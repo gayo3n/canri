@@ -1,8 +1,14 @@
 .login_title{
     text-align: center;
-    background-color: rgb(202, 202, 202);
+    background-color: rgb(161, 161, 161);
 }
 
 #login_input{
     text-align: center;
+}
+
+button{
+    border-radius: 4px;
+    color: #FFF;
+    background: #3e8bff;
 }
