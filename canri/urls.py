@@ -22,7 +22,5 @@ app_name = 'canri'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-]
-urlpatterns = [
     path('', views.IndexView.as_view(), name='login'),
 ]
