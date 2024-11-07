@@ -5,8 +5,8 @@ from .models import CustomUser
 
 class CustomUserAdmin(admin.ModelAdmin):
 
-    list_display = ('id', 'password', 'name')
-    list_display_links =  ('id', 'password', 'name')
+    list_display = ('id', 'password')
+    list_display_links =  ('id', 'password')
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
