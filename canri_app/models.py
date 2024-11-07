@@ -8,7 +8,7 @@ class User(models.Model):
     update_date = models.DateTimeField(auto_now=True)  # DATETIME
     deletion_flag = models.BooleanField(default=False)  # BOOLEAN
     administrator_flag = models.BooleanField(default=False)  # BOOLEAN
-    user_id = models.AutoField(primary_key=True)  # INTEGER PRIMARY KEY AUTOINCREMENT
+    id = models.AutoField(primary_key=True)  # INTEGER PRIMARY KEY AUTOINCREMENT
 
     class Meta:
         db_table = 'User'  # テーブル名を指定
