@@ -4,4 +4,5 @@ from . import views
 app_name ='canri_app'
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
+    path('/ongoingproject', views.OngoinprojectView.as_view(), name='ongoingproject')
 ]
