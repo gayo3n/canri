@@ -1,0 +1,31 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+    <h2>メンバーリスト作成</h2>
+
+    <button type="file" class="csv_ref">csvファイルアップロード</button>
+
+    <form><input type="text" placeholder="メンバー検索"></form>
+
+    <block>
+        <ul>
+            {% for member in members %}
+                <li>{{ Member.name }}</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'canri_app:member_make' %}" class="btn">＋</button>
+    </block>
+
+    <block>
+    {{ MemberList.member }}
+    <button class="memberList_add">＋</button>
+    </block>
+
+    <input type="text" placeholder="メンバーリスト名を入力してください">
+
+    <input type="text" placeholder="メンバーリストの詳細を入力してください">
+
+    <button class="memberList_save">保存</button>
+    <button class="memberList_cancel">キャンセル</button>
+
+{% endblock %}
