@@ -5,19 +5,23 @@
     <title>Can理</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!--追加のcss記入-->
+    {% block head %}{% endblock %}
 </head>
 <body>
     <header>
         {% block header %}
         <nav>
-            <a href="#">ホーム</a>
-            <a href="#">進行中プロジェクト</a>
-            <a href="#">新規プロジェクト</a>
-            <a href="#">過去プロジェクト</a>
-            <a href="#">メンバーリスト</a>
-            <a href="#">アカウント管理</a>
-            <a href="#">管理者</a>
-            <a href="#">ログアウト</a>
+            <ul>
+            <li><a href="#">ホーム</a></li>
+            <li><a href="#">進行中プロジェクト</a></li>
+            <li><a href="#">新規プロジェクト</a></li>
+            <li><a href="#">過去プロジェクト</a></li>
+            <li><a href="#">メンバーリスト</a></li>
+            <li><a href="#">アカウント管理</a></li>
+            <li><a href="#">管理者</a></li>
+            <li><a href="#">ログアウト</a></li>
+            </ul>
         </nav>
         {% endblock %}
     </header>
