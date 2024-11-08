@@ -18,14 +18,10 @@ from django.contrib import admin
 from django.urls import include, path
 from django.contrib.auth.views import LoginView
 
-from canri import views
-
-app_name = 'canri'
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    #path('', include('canri.urls')),
-    #path('', include('canri_app.urls')),
+    path('', include('canri_app.urls')),
     path('', include('accounts.urls')),
 ]
