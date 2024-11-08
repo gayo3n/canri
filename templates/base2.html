@@ -5,22 +5,29 @@
     <title>Can理</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <!--追加のcss記入-->
     {% block head %}{% endblock %}
 </head>
 <body>
     <header>
-        <nav>
-            <ul>
-            <li><a href="#">ホーム</a></li>
-            <li><a href="#">進行中プロジェクト</a></li>
-            <li><a href="#">新規プロジェクト</a></li>
-            <li><a href="#">過去プロジェクト</a></li>
-            <li><a href="#">メンバーリスト</a></li>
-            <li><a href="#">アカウント管理</a></li>
-            <li><a href="#">管理者</a></li>
-            <li><a href="#">ログアウト</a></li>
-            </ul>
+        <nav class="navbar">
+            <div class="navbar-left">
+                <a href="#" class="logo">
+                    <img src="{% static 'images/logo.png' %}" alt="ロゴ" class="logo-icon">
+                    ホーム
+                </a>
+                <a href="#">進行中プロジェクト</a>
+                <a href="#">新規プロジェクト</a>
+                <a href="#">過去プロジェクト</a>
+                <a href="#">メンバーリスト</a>
+                <a href="#">アカウント管理</a>
+            </div>
+            <div class="navbar-right">
+                <a href="#" class="user-icon">
+                    <img src="{% static 'images/user-icon.png' %}" alt="管理者アイコン">
+                    管理者
+                </a>
+                <a href="#">ログアウト</a>
+            </div>
         </nav>
     </header>
     <main>

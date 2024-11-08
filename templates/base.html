@@ -9,19 +9,28 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-            <li><a href="#">ホーム</a></li>
-            <li><a href="#">進行中プロジェクト</a></li>
-            <li><a href="#">新規プロジェクト</a></li>
-            <li><a href="#">過去プロジェクト</a></li>
-            <li><a href="#">メンバーリスト</a></li>
-            <li><a href="#">社員名</a></li>
-            <li><a href="#">ログアウト</a></li>
-            </ul>
-        </nav>
-    </header>
+    <body>
+        <header>
+            <nav class="navbar">
+                <div class="navbar-left">
+                    <a href="#" class="logo">
+                        <img src="{% static 'images/logo.png' %}" alt="ロゴ" class="logo-icon">
+                        ホーム
+                    </a>
+                    <a href="#">進行中プロジェクト</a>
+                    <a href="#">新規プロジェクト</a>
+                    <a href="#">過去プロジェクト</a>
+                    <a href="#">メンバーリスト</a>
+                </div>
+                <div class="navbar-right">
+                    <a href="#" class="user-icon">
+                        <img src="{% static 'images/user-icon.png' %}" alt="管理者アイコン">
+                        社員名
+                    </a>
+                    <a href="#">ログアウト</a>
+                </div>
+            </nav>
+        </header>
     <main>
         {% block content %}{% endblock %}
     </main>
