@@ -4,6 +4,7 @@ from django.contrib.auth import login, authenticate
 from django.views.generic import CreateView
 from canri.views import LoginView
 from . forms import LoginForm
+from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -15,15 +16,15 @@ from django.views.generic.base import TemplateView
 class LoginView(TemplateView):
     template_name = 'login.html'
 
-class LoginCompView(TemplateView):
-    template_name = 'login_complite.html'
-
 class LogoutView(TemplateView):
     template_name = 'logout.html'
 
 class MwnuView(TemplateView):
     template_name = 'menu.html'
 
+class LoginCompView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'login_complite.html')
 
 #ログイン機能
 class Account_login(LoginView):
@@ -33,12 +34,12 @@ class Account_login(LoginView):
             username = form.cleaned_data.get('username')
             user = User.objects.get(username=username)
             login(request, user)
-            return redirect('/')
+            return redirect('login_complite')
         return render(request, 'login_complite.html', {'form': form,})
 
     def get(self, request, *args, **kwargs):
-        form = LoginForm(request.POST)
-        return render(request, 'login.html', {'form': form,})
+         form = LoginForm(request.POST)
+         return render(request, 'login.html', {'form': form,})
 
 account_login = Account_login.as_view()
 

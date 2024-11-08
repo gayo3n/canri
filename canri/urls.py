@@ -17,13 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.contrib.auth.views import LoginView
-from django.urls import path, include
-# from canri import views
 
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('accounts/', include('accounts.urls')),  # accountsアプリのURL設定をインクルード
-    path('', include('canri_app.urls')),  # canri_appのURL設定
+    path('', include('canri_app.urls')),
+    path('', include('accounts.urls')),
 ]
