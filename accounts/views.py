@@ -37,15 +37,14 @@ class Account_login(LoginView):
             username = form.cleaned_data.get('username')
             user = User.objects.get(username=username)
             login(request, user)
-            return redirect('login_complite')
-        return render(request, 'login_complite.html', {'form': form,})
+            return redirect('/login_complite')
+        return render(request, 'login.html', {'form': form,})
 
     def get(self, request, *args, **kwargs):
          form = LoginForm(request.POST)
          return render(request, 'login.html', {'form': form,})
 
 account_login = Account_login.as_view()
-
 
 
 # アカウント作成
