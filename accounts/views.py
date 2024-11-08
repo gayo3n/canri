@@ -2,12 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.views.generic import CreateView
-from canri.views import LoginView, LogoutView
 from . forms import LoginForm
 from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
 
@@ -24,7 +22,16 @@ class MwnuView(TemplateView):
 
 class LoginCompView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'login_complite.html')
+        return render(request, 'login_complete.html')
+    def post(self, request, *args, **kwargs):
+        return render(request, 'login_complete.html')
+    
+class LogoutView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'logout_confirmation.html')
+    def post(self, request, *args, **kwargs):
+        return render(request, 'logout_confirmation.html')
+    
 
 #ログイン機能
 class Account_login(LoginView):
@@ -34,7 +41,7 @@ class Account_login(LoginView):
             username = form.cleaned_data.get('username')
             user = User.objects.get(username=username)
             login(request, user)
-            return redirect('/login_complite')
+            return redirect('/login_complete')
         return render(request, 'login.html', {'form': form,})
 
     def get(self, request, *args, **kwargs):
@@ -64,3 +71,5 @@ account_login = Account_login.as_view()
 #         return render(request, 'create.html', {'form': form,})
     
 #create_account = Create_account.as_view()
+
+
