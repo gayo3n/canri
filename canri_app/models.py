@@ -2,9 +2,9 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import Member
 
-<<<<<<< HEAD
+
 # class Member (models.Model):
-=======
+
 class User(models.Model):
     name = models.CharField(max_length=100)  # VARCHAR(100)
     password = models.CharField(max_length=255)  # VARCHAR(255)
@@ -36,4 +36,4 @@ class Project(models.Model):
     Project_Name=models.CharField(max_length=50)
     Project_Detail=models.CharField(max_length=10000)
     Project_start_date=models.DateField()
->>>>>>> 0309ffd77f94ac0c47b13091bece42f2d895e556
+

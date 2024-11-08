@@ -39,9 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
     'canri_app.apps.CanriAppConfig',
-    'canri_app.apps.CanriAppConfig',
-    'accounts.apps.AccountsConfig',
-
 ]
 
 
@@ -122,5 +119,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 LOGIN_URL = '/login'
-LOIN_REDIRECT_URL = '/login_complite'
+LOGIN_REDIRECT_URL = '/login_complite'
 LOGOUT_REDIRECT_URL = '/login'
