@@ -1,7 +1,7 @@
 from django.db import models
 
 class User(models.Model):
-    user_id=models.CharField(primary_key=True,max_length=20)
+    user_id=models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     password = models.CharField(max_length=255)
     creation_date = models.DateTimeField(auto_now_add=True)
