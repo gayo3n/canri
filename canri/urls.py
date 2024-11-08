@@ -16,11 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from canri import views
+from canri_app import views
 
 app_name = 'canri'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.IndexView.as_view(), name='login'),
+    path('', views.IndexView.as_view(), name='login'),  # ログインビューの設定
 ]
