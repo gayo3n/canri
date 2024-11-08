@@ -3,31 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ログイン</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>ログインページ</title>
 </head>
 <body>
-    <div class="login-container">
+    <div>
         <h2>ログイン</h2>
-        <div class="form-group">
-            <label for="username">ID</label>
-            <input type="text" id="username" placeholder="admin">
-        </div>
-        <div class="form-group">
-            <label for="password">パスワード</label>
-            <input type="password" id="password" placeholder="Passwd06112023!">
-        </div>
-        <div class="form-group">
-            <input type="checkbox" id="show-password">
-            <label for="show-password">パスワードを表示</label>
-        </div>
-        <button class="login-btn">ログイン</button>
+        <form action="/login" method="post">
+            <div>
+                <label for="username">ユーザーID</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div>
+                <label for="password">パスワード</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">ログイン</button>
+        </form>
     </div>
-
-    <script>
-        document.getElementById("show-password").addEventListener("change", function() {
-            document.getElementById("password").type = this.checked ? "text" : "password";
-        });
-    </script>
 </body>
 </html>
