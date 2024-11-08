@@ -1,4 +1,9 @@
 from django.db import models
+from django.utils import timezone
+# from django.contrib.auth.models import Member
+
+
+# class Member (models.Model):
 
 class User(models.Model):
     user_id=models.AutoField(primary_key=True)
