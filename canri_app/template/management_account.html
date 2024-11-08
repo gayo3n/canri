@@ -1,0 +1,37 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<h2>ユーザーのアカウント一覧</h2>
+
+<!-- ユーザー一覧テーブル -->
+<table border="1">
+    <tr>
+        <th>名前</th>
+        <th>ユーザーID</th>
+    </tr>
+    <tr>
+        <td name="user_name">大原太郎</td>
+        <td id="OHARA0001">OHARA0001</td>
+    </tr>
+    <tr>
+        <td name="user_name">大原次郎</td>
+        <td id="OHARA0002">OHARA0002</td>
+    </tr>
+    <tr>
+        <td name="user_name">大原三郎</td>
+        <td id="OHARA0003">OHARA0003</td>
+    </tr>
+    <tr>
+        <td name="user_name">大原四郎</td>
+        <td id="OHARA0004">OHARA0004</td>
+    </tr>
+</table>
+
+<div class="button-container">
+    <button type="button" class="btn btn-danger" data-user-id="OHARA0001">OHARA0001のアカウント削除 🗑️</button>
+    <button type="button" class="btn btn-danger" data-user-id="OHARA0002">OHARA0002のアカウント削除 🗑️</button>
+    <button type="button" class="btn btn-danger" data-user-id="OHARA0003">OHARA0003のアカウント削除 🗑️</button>
+    <button type="button" class="btn btn-danger" data-user-id="OHARA0004">OHARA0004のアカウント削除 🗑️</button>
+</div>
+
+{% endblock %}
