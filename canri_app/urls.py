@@ -1,11 +1,11 @@
+# urls.py
 from django.urls import path
-from . import views
+from .views import IndexView, MemberListView, ManagementAccountView
 
-app_name ='canri_app'
+app_name = 'canri_app'
 
 urlpatterns = [
-    path('', views.IndexView.as_view(), name='index'),
-    path('menberlist/', views.IndexView.as_view(), name='menberlist'),
-    path('management_account/', views.IndexView.as_view(), name='management_account'),
-    # path('ongoingproject/', views.OngoinprojectView.as_view(), name='ongoingproject') # 進行中プロジェクト
+    path('', IndexView.as_view(), name='index'),
+    path('menberlist/', MemberListView.as_view(), name='menberlist'),
+    path('management_account/', ManagementAccountView.as_view(), name='management_account'),
 ]
