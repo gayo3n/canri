@@ -15,12 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from canri_app import views
+from django.urls import include, path
+from django.contrib.auth.views import LoginView
+from django.urls import path, include
+# from canri import views
 
-app_name = 'canri'
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.IndexView.as_view(), name='login'),  # ログインビューの設定
+    # path('accounts/', include('accounts.urls')),  # accountsアプリのURL設定をインクルード
+    path('', include('canri_app.urls')),  # canri_appのURL設定
 ]
