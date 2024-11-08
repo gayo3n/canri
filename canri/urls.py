@@ -29,6 +29,6 @@ urlpatterns = [
     #path('', include('canri.urls')),
     path('', views.LoginView.as_view(), name='login'),
     path('logincomp/', views.LoginCompView.as_view(), name='login_complite'),
-    #path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('logout/', views.LogoutView.as_view(), name='logout'),
     path('', include('canri_app.urls'))
 ]

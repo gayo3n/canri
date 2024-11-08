@@ -19,7 +19,7 @@ class Account_login(LoginView):
             user = User.objects.get(username=username)
             login(request, user)
             return redirect('/')
-        return render(request, 'login.html', {'form': form,})
+        return render(request, 'login_complite.html', {'form': form,})
 
     def get(self, request, *args, **kwargs):
         form = LoginForm(request.POST)
