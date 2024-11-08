@@ -3,11 +3,11 @@ from django.views.generic.base import TemplateView
 
 # Create your views here.
 
-class IndexView(TemplateView):
+# class IndexView(TemplateView):
 
-    def index_view(request):
+def index_view(request):
 
-        return render(request, 'index.html')
+    return render(request, 'index.html')
 
 
-    template_name = 'index.html'
+    # template_name = 'index.html'
