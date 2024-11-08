@@ -5,10 +5,11 @@
     <title>Can理</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!--追加のcss記入-->
+    {% block head %}{% endblock %}
 </head>
 <body>
     <header>
-        {% block header %}
         <nav>
             <ul>
             <li><a href="#">ホーム</a></li>
@@ -20,7 +21,6 @@
             <li><a href="#">ログアウト</a></li>
             </ul>
         </nav>
-        {% endblock %}
     </header>
     <main>
         {% block content %}{% endblock %}
