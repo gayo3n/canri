@@ -1,8 +1,11 @@
-from django.shortcuts import render
+# views.py
 from django.views.generic.base import TemplateView
 
-# Create your views here.
-class IndexView (TemplateView):
+class IndexView(TemplateView):
     template_name = "index.html"
+
+class MemberListView(TemplateView):
     template_name = "menberlist.html"
+
+class ManagementAccountView(TemplateView):
     template_name = "management_account.html"
