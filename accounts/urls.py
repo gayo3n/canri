@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.urls import path,include
 from django.contrib.auth.views import LoginView
-from canri import views
+from . import views
 
 
 
