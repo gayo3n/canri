@@ -1,4 +1,3 @@
-{% extends "base.html" %}
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -23,7 +22,7 @@
             <input type="checkbox" id="show-password">
             <label for="show-password">パスワードを表示</label>
         </div>
-        <form action="{% url 'login_complite' %}" method="post">
+        <form action="{% url 'login_complete' %}" method="post">
             {% csrf_token %}
             <input class="w-100 btn btn-lg btn-primary" type="submit" value="ログイン">
         </form>

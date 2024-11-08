@@ -6,11 +6,16 @@ class LoginView(TemplateView):
     template_name = 'login.html'
 
 class LogoutView(TemplateView):
-    template_name = 'logout.html'
+    def post(self, request, *args, **kwargs):
+        return render(request, 'logout_confirmation')
+    
 
 class MwnuView(TemplateView):
     template_name = 'menu.html'
 
 class LoginCompView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'login_complite.html')
+        return render(request, 'login_complete.html')
+    def post(self, request, *args, **kwargs):
+        return render(request, 'login_complete.html')
+        
