@@ -4,6 +4,7 @@ from django.contrib.auth import login, authenticate
 from django.views.generic import CreateView
 from canri.views import LoginView
 from . forms import LoginForm
+from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -33,12 +34,12 @@ class Account_login(LoginView):
             username = form.cleaned_data.get('username')
             user = User.objects.get(username=username)
             login(request, user)
-            return redirect('/')
+            return redirect('login_complite')
         return render(request, 'login_complite.html', {'form': form,})
 
     def get(self, request, *args, **kwargs):
-        form = LoginForm(request.POST)
-        return render(request, 'login.html', {'form': form,})
+         form = LoginForm(request.POST)
+         return render(request, 'login.html', {'form': form,})
 
 account_login = Account_login.as_view()
 

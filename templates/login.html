@@ -24,7 +24,10 @@
             <input type="checkbox" id="show-password">
             <label for="show-password">パスワードを表示</label>
         </div>
-        <button class="login-btn">ログイン</button>
+        <form action="{% url 'login_complite' %}" method="post">
+            {% csrf_token %}
+            <input class="w-100 btn btn-lg btn-primary" type="submit" value="ログイン">
+        </form>
     </div>
 
     <script>
