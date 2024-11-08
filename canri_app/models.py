@@ -1,33 +1,125 @@
 from django.db import models
+from django.utils import timezone
+# from django.contrib.auth.models import Member
+
+
+# class Member (models.Model):
 
 class User(models.Model):
-    name = models.CharField(max_length=100)  # VARCHAR(100)
-    password = models.CharField(max_length=255)  # VARCHAR(255)
-    creation_date = models.DateTimeField(auto_now_add=True)  # DATETIME
-    deletion_date = models.DateTimeField(null=True, blank=True)  # DATETIME
-    update_date = models.DateTimeField(auto_now=True)  # DATETIME
-    deletion_flag = models.BooleanField(default=False)  # BOOLEAN
-    administrator_flag = models.BooleanField(default=False)  # BOOLEAN
-    id = models.AutoField(primary_key=True)  # INTEGER PRIMARY KEY AUTOINCREMENT
+    user_id=models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    password = models.CharField(max_length=255)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    deletion_date = models.DateTimeField(null=True, blank=True)
+    update_date = models.DateTimeField(auto_now=True)
+    deletion_flag = models.BooleanField(default=False)
+    administrator_flag = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'User'  # テーブル名を指定
+        db_table = 'user'  # テーブル名を指定
 
 class Category(models.Model):
-    CategoryID = models.AutoField(primary_key=True)
-    Category_Name = models.CharField(max_length=50)  # VARCHAR(255)
-    Detail=models.CharField(max_length=10000)
-    creation_date = models.DateTimeField(auto_now_add=True)  # DATETIME
-    deletion_date = models.DateTimeField(null=True, blank=True)  # DATETIM
-    deletion_flag = models.BooleanField(default=False)  # BOOLEAN
+    category_id = models.AutoField(primary_key=True)
+    category_name = models.CharField(max_length=255)
+    detail = models.TextField(null=True, blank=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
+    deletion_date = models.DateTimeField(null=True, blank=True)
+    deletion_flag = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'Category'  # テーブル名を指定
-
-
+        db_table = 'category'  # テーブル名を指定
 
 class Project(models.Model):
-    ProjectID=models.AutoField(primary_key=True)
-    Project_Name=models.CharField(max_length=50)
-    Project_Detail=models.CharField(max_length=10000)
-    Project_start_date=models.DateField()
+    project_id = models.AutoField(primary_key=True)
+    project_name = models.CharField(max_length=255)
+    project_detail = models.TextField(null=True, blank=True)
+    project_start_date = models.DateTimeField()
+    project_end_date = models.DateTimeField()
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
+    complete_date = models.DateTimeField(null=True, blank=True)
+    deletion_date = models.DateTimeField(null=True, blank=True)
+    post_evaluation_memo = models.TextField(null=True, blank=True)
+    deletion_flag = models.BooleanField(default=False)
+    complete_flag = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'project'  # テーブル名を指定
+
+class Team(models.Model):
+    team_id = models.AutoField(primary_key=True)
+    team_name = models.CharField(max_length=255)
+    count = models.IntegerField(null=True, blank=True)
+    objective = models.TextField(null=True, blank=True)
+    memo = models.TextField(null=True, blank=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
+    deletion_date = models.DateTimeField(null=True, blank=True)
+    deletion_flag = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'team'  # テーブル名を指定
+
+class ProjectAffiliationTeam(models.Model):
+    project_affiliation_team_id = models.AutoField(primary_key=True)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    deletion_flag = models.BooleanField(default=False)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    change_date = models.DateTimeField(auto_now=True)
+    deletion_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'project_affiliation_team'  # テーブル名を指定
+
+class TeamMember(models.Model):
+    team_member_id = models.AutoField(primary_key=True)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    deletion_flag = models.BooleanField(default=False)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
+    deletion_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'team_member'  # テーブル名を指定
+
+class MBTI(models.Model):
+    mbti_id = models.AutoField(primary_key=True)
+    mbti_name = models.CharField(max_length=255)
+    planning_presentation_power = models.TextField()
+    teamwork = models.TextField()
+    time_management_ability = models.TextField()
+    problem_solving_ability = models.TextField()
+
+    class Meta:
+        db_table = 'mbti'  # テーブル名を指定
+
+class Member(models.Model):
+    member_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255)
+    birthdate = models.DateTimeField()
+    job_title = models.CharField(max_length=255)
+    memo = models.TextField()
+    mbti = models.ForeignKey(MBTI, on_delete=models.CASCADE)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    deletion_date = models.DateTimeField(null=True, blank=True)
+    deletion_flag = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'member'  # テーブル名を指定
+
+class MemberList(models.Model):
+    member_list_id = models.AutoField(primary_key=True)
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    job_title = models.CharField(max_length=255)
+    memo = models.TextField()
+    mbti = models.ForeignKey(MBTI, on_delete=models.CASCADE)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    deletion_date = models.DateTimeField(null=True, blank=True)
+    deletion_flag = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'member_list'  # テーブル名を指定
