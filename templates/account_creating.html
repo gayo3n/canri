@@ -1,0 +1,19 @@
+{% extends 'base2.html' %}
+{% block content %}
+<h1>アカウント作成</h1>
+    <form action="アカウント作成完了" method="post">
+        <div> 
+            <input type="text" value="ユーザID" id="userid" name="userid" required>
+        </div>
+        <div>
+            <input type="text" value="パスワード" id="password" name="password" required>
+        </div>
+        <div>
+            <input type="text" value="ユーザ名" id="username" name="username" required>
+        </div>
+        <duv>
+            <td><button type="button" class="btn btn-danger">作成</button></td>
+        </div>
+
+{% endblock %}
+
