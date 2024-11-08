@@ -14,7 +14,7 @@ class Account_login(View):
             user = Account.objects.get(username=username, password=password)
             login(request, user)
             return redirect('/')
-        return render(request, 'login.html', {'form': form,})
+        return render(request, 'accounts/login.html', {'form': form,})
     
     def get(self, request, *args, **kwargs):
         form = LoginForm(request.POST)
@@ -41,3 +41,7 @@ class Create_account(CreateView):
         return render(request, 'create.html', {'form': form,})
     
 create_account = Create_account.as_view()
+
+
+def index(request):
+    return render(request, 'index.html')

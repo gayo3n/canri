@@ -16,15 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from ..templates import views
-from canri import views
+# from canri import views
 
-app_name = 'canri'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('canri_app.urls'))
-]
-urlpatterns = [
-    path('', views.IndexView.as_view(), name='login'),
+    # path('accounts/', include('accounts.urls')),  # accountsアプリのURL設定をインクルード
+    path('', include('canri_app.urls')),  # canri_appのURL設定
 ]
