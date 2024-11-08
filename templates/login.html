@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    {% block content %}
     <div class="login-container">
         <h2>ログイン</h2>
         <div class="form-group">
@@ -31,6 +32,7 @@
             document.getElementById("password").type = this.checked ? "text" : "password";
         });
     </script>
+{% endblock %}
 </body>
 </html>
 >>>>>>> c0a4bbc1e19550941e9a73487aaa943427bf5ac0
