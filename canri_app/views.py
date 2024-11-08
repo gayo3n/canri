@@ -7,8 +7,6 @@ class IndexView(TemplateView):
 class MemberListView(TemplateView):
     template_name = "menberlist.html"
 
-class ManagementAccountView(TemplateView):
-    template_name = "management_account.html"
 
 
 class MemberListMakeView(TemplateView):
