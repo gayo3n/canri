@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'accounts.apps.accountsConfig',
-    'canri_app.apps.canri_appConfig',
+    'accounts.apps.AccountsConfig',
+    'canri_app.apps.CanriAppConfig',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

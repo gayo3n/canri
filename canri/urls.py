@@ -15,13 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-<<<<<<< HEAD
 from django.urls import include, path
 from django.contrib.auth.views import LoginView
-=======
 from django.urls import path, include
-from ..templates import views
->>>>>>> 977271ee76173ee1df9909ae8d287f371e881a7d
+
 from canri import views
 
 app_name = 'canri'
@@ -29,16 +26,9 @@ app_name = 'canri'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-<<<<<<< HEAD
     #path('', include('canri.urls')),
     path('', views.LoginView.as_view(), name='login'),
     path('logincomp/', views.LoginCompView.as_view(), name='login_complite'),
     #path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-]
-=======
     path('', include('canri_app.urls'))
 ]
-urlpatterns = [
-    path('', views.IndexView.as_view(), name='login'),
-]
->>>>>>> 977271ee76173ee1df9909ae8d287f371e881a7d
