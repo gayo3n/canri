@@ -1,0 +1,26 @@
+/* テーブルと削除ボタンのコンテナを横並びにする */
+.content-wrapper {
+    display: flex;
+    align-items: flex-start;
+}
+
+table {
+    width: 60%; /* テーブルの幅を調整 */
+    border-collapse: collapse;
+    margin-right: 20px; /* テーブルとボタンの間に余白を追加 */
+}
+
+table th, table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column; /* ボタンを縦に並べる */
+}
+
+.button-container button {
+    margin-bottom: 10px;
+}

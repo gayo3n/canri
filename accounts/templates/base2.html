@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Can理</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="navbar-left">
+                <a href="#" class="logo">
+                    <img src="{% static 'images/logo.png' %}" alt="ロゴ" class="logo-icon">
+                    ホーム
+                </a>
+                <a href="#">進行中プロジェクト</a>
+                <a href="#">新規プロジェクト</a>
+                <a href="#">過去プロジェクト</a>
+                <a href="#">メンバーリスト</a>
+                <a href="{% url 'management_account' %}">アカウント管理</a>
+            </div>
+            <div class="navbar-right">
+                <a href="#" class="user-icon">
+                    <img src="{% static 'images/user-icon.png' %}" alt="管理者アイコン">
+                    管理者
+                </a>
+                <a href="#">ログアウト</a>
+            </div>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

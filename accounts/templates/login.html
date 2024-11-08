@@ -1,0 +1,38 @@
+
+{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログインページ</title>
+</head>
+<body>
+
+    {% block content %}
+    <div class="login-container">
+        <h2>ログイン</h2>
+        <form action="/login" method="post">
+
+            <div>
+                <input type="text" value="半角でご入力ください" id="userid" name="id" required>
+            </div>
+            <div>
+
+                <input type="password" value="" id="input_pass" name="input_pass" required>
+                <button id="btn_passview">表示</button>
+
+                
+            </div>
+            <button type="submit">ログイン</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("show-password").addEventListener("change", function() {
+            document.getElementById("password").type = this.checked ? "text" : "password";
+        });
+    </script>
+{% endblock %}
+</body>
+</html>

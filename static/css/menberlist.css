@@ -1,0 +1,85 @@
+/* メインコンテナ */
+.member-list-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 検索バーと新規作成ボタン */
+.search-create-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-bar {
+    padding: 5px;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.create-member-btn {
+    padding: 8px 16px;
+    background-color: #87ceeb;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.create-member-btn:hover {
+    background-color: #00bfff;
+}
+
+/* メンバーリスト */
+.member-list {
+    width: 100%;
+    max-width: 500px;
+}
+
+.member-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.detail-btn {
+    padding: 5px 10px;
+    background-color: #87cefa;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.detail-btn:hover {
+    background-color: #00bfff;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #ff6347;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* ページネーション */
+.pagination {
+    margin-top: 20px;
+}
+
+.more-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}

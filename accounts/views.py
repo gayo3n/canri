@@ -22,6 +22,7 @@ class MwnuView(TemplateView):
 
 class LoginCompView(View):
     def get(self, request, *args, **kwargs):
+<<<<<<< HEAD
         return render(request, 'login_complete.html')
     def post(self, request, *args, **kwargs):
         return render(request, 'login_complete.html')
@@ -32,6 +33,13 @@ class LogoutView(View):
     def post(self, request, *args, **kwargs):
         return render(request, 'logout_confirmation.html')
     
+=======
+        return render(request, 'login_complite.html')
+    
+class ManagementAccountView(TemplateView):
+    template_name = "management_account.html"
+
+>>>>>>> 70846145f8d354ce44127a9aaf8a4748310d2a17
 
 #ログイン機能
 class Account_login(LoginView):
