@@ -34,5 +34,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'name'
     REQUIRED_FIELDS = []
 
+    class Meta:
+        db_table = 'user'  # テーブル名を'user'に設定
+
     def __str__(self):
         return self.name
