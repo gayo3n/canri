@@ -2,14 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from django.views.generic import CreateView
-from . forms import LoginForm
+from .forms import LoginForm
 from django.views import View
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render
+from django.contrib.auth.views import LoginView as AuthLoginView
 from django.views.generic.base import TemplateView
-
-
 
 class LoginView(TemplateView):
     template_name = 'login.html'
@@ -22,62 +18,19 @@ class MwnuView(TemplateView):
 
 class LoginCompView(View):
     def get(self, request, *args, **kwargs):
-<<<<<<< HEAD
         return render(request, 'login_complete.html')
-    def post(self, request, *args, **kwargs):
-        return render(request, 'login_complete.html')
-    
-class LogoutView(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'logout_confirmation.html')
-    def post(self, request, *args, **kwargs):
-        return render(request, 'logout_confirmation.html')
-    
-=======
-        return render(request, 'login_complite.html')
-    
+
 class ManagementAccountView(TemplateView):
     template_name = "management_account.html"
 
->>>>>>> 70846145f8d354ce44127a9aaf8a4748310d2a17
-
-#ログイン機能
-class Account_login(LoginView):
-    def post(self, request, *arg, **kwargs):
+class AccountLogin(AuthLoginView):
+    def post(self, request, *args, **kwargs):
         form = LoginForm(data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             user = User.objects.get(username=username)
             login(request, user)
             return redirect('/login_complete')
-        return render(request, 'login.html', {'form': form,})
+        return render(request, 'login.html', {'form': form})
 
-    def get(self, request, *args, **kwargs):
-         form = LoginForm(request.POST)
-         return render(request, 'login.html', {'form': form,})
-
-account_login = Account_login.as_view()
-
-
-# アカウント作成
-# class Create_account(CreateView):
-#     def post(self, request, *args, **kwargs):
-#         form = UserCreateForm(data=request.POST)
-#         if form.is_valid():
-#             form.save()
-#             # フォームから'usename'を読み取る
-#             username = form.cleaned_data.get('username')
-#             # フォームから'password'を読み取る
-#             password = form.changed_data.get('password')
-#             user = authenticate(username=username, password=password)
-#             login(request, user)
-#             return redirect('/')
-#         return render(request, 'create.html', {'form': form,})
-    
-#     def get(self, request, *args, **kwargs):
-#         form = UserCreateForm(request.POST)
-#         return render(request, 'create.html', {'form': form,})
-    
-#create_account = Create_account.as_view()
-
-
+account_login = AccountLogin.as_view()
