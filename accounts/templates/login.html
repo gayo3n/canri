@@ -12,8 +12,11 @@
     {% block content %}
     <div class="login-container">
         <h2>ログイン</h2>
-        <form action="/login" method="post">
-
+        {% if form.errors %}
+          <p>ユーザー名かパスワードが一致しません</p>
+        {% endif %}
+        <form action="/login_complete/" method="post">
+            {% csrf_token %}
             <div>
                 <input type="text" value="半角でご入力ください" id="userid" name="id" required>
             </div>
@@ -21,7 +24,6 @@
 
                 <input type="password" value="" id="input_pass" name="input_pass" required>
                 <button id="btn_passview">表示</button>
-
                 
             </div>
             <button type="submit">ログイン</button>
