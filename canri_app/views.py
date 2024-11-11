@@ -26,3 +26,11 @@ class MemberListMakeView(TemplateView):
 
 class MemberMakeView(TemplateView):
     template_name = "member_make.html"
+
+
+
+
+
+
+class ManagementAccountView(TemplateView):
+    template_name = "management_account.html"
