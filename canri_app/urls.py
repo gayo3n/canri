@@ -5,8 +5,9 @@ from . import views
 app_name = 'canri_app'
 
 urlpatterns = [
-    path('menberlist/', views.MemberListView.as_view(), name='menberlist'),
     path('', views.IndexView.as_view(), name='index'),
+    path('menberlist/', views.MemberListView.as_view(), name='menberlist'),
     path('memberList_make/', views.MemberListMakeView.as_view(), name='memberList_make'),
     path('member_make/', views.MemberMakeView.as_view(), name='member_make'),
+    path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
 ]
