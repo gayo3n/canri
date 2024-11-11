@@ -27,7 +27,12 @@ class MemberListMakeView(TemplateView):
 class MemberMakeView(TemplateView):
     template_name = "member_make.html"
 
+class MemberListDeleteView(TemplateView):
+    template_name = "memberlist_delete.html"
+
 
 
 class ManagementAccountView(TemplateView):
     template_name = "management_account.html"
+
+
