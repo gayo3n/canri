@@ -4,19 +4,6 @@ from django.utils import timezone
 
 # class Member (models.Model):
 
-class User(models.Model):
-    user_id=models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
-    password = models.CharField(max_length=255)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    deletion_date = models.DateTimeField(null=True, blank=True)
-    update_date = models.DateTimeField(auto_now=True)
-    deletion_flag = models.BooleanField(default=False)
-    administrator_flag = models.BooleanField(default=False)
-
-    class Meta:
-        db_table = 'user'  # テーブル名を指定
-
 class Category(models.Model):
     category_id = models.AutoField(primary_key=True)
     category_name = models.CharField(max_length=255)
@@ -75,20 +62,6 @@ class ProjectAffiliationTeam(models.Model):
     class Meta:
         db_table = 'Project_Affiliation_Team'
 
-
-class TeamMember(models.Model):
-    team_member_id = models.AutoField(primary_key=True)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    deletion_flag = models.BooleanField(default=False)
-    creation_date = models.DateTimeField()
-    update_date = models.DateTimeField()
-    deletion_date = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        db_table = 'Team_Member'
-
-
 class MBTI(models.Model):
     mbti_id = models.AutoField(primary_key=True)
     mbti_name = models.CharField(max_length=255)
@@ -99,7 +72,6 @@ class MBTI(models.Model):
 
     class Meta:
         db_table = 'MBTI'
-
 
 class Member(models.Model):
     member_id = models.AutoField(primary_key=True)
@@ -114,6 +86,19 @@ class Member(models.Model):
 
     class Meta:
         db_table = 'Member'
+
+class TeamMember(models.Model):
+    team_member_id = models.AutoField(primary_key=True)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    member_id = models.ForeignKey(Member, on_delete=models.CASCADE)
+    deletion_flag = models.BooleanField(default=False)
+    creation_date = models.DateTimeField()
+    update_date = models.DateTimeField()
+    deletion_date = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'Team_Member'
+
 
 
 class MemberList(models.Model):
@@ -135,8 +120,7 @@ class CareerInformation(models.Model):
     career_id = models.AutoField(primary_key=True)
     career = models.CharField(max_length=255)
     speciality_height = models.IntegerField()
-    creation_date = models.DateTimeField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
 
     class Meta:
         db_table = 'career_information'
