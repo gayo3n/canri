@@ -1,3 +1,4 @@
+from django.contrib.auth.views import LogoutView
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, get_user_model
 from django.views import View
@@ -13,9 +14,6 @@ class LoginView(TemplateView):
 
 class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
-
-class MwnuView(TemplateView):
-    template_name = 'menu.html'
 
 class LoginCompView(View):
     def get(self, request, *args, **kwargs):

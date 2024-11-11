@@ -1,13 +1,6 @@
-/* テーブルと削除ボタンのコンテナを横並びにする */
-.content-wrapper {
-    display: flex;
-    align-items: flex-start;
-}
-
 table {
-    width: 60%; /* テーブルの幅を調整 */
+    width: 100%;
     border-collapse: collapse;
-    margin-right: 20px; /* テーブルとボタンの間に余白を追加 */
 }
 
 table th, table td {
@@ -16,11 +9,38 @@ table th, table td {
     border: 1px solid #ddd;
 }
 
-.button-container {
-    display: flex;
-    flex-direction: column; /* ボタンを縦に並べる */
+.btn-danger {
+    background-color: #fd5650;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
-.button-container button {
-    margin-bottom: 10px;
+.btn-danger:hover {
+    background-color: #e60800;
+}
+
+/* テーブルのヘッダーのスタイル */
+table th {
+    color: white; /* 文字色を白に */
+    background-color: black; /* 背景色を黒に */
+}
+
+/* 奇数行の名前とユーザーIDに薄いグレーを設定 */
+table tr:nth-child(odd) td[name="user_name"], 
+table tr:nth-child(odd) td[id^="OHARA"] {
+    background-color: #e7e7e7; /* 薄いグレー */
+}
+
+/* 偶数行の名前とユーザーIDに濃いグレーを設定 */
+table tr:nth-child(even) td[name="user_name"], 
+table tr:nth-child(even) td[id^="OHARA"] {
+    background-color: #f5f5f5; /* 濃いグレー */
+}
+
+/* 名前部分の色を青に変更 */
+table td[name="user_name"] {
+    color: #3498db; /* 青色 */
 }
