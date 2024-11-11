@@ -3,33 +3,33 @@ from django.contrib.auth import login, get_user_model
 from django.views import View
 from django.contrib.auth.views import LoginView as AuthLoginView
 from django.views.generic.base import TemplateView
-from .forms import LoginForm
+from .forms import UserForm
 
 User = get_user_model()
-
-class LoginView(TemplateView):
-    form_class = LoginForm
-    template_name = 'login.html'
-
-class LogoutConfView(TemplateView):
-    template_name = 'logout_confirmation.html'
 
 class MwnuView(TemplateView):
     template_name = 'menu.html'
 
+class LoginView(TemplateView):
+    form_class = UserForm
+    template_name = 'login.html'
+    def post(self, request, *args, **kwargs):
+        return render(request, 'login_complete.html')
+
 class LoginCompView(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_complete.html')
+    
+class LoginFailView(TemplateView):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'login_failure.html')
+    
+class LogoutConfView(TemplateView):
+    template_name = 'logout_confirmation.html'
 
 class LogoutCompView(TemplateView):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'request_complete.html')
     def post(self, request, *args, **kwargs):
         return render(request, 'logout_complete.html')
-    
-# class LoginFailView(TemplateView):
-#     def get(self, request, *args, **kwargs):
-#         return render(request, 'login_failure.html')
 
 
 class ManagementAccountView(TemplateView):
@@ -37,7 +37,7 @@ class ManagementAccountView(TemplateView):
 
 class AccountLogin(AuthLoginView):
     def post(self, request, *args, **kwargs):
-        form = LoginForm(data=request.POST)
+        form = UserForm(data=request.POST)
         if form.is_valid():
             name = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
