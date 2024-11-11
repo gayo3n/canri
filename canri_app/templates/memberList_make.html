@@ -19,6 +19,14 @@
         {% endfor %}
     </ul>
 
+    <block>
+        <ul>
+            {% for member in members %}
+                <li>{{ Member.name }}</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'canri_app:member_make' %}" class="btn">＋</a>
+    </block>
 
     <a href="{% url 'canri_app:member_make' %}" class="btn">＋</a>
 
