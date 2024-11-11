@@ -10,7 +10,6 @@ urlpatterns = [
     path('memberlist/make/', views.MemberListMakeView.as_view(), name='memberList_make'),
     path('member_make/', views.MemberMakeView.as_view(), name='member_make'),
 
-
     
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
 ]

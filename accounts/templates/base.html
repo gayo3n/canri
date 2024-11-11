@@ -14,13 +14,13 @@
             <nav class="navbar">
                 <div class="navbar-left">
                     <img src="{% static 'images/logo.png' %}" alt="ロゴ" class="logo-icon">
-                    <a href="#" class="logo">
+                    <a href="{% url 'canri_app:index' %}" class="logo">
                         ホーム
                     </a>
                     <a href="#">進行中プロジェクト</a>
                     <a href="#">新規プロジェクト</a>
                     <a href="#">過去プロジェクト</a>
-                    <a href="#">メンバーリスト</a>
+                    <a href="{% url 'canri_app:memberlist' %}">メンバーリスト</a>
                 </div>
                 <div class="navbar-right">
                     <a href="#" class="user-icon">
