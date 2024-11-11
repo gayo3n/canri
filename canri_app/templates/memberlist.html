@@ -10,40 +10,19 @@
         <input type="text" placeholder="検索" class="search-bar">
         <a href="{% url 'canri_app:memberList_make' %}" class="create-member-btn">新規メンバーリスト作成</a>
     </div>
-    
+    <!--メンバーリスト名を繰り返し表示させる（まだつなげてない）-->
+    {% for member in members %}
     <div class="member-list">
         <div class="member-item">
-            <span>メンバーリスト A</span>
+            <!--メンバーリストの中のリスト名-->
+            <span>{{ member.list }}</span>
             <a href="#" class="detail-btn">詳細</a>
             <a href="{% url "canri_app:memberlist_delete" %}" class="delete-btn">&#128465;</a>
         </div>
-        <div class="member-item">
-            <span>メンバーリスト B</span>
-            <a href="#" class="detail-btn">詳細</a>
-            <button class="delete-btn">&#128465;</button>
-        </div>
-        <div class="member-item">
-            <span>メンバーリスト C</span>
-            <a href="#" class="detail-btn">詳細</a>
-            <button class="delete-btn">&#128465;</button>
-        </div>
-        <div class="member-item">
-            <span>メンバーリスト D</span>
-            <a href="#" class="detail-btn">詳細</a>
-            <button class="delete-btn">&#128465;</button>
-        </div>
-        <div class="member-item">
-            <span>メンバーリスト E</span>
-            <a href="#" class="detail-btn">詳細</a>
-            <button class="delete-btn">&#128465;</button>
-        </div>
-        <div class="member-item">
-            <span>メンバーリスト F</span>
-            <a href="#" class="detail-btn">詳細</a>
-            <button class="delete-btn">&#128465;</button>
-        </div>
     </div>
+    {% endfor %}
 
+    <!--スクロールボタン-->
     <div class="pagination">
         <button class="more-btn">&#9660;</button>
     </div>
