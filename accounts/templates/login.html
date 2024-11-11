@@ -19,7 +19,8 @@
         {% if form.errors %}
           <p>ユーザー名かパスワードが一致しません</p>
         {% endif %}
-        <form action="/login_complete/" method="post">
+
+        <form action="/login/" method="post">
             {% csrf_token %}
             <div>
                 <input type="text" placeholder="半角でご入力ください" id="userid" name="username" required>
