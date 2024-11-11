@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -19,6 +19,7 @@
         {% if form.errors %}
           <p>ユーザー名かパスワードが一致しません</p>
         {% endif %}
+        <!-- <form action="/login_complete/" method="post"> -->
 
         <form action="/login/" method="post">
             {% csrf_token %}
