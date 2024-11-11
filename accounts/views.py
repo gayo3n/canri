@@ -21,8 +21,6 @@ class LoginCompView(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_complete.html')
 
-class ManagementAccountView(TemplateView):
-    template_name = "management_account.html"
 
 class AccountLogin(AuthLoginView):
     def post(self, request, *args, **kwargs):
