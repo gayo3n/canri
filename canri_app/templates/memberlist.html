@@ -2,44 +2,44 @@
 
 {% load static %}
 
-{% block head %}<link rel="stylesheet" href="{% static 'css/menberlist.css' %}">{% endblock %}
+{% block head %}<link rel="stylesheet" href="{% static 'css/memberlist.css' %}">{% endblock %}
 
 {% block content %}
 <div class="member-list-container">
     <div class="search-create-bar">
         <input type="text" placeholder="検索" class="search-bar">
-        <button class="create-member-btn"><a href="{% url 'menberList_make'%}">新規メンバーリスト作成</a></button>
+        <a href="{% url 'canri_app:memberList_make' %}" class="create-member-btn">新規メンバーリスト作成</a>
     </div>
     
     <div class="member-list">
         <div class="member-item">
             <span>メンバーリスト A</span>
-            <a href="{% url 'member_detail' 1 %}" class="detail-btn">詳細</a>
+            <a href="#" class="detail-btn">詳細</a>
             <button class="delete-btn">&#128465;</button>
         </div>
         <div class="member-item">
             <span>メンバーリスト B</span>
-            <a href="{% url 'member_detail' 2 %}" class="detail-btn">詳細</a>
+            <a href="#" class="detail-btn">詳細</a>
             <button class="delete-btn">&#128465;</button>
         </div>
         <div class="member-item">
             <span>メンバーリスト C</span>
-            <a href="{% url 'member_detail' 3 %}" class="detail-btn">詳細</a>
+            <a href="#" class="detail-btn">詳細</a>
             <button class="delete-btn">&#128465;</button>
         </div>
         <div class="member-item">
             <span>メンバーリスト D</span>
-            <a href="{% url 'member_detail' 4 %}" class="detail-btn">詳細</a>
+            <a href="#" class="detail-btn">詳細</a>
             <button class="delete-btn">&#128465;</button>
         </div>
         <div class="member-item">
             <span>メンバーリスト E</span>
-            <a href="{% url 'member_detail' 5 %}" class="detail-btn">詳細</a>
+            <a href="#" class="detail-btn">詳細</a>
             <button class="delete-btn">&#128465;</button>
         </div>
         <div class="member-item">
             <span>メンバーリスト F</span>
-            <a href="{% url 'member_detail' 6 %}" class="detail-btn">詳細</a>
+            <a href="#" class="detail-btn">詳細</a>
             <button class="delete-btn">&#128465;</button>
         </div>
     </div>

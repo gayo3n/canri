@@ -22,6 +22,6 @@ from django.contrib.auth.views import LoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    #path('', include('canri_app.urls')),
+    path('', include('canri_app.urls')),
     path('', include('accounts.urls')),
 ]
