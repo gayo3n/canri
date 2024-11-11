@@ -103,7 +103,7 @@ class TeamMember(models.Model):
 
 class MemberList(models.Model):
     member_list_id = models.AutoField(primary_key=True)
-    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    member = models.ManyToManyField(Member, related_name='member_lists')
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     job_title = models.CharField(max_length=255)
     memo = models.TextField()
