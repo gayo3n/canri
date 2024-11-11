@@ -29,8 +29,5 @@ class MemberMakeView(TemplateView):
 
 
 
-
-
-
 class ManagementAccountView(TemplateView):
     template_name = "management_account.html"
