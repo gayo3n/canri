@@ -2,7 +2,7 @@
 from django.views.generic.base import TemplateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from .models import Member, MemberList
+from .models import Member, MemberList, Feedback
 import json
 
 
@@ -99,35 +99,60 @@ def create_team_api(request):
 # team_type = チームを作成する際の目的 | members = 作成に使用するメンバーのリスト | team_size = 作成するチームの人数 
 # イベント用チーム = event | 研修用チーム = training | プロジェクト開発用チーム = project | アイデア発想チーム = idea_generation 
 def create_team(team_type, members, team_size):
-    # イベント用チーム編成ロジック
+    # フィードバック情報を無条件で取得（削除フラグが False のもの）
+    feedback_data = Feedback.objects.filter(deletion_flag=False)
+
+    # メンバー同士の関係性を確認するための辞書を構築
+    feedback_dict = {}
+    for feedback in feedback_data:
+        key = (feedback.member1_id, feedback.member2_id)
+        feedback_dict[key] = feedback.priority_flag
+
+    # チームの生成ロジック
     if team_type == 'event':
-        # birthdate順にソート（古い順）
         sorted_members = sorted(members, key=lambda x: x['birthdate'])
-        # 古い順と新しい順から交互にメンバーを追加する
         team = []
         left, right = 0, len(sorted_members) - 1
         while len(team) < team_size and left <= right:
             if len(team) % 2 == 0:
-                team.append(sorted_members[left])
+                member = sorted_members[left]
                 left += 1
             else:
-                team.append(sorted_members[right])
+                member = sorted_members[right]
                 right -= 1
-    # 研修用チーム編成ロジック
+            # フィードバック優先度を考慮
+            if all(feedback_dict.get((member['member_id'], teammate['member_id']), False) for teammate in team):
+                team.append(member)
+
     elif team_type == 'training':
-        team = sorted(members, key=lambda x: x['level_of_expertise'], reverse=True)[:team_size]
-    # プロジェクト開発用チーム編成ロジック
+        sorted_members = sorted(members, key=lambda x: x['level_of_expertise'], reverse=True)
+        team = []
+        for member in sorted_members:
+            if len(team) < team_size:
+                if all(feedback_dict.get((member['member_id'], teammate['member_id']), False) for teammate in team):
+                    team.append(member)
+
     elif team_type == 'project':
-        team = sorted(members, key=lambda x: (
+        sorted_members = sorted(members, key=lambda x: (
             x['level_of_expertise'], 
             x['planning_presentation_power'], 
             x['teamwork'], 
             x['time_management_ability'], 
             x['problem_solving_ability']
-        ), reverse=True)[:team_size]
-    # アイデア発想チーム編成ロジック
+        ), reverse=True)
+        team = []
+        for member in sorted_members:
+            if len(team) < team_size:
+                if all(feedback_dict.get((member['member_id'], teammate['member_id']), False) for teammate in team):
+                    team.append(member)
+
     elif team_type == 'idea_generation':
-        team = sorted(members, key=lambda x: x['planning_presentation_power'], reverse=True)[:team_size]
+        sorted_members = sorted(members, key=lambda x: x['planning_presentation_power'], reverse=True)
+        team = []
+        for member in sorted_members:
+            if len(team) < team_size:
+                if all(feedback_dict.get((member['member_id'], teammate['member_id']), False) for teammate in team):
+                    team.append(member)
     else:
         return {"error": "無効なチームタイプです"}
     
