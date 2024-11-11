@@ -5,7 +5,12 @@
 
     <button type="file" class="csv_ref">csvファイルアップロード</button>
 
-    <form><input type="text" placeholder="メンバー検索"></form>
+    <form><input type="text" placeholder="検索したいメンバーの名前を入力してください"></form>
+    <ul>
+        {% for result in results %}
+            <li> {{ result.field_name }}</li>
+            {% endfor %}
+    </ul>
 
     <block>
         <ul>
