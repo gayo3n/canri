@@ -7,7 +7,7 @@ class IndexView(TemplateView):
     template_name = "index.html"
 
 class MemberListView(TemplateView):
-    template_name = "menberlist.html"
+    template_name = "memberlist.html"
 
 
 
