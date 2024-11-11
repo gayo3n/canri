@@ -5,6 +5,14 @@
     <h2>ログアウトします<h2>
         <h2>よろしいですか？</h2>
 
-    <button type="submit">キャンセル</button>
-    <button type="submit">OK</button>
+    <form action="#" method="post">
+        {% csrf_token %}
+        <button type="submit">キャンセル</button>
+    </form>
+    
+    <form action="/logout_complete/" method="post">
+        {% csrf_token %}
+        <button type="submit">OK</button>
+    </form>
+    
 {% endblock %}

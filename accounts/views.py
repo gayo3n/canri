@@ -11,8 +11,8 @@ class LoginView(TemplateView):
     form_class = LoginForm
     template_name = 'login.html'
 
-class LogoutView(TemplateView):
-    template_name = 'logout.html'
+class LogoutConfView(TemplateView):
+    template_name = 'logout_confirmation.html'
 
 class MwnuView(TemplateView):
     template_name = 'menu.html'
@@ -20,6 +20,17 @@ class MwnuView(TemplateView):
 class LoginCompView(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_complete.html')
+
+class LogoutCompView(TemplateView):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'request_complete.html')
+    def post(self, request, *args, **kwargs):
+        return render(request, 'logout_complete.html')
+    
+# class LoginFailView(TemplateView):
+#     def get(self, request, *args, **kwargs):
+#         return render(request, 'login_failure.html')
+
 
 class ManagementAccountView(TemplateView):
     template_name = "management_account.html"
