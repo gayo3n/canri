@@ -53,10 +53,6 @@ class ManagementAccountView(TemplateView):
     template_name = "management_account.html"
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 96b7dc8b9e312bb96d7110c38ac519f88c789544
 #API関係
 
 # メンバー情報を取得するAPI
