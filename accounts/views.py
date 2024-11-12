@@ -31,10 +31,6 @@ class LogoutCompView(TemplateView):
     def post(self, request, *args, **kwargs):
         return render(request, 'logout_complete.html')
 
-
-class ManagementAccountView(TemplateView):
-    template_name = "management_account.html"
-
 class AccountLogin(AuthLoginView):
     def post(self, request, *args, **kwargs):
         form = UserForm(data=request.POST)
