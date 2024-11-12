@@ -11,5 +11,6 @@ urlpatterns = [
     path('login_failure/', views.LoginCompView.as_view(), name='login_failure'),
 
     path('logout_confirmation/', views.LogoutConfView.as_view(), name='logout_confirmation'),
+    path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
     path('logout_complete/', views.LogoutCompView.as_view(), name='logout_complete'),
 ]

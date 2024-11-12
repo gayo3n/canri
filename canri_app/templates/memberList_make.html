@@ -5,11 +5,18 @@
 
     <button type="file" class="csv_ref">csvファイルアップロード</button>
 
-    <form><input type="text" placeholder="検索したいメンバーの名前を入力してください"></form>
+    
+    <form action="" method="get">
+        {% csrf_token %}
+        <input name="query" value="{{ request.GET.query }}" type="text" />
+        <button type="submit">検索する</button>
+    </form>
+    <!-- 検索結果表示 -->
+    <h3>検索結果</h3>
     <ul>
-        {% for result in results %}
-            <li> {{ result.field_name }}</li>
-            {% endfor %}
+        {% for member in members %}
+            <li>{{ member.name }}</li>
+        {% endfor %}
     </ul>
 
     <block>
@@ -21,16 +28,18 @@
         <a href="{% url 'canri_app:member_make' %}" class="btn">＋</a>
     </block>
 
-    <block>
-    {{ MemberList.member }}
-    <button class="memberList_add">＋</button>
-    </block>
+    <a href="{% url 'canri_app:member_make' %}" class="btn">＋</a>
 
-    <input type="text" placeholder="メンバーリスト名を入力してください">
+    <section>
+        {{ MemberList.member }}
+        <button class="memberList_add">＋</button>
+    </section>
 
-    <input type="text" placeholder="メンバーリストの詳細を入力してください">
-
-    <button class="memberList_save">保存</button>
-    <button class="memberList_cancel">キャンセル</button>
-
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="member_list_name" placeholder="メンバーリスト名を入力してください">
+        <input type="text" name="member_list_details" placeholder="メンバーリストの詳細を入力してください">
+        <button class="memberList_save" type="submit">保存</button>
+        <button class="memberList_cancel" type="button">キャンセル</button>
+    </form>
 {% endblock %}
