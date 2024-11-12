@@ -39,3 +39,14 @@
     cursor: pointer;
     font-size: 16px;
 }
+
+/* 削除完了文字 */
+.popup-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    position: relative;
+    text-align: center;
+}

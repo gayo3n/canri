@@ -10,9 +10,9 @@
 <!-- ポップアップダイアログ -->
 <div id="deletePopup" class="popup">
     <div class="popup-content">
-        <p>メンバーリストを削除しますか？</p>
-        <p id="memberName"></p>
+        <p>{{ member.job_title }}を削除しますか？</p>
         <a href="{% url 'canri_app:memberlist_delete_complete' %}" class="confirm-delete-btn">削除</a>
+        <a href="{% url 'canri_app:memberlist' %}">キャンセル</a>
     </div>
 </div>
 
