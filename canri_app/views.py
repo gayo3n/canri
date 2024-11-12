@@ -22,13 +22,8 @@ class MemberListMakeView(TemplateView):
     def get(self, request, *args, **kwargs):
         form = SearchForm(request.GET) 
         return render(request, self.template_name, {'form': form})
-
-
-class MemberSearchView(TemplateView):
-    template_name = 'memberList_make.html'
-
+    
     def get(self, request, *args, **kwargs):
-        form = SearchForm(request.GET)  # GETパラメータをフォームに渡す
         members = Member.objects.all()  # 初期状態で全メンバーを取得
 
         # 検索処理
@@ -40,6 +35,7 @@ class MemberSearchView(TemplateView):
             print(f"Filtered members: {members}")  # フィルタリング結果を表示
 
         return render(request, self.template_name, {'members': members})
+
 
 class MemberMakeView(TemplateView):
     template_name = "member_make.html"

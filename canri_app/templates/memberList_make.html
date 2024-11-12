@@ -1,45 +1,46 @@
 {% extends 'base2.html' %}
 
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/memberList_make.css' %}">
+{% endblock %}
+
 {% block content %}
     <h2>メンバーリスト作成</h2>
 
-    <button type="file" class="csv_ref">csvファイルアップロード</button>
-
-    
-    <form action="" method="get">
-        {% csrf_token %}
-        <input name="query" value="{{ request.GET.query }}" type="text" />
-        <button type="submit">検索する</button>
-    </form>
-    <!-- 検索結果表示 -->
-    <h3>検索結果</h3>
-    <ul>
-        {% for member in members %}
-            <li>{{ member.name }}</li>
-        {% endfor %}
-    </ul>
-
-    <block>
+    <section class="section_one">
+        <button type="file" class="csv_ref">csvファイルアップロード</button>
+        
+        <form action="" method="get">
+            {% csrf_token %}
+            <input name="query" value="{{ request.GET.query }}" type="text" />
+            <button type="submit">検索する</button>
+        </form>
+        <!-- 検索結果表示 -->
+        <h3>検索結果</h3>
         <ul>
             {% for member in members %}
-                <li>{{ Member.name }}</li>
+                <li>{{ member.name }}</li>
             {% endfor %}
         </ul>
+
         <a href="{% url 'canri_app:member_make' %}" class="btn">＋</a>
-    </block>
 
-    <a href="{% url 'canri_app:member_make' %}" class="btn">＋</a>
-
-    <section>
-        {{ MemberList.member }}
         <button class="memberList_add">＋</button>
     </section>
 
-    <form method="post">
-        {% csrf_token %}
-        <input type="text" name="member_list_name" placeholder="メンバーリスト名を入力してください">
-        <input type="text" name="member_list_details" placeholder="メンバーリストの詳細を入力してください">
-        <button class="memberList_save" type="submit">保存</button>
-        <button class="memberList_cancel" type="button">キャンセル</button>
-    </form>
+    <section class="section_two">
+        {{ MemberList.member }}
+    </section>
+
+    <section class="section_three">
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="member_list_name" placeholder="メンバーリスト名を入力してください">
+            <input type="text" name="member_list_details" placeholder="メンバーリストの詳細を入力してください">
+            <button class="memberList_save" type="submit">保存</button>
+            <button class="memberList_cancel" type="button">キャンセル</button>
+        </form>
+    </section>
 {% endblock %}
