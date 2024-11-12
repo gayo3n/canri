@@ -22,7 +22,10 @@ class MemberListMakeView(TemplateView):
     def get(self, request, *args, **kwargs):
         form = SearchForm(request.GET) 
         return render(request, self.template_name, {'form': form})
+    
 
+class MemberListMakeCompleteView(TemplateView):
+    template_name = "memberList_make_complete.html"
 
 class MemberSearchView(TemplateView):
     template_name = 'memberList_make.html'
