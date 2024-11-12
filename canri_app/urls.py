@@ -1,6 +1,6 @@
 # urls.py
 from django.urls import path
-from . import views
+from . import views, api
 
 app_name = 'canri_app'
 
@@ -18,7 +18,8 @@ urlpatterns = [
     
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
     
-    path('get_member_data/<int:member_id>/', views.get_member_data, name='get_member_data'),
-    path('get_members/<int:member_list_id>/', views.get_members_by_member_list, name='get_members_by_member_list'),
-    path('create_team/', views.create_team_api, name='create_team'),
+    # API関係
+    path('get_member_data/<int:member_id>/', api.get_member_data, name='get_member_data'),#メンバー情報取得
+    path('get_members/<int:member_list_id>/', api.get_members_by_member_list, name='get_members_by_member_list'),#メンバーリスト取得
+    path('create_team/', api.create_team_api, name='create_team'),#チーム作成
 ]
