@@ -1,13 +1,14 @@
 from django.contrib import admin
 
-
-# Register your models here.
-
-
-# class CustomUserAdmin(admin.ModelAdmin):
-
-#     list_display = ('id', 'password')
-#     list_display_links =  ('id', 'password')
+from .models import CustomUser
 
 
-#admin.site.register(CustomUser, CustomUserAdmin)
+#Register your models here.
+
+
+class CustomUserAdmin(admin.ModelAdmin):
+
+    list_display = ('userid', 'password', 'username')
+    list_display_links =  ('userid', 'password', 'username')
+
+admin.site.register(CustomUser, CustomUserAdmin)
