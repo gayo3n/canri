@@ -9,6 +9,8 @@ urlpatterns = [
     path('memberlist/', views.MemberListView.as_view(), name='memberlist'),
     path('memberlist/make/', views.MemberListMakeView.as_view(), name='memberList_make'),
     path('member_make/', views.MemberMakeView.as_view(), name='member_make'),
+    path('member_make/complete/', views.MemberMakeCompleteView.as_view(), name='member_make_complete'),
+    path('member_make/delete/', views.MemberMakeDeleteView.as_view(), name='member_make_delete'),
     path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
     path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete'),
 

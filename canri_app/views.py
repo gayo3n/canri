@@ -44,6 +44,12 @@ class MemberSearchView(TemplateView):
 class MemberMakeView(TemplateView):
     template_name = "member_make.html"
 
+class MemberMakeCompleteView(TemplateView):
+    template_name = "member_make_complete.html"
+
+class MemberMakeDeleteView(TemplateView):
+    template_name = "member_make_delete.html"
+
 class MemberListDeleteView(TemplateView):
     template_name = "memberlist_delete.html"
 
