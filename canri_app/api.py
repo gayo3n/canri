@@ -3,7 +3,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic import CreateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification
+from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Team, ProjectAffiliationTeam, TeamMember
 import json
 
 #API関係
@@ -160,6 +160,70 @@ def create_team(team_type, members, team_size):
                     team.append(member)
     else:
         return {"error": "無効なチームタイプです"}
-    
-    
-    
+
+#プロジェクトチームの一覧を取得するAPI
+@require_http_methods(["GET"])
+def get_teams_by_project(request, project_id):
+    try:
+        # ProjectAffiliationTeamで指定されたプロジェクトIDに関連するチームIDを取得
+        affiliation_teams = ProjectAffiliationTeam.objects.filter(
+            project=project_id, deletion_flag=False
+        )
+
+        # 関連するチーム情報を取得
+        team_data = []
+        for affiliation in affiliation_teams:
+            team = affiliation.team
+            team_data.append({
+                'team_id': team.team_id,
+                'team_name': team.team_name,
+                'count': team.count,
+                'objective': team.objective,
+                'memo': team.memo,
+                'creation_date': team.creation_date,
+                'update_date': team.update_date,
+                'deletion_date': team.deletion_date,
+            })
+
+        # JSON形式でチーム情報を返す
+        return {'teams': team_data}
+
+    except ProjectAffiliationTeam.DoesNotExist:
+        return 'error404'
+    except Exception as e:
+        return 'error500'
+
+#チームに所属するメンバーを取得するAPI
+@require_http_methods(["GET"])
+def get_team_members(request, team_id):
+    try:
+        # チームIDに関連するメンバーを取得（deletion_flagがFalseのものに限定）
+        team_members = TeamMember.objects.filter(team=team_id, deletion_flag=False)
+        # メンバー情報をリストに格納
+        member_data = []
+        for team_member in team_members:
+            member = team_member.member_id
+            memberparameter = MemberParameter.objects.get(member=member)
+            member_data.append({
+                'team_member_id': team_member.team_member_id,
+                'member_id': member.member_id,
+                'name': member.name,
+                'birthdate': member.birthdate,
+                'job_title': member.job_title,
+                'mbti': member.mbti,
+                'creation_date': team_member.creation_date,
+                'update_date': team_member.update_date,
+                'planning_presentation_power': memberparameter.planning_presentation_power,#企画・プレゼン力
+                'teamwork': memberparameter.teamwork,#チームワーク
+                'time_management_ability': memberparameter.time_management_ability,#時間管理能力
+                'problem_solving_ability': memberparameter.problem_solving_ability,#問題解決能力
+                'speciality_height': memberparameter.speciality_height,#専門性の高さ
+            })
+
+        # JSON形式でメンバー情報を返す
+        return {'members': member_data}
+
+    except TeamMember.DoesNotExist:
+        return 'error404'
+    except Exception as e:
+        return 'error500'
