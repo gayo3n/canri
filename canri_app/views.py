@@ -1,10 +1,13 @@
 # views.py
+from django.shortcuts import render
 from django.views.generic.base import TemplateView
 from django.views.generic import CreateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from .models import MemberList, Member, Feedback
+from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer
 import json
+from .forms import SearchForm
+
 
 class IndexView(TemplateView):
     template_name = "index.html"
@@ -16,15 +19,22 @@ class MemberListView(TemplateView):
 
 class MemberListMakeView(TemplateView):
     template_name = "memberList_make.html"
+    def get(self, request, *args, **kwargs):
+        form = SearchForm(request.GET) 
+        return render(request, self.template_name, {'form': form})
+    
+    def get(self, request, *args, **kwargs):
+        members = Member.objects.all()  # 初期状態で全メンバーを取得
 
-    def search_view(request):
-        query = request.GET.get('q')
-        results = MemberList.objects.all()
+        # 検索処理
+        search_query = request.GET.get('query', '')  # 'query' というキーで取得
+        print(f"Search query: {search_query}")  # 入力内容を確認
 
-        if query:
-            results = results.filter(field_name__icontains=query)  # field_nameは検索対象のフィールドに置き換えてください
+        if search_query:
+            members = members.filter(name__icontains=search_query)
+            print(f"Filtered members: {members}")  # フィルタリング結果を表示
 
-        return render(request, 'memberList_make.html', {'results': results})
+        return render(request, self.template_name, {'members': members})
 
 
 class MemberMakeView(TemplateView):
@@ -35,6 +45,7 @@ class MemberMakeView(TemplateView):
 class ManagementAccountView(TemplateView):
     template_name = "management_account.html"
 
+
 #API関係
 
 # メンバー情報を取得するAPI
@@ -43,17 +54,23 @@ def get_member_data(request, member_id):
     try:
         # 指定された member_id に一致するメンバー情報を取得
         member = Member.objects.get(member_id=member_id)
+        carrer = MemberCareer.objects.get(member=member_id)
+        memberparameter = MemberParameter.objects.get(member=member_id)
         # メンバー情報をJSONレスポンスとして返す
         member_data = {
             'member_id': member.member_id,
             'name': member.name,
             'birthdate': member.birthdate,
+
             'job_title': member.job_title,
+            'career_id': carrer.career_id,
             'memo': member.memo,
             'mbti': member.mbti,  # ForeignKeyの場合、IDを返す
-            'creation_date': member.creation_date,
-            'deletion_date': member.deletion_date,
-            'deletion_flag': member.deletion_flag,
+            'planning_presentation_power': memberparameter.planning_presentation_power,
+            'teamwork': memberparameter.teamwork,
+            'time_management_ability': memberparameter.time_management_ability,
+            'problem_solving_ability': memberparameter.problem_solving_ability,
+            'speciality_height': memberparameter.speciality_height,
         }
         return JsonResponse(member_data)
     
@@ -169,4 +186,3 @@ def create_team(team_type, members, team_size):
     else:
         return {"error": "無効なチームタイプです"}
     
-    return team

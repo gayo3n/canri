@@ -9,11 +9,10 @@ urlpatterns = [
     path('memberlist/', views.MemberListView.as_view(), name='memberlist'),
     path('memberlist/make/', views.MemberListMakeView.as_view(), name='memberList_make'),
     path('member_make/', views.MemberMakeView.as_view(), name='member_make'),
-
     
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
     
-    path('api/get_member/<int:member_id>/', views.get_member_data, name='get_member_data'),
-    path('api/get_members/<int:member_list_id>/', views.get_members_by_member_list, name='get_members_by_member_list'),
-    path('api/create_team/', views.create_team_api, name='create_team'),
+    path('get_member_data/<int:member_id>/', views.get_member_data, name='get_member_data'),
+    path('get_members/<int:member_list_id>/', views.get_members_by_member_list, name='get_members_by_member_list'),
+    path('create_team/', views.create_team_api, name='create_team'),
 ]
