@@ -22,7 +22,10 @@ class MemberListMakeView(TemplateView):
     def get(self, request, *args, **kwargs):
         form = SearchForm(request.GET) 
         return render(request, self.template_name, {'form': form})
+    
 
+class MemberListMakeCompleteView(TemplateView):
+    template_name = "memberList_make_complete.html"
 
 class MemberSearchView(TemplateView):
     template_name = 'memberList_make.html'
@@ -43,6 +46,12 @@ class MemberSearchView(TemplateView):
 
 class MemberMakeView(TemplateView):
     template_name = "member_make.html"
+
+class MemberMakeCompleteView(TemplateView):
+    template_name = "member_make_complete.html"
+
+class MemberMakeDeleteView(TemplateView):
+    template_name = "member_make_delete.html"
 
 class MemberListDeleteView(TemplateView):
     template_name = "memberlist_delete.html"
