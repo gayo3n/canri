@@ -15,7 +15,8 @@ class IndexView(TemplateView):
 class MemberListView(TemplateView):
     template_name = "memberlist.html"
 
-
+class NewProjectView(TemplateView):
+    template_name = "create_new_project.html"
 
 class MemberListMakeView(TemplateView):
     template_name = "memberList_make.html"
