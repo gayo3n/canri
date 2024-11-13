@@ -87,3 +87,18 @@ class NewProjectEditView(TemplateView):
 
 class CreateTeamView(TemplateView):
     template_name = "create_team.html"
+class ProjectlistView(TemplateView):
+    template_name="projectlist.html"
+
+
+def projectListView(request):
+    template_name = "projectlist.html"
+    ctx = {}
+    query = request.GET.get('q')  # 検索クエリを取得
+    qs = Project.objects.all()
+
+    if query:
+        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+
+    ctx["project_list"] = qs
+    return render(request, template_name, ctx)

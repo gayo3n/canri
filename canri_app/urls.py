@@ -1,6 +1,7 @@
 # urls.py
 from django.urls import path
 from . import views, api
+from .views import projectListView
 
 app_name = 'canri_app'
 
@@ -22,6 +23,13 @@ urlpatterns = [
 
     path('new_project/', views.NewProjectView.as_view(), name='new_project'),    
     path('new_project_edit/', views.NewProjectEditView.as_view(), name='new_project_edit'),    
+    path('create_new_project/', views.NewProjectView.as_view(), name='create_new_project'),    
+
+    #プロジェクトリスト
+    path('projectlist/', views.ProjectlistView.as_view(), name='projectlist'),
+    path('project/', projectListView, name='project'),
+
+
     # API関係
     path('get_member_data/<int:member_id>/', api.get_member_data, name='get_member_data'),#メンバー情報取得
     path('get_members/<int:member_list_id>/', api.get_members_by_member_list, name='get_members_by_member_list'),#メンバーリスト取得
