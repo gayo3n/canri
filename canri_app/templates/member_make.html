@@ -1,3 +1,6 @@
+{% extends 'base2.html' %}
+
+{% block content %}
 <form class="center" action="" method="post">
 
     {% comment %} メンバーID {% endcomment %}
@@ -26,117 +29,20 @@
         <label for = "job_title">役職</label>
         <!--役職を入力されたらjob_titleで飛ばす-->
         <select id="job_title", name="job_title">
-            {% for  in  %}{% endfor %}
-            <option value="プログラマ">プログラマ</option>
-            <option value="システムエンジニア">システムエンジニア</option>
-            <option value="プロジェクトマネージャー">プロジェクトマネージャー</option>
-            <option value="デザイナー">デザイナー</option>
-            <option value="ネットワークエンジニア">ネットワークエンジニア</option>
-            <option value="インフラエンジニア">インフラエンジニア</option>
-            <option value="マーケティング担当">マーケティング担当</option>
-            <option value="経営者">経営者</option>
-            <option value="ライター">ライター</option>
-            <option value="セールス担当">セールス担当</option>
-            <option value="HR担当">HR担当</option>
-            <option value="データアナリスト">データアナリスト</option>
-            <option value="ITコンサルタント">ITコンサルタント</option>
-            <option value="法務担当">法務担当</option>
-            <option value="経理担当">経理担当</option>
-            <option value="カスタマーサポート">カスタマーサポート</option>
-            <option value="アプリケーションエンジニア">アプリケーションエンジニア</option>
-            <option value="機械学習エンジニア">機械学習エンジニア</option>
-            <option value="ウェブデベロッパー">ウェブデベロッパー</option>
-            <option value="クラウドエンジニア">クラウドエンジニア</option>
-            <option value="UI/UXデザイナー">UI/UXデザイナー</option>
-            <option value="システムアーキテクト">システムアーキテクト</option>
-            <option value="サーバーエンジニア">サーバーエンジニア</option>
-            <option value="リサーチャー">リサーチャー</option>
-            <option value="プロダクトマネージャー">プロダクトマネージャー</option>
-            <option value="品質保証マネージャー">品質保証マネージャー</option>
-            <option value="アジャイルコーチ">アジャイルコーチ</option>
-            <option value="データベースエンジニア">データベースエンジニア</option>
-            <option value="セキュリティエンジニア">セキュリティエンジニア</option>
-            <option value="ゲームプログラマ">ゲームプログラマ</option>
-            <option value="ヘルプデスク">ヘルプデスク</option>
-            <option value="バイオインフォマティクス">バイオインフォマティクス</option>
-            <option value="イベントプランナー">イベントプランナー</option>
-            <option value="プロダクトデザイナー">プロダクトデザイナー</option>
-            <option value="ソフトウェアエンジニア">ソフトウェアエンジニア</option>
-            <option value="フロントエンドエンジニア">フロントエンドエンジニア</option>
-            <option value="バックエンドエンジニア">バックエンドエンジニア</option>
-            <option value="バーチャルアシスタント">バーチャルアシスタント</option>
-            <option value="PR担当">PR担当</option>
-            <option value="運用エンジニア">運用エンジニア</option>
-            <option value="データサイエンティスト">データサイエンティスト</option>
-            <option value="組込みエンジニア">組込みエンジニア</option>
-            <option value="オペレーションマネージャー">オペレーションマネージャー</option>
-            <option value="事業開発担当">事業開発担当</option>
-            <option value="品質管理エンジニア">品質管理エンジニア</option>
-            <option value="アートディレクター">アートディレクター</option>
-            <option value="戦略コンサルタント">戦略コンサルタント</option>
-            <option value="バイヤー">バイヤー</option>
-            <option value="ビジネスアナリスト">ビジネスアナリスト</option>
-            <option value="サウンドエンジニア">サウンドエンジニア</option>
-            <option value="ブロックチェーンエンジニア">ブロックチェーンエンジニア</option>
-            </select>
+            {% for job in job_title %}
+            <option value="{{ forloop.counter }}">{{ job.job_title }}</option>
+            {% endfor %}
+        </select>
     </div>
 
-    {% comment %} 職歴 {% endcomment %}
+        {% comment %} 職歴 {% endcomment %}
     <div class="form-area">
-        <label for = "career">職歴</label>
+        <label for="career">職歴</label>
         <!--職歴を入力されたらcareerで飛ばす-->
-        <select id="career", name="career">
-            <option value="プログラマ">プログラマ</option>
-    <option value="システムエンジニア">システムエンジニア</option>
-    <option value="プロジェクトマネージャー">プロジェクトマネージャー</option>
-    <option value="デザイナー">デザイナー</option>
-    <option value="ネットワークエンジニア">ネットワークエンジニア</option>
-    <option value="インフラエンジニア">インフラエンジニア</option>
-    <option value="マーケティング担当">マーケティング担当</option>
-    <option value="経営者">経営者</option>
-    <option value="ライター">ライター</option>
-    <option value="セールス担当">セールス担当</option>
-    <option value="HR担当">HR担当</option>
-    <option value="データアナリスト">データアナリスト</option>
-    <option value="ITコンサルタント">ITコンサルタント</option>
-    <option value="法務担当">法務担当</option>
-    <option value="経理担当">経理担当</option>
-    <option value="カスタマーサポート">カスタマーサポート</option>
-    <option value="アプリケーションエンジニア">アプリケーションエンジニア</option>
-    <option value="機械学習エンジニア">機械学習エンジニア</option>
-    <option value="ウェブデベロッパー">ウェブデベロッパー</option>
-    <option value="クラウドエンジニア">クラウドエンジニア</option>
-    <option value="UI/UXデザイナー">UI/UXデザイナー</option>
-    <option value="システムアーキテクト">システムアーキテクト</option>
-    <option value="サーバーエンジニア">サーバーエンジニア</option>
-    <option value="リサーチャー">リサーチャー</option>
-    <option value="プロダクトマネージャー">プロダクトマネージャー</option>
-    <option value="品質保証マネージャー">品質保証マネージャー</option>
-    <option value="アジャイルコーチ">アジャイルコーチ</option>
-    <option value="データベースエンジニア">データベースエンジニア</option>
-    <option value="セキュリティエンジニア">セキュリティエンジニア</option>
-    <option value="ゲームプログラマ">ゲームプログラマ</option>
-    <option value="ヘルプデスク">ヘルプデスク</option>
-    <option value="バイオインフォマティクス">バイオインフォマティクス</option>
-    <option value="イベントプランナー">イベントプランナー</option>
-    <option value="プロダクトデザイナー">プロダクトデザイナー</option>
-    <option value="ソフトウェアエンジニア">ソフトウェアエンジニア</option>
-    <option value="フロントエンドエンジニア">フロントエンドエンジニア</option>
-    <option value="バックエンドエンジニア">バックエンドエンジニア</option>
-    <option value="バーチャルアシスタント">バーチャルアシスタント</option>
-    <option value="PR担当">PR担当</option>
-    <option value="運用エンジニア">運用エンジニア</option>
-    <option value="データサイエンティスト">データサイエンティスト</option>
-    <option value="組込みエンジニア">組込みエンジニア</option>
-    <option value="オペレーションマネージャー">オペレーションマネージャー</option>
-    <option value="事業開発担当">事業開発担当</option>
-    <option value="品質管理エンジニア">品質管理エンジニア</option>
-    <option value="アートディレクター">アートディレクター</option>
-    <option value="戦略コンサルタント">戦略コンサルタント</option>
-    <option value="バイヤー">バイヤー</option>
-    <option value="ビジネスアナリスト">ビジネスアナリスト</option>
-    <option value="サウンドエンジニア">サウンドエンジニア</option>
-    <option value="ブロックチェーンエンジニア">ブロックチェーンエンジニア</option>
+        <select id="career" name="career">
+            {% for career in careerinformation %}
+                <option value="{{ forloop.counter }}">{{ career.career }}</option>
+            {% endfor %}
         </select>
     </div>
 
@@ -145,63 +51,9 @@
         <label for = "qualification">資格</label>
         <!--資格を選択されたらqualificationで飛ばす-->
         <select id="qualification", name="qualification">
-            <option value="ITパスポート">ITパスポート</option>
-            <option value="基本情報技術者">基本情報技術者</option>
-            <option value="応用情報技術者">応用情報技術者</option>
-            <option value="情報セキュリティマネジメント">情報セキュリティマネジメント</option>
-            <option value="ネットワークスペシャリスト">ネットワークスペシャリスト</option>
-            <option value="データベーススペシャリスト">データベーススペシャリスト</option>
-            <option value="ITストラテジスト">ITストラテジスト</option>
-            <option value="プロジェクトマネージャ">プロジェクトマネージャ</option>
-            <option value="システムアーキテクト">システムアーキテクト</option>
-            <option value="AIスペシャリスト">AIスペシャリスト</option>
-            <option value="機械学習エンジニア検定">機械学習エンジニア検定</option>
-            <option value="Pythonエンジニア認定基礎">Pythonエンジニア認定基礎</option>
-            <option value="Pythonエンジニア認定データ分析">Pythonエンジニア認定データ分析</option>
-            <option value="AWS認定クラウドプラクティショナー">AWS認定クラウドプラクティショナー</option>
-            <option value="AWS認定ソリューションアーキテクト">AWS認定ソリューションアーキテクト</option>
-            <option value="AWS認定デベロッパー">AWS認定デベロッパー</option>
-            <option value="GCP認定アソシエイトクラウドエンジニア">GCP認定アソシエイトクラウドエンジニア</option>
-            <option value="GCP認定プロフェッショナルデータエンジニア">GCP認定プロフェッショナルデータエンジニア</option>
-            <option value="Cisco CCNA">Cisco CCNA</option>
-            <option value="Cisco CCNP">Cisco CCNP</option>
-            <option value="Oracle認定Javaプログラマ">Oracle認定Javaプログラマ</option>
-            <option value="Oracle認定データベース管理者">Oracle認定データベース管理者</option>
-            <option value="PMP（Project Management Professional）">PMP（Project Management Professional）</option>
-            <option value="ITILファンデーション">ITILファンデーション</option>
-            <option value="ITILプラクティショナー">ITILプラクティショナー</option>
-            <option value="簿記3級">簿記3級</option>
-            <option value="簿記2級">簿記2級</option>
-            <option value="簿記1級">簿記1級</option>
-            <option value="中小企業診断士">中小企業診断士</option>
-            <option value="ファイナンシャルプランナー3級">ファイナンシャルプランナー3級</option>
-            <option value="ファイナンシャルプランナー2級">ファイナンシャルプランナー2級</option>
-            <option value="ファイナンシャルプランナー1級">ファイナンシャルプランナー1級</option>
-            <option value="建築士（2級）">建築士（2級）</option>
-            <option value="建築士（1級）">建築士（1級）</option>
-            <option value="宅地建物取引士（宅建士）">宅地建物取引士（宅建士）</option>
-            <option value="社会保険労務士（社労士）">社会保険労務士（社労士）</option>
-            <option value="行政書士">行政書士</option>
-            <option value="司法書士">司法書士</option>
-            <option value="弁理士">弁理士</option>
-            <option value="気象予報士">気象予報士</option>
-            <option value="医師免許">医師免許</option>
-            <option value="看護師">看護師</option>
-            <option value="薬剤師">薬剤師</option>
-            <option value="臨床検査技師">臨床検査技師</option>
-            <option value="放射線技師">放射線技師</option>
-            <option value="歯科医師">歯科医師</option>
-            <option value="保育士">保育士</option>
-            <option value="教員免許（中学校・高校）">教員免許（中学校・高校）</option>
-            <option value="教員免許（特別支援教育）">教員免許（特別支援教育）</option>
-            <option value="公認会計士">公認会計士</option>
-            <option value="税理士">税理士</option>
-            <option value="不動産鑑定士">不動産鑑定士</option>
-            <option value="測量士">測量士</option>
-            <option value="危険物取扱者（乙種）">危険物取扱者（乙種）</option>
-            <option value="危険物取扱者（甲種）">危険物取扱者（甲種）</option>
-            <option value="消防設備士（乙種）">消防設備士（乙種）</option>
-            <option value="消防設備士（甲種）">消防設備士（甲種）</option>
+            {% for crede in credentials %}
+                <option value="{{ forloop.counter }}">{{ crede.qualification_name }}</option>
+            {% endfor %}
         </select>
     </div>
 
@@ -209,63 +61,9 @@
     <div class="form-area2">
         <label for = "qualification2">資格</label>
         <select id="qualification2", name="qualification2">
-            <option value="ITパスポート">ITパスポート</option>
-            <option value="基本情報技術者">基本情報技術者</option>
-            <option value="応用情報技術者">応用情報技術者</option>
-            <option value="情報セキュリティマネジメント">情報セキュリティマネジメント</option>
-            <option value="ネットワークスペシャリスト">ネットワークスペシャリスト</option>
-            <option value="データベーススペシャリスト">データベーススペシャリスト</option>
-            <option value="ITストラテジスト">ITストラテジスト</option>
-            <option value="プロジェクトマネージャ">プロジェクトマネージャ</option>
-            <option value="システムアーキテクト">システムアーキテクト</option>
-            <option value="AIスペシャリスト">AIスペシャリスト</option>
-            <option value="機械学習エンジニア検定">機械学習エンジニア検定</option>
-            <option value="Pythonエンジニア認定基礎">Pythonエンジニア認定基礎</option>
-            <option value="Pythonエンジニア認定データ分析">Pythonエンジニア認定データ分析</option>
-            <option value="AWS認定クラウドプラクティショナー">AWS認定クラウドプラクティショナー</option>
-            <option value="AWS認定ソリューションアーキテクト">AWS認定ソリューションアーキテクト</option>
-            <option value="AWS認定デベロッパー">AWS認定デベロッパー</option>
-            <option value="GCP認定アソシエイトクラウドエンジニア">GCP認定アソシエイトクラウドエンジニア</option>
-            <option value="GCP認定プロフェッショナルデータエンジニア">GCP認定プロフェッショナルデータエンジニア</option>
-            <option value="Cisco CCNA">Cisco CCNA</option>
-            <option value="Cisco CCNP">Cisco CCNP</option>
-            <option value="Oracle認定Javaプログラマ">Oracle認定Javaプログラマ</option>
-            <option value="Oracle認定データベース管理者">Oracle認定データベース管理者</option>
-            <option value="PMP（Project Management Professional）">PMP（Project Management Professional）</option>
-            <option value="ITILファンデーション">ITILファンデーション</option>
-            <option value="ITILプラクティショナー">ITILプラクティショナー</option>
-            <option value="簿記3級">簿記3級</option>
-            <option value="簿記2級">簿記2級</option>
-            <option value="簿記1級">簿記1級</option>
-            <option value="中小企業診断士">中小企業診断士</option>
-            <option value="ファイナンシャルプランナー3級">ファイナンシャルプランナー3級</option>
-            <option value="ファイナンシャルプランナー2級">ファイナンシャルプランナー2級</option>
-            <option value="ファイナンシャルプランナー1級">ファイナンシャルプランナー1級</option>
-            <option value="建築士（2級）">建築士（2級）</option>
-            <option value="建築士（1級）">建築士（1級）</option>
-            <option value="宅地建物取引士（宅建士）">宅地建物取引士（宅建士）</option>
-            <option value="社会保険労務士（社労士）">社会保険労務士（社労士）</option>
-            <option value="行政書士">行政書士</option>
-            <option value="司法書士">司法書士</option>
-            <option value="弁理士">弁理士</option>
-            <option value="気象予報士">気象予報士</option>
-            <option value="医師免許">医師免許</option>
-            <option value="看護師">看護師</option>
-            <option value="薬剤師">薬剤師</option>
-            <option value="臨床検査技師">臨床検査技師</option>
-            <option value="放射線技師">放射線技師</option>
-            <option value="歯科医師">歯科医師</option>
-            <option value="保育士">保育士</option>
-            <option value="教員免許（中学校・高校）">教員免許（中学校・高校）</option>
-            <option value="教員免許（特別支援教育）">教員免許（特別支援教育）</option>
-            <option value="公認会計士">公認会計士</option>
-            <option value="税理士">税理士</option>
-            <option value="不動産鑑定士">不動産鑑定士</option>
-            <option value="測量士">測量士</option>
-            <option value="危険物取扱者（乙種）">危険物取扱者（乙種）</option>
-            <option value="危険物取扱者（甲種）">危険物取扱者（甲種）</option>
-            <option value="消防設備士（乙種）">消防設備士（乙種）</option>
-            <option value="消防設備士（甲種）">消防設備士（甲種）</option>
+            {% for crede in credentials %}
+                <option value="{{ forloop.counter }}">{{ crede.qualification_name }}</option>
+            {% endfor %}
         </select>
     </div>
 
@@ -273,63 +71,9 @@
     <div class="form-area3">
         <label for = "qualification3">資格</label>
         <select id="qualification3", name="qualification3">
-            <option value="ITパスポート">ITパスポート</option>
-            <option value="基本情報技術者">基本情報技術者</option>
-            <option value="応用情報技術者">応用情報技術者</option>
-            <option value="情報セキュリティマネジメント">情報セキュリティマネジメント</option>
-            <option value="ネットワークスペシャリスト">ネットワークスペシャリスト</option>
-            <option value="データベーススペシャリスト">データベーススペシャリスト</option>
-            <option value="ITストラテジスト">ITストラテジスト</option>
-            <option value="プロジェクトマネージャ">プロジェクトマネージャ</option>
-            <option value="システムアーキテクト">システムアーキテクト</option>
-            <option value="AIスペシャリスト">AIスペシャリスト</option>
-            <option value="機械学習エンジニア検定">機械学習エンジニア検定</option>
-            <option value="Pythonエンジニア認定基礎">Pythonエンジニア認定基礎</option>
-            <option value="Pythonエンジニア認定データ分析">Pythonエンジニア認定データ分析</option>
-            <option value="AWS認定クラウドプラクティショナー">AWS認定クラウドプラクティショナー</option>
-            <option value="AWS認定ソリューションアーキテクト">AWS認定ソリューションアーキテクト</option>
-            <option value="AWS認定デベロッパー">AWS認定デベロッパー</option>
-            <option value="GCP認定アソシエイトクラウドエンジニア">GCP認定アソシエイトクラウドエンジニア</option>
-            <option value="GCP認定プロフェッショナルデータエンジニア">GCP認定プロフェッショナルデータエンジニア</option>
-            <option value="Cisco CCNA">Cisco CCNA</option>
-            <option value="Cisco CCNP">Cisco CCNP</option>
-            <option value="Oracle認定Javaプログラマ">Oracle認定Javaプログラマ</option>
-            <option value="Oracle認定データベース管理者">Oracle認定データベース管理者</option>
-            <option value="PMP（Project Management Professional）">PMP（Project Management Professional）</option>
-            <option value="ITILファンデーション">ITILファンデーション</option>
-            <option value="ITILプラクティショナー">ITILプラクティショナー</option>
-            <option value="簿記3級">簿記3級</option>
-            <option value="簿記2級">簿記2級</option>
-            <option value="簿記1級">簿記1級</option>
-            <option value="中小企業診断士">中小企業診断士</option>
-            <option value="ファイナンシャルプランナー3級">ファイナンシャルプランナー3級</option>
-            <option value="ファイナンシャルプランナー2級">ファイナンシャルプランナー2級</option>
-            <option value="ファイナンシャルプランナー1級">ファイナンシャルプランナー1級</option>
-            <option value="建築士（2級）">建築士（2級）</option>
-            <option value="建築士（1級）">建築士（1級）</option>
-            <option value="宅地建物取引士（宅建士）">宅地建物取引士（宅建士）</option>
-            <option value="社会保険労務士（社労士）">社会保険労務士（社労士）</option>
-            <option value="行政書士">行政書士</option>
-            <option value="司法書士">司法書士</option>
-            <option value="弁理士">弁理士</option>
-            <option value="気象予報士">気象予報士</option>
-            <option value="医師免許">医師免許</option>
-            <option value="看護師">看護師</option>
-            <option value="薬剤師">薬剤師</option>
-            <option value="臨床検査技師">臨床検査技師</option>
-            <option value="放射線技師">放射線技師</option>
-            <option value="歯科医師">歯科医師</option>
-            <option value="保育士">保育士</option>
-            <option value="教員免許（中学校・高校）">教員免許（中学校・高校）</option>
-            <option value="教員免許（特別支援教育）">教員免許（特別支援教育）</option>
-            <option value="公認会計士">公認会計士</option>
-            <option value="税理士">税理士</option>
-            <option value="不動産鑑定士">不動産鑑定士</option>
-            <option value="測量士">測量士</option>
-            <option value="危険物取扱者（乙種）">危険物取扱者（乙種）</option>
-            <option value="危険物取扱者（甲種）">危険物取扱者（甲種）</option>
-            <option value="消防設備士（乙種）">消防設備士（乙種）</option>
-            <option value="消防設備士（甲種）">消防設備士（甲種）</option>
+            {% for crede in credentials %}
+                <option value="{{ forloop.counter }}">{{ crede.qualification_name }}</option>
+            {% endfor %}
         </select>
     </div>
 
@@ -337,41 +81,13 @@
     <div class="form-area">
         <label for = "MBTI">MBTI</label>
         <select id="MBTI", name="MBTI" required>
-            <option value="ESTP-E">ESTP-E</option>
-            <option value="ESTP-A">ESTP-A</option>
-            <option value="ESFP-E">ESFP-E</option>
-            <option value="ESFP-A">ESFP-A</option>
-            <option value="ENTP-E">ENTP-E</option>
-            <option value="ENTP-A">ENTP-A</option>
-            <option value="ENFP-E">ENFP-E</option>
-            <option value="ENFP-A">ENFP-A</option>
-            <option value="ISTJ-E">ISTJ-E</option>
-            <option value="ISTJ-A">ISTJ-A</option>
-            <option value="ISFJ-E">ISFJ-E</option>
-            <option value="ISFJ-A">ISFJ-A</option>
-            <option value="INTJ-E">INTJ-E</option>
-            <option value="INTJ-A">INTJ-A</option>
-            <option value="INFJ-E">INFJ-E</option>
-            <option value="INFJ-A">INFJ-A</option>
-            <option value="ESTJ-E">ESTJ-E</option>
-            <option value="ESTJ-A">ESTJ-A</option>
-            <option value="ESFJ-E">ESFJ-E</option>
-            <option value="ESFJ-A">ESFJ-A</option>
-            <option value="ENTJ-E">ENTJ-E</option>
-            <option value="ENTJ-A">ENTJ-A</option>
-            <option value="ENFJ-E">ENFJ-E</option>
-            <option value="ENFJ-A">ENFJ-A</option>
-            <option value="ISTP-E">ISTP-E</option>
-            <option value="ISTP-A">ISTP-A</option>
-            <option value="ISFP-E">ISFP-E</option>
-            <option value="ISFP-A">ISFP-A</option>
-            <option value="INTP-E">INTP-E</option>
-            <option value="INTP-A">INTP-A</option>
-            <option value="INFP-E">INFP-E</option>
-            <option value="INFP-A">INFP-A</option>
+            {% for MBTI in mbti %}
+                <option value="{{ forloop.counter }}">{{ MBTI.mbti_name }}</option>
+            {% endfor %}
         </select>
         
     </div>
 
     <a href="{% url 'canri_app:member_make_delete' %}">削除</a>
     <a href="{% url 'canri_app:member_make_complete' %}">保存</a>
+{% endblock %}

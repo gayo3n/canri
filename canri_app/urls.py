@@ -24,7 +24,7 @@ urlpatterns = [
 
     #プロジェクトリスト
     path('projectlist/', views.ProjectlistView.as_view(), name='projectlist'),
-    path('project/', projectListView, name='project'),
+    # path('project/', projectListView, name='project'),
 
 
     # API関係
