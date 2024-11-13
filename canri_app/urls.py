@@ -8,6 +8,8 @@ urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
     path('memberlist/', views.MemberListView.as_view(), name='memberlist'),
     path('memberlist/make/', views.MemberListMakeView.as_view(), name='memberList_make'),
+    path('memberlist/add/', views.MemberListAddView.as_view(), name='memberList_add'),
+    path('memberlist/make/complete', views.MemberListMakeCompleteView.as_view(), name='memberList_make_complete'),
     path('member_make/', views.MemberMakeView.as_view(), name='member_make'),
     path("memberlist/make/complete/", views.MemberListMakeCompleteView.as_view(), name="memberList_make_complete"),
     path('member_make/complete/', views.MemberMakeCompleteView.as_view(), name='member_make_complete'),
@@ -15,7 +17,12 @@ urlpatterns = [
     path('member_make/delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
     path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
     path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
+<<<<<<< HEAD
+
+    
+=======
     path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
+>>>>>>> ac71f44c2585ab6747be79a834bafdae6e71361d
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
 
     path('new_project/', views.NewProjectView.as_view(), name='new_project'),    
