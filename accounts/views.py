@@ -1,6 +1,7 @@
 from django.contrib.auth.views import LogoutView
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, get_user_model
+from django.urls import reverse
 from django.views import View, generic
 from django.contrib.auth.views import LoginView as AuthLoginView
 from django.views.generic.base import TemplateView
@@ -36,12 +37,15 @@ class LogoutCompView(TemplateView):
 
 
 class Create(generic.CreateView):
-    template_name = 'canri_app/templates/account_creating.html'
+    template_name = 'account_creating.html'
     form_class = UserForm
 
     def form_valid(self, form):
         user = form.save()
-        return super().form_valid('accounts:login')
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse('account_created')  # URL名を正しく指定
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -49,7 +53,7 @@ class Create(generic.CreateView):
         return context
     
 class CreateComp(generic.TemplateView):
-    template_name = 'canri_app/templates/account_created.html'
+    template_name = 'account_created.html'
 
 
 class ManagementAccountView(TemplateView):
@@ -79,22 +83,22 @@ class AccountLogin(AuthLoginView):
 account_login = AccountLogin.as_view()
 
 
-def AccCreateView(request):
-    if request.method == 'GET':
-        form = AccountAddForm
-    elif request.method == 'POST':
-        if form.is_valid():
-            get_user_model().objects.create_user(
-            userid=form.cleaned_data['userid'],
-            password=form.cleaned_data['password'],
-            username=form.cleaned_data['name']
-        ) 
-            return 
+# def AccCreateView(request):
+#     if request.method == 'GET':
+#         form = AccountAddForm
+#     elif request.method == 'POST':
+#         if form.is_valid():
+#             get_user_model().objects.create_user(
+#             userid=form.cleaned_data['userid'],
+#             password=form.cleaned_data['password'],
+#             username=form.cleaned_data['name']
+#         ) 
+#             return 
     
-    context = {
-        'form': form
-    }
-    return render(request, 'canri_app/templates/account_creating.html', context)
+#     context = {
+#         'form': form
+#     }
+#     return render(request, 'canri_app/templates/account_creating.html', context)
 
-# class AccCreatedView(TemplateView):
-#     template_name = "account_created.html"
+class AccCreatedView(TemplateView):
+    template_name = "account_created.html"

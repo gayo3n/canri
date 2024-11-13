@@ -12,8 +12,8 @@ urlpatterns = [
     path('logout_confirmation/', views.LogoutConfView.as_view(), name='logout_confirmation'), #ログアウト
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
     path('logout_complete/', views.LogoutCompView.as_view(), name='logout_complete'), #ログアウト完了
-    path('account_creating/', views.Create.as_view(), name='account_creating'),
-    #path('account_created/', views.AccCreatedView.as_view(), name='account_created'),
+    path('management_account/account_creating/', views.Create.as_view(), name='account_creating'),
+    path('account_created/', views.CreateComp.as_view(), name='account_created'),
     path('login/', account_login, name="login"),
     #path('#/<int:pk>/', views.ManageAcc.as_view(), name='#'),   #アカウントページ用url
     
