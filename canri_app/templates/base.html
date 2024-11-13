@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Can理</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- 追加のcss記入 -->
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <body>
+        <header>
+            <nav class="navbar">
+                <div class="navbar-left">
+                    <img src="{% static 'images/logo.png' %}" alt="ロゴ" class="logo-icon">
+                    <a href="{% url 'canri_app:index' %}" class="logo">
+                        ホーム
+                    </a>
+                    <a href="{% url 'canri_app:new_project' %}">新規プロジェクト</a>
+                    <a href="{% url 'canri_app:project' %}">進行中プロジェクト</a>
+                    <a href="#">過去プロジェクト</a>
+                    <a href="{% url 'canri_app:memberlist' %}">メンバーリスト</a>
+                </div>
+                <div class="navbar-right">
+                    <a href="#" class="user-icon">
+                        <img src="{% static 'images/user-icon.png' %}" alt="管理者アイコン">
+                        社員名
+                    </a>
+                    <a href="#">ログアウト</a>
+                </div>
+            </nav>
+        </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

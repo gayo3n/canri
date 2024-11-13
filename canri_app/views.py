@@ -4,7 +4,12 @@ from django.views.generic.base import TemplateView
 from django.views.generic import CreateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+<<<<<<< HEAD
 from .models import *
+=======
+from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Project,CareerInformation,MBTI,Credentials
+from django.utils import timezone
+>>>>>>> ac71f44c2585ab6747be79a834bafdae6e71361d
 import json
 from .forms import SearchForm
 from django.http import HttpResponseBadRequest, HttpResponseNotFound
@@ -30,9 +35,6 @@ class IndexView(TemplateView):
 class MemberListView(TemplateView):
     template_name = "memberlist.html"
 
-class NewProjectView(TemplateView):
-    template_name = "create_new_project.html"
-
 class MemberListMakeView(TemplateView):
     template_name = "memberList_make.html"
     def get(self, request, *args, **kwargs):
@@ -45,7 +47,7 @@ class MemberListMakeView(TemplateView):
         # 検索処理
         search_query = request.GET.get('query', '')  # 'query' というキーで取得
 
-        if search_query:
+        if (search_query):
             members = members.filter(name__icontains=search_query)
 
         return render(request, self.template_name, {'members': members})
@@ -86,6 +88,18 @@ class MemberListMakeCompleteView(TemplateView):
 
 class MemberMakeView(TemplateView):
     template_name = "member_make.html"
+    def get(self, request, *args, **kwargs):
+        mbti = MBTI.objects.all()  # 複数のフィールドを取得
+        job_title = JobTitleInformation.objects.all()
+        credentials = Credentials.objects.all()
+        careerinformation = CareerInformation.objects.all()
+        context = {
+        'mbti': mbti,
+        'job_title': job_title,
+        'credentials': credentials,
+        'careerinformation': careerinformation,
+    }
+        return render(request, 'member_make.html', context)
 
 class MemberMakeCompleteView(TemplateView):
     template_name = "member_make_complete.html"
@@ -103,3 +117,43 @@ class ManagementAccountView(TemplateView):
     template_name = "management_account.html"
 
 
+class NewProjectView(TemplateView):
+    template_name = "new_project.html"
+
+class NewProjectEditView(TemplateView):
+    template_name = "new_project_edit.html"
+
+    def post(self, request, *args, **kwargs):
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        # 入力された情報をリスト化
+        project_data = {
+            'project_name': project_name,
+            'project_description': project_description,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+
+        # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
+        return render(request, self.template_name, {'project': project_data})
+
+class CreateTeamView(TemplateView):
+    template_name = "create_team.html"
+class ProjectlistView(TemplateView):
+    template_name="projectlist.html"
+
+
+def projectListView(request):
+    template_name = "projectlist.html"
+    ctx = {}
+    query = request.GET.get('q')
+    qs = Project.objects.all()
+    qs=qs.filter(complete_flag=0,deletion_flag=0)
+    if query:
+        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+
+    ctx["project_list"] = qs
+    return render(request, template_name, ctx)

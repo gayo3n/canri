@@ -81,24 +81,3 @@ class AccountLogin(AuthLoginView):
         return render(request, 'login.html', {'form': form, 'error_message': error_message})
 
 account_login = AccountLogin.as_view()
-
-
-# def AccCreateView(request):
-#     if request.method == 'GET':
-#         form = AccountAddForm
-#     elif request.method == 'POST':
-#         if form.is_valid():
-#             get_user_model().objects.create_user(
-#             userid=form.cleaned_data['userid'],
-#             password=form.cleaned_data['password'],
-#             username=form.cleaned_data['name']
-#         ) 
-#             return 
-    
-#     context = {
-#         'form': form
-#     }
-#     return render(request, 'canri_app/templates/account_creating.html', context)
-
-class AccCreatedView(TemplateView):
-    template_name = "account_created.html"
