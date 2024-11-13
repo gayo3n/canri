@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base2.html' %}
 
 {% load static %}
 
@@ -7,43 +7,26 @@
 {% block content %}
 <div class="member-list-container">
     <div class="search-create-bar">
-        <input type="text" placeholder="検索" class="search-bar">
+        <form action="" method="get">
+        {% csrf_token %}
+        <input name="query" value="{{ request.GET.query }}" type="text" />
+        <button type="submit">検索する</button>
+        </form>
         <a href="{% url 'canri_app:memberList_make' %}" class="create-member-btn">新規メンバーリスト作成</a>
     </div>
-    
+    <!--メンバーリスト名を繰り返し表示させる（まだつなげてない）-->
+    {% for member in members %}
     <div class="member-list">
         <div class="member-item">
-            <span>メンバーリスト A</span>
+            <!--メンバーリストの中のリスト名-->
+            <span>{{ member.member_id }}</span>
             <a href="#" class="detail-btn">詳細</a>
-            <button class="delete-btn">&#128465;</button>
-        </div>
-        <div class="member-item">
-            <span>メンバーリスト B</span>
-            <a href="#" class="detail-btn">詳細</a>
-            <button class="delete-btn">&#128465;</button>
-        </div>
-        <div class="member-item">
-            <span>メンバーリスト C</span>
-            <a href="#" class="detail-btn">詳細</a>
-            <button class="delete-btn">&#128465;</button>
-        </div>
-        <div class="member-item">
-            <span>メンバーリスト D</span>
-            <a href="#" class="detail-btn">詳細</a>
-            <button class="delete-btn">&#128465;</button>
-        </div>
-        <div class="member-item">
-            <span>メンバーリスト E</span>
-            <a href="#" class="detail-btn">詳細</a>
-            <button class="delete-btn">&#128465;</button>
-        </div>
-        <div class="member-item">
-            <span>メンバーリスト F</span>
-            <a href="#" class="detail-btn">詳細</a>
-            <button class="delete-btn">&#128465;</button>
+            <a href="{% url "canri_app:memberlist_delete" %}" class="delete-btn">&#128465;</a>
         </div>
     </div>
+    {% endfor %}
 
+    <!--スクロールボタン-->
     <div class="pagination">
         <button class="more-btn">&#9660;</button>
     </div>

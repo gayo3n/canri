@@ -1,3 +1,4 @@
+from django.contrib.auth.views import LogoutView
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, get_user_model
 from django.views import View, generic
@@ -12,14 +13,11 @@ from django.views.generic.edit import CreateView
 
 User = get_user_model()
 
-class MwnuView(TemplateView):
-    template_name = 'menu.html'
-
-# class LoginView(TemplateView):
-#     form_class = UserForm
-#     template_name = 'login.html'
-#     def post(self, request, *args, **kwargs):
-#         return render(request, 'login_complete.html')
+class LoginView(TemplateView):
+    form_class = UserForm
+    template_name = 'login.html'
+    def post(self, request, *args, **kwargs):
+        return render(request, 'login_complete.html')
 
 class LoginCompView(View):
     def get(self, request, *args, **kwargs):

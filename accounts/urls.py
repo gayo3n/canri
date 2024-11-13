@@ -8,7 +8,8 @@ from.views import account_login
 urlpatterns = [
     #path('login/', views.LoginView.as_view(), name='login'),
     path('login_complete/', views.LoginCompView.as_view(), name='login_complete'),
-    path('login_failure/', views.LoginFailView.as_view(), name='login_failure'),
+    path('login_failure/', views.LoginCompView.as_view(), name='login_failure'),
+
     path('logout_confirmation/', views.LogoutConfView.as_view(), name='logout_confirmation'),
     path('logout_complete/', views.LogoutCompView.as_view(), name='logout_complete'),
     path('account_creating/', views.AccCreateView.as_view(), name='account_creating'),

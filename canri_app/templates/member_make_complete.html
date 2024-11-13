@@ -1,0 +1,14 @@
+{% extends 'base2.html' %}
+
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/memberlist_delete.css' %}">
+{% endblock %}
+{% block content %}
+
+<div class="deleteok">
+<h1>メンバー情報を保存しました</h1>
+<a href="{% url "canri_app:memberlist" %}" class="delete-btn">⇐メンバーリスト一覧画面に戻る</a>
+</div>
+{% endblock %}
