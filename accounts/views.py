@@ -3,7 +3,7 @@ from django.contrib.auth import login, get_user_model
 from django.views import View, generic
 from django.contrib.auth.views import LoginView as AuthLoginView
 from django.views.generic.base import TemplateView
-from .forms import CustomUserCreationForm
+from .forms import UserCreationForm, UserForm, AccountAddForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
@@ -37,6 +37,23 @@ class LogoutCompView(TemplateView):
         return render(request, 'logout_complete.html')
 
 
+class Create(generic.CreateView):
+    template_name = 'canri_app/templates/account_creating.html'
+    form_class = UserForm
+
+    def form_valid(self, form):
+        user = form.save()
+        return super().form_valid('accounts:login')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["process_name"] = "Login"
+        return context
+    
+class CreateComp(generic.TemplateView):
+    template_name = 'canri_app/templates/account_created.html'
+
+
 class ManagementAccountView(TemplateView):
     template_name = "management_account.html"
 
@@ -64,46 +81,22 @@ class AccountLogin(AuthLoginView):
 account_login = AccountLogin.as_view()
 
 
-class OnlyYouMixin(UserPassesTestMixin):
-    raise_exception = True
-
-    def test_func(self):
-        user = self.request.user
-        return user.pk == self.kwargs['pk']
+def AccCreateView(request):
+    if request.method == 'GET':
+        form = AccountAddForm
+    elif request.method == 'POST':
+        if form.is_valid():
+            get_user_model().objects.create_user(
+            userid=form.cleaned_data['userid'],
+            password=form.cleaned_data['password'],
+            username=form.cleaned_data['name']
+        ) 
+            return 
     
+    context = {
+        'form': form
+    }
+    return render(request, 'canri_app/templates/account_creating.html', context)
 
-class ManageAcc(OnlyYouMixin, generic.DetailView):
-    model = User
-    template_name = '#'
-
-# class AccCreateForm(UserCreationForm):
-#     template_name = 'account_creating.html'
-
-    #class Meta:
-    #     model = User
-    #     fields = ('userid', 'password', 'username',)
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     for field in self.fields.values():
-    #         field.widget.attrs['class'] = 'form-control'
-    #         field.widget.attrs['required'] = ''
-
-
-    #         print(field.label)
-    #         if field.label == '姓':
-    #             field.widget.attrs['autofocus'] = ''
-    #             field.widget.attrs['placeholder'] = '大原'
-    #         elif field.label == '名':
-    #             field.widget.attrs['placeholder'] = '太郎'
-    #         elif field.label == 'メールアドレス':
-    #             field.widget.attrs['placeholder'] = '***＠gmail.com'
-
-
-class AccCreateView(CreateView):
-    form_class = CustomUserCreationForm
-    template_name = 'account_creating.html'
-    success_url = '/account_created/'  
-
-class AccCreatedView(TemplateView):
-    template_name = "account_created.html"
+# class AccCreatedView(TemplateView):
+#     template_name = "account_created.html"

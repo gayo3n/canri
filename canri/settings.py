@@ -128,6 +128,6 @@ LOGIN_REDIRECT_URL = '/login_complete'
 LOGOUT_REDIRECT_URL = '/logout_confirmation'
 
 
-AUTH_USER_MODEL = 'accounts.CustomUser'
+AUTH_USER_MODEL = 'accounts.User'
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'your-default-secret-key')
