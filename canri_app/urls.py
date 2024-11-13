@@ -21,6 +21,12 @@ urlpatterns = [
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
 
     path('create_new_project/', views.NewProjectView.as_view(), name='create_new_project'),    
+
+    #プロジェクトリスト
+    path('projectlist/', views.ProjectlistView.as_view(), name='projectlist'),
+    path('project/', projectListView, name='project'),
+
+
     # API関係
     path('get_member_data/<int:member_id>/', api.get_member_data, name='get_member_data'),#メンバー情報取得
     path('get_members/<int:member_list_id>/', api.get_members_by_member_list, name='get_members_by_member_list'),#メンバーリスト取得
