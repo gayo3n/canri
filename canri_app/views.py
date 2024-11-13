@@ -4,12 +4,9 @@ from django.views.generic.base import TemplateView
 from django.views.generic import CreateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-<<<<<<< HEAD
 from .models import *
-=======
 from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Project,CareerInformation,MBTI,Credentials
 from django.utils import timezone
->>>>>>> ac71f44c2585ab6747be79a834bafdae6e71361d
 import json
 from .forms import SearchForm
 from django.http import HttpResponseBadRequest, HttpResponseNotFound
