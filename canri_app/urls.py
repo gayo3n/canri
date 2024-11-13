@@ -17,6 +17,9 @@ urlpatterns = [
     path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
     path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
+
+    path('new_project/', views.NewProjectView.as_view(), name='new_project'),    
+    path('new_project_edit/', views.NewProjectEditView.as_view(), name='new_project_edit'),    
     path('create_new_project/', views.NewProjectView.as_view(), name='create_new_project'),    
 
 
