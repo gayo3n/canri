@@ -50,9 +50,9 @@ def get_member_data(request, member_id):
         return render(request, 'template_name.html', {'member_data': member_data})
     
     except Member.DoesNotExist:
-        return render(request, 'template_name.html', {'error': 'error'})
+        return render(request, 'template_name.html', {'error': 'Member not found'}, status=404)
     except Exception as e:
-        return render(request, 'template_name.html', {'error': 'error'})
+        return render(request, 'template_name.html', {'error': str(e)}, status=500)
 
 # メンバーリストに対応したメンバー情報を取得するAPI
 @require_http_methods(["GET"])
@@ -67,9 +67,9 @@ def get_members_by_member_list(request, member_list_id):
         return render(request, 'template_name.html', {'members': list(members)})
     
     except MemberList.DoesNotExist:
-        return render(request, 'template_name.html', {'error': 'error404'})
+        return render(request, 'template_name.html', {'error': 'MemberList not found'}, status=404)
     except Exception as e:
-        return render(request, 'template_name.html', {'error': 'error500'})
+        return render(request, 'template_name.html', {'error': str(e)}, status=500)
 
 #チームを作成するAPI
 @require_http_methods(["POST"])
@@ -96,9 +96,9 @@ def create_team_api(request):
         return render(request, 'template_name.html', {'team': team})
 
     except json.JSONDecodeError:
-        return render(request, 'template_name.html', {'error': 'error400'})
+        return render(request, 'template_name.html', {'error': 'Invalid JSON'}, status=400)
     except Exception as e:
-        return render(request, 'template_name.html', {'error': 'error500'})
+        return render(request, 'template_name.html', {'error': str(e)}, status=500)
 
 # チーム作成ロジック
 # team_type = チームを作成する際の目的 | members = 作成に使用するメンバーのリスト | team_size = 作成するチームの人数 
@@ -189,9 +189,9 @@ def get_teams_by_project(request, project_id):
         return render(request, 'template_name.html', {'teams': team_data})
 
     except ProjectAffiliationTeam.DoesNotExist:
-        return render(request, 'template_name.html', {'error': 'error404'})
+        return render(request, 'template_name.html', {'error': 'ProjectAffiliationTeam not found'}, status=404)
     except Exception as e:
-        return render(request, 'template_name.html', {'error': 'error500'})
+        return render(request, 'template_name.html', {'error': str(e)}, status=500)
 
 #チームに所属するメンバーを取得するAPI
 @require_http_methods(["GET"])
@@ -224,6 +224,32 @@ def get_team_members(request, team_id):
         return render(request, 'template_name.html', {'members': member_data})
 
     except TeamMember.DoesNotExist:
-        return render(request, 'template_name.html', {'error': 'error404'})
+        return render(request, 'template_name.html', {'error': 'TeamMember not found'}, status=404)
     except Exception as e:
-        return render(request, 'template_name.html', {'error': 'error500'})
+        return render(request, 'template_name.html', {'error': str(e)}, status=500)
+
+# チーム情報を取得するAPI
+@require_http_methods(["GET"])
+def get_team_data(request, team_id):
+    try:
+        # 指定された team_id に一致するチーム情報を取得
+        team = Team.objects.get(team_id=team_id)
+        
+        # チーム情報を辞書として返す
+        team_data = {
+            'team_id': team.team_id,
+            'team_name': team.team_name,
+            'count': team.count,
+            'objective': team.objective,
+            'memo': team.memo,
+            'creation_date': team.creation_date,
+            'update_date': team.update_date,
+            'deletion_date': team.deletion_date,
+        }
+
+        return render(request, 'template_name.html', {'team': team_data})
+    
+    except Team.DoesNotExist:
+        return render(request, 'template_name.html', {'error': 'Team not found'}, status=404)
+    except Exception as e:
+        return render(request, 'template_name.html', {'error': str(e)}, status=500)
