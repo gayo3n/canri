@@ -71,9 +71,9 @@ class ProjectlistView(TemplateView):
 def projectListView(request):
     template_name = "projectlist.html"
     ctx = {}
-    query = request.GET.get('q')  # 検索クエリを取得
+    query = request.GET.get('q')
     qs = Project.objects.all()
-
+    qs=qs.filter(complete_flag=0,deletion_flag=0)
     if query:
         qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
 

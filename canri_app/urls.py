@@ -2,7 +2,6 @@
 from django.urls import path
 from . import views, api
 from .views import projectListView
-
 app_name = 'canri_app'
 
 urlpatterns = [
@@ -16,17 +15,13 @@ urlpatterns = [
     path('member_make/delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
     path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
     path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
-
     path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
-    
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
-
     path('create_new_project/', views.NewProjectView.as_view(), name='create_new_project'),    
 
-    #プロジェクトリスト
+
     path('projectlist/', views.ProjectlistView.as_view(), name='projectlist'),
     path('project/', projectListView, name='project'),
-
 
     # API関係
     path('get_member_data/<int:member_id>/', api.get_member_data, name='get_member_data'),#メンバー情報取得
