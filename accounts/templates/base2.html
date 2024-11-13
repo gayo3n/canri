@@ -15,10 +15,9 @@
                 <a href="{% url 'canri_app:index' %}" class="logo">
                     ホーム
                 </a>
-                <a href="#">進行中プロジェクト</a>
                 <a href="{% url 'canri_app:new_project' %}">新規プロジェクト</a>
                 <a href="{% url 'canri_app:project' %}">進行中プロジェクト</a>
-                <a href="#">過去プロジェクト</a>
+                <a href="{% url 'canri_app:post_project'%}">過去プロジェクト</a>
                 <a href="{% url 'canri_app:memberlist' %}">メンバーリスト</a>
                 <a href="{% url 'canri_app:management_account' %}">アカウント管理</a>
             </div>

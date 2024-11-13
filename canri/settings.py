@@ -119,10 +119,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static")),
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-)
-
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -130,3 +126,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/login_complete'
 LOGOUT_REDIRECT_URL = '/logout_confirmation'
+
+
+AUTH_USER_MODEL = 'accounts.User'
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # デフォルトでデータベースを使用
+SESSION_COOKIE_AGE = 1209600  # セッションが有効な期間（秒単位、2週間）
+SESSION_SAVE_EVERY_REQUEST = True  # 各リクエストでセッションを保存
+
+
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'your-default-secret-key')
