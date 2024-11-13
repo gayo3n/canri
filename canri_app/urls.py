@@ -18,7 +18,6 @@ urlpatterns = [
     path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
     path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
 
-    path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
     
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
 

@@ -1,6 +1,5 @@
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import get_user_model
-from .models import CustomUser
 
 
 User = get_user_model()
@@ -10,9 +9,9 @@ class UserForm(AuthenticationForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             #htmlの表示を変更可能にします
-            self.fields['userid'].widget.attrs['class'] = 'form-control'
+            self.fields['user_id'].widget.attrs['class'] = 'form-control'
             self.fields['password'].widget.attrs['class'] = 'form-control'
-            self.fields['username'].widget.attrs['class'] = 'form-control'
+            self.fields['name'].widget.attrs['class'] = 'form-control'
 
 
  
@@ -20,7 +19,7 @@ class UserForm(AuthenticationForm):
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('userid', 'password', 'username')
+        fields = ('user_id', 'password', 'name')
 
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)

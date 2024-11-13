@@ -43,6 +43,9 @@
 
     <section class="section_two">
         {{ MemberList.member }}
+        {% for member_id in memberID_list %}
+            <li>{{ member_id }}</li>
+        {% endfor %}
     </section>
 
     <section class="section_three">
