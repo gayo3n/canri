@@ -1,3 +1,5 @@
+{% comment %} 管理者 {% endcomment %}
+
 {% extends 'base2.html' %}
 {% load static %}
 
@@ -5,14 +7,14 @@
 {% block content %}
 <h2>アカウント作成</h2>
     <form action="アカウント作成完了" method="post">
+        <div>
+            <input type="text" value="ユーザ名" id="username" name="name" required>
+        </div>
         <div> 
             <input type="text" value="ユーザID" id="userid" name="id" required>
         </div>
         <div>
             <input type="text" value="パスワード" id="password" name="password" required>
-        </div>
-        <div>
-            <input type="text" value="ユーザ名" id="username" name="name" required>
         </div>
         <div>
             <td><button type="submit" class="btn btn-danger">作成</button></td>

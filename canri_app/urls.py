@@ -28,6 +28,7 @@ urlpatterns = [
     path('project/', projectListView, name='project'),
     path('post_project/', Post_projectListView, name='post_project'),
 
+
     # API関係
     path('get_member_data/<int:member_id>/', api.get_member_data, name='get_member_data'),#メンバー情報取得
     path('get_members/<int:member_list_id>/', api.get_members_by_member_list, name='get_members_by_member_list'),#メンバーリスト取得
