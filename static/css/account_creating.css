@@ -1,0 +1,14 @@
+/* 作成ボタンの背景色 */
+.btn-danger {
+    background-color: #fd5650;  /* 赤色の背景 */
+    color: white;  /* 文字色を白 */
+    border: none;  /* ボーダーをなし */
+    padding: 10px 20px;  /* ボタンのパディング */
+    cursor: pointer;  /* ポインターカーソル */
+    border-radius: 5px;  /* 角を丸くする */
+}
+
+/* ホバー時の背景色変更 */
+.btn-danger:hover {
+    background-color: #e60800;  /* ホバー時の色を変更 */
+}
