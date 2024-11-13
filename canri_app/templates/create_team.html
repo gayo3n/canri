@@ -1,0 +1,28 @@
+{% block content %}
+<div class="main-content">
+    <h1>新規チーム作成</h1>
+    <form method="post" action="{% url 'canri_app:create_team' %}">
+        {% csrf_token %}
+        
+        <label for="team_size">チームの人数</label>
+        <select name="team_size" id="team_size" required>
+            {% for i in 1|range:31 %}
+            <option value="{{ i }}">{{ i }}人</option>
+            {% endfor %}
+        </select>
+        
+        <label for="team_type">チームの目的</label>
+        <select name="team_type" id="team_type" required>
+            <option value="event">イベント用チーム</option>
+            <option value="training">研修用チーム</option>
+            <option value="project">プロジェクト開発用チーム</option>
+            <option value="idea_generation">アイデア発想チーム</option>
+        </select>
+        
+        <label for="auto_generate">チームを自動生成する</label>
+        <input type="checkbox" name="auto_generate" id="auto_generate">
+        
+        <input type="submit" value="次へ">
+    </form>
+</div>
+{% endblock %}
