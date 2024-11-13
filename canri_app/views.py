@@ -4,7 +4,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic import CreateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification
+from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification,Project
 import json
 from .forms import SearchForm
 
@@ -15,7 +15,8 @@ class IndexView(TemplateView):
 class MemberListView(TemplateView):
     template_name = "memberlist.html"
 
-
+class NewProjectView(TemplateView):
+    template_name = "create_new_project.html"
 
 class MemberListMakeView(TemplateView):
     template_name = "memberList_make.html"
@@ -63,3 +64,18 @@ class ManagementAccountView(TemplateView):
     template_name = "management_account.html"
 
 
+class ProjectlistView(TemplateView):
+    template_name="projectlist.html"
+
+
+def projectListView(request):
+    template_name = "projectlist.html"
+    ctx = {}
+    query = request.GET.get('q')  # 検索クエリを取得
+    qs = Project.objects.all()
+
+    if query:
+        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+
+    ctx["project_list"] = qs
+    return render(request, template_name, ctx)

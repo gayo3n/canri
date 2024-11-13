@@ -19,9 +19,18 @@ urlpatterns = [
     path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
     
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
-    
+
+    path('create_new_project/', views.NewProjectView.as_view(), name='create_new_project'),    
+
+    #プロジェクトリスト
+    path('projectlist/', views.ProjectlistView.as_view(), name='projectlist'),
+    path('project/', projectListView, name='project'),
+
+
     # API関係
     path('get_member_data/<int:member_id>/', api.get_member_data, name='get_member_data'),#メンバー情報取得
     path('get_members/<int:member_list_id>/', api.get_members_by_member_list, name='get_members_by_member_list'),#メンバーリスト取得
     path('create_team/', api.create_team_api, name='create_team'),#チーム作成
+    path('get_teams_by_project/<int:project_id>', api.get_teams_by_project, name='get_teams_by_project'),#プロジェクトチーム取得
+    path('get_team_members/<int:team_id>', api.get_team_members, name='get_team_members'),#チームメンバー取得
 ]
