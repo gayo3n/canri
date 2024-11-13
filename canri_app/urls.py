@@ -1,6 +1,7 @@
 # urls.py
 from django.urls import path
 from . import views, api
+from .views import projectListView
 
 app_name = 'canri_app'
 
