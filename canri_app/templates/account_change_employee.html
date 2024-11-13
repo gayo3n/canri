@@ -1,21 +1,21 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
 {% block content %}
 
 <h2>ユーザアカウント変更</h2>
     <div>
         <form action="ユーザアカウント変更" method="post">
-            <label>ユーザ名🔓</label>
             <div>
-                <input type="text" value="大原一郎" id="name" name="user_name" required>
+                <input type="text" value="ユーザ名" id="user_name" name="name" required>
             </div>
-                <label>ユーザID🔓</label>
+
             <div>
-                <input type="text" value="exam_user_id" id="id" name="user_id" required>
+                <input type="text" value="ユーザID" id="user_id" name="id" required>
             </div>
-                <label>パスワード</label>
+
             <div>
-                <input type="text" value="password" id="password" name="user_password" required>
+                <input type="text" value="password" id="user_password" name="password" required>
             </div>
+
             <div>
                 <td><button type="submit" class="btn btn-danger">保存</button></td>
             </div>
