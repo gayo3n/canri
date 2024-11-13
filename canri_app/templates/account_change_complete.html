@@ -1,3 +1,5 @@
+{% comment %} 管理者 {% endcomment %}
+
 {% extends 'base2.html' %}
 {% block content %}
 
@@ -5,7 +7,7 @@
     <p>
         アカウントの変更が完了しました
     </p>
-    <a href="{% url 'account_change' %}">←アカウント管理画面</a>
+    <a href="{% url 'management_account' %}">←アカウント管理画面へ</a>
 </body>
 
 {% endblock %}
