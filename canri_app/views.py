@@ -259,14 +259,65 @@ class post_ProjectlistView(TemplateView):
     template_name="post_projectlist.html"
 
 
-    def Post_projectListView(request):
-        template_name = "post_projectlist.html"
-        ctx = {}
-        query = request.GET.get('p')
-        qs = Project.objects.all()
-        qs=qs.filter(complete_flag=1,deletion_flag=0)
-        if query:
-            qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+def Post_projectListView(request):
+    template_name = "post_projectlist.html"
+    ctx = {}
+    query = request.GET.get('p')
+    qs = Project.objects.all()
+    qs=qs.filter(complete_flag=1,deletion_flag=0)
+    if query:
+        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+
+    ctx["project_list"] = qs
+    return render(request, template_name, ctx)
+
+
+
+
+
+class Project_detailView(TemplateView):
+    template_name="project_detail.html"
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import Project, ProjectAffiliationTeam, ProjectProgressStatus
+
+def project_detail_view(request, project_id):
+    # プロジェクトを取得
+    project = get_object_or_404(Project, project_id=project_id)
+
+    # プロジェクトに関連するチームを取得
+    teams = ProjectAffiliationTeam.objects.filter(project=project).select_related('team')
+
+    # プロジェクトに関連するフェーズを取得
+    phases = ProjectProgressStatus.objects.filter(project=project)
+
+    context = {
+        'project': project,
+        'teams': teams,
+        'phases': phases,
+    }
+
+    return render(request, 'project_detail.html', context)
+
+
+
+class team_detailView(TemplateView):
+    template_name="team_detail.html"
+
+
+def team_detail_view(request, team_id):
+    template_name = "post_projectlist.html"
+    ctx = {}
+    team = get_object_or_404(Project, team_id=team_id)
+    qs = Project.objects.all()
+    qs=qs.filter(complete_flag=1,deletion_flag=0)
+    if team:
+        qs = qs.filter(project_id=team)
+
+    ctx["team_detail"] = qs
+    return render(request, template_name, ctx)
+
 
         ctx["project_list"] = qsequest, self.template_name, {'members': members}
     
