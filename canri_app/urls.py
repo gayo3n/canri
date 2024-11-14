@@ -14,7 +14,7 @@ urlpatterns = [
     path("memberlist/make/complete/", views.MemberListMakeCompleteView.as_view(), name="memberList_make_complete"),
     path('member_make/complete/', views.MemberMakeCompleteView.as_view(), name='member_make_complete'),
     path('member_make/delete/', views.MemberMakeDeleteView.as_view(), name='member_make_delete'),
-    path('member_make/delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
+    path('member_make/delete/complete/', views.MemberMakeDeleteOkView.as_view(), name='member_make_delete_complete'),
     path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
     path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
 
