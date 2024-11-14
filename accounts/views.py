@@ -1,10 +1,11 @@
 from django.contrib.auth.views import LogoutView
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, get_user_model
+from django.urls import reverse
 from django.views import View, generic
 from django.contrib.auth.views import LoginView as AuthLoginView
 from django.views.generic.base import TemplateView
-from .forms import CustomUserCreationForm, UserForm
+from .forms import AccountAddForm, UserForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
@@ -34,6 +35,30 @@ class LogoutCompView(TemplateView):
     def post(self, request, *args, **kwargs):
         return render(request, 'logout_complete.html')
 
+
+class Create(generic.CreateView):
+    template_name = 'account_creating.html'
+    form_class = UserForm
+
+    def form_valid(self, form):
+        user = form.save()
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse('account_created')  # URL名を正しく指定
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["process_name"] = "Login"
+        return context
+    
+class CreateComp(generic.TemplateView):
+    template_name = 'account_created.html'
+
+
+class ManagementAccountView(TemplateView):
+    template_name = "management_account.html"
+
 class AccountLogin(AuthLoginView):
     template_name = "login.html"
     def post(self, request, *args, **kwargs):
@@ -56,48 +81,3 @@ class AccountLogin(AuthLoginView):
         return render(request, 'login.html', {'form': form, 'error_message': error_message})
 
 account_login = AccountLogin.as_view()
-
-
-class OnlyYouMixin(UserPassesTestMixin):
-    raise_exception = True
-
-    def test_func(self):
-        user = self.request.user
-        return user.pk == self.kwargs['pk']
-    
-
-class ManageAcc(OnlyYouMixin, generic.DetailView):
-    model = User
-    template_name = '#'
-
-# class AccCreateForm(UserCreationForm):
-#     template_name = 'account_creating.html'
-
-    #class Meta:
-    #     model = User
-    #     fields = ('userid', 'password', 'username',)
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     for field in self.fields.values():
-    #         field.widget.attrs['class'] = 'form-control'
-    #         field.widget.attrs['required'] = ''
-
-
-    #         print(field.label)
-    #         if field.label == '姓':
-    #             field.widget.attrs['autofocus'] = ''
-    #             field.widget.attrs['placeholder'] = '大原'
-    #         elif field.label == '名':
-    #             field.widget.attrs['placeholder'] = '太郎'
-    #         elif field.label == 'メールアドレス':
-    #             field.widget.attrs['placeholder'] = '***＠gmail.com'
-
-
-class AccCreateView(CreateView):
-    form_class = CustomUserCreationForm
-    template_name = 'account_creating.html'
-    success_url = '/account_created/'  
-
-class AccCreatedView(TemplateView):
-    template_name = "account_created.html"

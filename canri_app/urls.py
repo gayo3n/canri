@@ -1,7 +1,7 @@
 # urls.py
 from django.urls import path
 from . import views, api
-
+from .views import projectListView
 app_name = 'canri_app'
 
 urlpatterns = [
@@ -17,11 +17,22 @@ urlpatterns = [
     path('member_make/delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
     path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
     path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
+<<<<<<< HEAD
 
     
+=======
+    path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
+>>>>>>> ac71f44c2585ab6747be79a834bafdae6e71361d
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
 
+    path('new_project/', views.NewProjectView.as_view(), name='new_project'),    
+    path('new_project_edit/', views.NewProjectEditView.as_view(), name='new_project_edit'),    
     path('create_new_project/', views.NewProjectView.as_view(), name='create_new_project'),    
+
+
+    path('projectlist/', views.ProjectlistView.as_view(), name='projectlist'),
+    # path('project/', projectListView, name='project'),
+
     # API関係
     path('get_member_data/<int:member_id>/', api.get_member_data, name='get_member_data'),#メンバー情報取得
     path('get_members/<int:member_list_id>/', api.get_members_by_member_list, name='get_members_by_member_list'),#メンバーリスト取得
