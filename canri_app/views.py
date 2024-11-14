@@ -251,13 +251,14 @@ class post_ProjectlistView(TemplateView):
     template_name="post_projectlist.html"
 
 
-def Post_projectListView(request):
-    template_name = "post_projectlist.html"
-    ctx = {}
-    query = request.GET.get('p')
-    qs = Project.objects.all()
-    qs=qs.filter(complete_flag=1,deletion_flag=0)
-    if query:
-        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+    def Post_projectListView(request):
+        template_name = "post_projectlist.html"
+        ctx = {}
+        query = request.GET.get('p')
+        qs = Project.objects.all()
+        qs=qs.filter(complete_flag=1,deletion_flag=0)
+        if query:
+            qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
 
-    ctx["project_list"] = qsequest, self.template_name, {'members': members})
+        ctx["project_list"] = qsequest, self.template_name, {'members': members}
+    
