@@ -33,7 +33,7 @@
         </ul>
 
         <button type="file" class="csv_ref">csvファイルアップロード</button>
-        <form method="POST" action="{% url 'canri_app:member_make' %}" >
+        <form action="{% url 'canri_app:member_make' %}" >
             {% csrf_token %}
             <button type="submit" class="btn">⊕新規メンバー追加</button>
         </form>
