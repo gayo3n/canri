@@ -168,11 +168,12 @@ class CreateTeam2View(TemplateView):
         project_description = request.POST.get('project_description')
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
-        teams = request.POST.get('teams')
+        teams = request.POST.getlist('teams')
         team_size = request.POST.get('team_size')
         team_type = request.POST.get('team_type')
         auto_generate = request.POST.get('auto_generate')
-
+        member_lists = MemberList.objects.all()
+            
         if auto_generate:
             # 入力された情報を保持した状態でcreate_team2.htmlに遷移
             return render(request, self.template_name, {
@@ -183,7 +184,8 @@ class CreateTeam2View(TemplateView):
                 'teams': teams,
                 'team_size': team_size,
                 'team_type': team_type,
-                'auto_generate': auto_generate
+                'auto_generate': auto_generate,
+                'member_lists': member_lists
             })
         else:
             # 入力された情報を保持した状態でcreate_team3.htmlに遷移
@@ -193,7 +195,8 @@ class CreateTeam2View(TemplateView):
                 'start_date': start_date,
                 'end_date': end_date,
                 'teams': teams,
-                'team_type': team_type
+                'team_type': team_type,
+                'member_lists': member_lists
             })
 
 class CreateTeam3View(TemplateView):
@@ -254,5 +257,4 @@ def Post_projectListView(request):
     if query:
         qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
 
-    ctx["project_list"] = qs
-    return render(request, template_name, ctx)
+    ctx["project_list"] = qsequest, self.template_name, {'members': members})
