@@ -6,12 +6,15 @@ app_name = 'canri_app'
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
+    # メンバーリスト
     path('memberlist/', views.MemberListView.as_view(), name='memberlist'),
     path('memberlist/make/', views.MemberListMakeView.as_view(), name='memberList_make'),
-    path('memberlist/add/', views.MemberListAddView.as_view(), name='memberList_add'),
-    path('memberlist/make/complete', views.MemberListMakeCompleteView.as_view(), name='memberList_make_complete'),
+    path('memberlist/make/complete/', views.MemberListMakeCompleteView.as_view(), name='memberList_make_complete'),
+    
+    path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
+    path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
+    # メンバー
     path('member_make/', views.MemberMakeView.as_view(), name='member_make'),
-    path("memberlist/make/complete/", views.MemberListMakeCompleteView.as_view(), name="memberList_make_complete"),
     path('member_make/complete/', views.MemberMakeCompleteView.as_view(), name='member_make_complete'),
     path('member_make/delete/', views.MemberMakeDeleteView.as_view(), name='member_make_delete'),
     path('member_make/delete/complete/', views.MemberMakeDeleteOkView.as_view(), name='member_make_delete_complete'),
@@ -30,11 +33,22 @@ urlpatterns = [
     path('create_team3/', views.CreateTeam3View.as_view(), name='create_team3'),
     path('save_new_project/', views.SaveNewProjectView.as_view(), name='save_new_project'),
 
-
+    #プロジェクト一覧
     path('progress_within_projectlist/', views.progress_within_ProjectlistView.as_view(), name='projectlist'),
     path('post_projectlist/', views.progress_within_ProjectlistView.as_view(), name='post_projectlist'),
     path('project/', projectListView, name='project'),
     path('post_project/', views.post_ProjectlistView.as_view(), name='post_project'),
+
+    #プロジェクト詳細
+    path('project_detail/',views.Project_detailView.as_view(), name='project_detail'),
+    path('project/<int:project_id>/', project_detail_view, name='project_detail'),
+
+
+
+    #チーム詳細
+    # path('team_detail/',views.team_detailView.as_view(), name='team_detail'),
+    # path('team/<int:team_id>/', team_detail_view, name='project_detail'),
+
 
     # API関係
     path('get_member_data/<int:member_id>/', api.get_member_data, name='get_member_data'),#メンバー情報取得
