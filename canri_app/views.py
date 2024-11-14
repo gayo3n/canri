@@ -288,3 +288,23 @@ def project_detail_view(request, project_id):
     }
 
     return render(request, 'project_detail.html', context)
+
+
+
+class team_detailView(TemplateView):
+    template_name="team_detail.html"
+
+
+def team_detail_view(request, team_id):
+    template_name = "post_projectlist.html"
+    ctx = {}
+    team = get_object_or_404(Project, team_id=team_id)
+    qs = Project.objects.all()
+    qs=qs.filter(complete_flag=1,deletion_flag=0)
+    if team:
+        qs = qs.filter(project_id=team)  # プロジェクト名でフィルタリング
+
+    ctx["team_detail"] = qs
+    return render(request, template_name, ctx)
+
+
