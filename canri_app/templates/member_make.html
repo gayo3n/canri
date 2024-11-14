@@ -1,5 +1,11 @@
 {% extends 'base2.html' %}
 
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/member_make.css' %}">
+{% endblock %}
+
 {% block content %}
 <form class="center" method="post">
 
@@ -86,7 +92,6 @@
             {% endfor %}
         </select>
     </div>
-
-    <a href="{% url 'canri_app:member_make_delete' %}">削除</a>
-    <a href="{% url 'canri_app:member_make_complete' %}">保存</a>
+    <a href="{% url 'canri_app:member_make_delete' %}" class="btn delete">削除</a>
+    <a href="{% url 'canri_app:member_make_complete' %}" class="btn save">保存</a>
 {% endblock %}
