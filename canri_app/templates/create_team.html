@@ -1,12 +1,22 @@
+{% extends 'base2.html' %}
+
+{% load custom_filters %} <!-- カスタムフィルターをロード -->
+
 {% block content %}
 <div class="main-content">
     <h1>新規チーム作成</h1>
-    <form method="post" action="{% url 'canri_app:create_team' %}">
+    <form method="post" action="{% url 'canri_app:create_team2' %}">
         {% csrf_token %}
+        
+        <input type="hidden" name="project_name" value="{{ project_name }}">
+        <input type="hidden" name="project_description" value="{{ project_description }}">
+        <input type="hidden" name="start_date" value="{{ start_date }}">
+        <input type="hidden" name="end_date" value="{{ end_date }}">
+        <input type="hidden" name="teams" value="{{ teams }}">
         
         <label for="team_size">チームの人数</label>
         <select name="team_size" id="team_size" required>
-            {% for i in 1|range:31 %}
+            {% for i in 1|range_filter:31 %}
             <option value="{{ i }}">{{ i }}人</option>
             {% endfor %}
         </select>
