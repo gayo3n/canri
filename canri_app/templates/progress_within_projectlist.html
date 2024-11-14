@@ -89,7 +89,9 @@
 <div class="project-table">
     {% for project in project_list %}
     <div class="project-row">
-        <div class="project-name">{{ project.project_name }}</div>
+        <div class="project-name">
+            <a href="{% url 'canri_app:project_detail' project.project_id %}">{{ project.project_name }}</a>
+        </div>
         <div class="project-period">プロジェクト開始日：<br>{{ project.project_start_date|date:"Y年m月d日" }}</div>
         <div class="project-details">プロジェクト詳細：<br>{{ project.project_detail }}</div>
         <button class="action-button">保存して終了</button>
