@@ -310,7 +310,7 @@ def team_detail_view(request, team_id):
     qs = Project.objects.all()
     qs=qs.filter(complete_flag=1,deletion_flag=0)
     if team:
-        qs = qs.filter(project_id=team)  # プロジェクト名でフィルタリング
+        qs = qs.filter(project_id=team)
 
     ctx["team_detail"] = qs
     return render(request, template_name, ctx)
