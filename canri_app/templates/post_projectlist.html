@@ -79,8 +79,8 @@
 {% block content %}
 <!-- 検索バー -->
 <div class="search-container">
-    <form method="GET" action="{% url 'canri_app:project' %}">
-        <input type="text" name="q" class="search-input" placeholder="キーワードを入力" value="{{ request.GET.q }}">
+    <form method="GET" action="{% url 'canri_app:post_project' %}">
+        <input type="text" name="p" class="search-input" placeholder="キーワードを入力" value="{{ request.GET.q }}">
         <button type="submit" class="search-button">検索</button>
     </form>
 </div>

@@ -122,6 +122,7 @@ class ManagementAccountView(TemplateView):
     template_name = "management_account.html"
 
 
+#新規プロジェクト作成
 class NewProjectView(TemplateView):
     template_name = "new_project.html"
 
@@ -142,17 +143,103 @@ class NewProjectEditView(TemplateView):
             'end_date': end_date
         }
 
+        # 空のチームリストを追加
+        teams = []
+
         # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
-        return render(request, self.template_name, {'project': project_data})
+        return render(request, self.template_name, {'project': project_data, 'teams': teams})
 
 class CreateTeamView(TemplateView):
     template_name = "create_team.html"
+
+    def post(self, request, *args, **kwargs):
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        teams = request.POST.get('teams')
+
+        # 入力された情報を保持した状態でcreate_team.htmlに遷移
+        return render(request, self.template_name, {
+            'project_name': project_name,
+            'project_description': project_description,
+            'start_date': start_date,
+            'end_date': end_date,
+            'teams': teams
+        })
+
+class CreateTeam2View(TemplateView):
+    template_name = "create_team2.html"
+
+    def post(self, request, *args, **kwargs):
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        teams = request.POST.getlist('teams')
+        team_size = request.POST.get('team_size')
+        team_type = request.POST.get('team_type')
+        auto_generate = request.POST.get('auto_generate')
+        member_lists = MemberList.objects.all()
+            
+        if auto_generate:
+            # 入力された情報を保持した状態でcreate_team2.htmlに遷移
+            return render(request, self.template_name, {
+                'project_name': project_name,
+                'project_description': project_description,
+                'start_date': start_date,
+                'end_date': end_date,
+                'teams': teams,
+                'team_size': team_size,
+                'team_type': team_type,
+                'auto_generate': auto_generate,
+                'member_lists': member_lists
+            })
+        else:
+            # 入力された情報を保持した状態でcreate_team3.htmlに遷移
+            return render(request, 'create_team3.html', {
+                'project_name': project_name,
+                'project_description': project_description,
+                'start_date': start_date,
+                'end_date': end_date,
+                'teams': teams,
+                'team_type': team_type,
+                'member_lists': member_lists
+            })
+
+class CreateTeam3View(TemplateView):
+    template_name = "create_team3.html"
+
+class SaveNewProjectView(TemplateView):
+    template_name = "save_new_project.html"
+
+    def post(self, request, *args, **kwargs):
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        teams = request.POST.get('teams')
+
+        # プロジェクトを保存するロジックをここに追加
+
+        # 入力された情報を保持した状態でsave_new_project.htmlに遷移
+        return render(request, self.template_name, {
+            'project_name': project_name,
+            'project_description': project_description,
+            'start_date': start_date,
+            'end_date': end_date,
+            'teams': teams
+        })
+
+#プロジェクトリスト
 class ProjectlistView(TemplateView):
     template_name="projectlist.html"
+class progress_within_ProjectlistView(TemplateView):
+    template_name="progress_within_projectlist.html"
 
 
 def projectListView(request):
-    template_name = "projectlist.html"
+    template_name = "progress_within_projectlist.html"
     ctx = {}
     query = request.GET.get('q')
     qs = Project.objects.all()
@@ -162,3 +249,50 @@ def projectListView(request):
 
     ctx["project_list"] = qs
     return render(request, template_name, ctx)
+
+
+
+class post_ProjectlistView(TemplateView):
+    template_name="post_projectlist.html"
+
+
+def Post_projectListView(request):
+    template_name = "post_projectlist.html"
+    ctx = {}
+    query = request.GET.get('p')
+    qs = Project.objects.all()
+    qs=qs.filter(complete_flag=1,deletion_flag=0)
+    if query:
+        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+
+    ctx["project_list"] = qs
+    return render(request, template_name, ctx)
+
+
+
+
+
+class Project_detailView(TemplateView):
+    template_name="project_detail.html"
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import Project, ProjectAffiliationTeam, ProjectProgressStatus
+
+def project_detail_view(request, project_id):
+    # プロジェクトを取得
+    project = get_object_or_404(Project, project_id=project_id)
+
+    # プロジェクトに関連するチームを取得
+    teams = ProjectAffiliationTeam.objects.filter(project=project).select_related('team')
+
+    # プロジェクトに関連するフェーズを取得
+    phases = ProjectProgressStatus.objects.filter(project=project)
+
+    context = {
+        'project': project,
+        'teams': teams,
+        'phases': phases,
+    }
+
+    return render(request, 'project_detail.html', context)

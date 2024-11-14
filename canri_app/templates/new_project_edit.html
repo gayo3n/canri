@@ -1,0 +1,48 @@
+{% extends 'base2.html' %}
+
+{% load custom_filters %} <!-- カスタムフィルターをロード -->
+
+{% block content %}
+<div class="main-content">
+    <h1>新規プロジェクト作成</h1>
+    <p>プロジェクト名: {{ project.project_name }}</p>
+    <p>プロジェクトの詳細: {{ project.project_description }}</p>
+    <p>開始日: {{ project.start_date }}</p>
+    <p>完了予定日: {{ project.end_date }}</p>
+
+    <h2>参加チーム一覧</h2>
+    <ul>
+        {% if teams %}
+            {% for team in teams %}
+                {% if team %}
+                    <li class="team-box">{{ team.team_name }}</li>
+                {% else %}
+                    <li>チームが存在しません</li>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <li>チームが存在しません</li>
+        {% endif %}
+    </ul>
+
+    <form method="post" action="{% url 'canri_app:create_team' %}">
+        {% csrf_token %}
+        <input type="hidden" name="project_name" value="{{ project.project_name }}">
+        <input type="hidden" name="project_description" value="{{ project.project_description }}">
+        <input type="hidden" name="start_date" value="{{ project.start_date }}">
+        <input type="hidden" name="end_date" value="{{ project.end_date }}">
+        <input type="hidden" name="teams" value="{{ teams }}">
+        <input type="submit" value="チームを新規で作成">
+    </form>
+
+    <form method="post" action="{% url 'canri_app:save_new_project' %}">
+        {% csrf_token %}
+        <input type="hidden" name="project_name" value="{{ project.project_name }}">
+        <input type="hidden" name="project_description" value="{{ project.project_description }}">
+        <input type="hidden" name="start_date" value="{{ project.start_date }}">
+        <input type="hidden" name="end_date" value="{{ project.end_date }}">
+        <input type="hidden" name="teams" value="{{ teams }}">
+        <input type="submit" value="プロジェクトを保存">
+    </form>
+</div>
+{% endblock %}

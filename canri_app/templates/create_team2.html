@@ -1,0 +1,35 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<div class="main-content">
+    <h1>新規チーム作成</h1>
+    
+    <form method="post" action="{% url 'canri_app:create_team3' %}">
+        {% csrf_token %}
+        
+        <input type="hidden" name="project_name" value="{{ project_name }}">
+        <input type="hidden" name="project_description" value="{{ project_description }}">
+        <input type="hidden" name="start_date" value="{{ start_date }}">
+        <input type="hidden" name="end_date" value="{{ end_date }}">
+        <input type="hidden" name="teams" value="{{ teams }}">
+        
+        <label for="member_list">メンバーリストを選択</label>
+        <select name="member_list" id="member_list" required>
+            {% for member_list in member_lists %}
+                <option value="{{ member_list.member_list_id }}">{{ member_list.job_title }}</option>
+            {% endfor %}
+        </select>
+        
+        <input type="submit" value="メンバーを表示">
+    </form>
+
+    {% if members %}
+        <h2>メンバー一覧</h2>
+        <ul>
+            {% for member in members %}
+                <li>{{ member.name }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}
