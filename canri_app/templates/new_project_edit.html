@@ -13,14 +13,12 @@
     <h2>参加チーム一覧</h2>
     <ul>
         {% if teams %}
-            {% for team_id in teams %}
-                {% with team=team_id|get_team_data %}
-                    {% if team %}
-                        <li class="team-box">{{ team.team_name }}</li>
-                    {% else %}
-                        <li>チームが存在しません</li>
-                    {% endif %}
-                {% endwith %}
+            {% for team in teams %}
+                {% if team %}
+                    <li class="team-box">{{ team.team_name }}</li>
+                {% else %}
+                    <li>チームが存在しません</li>
+                {% endif %}
             {% endfor %}
         {% else %}
             <li>チームが存在しません</li>
