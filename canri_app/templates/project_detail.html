@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+a{% extends "base.html" %}
 
 {% block head %}
 <style>
@@ -100,7 +100,7 @@
     <div class="teams-grid">
         {% for affiliation in teams %}
             <div class="team-card">
-                <h4>{{ affiliation.team.team_name }}</h4>
+                <a href="{% url 'canri_app:' team.team_id %}">{{ affiliation.team.team_name }}</a>
             </div>
         {% endfor %}
     </div>
