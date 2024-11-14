@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}<link rel="stylesheet" href="{% static 'css/completed_project_not' %}">{% endblock %}
+{% block content %}
+
+
+<form action="" method="get">
+    <input type="search" name="search" placeholder="キーワードを入力">
+    <input type="submit" name="submit" value="検索">
+   </form>
+   <div class="completed_project_not">
+    <h2>完了済みのプロジェクトが存在しません</h2>
+    </div>
+    
+
+
+
+{% endblock %}

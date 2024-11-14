@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}<link rel="stylesheet" href="{% static 'css/past_project_list' %}">{% endblock %}
+{% block content %}
+
+
+<form action="" method="get">
+    <input type="search" name="search" placeholder="キーワードを入力" required>
+    <input type="submit" name="submit" value="検索">
+    </form>
+    <div class="project-list">
+        <div class="project-A">
+            <div>プロジェクトA</div>
+            <label>プロジェクト開始日:</label>
+            <a>----/--/--</a>
+            <label>完了日:</label> 
+            <a>----/--/--</a>
+            <a>詳細: -----------------------------</a>
+            <button>削除</button>
+        </div>
+
+        <div class="project-B">
+            <div>プロジェクトB</div>
+            <label>プロジェクト開始日:</label>
+            <a>----/--/--</a>
+            <label>完了日:</label> 
+            <a>----/--/--</a>
+            <a>詳細: -----------------------------</a>
+            <button>削除</button>
+        </div>
+
+        <div class="project-C">
+            <div>プロジェクトC</div>
+            <label>プロジェクト開始日:</label>
+            <a>----/--/--</a>
+            <label>完了日:</label> 
+            <a>----/--/--</a>
+            <a>詳細: -----------------------------</a>
+            <button>削除</button>
+        </div>
+
+    </div>
+
+{% endblock %}
+
