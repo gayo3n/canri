@@ -13,6 +13,7 @@ from django.http import HttpResponseBadRequest, HttpResponseNotFound
 
 
 
+# -----システムメニュー-----
 class IndexView(TemplateView):
     template_name = "index.html"
 
@@ -29,6 +30,7 @@ class IndexView(TemplateView):
             return redirect('accounts:login/')
 
 
+# -----メンバーリスト一覧-----
 class MemberListView(TemplateView):
     template_name = "memberlist.html"
 
@@ -37,61 +39,58 @@ class NewProjectView(TemplateView):
 
 
 
-
+# -----メンバーリスト作成-----
 class MemberListMakeView(TemplateView):
     template_name = "memberList_make.html"
     
     memberID_list = []
-    
+
     def get(self, request, *args, **kwargs):
-        form = SearchForm(request.GET) 
-        # 初期状態で全メンバーを取得
+        form = SearchForm(request.GET)
         members = Member.objects.all()
 
         context = {
             'form': form,
-            'members': members
+            'members': members,
+            'memberID_list': self.memberID_list
         }
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        # 初期状態で全メンバーを取得
         members = Member.objects.all()
-        
+
         # 検索処理
         search_query = request.POST.get('query', '')
         if search_query:
             members = members.filter(name__icontains=search_query)
         
-        # リクエストから 'member_id' を取得
+        # member_id をリクエストから取得
         member_id = request.POST.get('member_id')
-        memberID_list = request.POST.getlist('memberID_list')
-        member_name = None  # 初期化しておく
 
-        if member_id:
-            #  member_id でメンバーを検索
-                member = Member.objects.get(id=member_id)
-                member_name = member.name
-                print(f"Member Name: {member_name}")
-                
-        if member_id is not None:
-            memberID_list.append(member_id)  # リストに 'member_id' を追加
-
+        if member_id and member_id.isdigit():  # 数値チェック
+            try:
+                member = Member.objects.get(member_id=int(member_id))
+                if member_id not in self.memberID_list:
+                    self.memberID_list.append(member_id)
+            except Member.DoesNotExist:
+                member = None
+        else:
+            member = None
         
-        # データをテンプレートに渡す
         context = {
             'members': members,
-            'memberID_list': memberID_list,
-            'member_name' : member_name
+            'memberID_list': self.memberID_list,
+            'member': member
         }
         return render(request, self.template_name, context)
+
 
 
 
 class MemberListMakeCompleteView(TemplateView):
     template_name = "memberList_make_complete.html"
 
-
+# メンバー作成
 class MemberMakeView(TemplateView):
     template_name = "member_make.html"
     def get(self, request, *args, **kwargs):
