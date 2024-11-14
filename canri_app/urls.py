@@ -1,6 +1,6 @@
 # urls.py
 from django.urls import path
-from . import views, api
+from . import views
 from .views import projectListView,Post_projectListView
 app_name = 'canri_app'
 
@@ -19,7 +19,7 @@ urlpatterns = [
     path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
 
     
-    # path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
+    path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
     
     #新規プロジェクト作成
@@ -35,12 +35,4 @@ urlpatterns = [
     path('post_projectlist/', views.progress_within_ProjectlistView.as_view(), name='post_projectlist'),
     path('project/', projectListView, name='project'),
     path('post_project/', Post_projectListView, name='post_project'),
-
-    # API関係
-    path('get_member_data/<int:member_id>/', api.get_member_data, name='get_member_data'),#メンバー情報取得
-    path('get_members/<int:member_list_id>/', api.get_members_by_member_list, name='get_members_by_member_list'),#メンバーリスト取得
-    path('create_team/', api.create_team_api, name='create_team'),#チーム作成
-    path('get_teams_by_project/<int:project_id>', api.get_teams_by_project, name='get_teams_by_project'),#プロジェクトチーム取得
-    path('get_team_members/<int:team_id>', api.get_team_members, name='get_team_members'),#チームメンバー取得
-    path('get_team_data/<int:team_id>/', api.get_team_data, name='get_team_data'),  # 作成中のチーム情報取得
 ]
