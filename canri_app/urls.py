@@ -30,7 +30,7 @@ urlpatterns = [
     path('create_team3/', views.CreateTeam3View.as_view(), name='create_team3'),
     path('save_new_project/', views.SaveNewProjectView.as_view(), name='save_new_project'),
 
-
+    
     path('progress_within_projectlist/', views.progress_within_ProjectlistView.as_view(), name='projectlist'),
     path('post_projectlist/', views.progress_within_ProjectlistView.as_view(), name='post_projectlist'),
     path('project/', projectListView, name='project'),

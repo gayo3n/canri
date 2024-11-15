@@ -260,4 +260,4 @@ def Post_projectListView(request):
     if query:
         qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
 
-    ctx["project_list"] = qsequest, self.template_name, {'members': members})
+    ctx["project_list"] = qsequest, self.template_name, {'members': members}
