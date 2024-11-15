@@ -32,51 +32,60 @@ class IndexView(TemplateView):
 class MemberListView(TemplateView):
     template_name = "memberlist.html"
 
+class NewProjectView(TemplateView):
+    template_name = "create_new_project.html"
+
+
+
+
 class MemberListMakeView(TemplateView):
     template_name = "memberList_make.html"
+    
+    memberID_list = []
+    
     def get(self, request, *args, **kwargs):
         form = SearchForm(request.GET) 
-        return render(request, self.template_name, {'form': form})
-    
-    def get(self, request, *args, **kwargs):
-        members = Member.objects.all()  # 初期状態で全メンバーを取得
+        # 初期状態で全メンバーを取得
+        members = Member.objects.all()
 
-        # 検索処理
-        search_query = request.GET.get('query', '')  # 'query' というキーで取得
-
-        if (search_query):
-            members = members.filter(name__icontains=search_query)
-
-        return render(request, self.template_name, {'members': members})
-
-    
-
-
-class MemberListAddView(TemplateView):
-    template_name = "memberList_make.html"
-    memberList = MemberList.objects.all()
+        context = {
+            'form': form,
+            'members': members
+        }
+        return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
+        # 初期状態で全メンバーを取得
+        members = Member.objects.all()
+        
+        # 検索処理
+        search_query = request.POST.get('query', '')
+        if search_query:
+            members = members.filter(name__icontains=search_query)
+        
         # リクエストから 'member_id' を取得
         member_id = request.POST.get('member_id')
-        memberID_list = []
+        memberID_list = request.POST.getlist('memberID_list')
+        member_name = None  # 初期化しておく
 
-        # member_id が数値であることを確認
+        if member_id:
+            #  member_id でメンバーを検索
+                member = Member.objects.get(id=member_id)
+                member_name = member.name
+                print(f"Member Name: {member_name}")
+                
         if member_id is not None:
-            try:
-                memberID_list = member_id
-                return memberID_list
-            except ValueError:
-                # 数値に変換できなかった場合のエラーハンドリング
-                return HttpResponseBadRequest("member IDを取得できませんでした。")
-            
-        return render(request, self.template_name, {"memberID_list": memberID_list})
+            memberID_list.append(member_id)  # リストに 'member_id' を追加
 
-        # # 取得したIDを使用して MemberList オブジェクトを取得
-        # try:
-        #     member_list = MemberList.objects.get(member_list_id=member_id)
-        # except MemberList.DoesNotExist:
-        #     return HttpResponseNotFound("Memberが見つかりません。")
+        
+        # データをテンプレートに渡す
+        context = {
+            'members': members,
+            'memberID_list': memberID_list,
+            'member_name' : member_name
+        }
+        return render(request, self.template_name, context)
+
 
 
 class MemberListMakeCompleteView(TemplateView):
