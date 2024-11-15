@@ -5,7 +5,7 @@ from django.views.generic import CreateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from .models import *
-from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Project,CareerInformation,MBTI,Credentials
+from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Project,CareerInformation,MBTI,Credentials,Category
 from django.utils import timezone
 import json
 from .forms import SearchForm
@@ -186,8 +186,7 @@ class CreateTeam2View(TemplateView):
         team_size = request.POST.get('team_size')
         team_type = request.POST.get('team_type')
         auto_generate = request.POST.get('auto_generate')
-        member_lists = MemberList.objects.all()
-            
+        categories = Category.objects.filter(deletion_flag=False)
         if auto_generate:
             # 入力された情報を保持した状態でcreate_team2.htmlに遷移
             return render(request, self.template_name, {
@@ -199,7 +198,7 @@ class CreateTeam2View(TemplateView):
                 'team_size': team_size,
                 'team_type': team_type,
                 'auto_generate': auto_generate,
-                'member_lists': member_lists
+                'categories': categories,
             })
         else:
             # 入力された情報を保持した状態でcreate_team3.htmlに遷移
@@ -210,7 +209,7 @@ class CreateTeam2View(TemplateView):
                 'end_date': end_date,
                 'teams': teams,
                 'team_type': team_type,
-                'member_lists': member_lists
+                'categories': categories,
             })
 
 class CreateTeam3View(TemplateView):
@@ -302,3 +301,23 @@ def project_detail_view(request, project_id):
     }
 
     return render(request, 'project_detail.html', context)
+
+
+
+class team_detailView(TemplateView):
+    template_name="team_detail.html"
+
+
+def team_detail_view(request, team_id):
+    template_name = "post_projectlist.html"
+    ctx = {}
+    team = get_object_or_404(Project, team_id=team_id)
+    qs = Project.objects.all()
+    qs=qs.filter(complete_flag=1,deletion_flag=0)
+    if team:
+        qs = qs.filter(project_id=team)
+
+    ctx["team_detail"] = qs
+    return render(request, template_name, ctx)
+
+
