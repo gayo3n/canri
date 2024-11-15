@@ -3,7 +3,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic import CreateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Team, ProjectAffiliationTeam, TeamMember
+from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Team, ProjectAffiliationTeam, TeamMember, Category
 import json
 
 #API関係
@@ -47,29 +47,28 @@ def get_member_data(request, member_id):
         # メンバー情報に資格情報を追加
         member_data['qualifications'] = qualifications_data
 
-        return render(request, 'template_name.html', {'member_data': member_data})
+        return JsonResponse({'member_data': member_data})
     
     except Member.DoesNotExist:
-        return render(request, 'template_name.html', {'error': 'error'})
+        return JsonResponse({'error': 'Member not found'}, status=404)
     except Exception as e:
-        return render(request, 'template_name.html', {'error': 'error'})
+        return JsonResponse({'error': str(e)}, status=500)
 
 # メンバーリストに対応したメンバー情報を取得するAPI
 @require_http_methods(["GET"])
-def get_members_by_member_list(request, member_list_id):
+def get_members_by_member_list(request, category_id):
     try:
-        # 指定された member_list_id に一致する MemberList を取得
-        member_list = MemberList.objects.get(member_list_id=member_list_id)
-        # MemberList の members フィールドを通じて関連するメンバー情報を取得
-        members = member_list.member.all().values()
-        
+        # 指定された category_id に一致する MemberList を取得
+        member_lists = MemberList.objects.filter(category=category_id, deletion_flag=False)
+        members = Member.objects.filter(memberlist__in=member_lists, deletion_flag=False).distinct()
+
         # メンバー情報を辞書形式で返す
-        return render(request, 'template_name.html', {'members': list(members)})
+        return JsonResponse({'members': list(members.values())})
     
     except MemberList.DoesNotExist:
-        return render(request, 'template_name.html', {'error': 'error404'})
+        return JsonResponse({'error': 'MemberList not found'}, status=404)
     except Exception as e:
-        return render(request, 'template_name.html', {'error': 'error500'})
+        return JsonResponse({'error': str(e)}, status=500)
 
 #チームを作成するAPI
 @require_http_methods(["POST"])
@@ -83,22 +82,22 @@ def create_team_api(request):
 
         # team_type, members, team_size のバリデーションチェック
         if not team_type or not isinstance(members, list) or not team_size:
-            return render(request, 'template_name.html', {"error": "無効なデータです"}, status=400)
+            return JsonResponse({"error": "無効なデータです"}, status=400)
 
         # チーム作成ロジックを呼び出し
         team = create_team(team_type, members, team_size)
         
         # チーム作成に失敗した場合のエラーハンドリング
         if isinstance(team, dict) and "error" in team:
-            return render(request, 'template_name.html', team, status=400)
+            return JsonResponse(team, status=400)
         
         # 作成されたチームを辞書形式として返す
-        return render(request, 'template_name.html', {'team': team})
+        return JsonResponse({'team': team})
 
     except json.JSONDecodeError:
-        return render(request, 'template_name.html', {'error': 'error400'})
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
     except Exception as e:
-        return render(request, 'template_name.html', {'error': 'error500'})
+        return JsonResponse({'error': str(e)}, status=500)
 
 # チーム作成ロジック
 # team_type = チームを作成する際の目的 | members = 作成に使用するメンバーのリスト | team_size = 作成するチームの人数 
@@ -186,12 +185,12 @@ def get_teams_by_project(request, project_id):
             })
 
         # 辞書形式でチーム情報を返す
-        return render(request, 'template_name.html', {'teams': team_data})
+        return JsonResponse({'teams': team_data})
 
     except ProjectAffiliationTeam.DoesNotExist:
-        return render(request, 'template_name.html', {'error': 'error404'})
+        return JsonResponse({'error': 'ProjectAffiliationTeam not found'}, status=404)
     except Exception as e:
-        return render(request, 'template_name.html', {'error': 'error500'})
+        return JsonResponse({'error': str(e)}, status=500)
 
 #チームに所属するメンバーを取得するAPI
 @require_http_methods(["GET"])
@@ -221,9 +220,35 @@ def get_team_members(request, team_id):
             })
 
         # 辞書形式でメンバー情報を返す
-        return render(request, 'template_name.html', {'members': member_data})
+        return JsonResponse({'members': member_data})
 
     except TeamMember.DoesNotExist:
-        return render(request, 'template_name.html', {'error': 'error404'})
+        return JsonResponse({'error': 'TeamMember not found'}, status=404)
     except Exception as e:
-        return render(request, 'template_name.html', {'error': 'error500'})
+        return JsonResponse({'error': str(e)}, status=500)
+
+# チーム情報を取得するAPI
+@require_http_methods(["GET"])
+def get_team_data(request, team_id):
+    try:
+        # 指定された team_id に一致するチーム情報を取得
+        team = Team.objects.get(team_id=team_id)
+        
+        # チーム情報を辞書として返す
+        team_data = {
+            'team_id': team.team_id,
+            'team_name': team.team_name,
+            'count': team.count,
+            'objective': team.objective,
+            'memo': team.memo,
+            'creation_date': team.creation_date,
+            'update_date': team.update_date,
+            'deletion_date': team.deletion_date,
+        }
+
+        return JsonResponse({'team': team_data})
+    
+    except Team.DoesNotExist:
+        return JsonResponse({'error': 'Team not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

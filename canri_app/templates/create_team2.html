@@ -1,0 +1,50 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<div class="main-content">
+    <h1>新規チーム作成</h1>
+    
+    <form id="categoryForm" method="get" action="{% url 'canri_app:get_members_by_member_list' category_id=0 %}">
+        {% csrf_token %}
+        
+        <input type="hidden" name="project_name" value="{{ project_name }}">
+        <input type="hidden" name="project_description" value="{{ project_description }}">
+        <input type="hidden" name="start_date" value="{{ start_date }}">
+        <input type="hidden" name="end_date" value="{{ end_date }}">
+        <input type="hidden" name="teams" value="{{ teams }}">
+        
+        <label for="category">カテゴリーを選択</label>
+        <select name="category_id" id="category" required>
+            <option value="null" selected>選択してください</option>
+            {% for category in categories %}
+                <option value="{{ category.category_id }}">{{ category.category_name }}</option>
+            {% endfor %}
+        </select>
+        
+        <input type="submit" value="メンバーを表示">
+    </form>
+
+    {% if members %}
+        <h2>メンバー一覧</h2>
+        <ul>
+            {% for member in members %}
+                <li>{{ member.name }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+
+<script>
+    document.getElementById('categoryForm').addEventListener('submit', function(event) {
+        var categorySelect = document.getElementById('category');
+        if (categorySelect.value === "null") {
+            event.preventDefault();
+            alert("カテゴリーを選択してください。");
+        } else {
+            // フォームのアクションURLにcategory_idを追加
+            var categoryId = categorySelect.value;
+            this.action = "{% url 'canri_app:get_members_by_member_list' category_id=0 %}".replace("0", categoryId);
+        }
+    });
+</script>
+{% endblock %}
