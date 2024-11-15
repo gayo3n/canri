@@ -20,6 +20,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=255)
 
+    is_active = models.BooleanField(default=True) #ログインしているかどうか
     is_staff = models.BooleanField(default=False)  # 管理者権限
     is_superuser = models.BooleanField(default=False)  # スーパーユーザー権限
 

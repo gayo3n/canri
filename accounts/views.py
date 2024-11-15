@@ -1,15 +1,15 @@
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import LogoutView, LoginView as AuthLoginView
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, get_user_model
 from django.urls import reverse
 from django.views import View, generic
-from django.contrib.auth.views import LoginView as AuthLoginView
 from django.views.generic.base import TemplateView
 from .forms import AccountAddForm, UserForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
+from django.http import HttpResponse
 
 
 User = get_user_model()
@@ -35,29 +35,32 @@ class LogoutCompView(TemplateView):
     def post(self, request, *args, **kwargs):
         return render(request, 'logout_complete.html')
 
-
-class Create(generic.CreateView):
-    template_name = 'account_creating.html'
-    form_class = UserForm
-
-    def form_valid(self, form):
-        user = form.save()
-        return super().form_valid(form)
-    
-    def get_success_url(self):
-        return reverse('account_created')  # URL名を正しく指定
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["process_name"] = "Login"
-        return context
-    
-class CreateComp(generic.TemplateView):
-    template_name = 'account_created.html'
-
+def create(request):
+    if request.method == 'GET':
+        form = AccountAddForm
+        context = {
+            'form':form
+        }
+        return render(request, 'account_create.html', context)
+    elif request.method == 'POST':
+        form = AccountAddForm(request.POST)
+        if form.is_valid():
+            get_user_model().objects.create_user(
+                user_id=form.cleaned_data['user_id'],
+                password=form.cleaned_data['password'],
+                name=form.cleaned_data['name']
+            )
+            return redirect('management_account/account_creating/account_create_complete/')
+        context = {
+            'form': form
+        }
+        return render(request, 'account_create.html', context)
+         
+def account_create_complete(request):
+    return render(request, 'account_create_complete.html')
 
 class ManagementAccountView(TemplateView):
-    template_name = "management_account.html"
+    template_name = "canri_app/templates/management_account.html"
 
 class AccountLogin(AuthLoginView):
     template_name = "login.html"
@@ -81,3 +84,7 @@ class AccountLogin(AuthLoginView):
         return render(request, 'login.html', {'form': form, 'error_message': error_message})
 
 account_login = AccountLogin.as_view()
+
+def user_list(request):
+    users = User.objects.all()
+    return render(request, 'management_account.html', {'users': users})
