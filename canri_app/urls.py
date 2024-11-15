@@ -23,8 +23,19 @@ urlpatterns = [
 
     
     # path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
+    # アカウント管理
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
-    
+    path('management_account/create/', views.AccountCreateView.as_view(), name='account_create'),
+    path('management_account/create/complete/', views.CreateCompleteView.as_view(), name='account_create_complete'),
+    path('management_account/change/', views.AccountChangeView.as_view(), name='account_change'),
+
+
+
+    # アイコン
+    path('change_employee/', views.AccountChangeEmployeeView.as_view(), name='account_change_employee'),
+
+
+
     #新規プロジェクト作成
     path('new_project/', views.NewProjectView.as_view(), name='new_project'),    
     path('new_project_edit/', views.NewProjectEditView.as_view(), name='new_project_edit'),
