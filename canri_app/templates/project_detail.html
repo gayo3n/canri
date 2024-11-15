@@ -1,0 +1,120 @@
+a{% extends "base.html" %}
+
+{% block head %}
+<style>
+    .container {
+        padding: 20px;
+        display: flex;
+    }
+
+    .teams-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        flex: 3;
+        padding-right: 20px;
+    }
+
+    .team-card {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        min-height: 150px;
+    }
+
+    .new-team-button {
+        margin-top: 20px;
+        color: #007bff;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+    }
+
+    .tasks-panel {
+        flex: 2;
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        border: 1px solid #ddd;
+    }
+
+    .task-list {
+        margin-top: 15px;
+    }
+
+    .task-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .task-item:last-child {
+        border-bottom: none;
+    }
+
+    .task-checkbox {
+        margin-right: 10px;
+    }
+
+    .task-name {
+        flex: 1;
+    }
+
+    .task-date {
+        color: #666;
+        margin-right: 10px;
+    }
+
+    .delete-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #666;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .action-button {
+        padding: 8px 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+
+
+{% block content %}
+<div class="container">
+    <h2>{{ project.project_name }}</h2>
+    <h3>関連チーム</h3>
+    <div class="teams-grid">
+        {% for affiliation in teams %}
+            <div class="team-card">
+                <a href="{% url 'canri_app:' team.team_id %}">{{ affiliation.team.team_name }}</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <h3>フェーズ情報</h3>
+    <div class="tasks-panel">
+        <div class="task-list">
+            {% for phase in phases %}
+                <div class="task-item">
+                    <span class="task-name">{{ phase.phase_name }}</span>
+                    <span class="task-date">{{ phase.expiration_date }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
