@@ -318,5 +318,5 @@ def team_detail_view(request, team_id):
     return render(request, template_name, ctx)
 
 
-        ctx["project_list"] = qsequest, self.template_name, {'members': members}
+        # ctx["project_list"] = qsequest, self.template_name, {'members': members}
     
