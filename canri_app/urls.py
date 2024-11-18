@@ -22,8 +22,8 @@ urlpatterns = [
     path('member_make/delete/complete/', views.MemberMakeDeleteOkView.as_view(), name='member_make_delete_complete'),
     path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
     path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
-
     
+
     # path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
     # アカウント管理
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
