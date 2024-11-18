@@ -122,35 +122,6 @@ class MemberListDeleteOkView(TemplateView):
 class MemberMakeDeleteOkView(TemplateView):
     template_name = "member_make_delete_complete.html"
 
-# アカウント管理
-class ManagementAccountView(TemplateView):
-    template_name = "management_account.html"
-
-class AccountCreateView(TemplateView):
-    template_name = "account_create.html"
-
-class CreateCompleteView(TemplateView):
-    template_name = "account_create_complete.html"
-
-class AccountChangeView(TemplateView):
-    template_name = "account_change.html"
-
-class AccountChangeCompleteView(TemplateView):
-    template_name = "account_change_complete.html"
-
-class AccountDeleteView(TemplateView):
-    template_name = "account_delete.html"
-
-class DeleteCompleteView(TemplateView):
-    template_name = "account_delete_complete.html"
-
-# アイコン
-class AccountChangeEmployeeView(TemplateView):
-    template_name = "account_change_employee.html"
-
-class AccountChangeEmployeeCompleteView(TemplateView):
-    template_name = "account_change_complete_employee.html"
-
 #新規プロジェクト作成
 class NewProjectView(TemplateView):
     template_name = "new_project.html"
