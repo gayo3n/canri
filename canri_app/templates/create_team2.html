@@ -1,19 +1,19 @@
 {% extends 'base2.html' %}
 
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/create_team2.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="main-content">
     <h1>新規チーム作成</h1>
     
-    <form id="categoryForm" method="get" action="{% url 'canri_app:get_members_by_member_list' category_id=0 %}">
+    <form id="categoryForm" class="form-inline">
         {% csrf_token %}
         
-        <input type="hidden" name="project_name" value="{{ project_name }}">
-        <input type="hidden" name="project_description" value="{{ project_description }}">
-        <input type="hidden" name="start_date" value="{{ start_date }}">
-        <input type="hidden" name="end_date" value="{{ end_date }}">
-        <input type="hidden" name="teams" value="{{ teams }}">
-        
-        <label for="category">カテゴリーを選択</label>
+        <label for="category">メンバーリストを選択</label>
         <select name="category_id" id="category" required>
             <option value="null" selected>選択してください</option>
             {% for category in categories %}
@@ -21,30 +21,111 @@
             {% endfor %}
         </select>
         
-        <input type="submit" value="メンバーを表示">
+        <button type="button" class="action-button" onclick="fetchMembers()">メンバーを表示</button>
     </form>
 
-    {% if members %}
-        <h2>メンバー一覧</h2>
-        <ul>
-            {% for member in members %}
-                <li>{{ member.name }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+    <div id="memberList">
+        <div class="member-list-header">
+            <h2>メンバー一覧</h2>
+            <button type="button" class="action-button" onclick="selectAllMembers()">全選択</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 10%;">選択</th>
+                    <th style="width: 30%;">名前</th>
+                    <th style="width: 30%;">生年月日</th>
+                    <th style="width: 30%;">役職</th>
+                </tr>
+            </thead>
+            <tbody id="memberTableBody">
+                <!-- メンバー情報がここに表示される -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="button-container">
+        <form method="post" action="{% url 'canri_app:create_team' %}">
+            {% csrf_token %}
+            <input type="hidden" name="project_name" value="{{ project_name }}">
+            <input type="hidden" name="project_description" value="{{ project_description }}">
+            <input type="hidden" name="start_date" value="{{ start_date }}">
+            <input type="hidden" name="end_date" value="{{ end_date }}">
+            <input type="hidden" name="teams" value="{{ teams }}">
+            <button type="submit" class="action-button">戻る</button>
+        </form>
+
+        <form id="nextForm" method="post" action="{% url 'canri_app:create_team3' %}">
+            {% csrf_token %}
+            <input type="hidden" name="project_name" value="{{ project_name }}">
+            <input type="hidden" name="project_description" value="{{ project_description }}">
+            <input type="hidden" name="start_date" value="{{ start_date }}">
+            <input type="hidden" name="end_date" value="{{ end_date }}">
+            <input type="hidden" name="teams" value="{{ teams }}">
+            <input type="hidden" name="team_size" value="{{ team_size }}">
+            <input type="hidden" name="team_type" value="{{ team_type }}">
+            <input type="hidden" name="selected_members" id="selected_members">
+            <button type="button" class="next-button action-button" onclick="submitNextForm()">次へ</button>
+        </form>
+    </div>
 </div>
 
 <script>
-    document.getElementById('categoryForm').addEventListener('submit', function(event) {
+    // カテゴリが選択されているかチェックし、メンバーを取得する
+    function fetchMembers() {
         var categorySelect = document.getElementById('category');
         if (categorySelect.value === "null") {
-            event.preventDefault();
             alert("カテゴリーを選択してください。");
-        } else {
-            // フォームのアクションURLにcategory_idを追加
-            var categoryId = categorySelect.value;
-            this.action = "{% url 'canri_app:get_members_by_member_list' category_id=0 %}".replace("0", categoryId);
+            return;
         }
-    });
+
+        var categoryId = categorySelect.value;
+        // API呼び出しでメンバー情報を取得
+        fetch(`{% url 'canri_app:get_members_by_member_list' category_id=0 %}`.replace("0", categoryId))
+            .then(response => response.json())
+            .then(data => {
+                // メンバーリストの表示をクリア
+                const memberTableBody = document.getElementById('memberTableBody');
+                memberTableBody.innerHTML = '';
+
+                // メンバー情報をテーブルに追加
+                data.members.forEach(member => {
+                    const birthdate = member.birthdate.split('T')[0]; // T以降を削除
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="width: 10%;"><input type="checkbox" name="member" value="${member.member_id}"></td>
+                        <td style="width: 30%;">${member.name}</td>
+                        <td style="width: 30%;">${birthdate}</td>
+                        <td style="width: 30%;">${member.job_title}</td>
+                    `;
+                    memberTableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('データ取得エラー:', error));
+    }
+
+    // 全選択ボタンをクリックしたときに全てのメンバーを選択状態にする
+    function selectAllMembers() {
+        document.querySelectorAll('input[name="member"]').forEach(checkbox => {
+            checkbox.checked = true;
+        });
+    }
+
+    // 次へボタンをクリックしたときにフォームを送信
+    function submitNextForm() {
+        const selectedMembers = [];
+        document.querySelectorAll('input[name="member"]:checked').forEach(checkbox => {
+            selectedMembers.push(checkbox.value);
+        });
+
+        const teamSize = parseInt(document.querySelector('input[name="team_size"]').value);
+        if (selectedMembers.length < teamSize) {
+            alert(`選択されたメンバーがチームサイズ(${teamSize})以上である必要があります。`);
+            return;
+        }
+
+        document.getElementById('selected_members').value = JSON.stringify(selectedMembers);
+        document.getElementById('nextForm').submit();
+    }
 </script>
 {% endblock %}

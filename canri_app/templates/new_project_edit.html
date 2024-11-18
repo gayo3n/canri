@@ -2,6 +2,12 @@
 
 {% load custom_filters %} <!-- カスタムフィルターをロード -->
 
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/new_project_edit.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="main-content">
     <h1>新規プロジェクト作成</h1>
@@ -25,24 +31,26 @@
         {% endif %}
     </ul>
 
-    <form method="post" action="{% url 'canri_app:create_team' %}">
-        {% csrf_token %}
-        <input type="hidden" name="project_name" value="{{ project.project_name }}">
-        <input type="hidden" name="project_description" value="{{ project.project_description }}">
-        <input type="hidden" name="start_date" value="{{ project.start_date }}">
-        <input type="hidden" name="end_date" value="{{ project.end_date }}">
-        <input type="hidden" name="teams" value="{{ teams }}">
-        <input type="submit" value="チームを新規で作成">
-    </form>
+    <div class="button-container">
+        <form method="post" action="{% url 'canri_app:create_team' %}">
+            {% csrf_token %}
+            <input type="hidden" name="project_name" value="{{ project.project_name }}">
+            <input type="hidden" name="project_description" value="{{ project.project_description }}">
+            <input type="hidden" name="start_date" value="{{ project.start_date }}">
+            <input type="hidden" name="end_date" value="{{ project.end_date }}">
+            <input type="hidden" name="teams" value="{{ teams }}">
+            <button type="submit" class="action-button back-button">チームを新規で作成</button>
+        </form>
 
-    <form method="post" action="{% url 'canri_app:save_new_project' %}">
-        {% csrf_token %}
-        <input type="hidden" name="project_name" value="{{ project.project_name }}">
-        <input type="hidden" name="project_description" value="{{ project.project_description }}">
-        <input type="hidden" name="start_date" value="{{ project.start_date }}">
-        <input type="hidden" name="end_date" value="{{ project.end_date }}">
-        <input type="hidden" name="teams" value="{{ teams }}">
-        <input type="submit" value="プロジェクトを保存">
-    </form>
+        <form method="post" action="{% url 'canri_app:save_new_project' %}">
+            {% csrf_token %}
+            <input type="hidden" name="project_name" value="{{ project.project_name }}">
+            <input type="hidden" name="project_description" value="{{ project.project_description }}">
+            <input type="hidden" name="start_date" value="{{ project.start_date }}">
+            <input type="hidden" name="end_date" value="{{ project.end_date }}">
+            <input type="hidden" name="teams" value="{{ teams }}">
+            <button type="submit" class="action-button next-button">プロジェクトを保存</button>
+        </form>
+    </div>
 </div>
 {% endblock %}

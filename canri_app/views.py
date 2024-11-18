@@ -10,6 +10,7 @@ from django.utils import timezone
 import json
 from .forms import SearchForm
 from django.http import HttpResponseBadRequest, HttpResponseNotFound
+from .api import create_team_api
 
 
 
@@ -191,7 +192,6 @@ class CreateTeam2View(TemplateView):
                 'teams': teams,
                 'team_size': team_size,
                 'team_type': team_type,
-                'auto_generate': auto_generate,
                 'categories': categories,
             })
         else:
@@ -208,6 +208,56 @@ class CreateTeam2View(TemplateView):
 
 class CreateTeam3View(TemplateView):
     template_name = "create_team3.html"
+
+    def post(self, request, *args, **kwargs):
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        teams = request.POST.getlist('teams')
+        team_size = request.POST.get('team_size')
+        team_type = request.POST.get('team_type')
+        categories = Category.objects.filter(deletion_flag=False)
+        selected_members = json.loads(request.POST.get('selected_members'))
+
+        # チームを編成するためのデータを作成
+        data = {
+            'team_type': team_type,
+            'members': selected_members,
+            'team_size': team_size
+        }
+
+        # selected_members の情報をターミナルに表示
+        print("selected_members:", selected_members)
+
+        # create_team_api を呼び出してチームを編成
+        request._body = json.dumps(data).encode('utf-8')
+        response = create_team_api(request)
+        response_data = json.loads(response.content)
+
+        if response.status_code == 200:
+            team = response_data['team']
+            print("チームが作成されました:", team)  # メンバー情報をターミナルに表示
+        else:
+            team = None
+            print("チームの作成に失敗しました")  # エラーメッセージをターミナルに表示
+
+        # 入力された情報を保持した状態でcreate_team3.htmlに遷移
+        return render(request, self.template_name, {
+            'project_name': project_name,
+            'project_description': project_description,
+            'start_date': start_date,
+            'end_date': end_date,
+            'teams': teams,
+            'team_size': team_size,
+            'team_type': team_type,
+            'categories': categories,
+            'selected_members': selected_members,
+            'team': team
+        })
+    
+class SaveTeamView(TemplateView):
+    template_name = "new_project_edit.html"
 
 class SaveNewProjectView(TemplateView):
     template_name = "save_new_project.html"
