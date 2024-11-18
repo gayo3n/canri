@@ -124,8 +124,38 @@
             return;
         }
 
-        document.getElementById('selected_members').value = JSON.stringify(selectedMembers);
-        document.getElementById('nextForm').submit();
+        const teams = {{ teams|safe }};
+        if (teams.length === 0) {
+            document.getElementById('selected_members').value = JSON.stringify(selectedMembers);
+            document.getElementById('nextForm').submit();
+        } else {
+            const existingMemberIds = new Set();
+            let messageShown = false;
+            {% for team_id in teams %}
+                fetch(`{% url 'canri_app:get_team_members' team_id=0 %}`.replace("0", {{ team_id }}))
+                    .then(response => response.json())
+                    .then(data => {
+                        data.members.forEach(member => {
+                            existingMemberIds.add(member.member_id);
+                        });
+
+                        const filteredMembers = selectedMembers.filter(memberId => {
+                            if (existingMemberIds.has(parseInt(memberId))) {
+                                if (!messageShown) {
+                                    alert('既存のチームに所属しているメンバーはチーム作成に使用しません。');
+                                    messageShown = true;
+                                }
+                                return false;
+                            }
+                            return true;
+                        });
+
+                        document.getElementById('selected_members').value = JSON.stringify(filteredMembers);
+                        document.getElementById('nextForm').submit();
+                    })
+                    .catch(error => console.error('データ取得エラー:', error));
+            {% endfor %}
+        }
     }
 </script>
 {% endblock %}
