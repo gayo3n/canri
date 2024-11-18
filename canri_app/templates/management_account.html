@@ -10,12 +10,14 @@
 
 <!-- ユーザー情報のテーブル -->
 <table border="1">
-    <tr>
-        <th>名前</th>
-        <th>ユーザーID</th>
-        <th>削除</th> 
-    </tr>
-    <tr>
+    <thead>
+        <tr>
+            <th>名前</th>
+            <th>ID</th>
+            <th>削除</th>
+        </tr>
+    </thead>
+    <!-- <tr>
         <td name="user_name">大原太郎</td>
         <td id="OHARA0001">OHARA0001</td>
         <td>
@@ -42,7 +44,16 @@
         <td>
             <button type="button" class="btn btn-danger" data-user-id="OHARA0004">🗑️</button>
         </td>
-    </tr>
+    </tr> --> 
+    <tbody>
+        {% for user in user_list %}
+        <tr>
+            <td>{{ user.user_id }}</td>
+            <td>{{ user.password }}</td>
+            <td>{{ user.name }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 
 <div class="add-account-container">

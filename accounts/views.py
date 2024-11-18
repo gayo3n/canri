@@ -4,15 +4,16 @@ from django.contrib.auth import login, get_user_model
 from django.urls import reverse
 from django.views import View, generic
 from django.views.generic.base import TemplateView
-from .forms import AccountAddForm, UserForm
+from .forms import AccountAddForm, UserCreationForm, UserForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
 from django.http import HttpResponse
+from .models import User
 
 
-User = get_user_model()
+USer = get_user_model()
 
 class LoginView(TemplateView):
     form_class = UserForm
@@ -35,32 +36,36 @@ class LogoutCompView(TemplateView):
     def post(self, request, *args, **kwargs):
         return render(request, 'logout_complete.html')
 
-def create(request):
-    if request.method == 'GET':
-        form = AccountAddForm
-        context = {
-            'form':form
-        }
-        return render(request, 'account_create.html', context)
-    elif request.method == 'POST':
-        form = AccountAddForm(request.POST)
-        if form.is_valid():
-            get_user_model().objects.create_user(
-                user_id=form.cleaned_data['user_id'],
-                password=form.cleaned_data['password'],
-                name=form.cleaned_data['name']
-            )
-            return redirect('management_account/account_creating/account_create_complete/')
-        context = {
-            'form': form
-        }
-        return render(request, 'account_create.html', context)
-         
+# def create(request):
+#     if request.method == 'GET':
+#         form = AccountAddForm
+#         context = {
+#             'form':form
+#         }
+#         return render(request, 'account_create.html', context)
+#     elif request.method == 'POST':
+#         form = AccountAddForm(request.POST)
+#         if form.is_valid():
+#             get_user_model().objects.create_user(
+#                 user_id=form.cleaned_data['user_id'],
+#                 password=form.cleaned_data['password'],
+#                 name=form.cleaned_data['name']
+#             )
+#             return redirect('management_account/account_creating/account_create_complete/')
+#         context = {
+#             'form': form
+#         }
+#         return render(request, 'account_create.html', context)
+
+def manage_account(request):
+    template_name = 'management_account.html'
+    acc = {}
+    user = User.objects.all()
+    acc['object_list']
+
+
 def account_create_complete(request):
     return render(request, 'account_create_complete.html')
-
-class ManagementAccountView(TemplateView):
-    template_name = "canri_app/templates/management_account.html"
 
 class AccountLogin(AuthLoginView):
     template_name = "login.html"
@@ -85,6 +90,13 @@ class AccountLogin(AuthLoginView):
 
 account_login = AccountLogin.as_view()
 
-def user_list(request):
-    users = User.objects.all()
-    return render(request, 'management_account.html', {'users': users})
+def account_create(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            return redirect('account_create_complete')
+    else:
+        form = UserForm()
+
+    return render(request, "account_create.html")

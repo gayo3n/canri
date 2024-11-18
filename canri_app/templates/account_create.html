@@ -9,6 +9,7 @@
 <h2>アカウント作成</h2>
     <form action="account_create_complete/" method="post">
         {% csrf_token %}
+        {{ form.as_p }}
         <div>
             <input type="text" value="ユーザ名" id="username" name="name" required>
         </div>
@@ -20,7 +21,7 @@
         </div>
         <div>
             <td><button type="submit" class="btn btn-danger">作成</button></td>
-        </div>
+        </div> 
 
 {% endblock %}
 
