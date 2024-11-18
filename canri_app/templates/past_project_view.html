@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/past_project_view.css' %}">
+{% endblock %}
+{% block content %}
+
+<main class="main-content">
+    <section class="project-section">
+        <!--各プロジェクト名-->
+        <h2>{{ project.project_name }}</h2>
+        <div class="project-list">
+            <div class="project-card">
+                <h3 class="project-name">{{ project.project_name }}</h3>
+                <p>開始日: {{ project.creation_date|date:"Y年m月d日" }}</p>
+                <p>完了日: {{ project.complete_date|date:"Y年m月d日" }}</p>
+                <p>事後評価メモ: {{ project.post_evaluation_memo }}</p>
+                <button class="delete-button">削除</button>
+                <button class="action-button">保存</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- チームメンバー情報 -->
+    <section class="team-section">
+        <h3>チームメンバー情報</h3>
+        <div class="team-list">
+            {% for member in team_members %}
+            <div class="team-name">
+                <p><strong>メンバーID:</strong> {{ member.id }}</p>
+                <p><strong>名前:</strong> {{ member.name }}</p>
+                <p><strong>生年月日:</strong> {{ member.birthday }}</p>
+                <p><strong>役職:</strong> {{ member.role }}</p>
+                <p><strong>職歴:</strong> {{ member.work_experience }}</p>
+                <p><strong>資格:</strong> {{ member.qualification }}</p>
+                <p><strong>MBTI:</strong> {{ member.mbti }}</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+{% endblock %}
