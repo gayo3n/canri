@@ -77,15 +77,43 @@ def create_team_api(request):
         # リクエストボディからデータを取得
         data = json.loads(request.body)
         team_type = data.get('team_type')
-        members = data.get('members')
+        member_ids = data.get('members')
         team_size = data.get('team_size')
 
         # team_type, members, team_size のバリデーションチェック
-        if not team_type or not isinstance(members, list) or not team_size:
+        if not team_type or not isinstance(member_ids, list) or not team_size:
             return JsonResponse({"error": "無効なデータです"}, status=400)
+
+        # メンバーIDから各メンバーの情報を取得
+        members = []
+        for member_id in member_ids:
+            try:
+                member_id = int(member_id)  # member_id を整数に変換
+                member = Member.objects.get(member_id=member_id)
+                member_parameter = MemberParameter.objects.get(member=member)
+                members.append({
+                    'member_id': member.member_id,
+                    'name': member.name,
+                    'birthdate': member.birthdate,
+                    'planning_presentation_power': member_parameter.planning_presentation_power,
+                    'teamwork': member_parameter.teamwork,
+                    'time_management_ability': member_parameter.time_management_ability,
+                    'problem_solving_ability': member_parameter.problem_solving_ability,
+                    'speciality_height': member_parameter.speciality_height
+                })
+            except Member.DoesNotExist:
+                return JsonResponse({'error': f'Member with ID {member_id} not found'}, status=404)
+            except MemberParameter.DoesNotExist:
+                return JsonResponse({'error': f'MemberParameter for member ID {member_id} not found'}, status=404)
+
+        # メンバー情報をターミナルに表示
+        print("チーム作成前のメンバー情報:", members)
 
         # チーム作成ロジックを呼び出し
         team = create_team(team_type, members, team_size)
+        
+        # チーム作成後の情報をターミナルに表示
+        print("チーム作成後の情報:", team)
         
         # チーム作成に失敗した場合のエラーハンドリング
         if isinstance(team, dict) and "error" in team:
@@ -101,7 +129,7 @@ def create_team_api(request):
 
 # チーム作成ロジック
 # team_type = チームを作成する際の目的 | members = 作成に使用するメンバーのリスト | team_size = 作成するチームの人数 
-# イベント用チーム = event | 研修用チーム = training | プロジェクト開発用チーム = project | アイデア発想チーム = idea_generation 
+# イベント用チーム = event | 研修用チーム = training | プロ���ェクト開発用チーム = project | ��イデア発想チーム = idea_generation 
 def create_team(team_type, members, team_size):
     # フィードバック情報を無条件で取得（削除フラグが False のもの）
     feedback_data = Feedback.objects.filter(deletion_flag=False)

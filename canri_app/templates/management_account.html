@@ -1,8 +1,4 @@
 {% extends 'base2.html' %}
-
-{% comment %} 管理者のみ {% endcomment %}
-
-
 {% load static %}
 {% block head %}<link rel="stylesheet" href="{% static 'css/management_account.css' %}">{% endblock %}
 {% block content %}
@@ -10,18 +6,16 @@
 
 <!-- ユーザー情報のテーブル -->
 <table border="1">
-    <thead>
-        <tr>
-            <th>名前</th>
-            <th>ID</th>
-            <th>削除</th>
-        </tr>
-    </thead>
-    <!-- <tr>
-        <td name="user_name">大原太郎</td>
+    <tr>
+        <th>名前</th>
+        <th>ユーザーID</th>
+        <th>削除</th> 
+    </tr>
+    <tr>
+        <td name="user_name"><a href="{% url 'canri_app:account_change' %}" class="btn save">大原太郎</a></td>
         <td id="OHARA0001">OHARA0001</td>
         <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0001">🗑️</button>
+            <a href="{% url 'canri_app:account_delete' %}" class="btn btn-danger" data-user-id="OHARA0001">🗑️</a>
         </td>
     </tr>
     <tr>
@@ -44,7 +38,7 @@
         <td>
             <button type="button" class="btn btn-danger" data-user-id="OHARA0004">🗑️</button>
         </td>
-    </tr> --> 
+    </tr> 
     <tbody>
         {% for user in user_list %}
         <tr>
@@ -57,7 +51,7 @@
 </table>
 
 <div class="add-account-container">
-    <button type="button" class="btn btn-success add-account-btn" onclick="location.href='account_creating'">＋ </button>
+    <a href="{% url "canri_app:account_create" %}" class="delete-btn">＋ </a>
 </div>
 
 {% endblock %}

@@ -1,0 +1,102 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px; /* Adjust margin to control distance from bottom */
+}
+
+form {
+    width: 100%; /* Adjust width to fit the screen */
+    max-width: 1200px; /* Set a maximum width */
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+}
+
+/* Form Area Styling */
+.form-area, .form-area2, .form-area3 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+label {
+    width: 100px; /* Adjust label width */
+    font-size: 14px;
+    color: #333;
+}
+
+input[type="text"], input[type="date"], select {
+    flex: 1;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Specific Areas for Additional Styling */
+.form-area2, .form-area3 {
+    margin-left: 100px; /* Align with the labels of other inputs */
+}
+
+/* Button Styling */
+a.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px 5px 0 5px;
+    text-align: center;
+    font-size: 14px;
+    text-decoration: none;
+    color: #fff;
+    border-radius: 4px;
+}
+
+a.btn.delete {
+    background-color: #d9534f; /* Red color for delete */
+}
+
+a.btn.save {
+    background-color: #5cb85c; /* Green color for save */
+}
+
+/* Positioning of Close Button */
+.close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+}
+
+/* Header Navigation */
+nav {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+nav a {
+    margin: 0 15px;
+    font-size: 14px;
+    color: #333;
+    text-decoration: none;
+}
+
+nav a:hover {
+    color: #007bff; /* Blue color on hover */
+}
