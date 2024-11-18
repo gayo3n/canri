@@ -100,7 +100,7 @@ a{% extends "base.html" %}
     <div class="teams-grid">
         {% for affiliation in teams %}
             <div class="team-card">
-                <a href="{% url 'canri_app:' team.team_id %}">{{ affiliation.team.team_name }}</a>
+                <a href="*">{{ affiliation.team.team_name }}</a>
             </div>
         {% endfor %}
     </div>
@@ -110,8 +110,10 @@ a{% extends "base.html" %}
         <div class="task-list">
             {% for phase in phases %}
                 <div class="task-item">
+
+                    <input type="checkbox" {% if phase.complete_flag %}checked{% endif %}>
                     <span class="task-name">{{ phase.phase_name }}</span>
-                    <span class="task-date">{{ phase.expiration_date }}</span>
+                    <span class="task-date">{{ phase.expiration_date |date:"Y年m月d日"}}</span>
                 </div>
             {% endfor %}
         </div>
