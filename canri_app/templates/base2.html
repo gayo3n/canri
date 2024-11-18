@@ -26,7 +26,7 @@
                     <img src="{% static 'images/user-icon.png' %}" alt="管理者アイコン">
                     {{ name }}
                 </a>
-                <a href="#">ログアウト</a>
+                <a href="{% url 'account:logout_confirmation' %}">ログアウト</a>
             </div>
         </nav>
     </header>
