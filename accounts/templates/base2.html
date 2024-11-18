@@ -22,7 +22,7 @@
                 <a href="{% url 'canri_app:management_account' %}">アカウント管理</a>
             </div>
             <div class="navbar-right">
-                <a href="#" class="user-icon">
+                <a href="{% url 'canri_app:account_change_employee' %}" class="user-icon">
                     <img src="{% static 'images/user-icon.png' %}" alt="管理者アイコン">
                     管理者
                 </a>

@@ -1,5 +1,3 @@
-{% comment %} 管理者のみ {% endcomment %}
-
 {% extends 'base2.html' %}
 {% load static %}
 {% block head %}<link rel="stylesheet" href="{% static 'css/management_account.css' %}">{% endblock %}
@@ -14,10 +12,10 @@
         <th>削除</th> 
     </tr>
     <tr>
-        <td name="user_name">大原太郎</td>
+        <td name="user_name"><a href="{% url 'canri_app:account_change' %}" class="btn save">大原太郎</a></td>
         <td id="OHARA0001">OHARA0001</td>
         <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0001">🗑️</button>
+            <a href="{% url 'canri_app:account_delete' %}" class="btn btn-danger" data-user-id="OHARA0001">🗑️</a>
         </td>
     </tr>
     <tr>
@@ -44,7 +42,7 @@
 </table>
 
 <div class="add-account-container">
-    <button type="button" class="btn btn-success add-account-btn" onclick="location.href='account_creating'">＋ </button>
+    <a href="{% url "canri_app:account_create" %}" class="delete-btn">＋ </a>
 </div>
 
 {% endblock %}

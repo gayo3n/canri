@@ -19,14 +19,25 @@ urlpatterns = [
     path('member_make/', views.MemberMakeView.as_view(), name='member_make'),
     path('member_make/complete/', views.MemberMakeCompleteView.as_view(), name='member_make_complete'),
     path('member_make/delete/', views.MemberMakeDeleteView.as_view(), name='member_make_delete'),
-    path('member_make/delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
+    path('member_make/delete/complete/', views.MemberMakeDeleteOkView.as_view(), name='member_make_delete_complete'),
     path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
     path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
+    
 
-    
     # path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
+    # アカウント管理
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
-    
+    path('management_account/create/', views.AccountCreateView.as_view(), name='account_create'),
+    path('management_account/create/complete/', views.CreateCompleteView.as_view(), name='account_create_complete'),
+    path('management_account/delete/', views.AccountDeleteView.as_view(), name='account_delete'),
+    path('management_account/delete/complete/', views.DeleteCompleteView.as_view(), name='account_delete_complete'),
+    path('management_account/change/', views.AccountChangeView.as_view(), name='account_change'),
+    path('management_account/change/complete/', views.AccountChangeCompleteView.as_view(), name='account_change_complete'),
+
+    # アイコン
+    path('change_employee/', views.AccountChangeEmployeeView.as_view(), name='account_change_employee'),
+    path('change_employee/complete/', views.AccountChangeEmployeeCompleteView.as_view(), name='account_change_complete_employee'),
+
     #新規プロジェクト作成
     path('new_project/', views.NewProjectView.as_view(), name='new_project'),    
     path('new_project_edit/', views.NewProjectEditView.as_view(), name='new_project_edit'),
@@ -40,7 +51,7 @@ urlpatterns = [
     path('progress_within_projectlist/', views.progress_within_ProjectlistView.as_view(), name='projectlist'),
     path('post_projectlist/', views.progress_within_ProjectlistView.as_view(), name='post_projectlist'),
     path('project/', projectListView, name='project'),
-    path('post_project/', Post_projectListView, name='post_project'),
+    path('post_project/', views.post_ProjectlistView.as_view(), name='post_project'),
 
     #プロジェクト詳細
     path('project_detail/',views.Project_detailView.as_view(), name='project_detail'),
