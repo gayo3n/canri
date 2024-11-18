@@ -5,6 +5,8 @@ from . import views
 
 from.views import account_login
 
+app_name = 'accounts'
+
 urlpatterns = [
     #path('login/', views.LoginView.as_view(), name='login'),
     path('login_complete/', views.LoginCompView.as_view(), name='login_complete'), #ログイン完了

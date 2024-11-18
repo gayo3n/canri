@@ -32,6 +32,7 @@ class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
 class LogoutCompView(TemplateView):
+    template_name = 'logout_confirmation_complete.html'
     def post(self, request, *args, **kwargs):
         return render(request, 'logout_complete.html')
 
