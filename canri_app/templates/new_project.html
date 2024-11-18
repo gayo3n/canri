@@ -1,10 +1,10 @@
 {% extends 'base2.html' %}
 
-<!-- {% load static %}
+{% load static %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/.css' %}">
-{% endblock %} -->
+<link rel="stylesheet" href="{% static 'css/new_project.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="main-content">
@@ -23,7 +23,7 @@
         <label for="end_date">完了予定日</label>
         <input type="date" name="end_date" id="end_date" required>
         
-        <input type="submit" value="作成">
+        <input type="submit" class= "create_button" value="作成">
     </form>
 </div>
 {% endblock %}
