@@ -134,12 +134,21 @@ class CreateCompleteView(TemplateView):
 class AccountChangeView(TemplateView):
     template_name = "account_change.html"
 
+class AccountChangeCompleteView(TemplateView):
+    template_name = "account_change_complete.html"
 
+class AccountDeleteView(TemplateView):
+    template_name = "account_delete.html"
+
+class DeleteCompleteView(TemplateView):
+    template_name = "account_delete_complete.html"
 
 # アイコン
 class AccountChangeEmployeeView(TemplateView):
     template_name = "account_change_employee.html"
 
+class AccountChangeEmployeeCompleteView(TemplateView):
+    template_name = "account_change_complete_employee.html"
 
 #新規プロジェクト作成
 class NewProjectView(TemplateView):

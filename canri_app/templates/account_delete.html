@@ -5,59 +5,15 @@
 
 {% block head %}<link rel="stylesheet" href="{% static 'css/account_delete.css' %}">{% endblock %}
 {% block content %}
-<h2>ユーザーのアカウント一覧</h2>
-
-<!-- ユーザー情報のテーブル -->
-<table border="1">
-    <tr>
-        <th>名前</th>
-        <th>ユーザーID</th>
-        <th>削除</th> 
-    </tr>
-    <tr>
-        <td name="user_name">大原太郎</td>
-        <td id="OHARA0001">OHARA0001</td>
-        <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0001">🗑️</button>
-        </td>
-    </tr>
-    <tr>
-        <td name="user_name">大原次郎</td>
-        <td id="OHARA0002">OHARA0002</td>
-        <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0002">🗑️</button>
-        </td>
-    </tr>
-    <tr>
-        <td name="user_name">大原三郎</td>
-        <td id="OHARA0003">OHARA0003</td>
-        <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0003">🗑️</button>
-        </td>
-    </tr>
-    <tr>
-        <td name="user_name">大原四郎</td>
-        <td id="OHARA0004">OHARA0004</td>
-        <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0004">🗑️</button>
-        </td>
-    </tr>
-</table>
-
-<div class="add-account-container">
-    <button type="button" class="btn btn-success add-account-btn">＋ </button>
-</div>
-
-
 
 <!-- モーダル (確認ダイアログ) -->
 <div class="modal">
     <div class="modal-content">
         <p>アカウントを削除しますか？</p>
-        <p>○○ ○○</p>
+        <p></p>
         <div class="modal-buttons">
-            <button class="btn btn-confirm">削除</button>
-            <button class="btn btn-cancel">キャンセル</button>
+            <a href="{% url 'canri_app:account_delete_complete' %}" class="btn btn-confirm">削除</a>
+            <a href="{% url 'canri_app:management_account' %}" class="btn btn-cancel">キャンセル</a>
         </div>
     </div>
 </div>
