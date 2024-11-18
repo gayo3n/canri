@@ -1,10 +1,10 @@
 from django.contrib.auth.views import LogoutView, LoginView as AuthLoginView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, get_user_model
 from django.urls import reverse
 from django.views import View, generic
 from django.views.generic.base import TemplateView
-from .forms import AccountAddForm, UserCreationForm, UserForm
+from .forms import AccountAddForm, UserCreationForm, UserForm, AccountAddForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
@@ -65,6 +65,9 @@ def manage_account(request):
 
 
 def account_create_complete(request):
+    form = UserForm(request.POST)
+    if form.is_valid():
+        form.save()
     return render(request, 'account_create_complete.html')
 
 class AccountLogin(AuthLoginView):
@@ -91,12 +94,31 @@ class AccountLogin(AuthLoginView):
 account_login = AccountLogin.as_view()
 
 def account_create(request):
-    if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
+    form = AccountAddForm(request.POST)
+    if form.is_valid():
+            form.save()
             return redirect('account_create_complete')
     else:
         form = UserForm()
 
     return render(request, "account_create.html")
+
+
+def account_chaenge(request):
+    user_change = get_object_or_404(User, user=user_id)
+    form = UserForm(instance=user_change)
+    return render(request, 'account_change.html', {'form': form})
+
+def account_change_complete(request):
+    user_change = get_object_or_404(User, user=user_id)
+    if request.method == "POST":
+        form = UserForm(request.POST, instance=user_change)
+        if form.is_valid():
+            form.save()
+    return render(request, 'account_change_complete')
+
+def account_delete(request, user):
+    template_name = "account_delete.html"
+    obj = get_object_or_404(User, user=user)
+    context = {'object': obj}
+    return render(request, template_name, context)
