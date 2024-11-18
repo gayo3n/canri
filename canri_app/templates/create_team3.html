@@ -1,15 +1,191 @@
 {% extends 'base2.html' %}
 
-<!-- {% load static %}
+{% load static %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/.css' %}">
-{% endblock %} -->
+<link rel="stylesheet" href="{% static 'css/create_team3.css' %}">
+<style>
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .modal .button-container {
+        justify-content: flex-end;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="main-content">
     <h1>新規チーム作成</h1>
-    <h2>仮３</h2>
+    
+    <form method="post" action="{% url 'canri_app:create_team3_save' %}">
+        {% csrf_token %}
+        
+        <label for="team_name">チーム名</label>
+        <input type="text" name="team_name" id="team_name" required>
+        
+        <h2>メンバー一覧</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 90%;">メンバー名</th>
+                    <th style="width: 10%;">削除</th>
+                </tr>
+            </thead>
+            <tbody id="memberTableBody">
+                {% if team %}
+                    {% for member in team %}
+                    <tr>
+                        <td>{{ member.name }}</td>
+                        <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr id="noMembersMessage">
+                        <td colspan="2">メンバーが存在しません</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td colspan="2"><a href="#" class="add-member" onclick="openAddMemberWindow()">＋</a></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="button-container">
+            <button type="submit" class="action-button next-button">保存</button>
+        </div>
     </form>
 </div>
+
+<!-- 小ウィンドウのHTML -->
+<div id="addMemberWindow" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAddMemberWindow()">&times;</span>
+        <h2>メンバーを追加</h2>
+        <form id="categoryForm" class="form-inline">
+            {% csrf_token %}
+            
+            <label for="category">メンバーリストを選択</label>
+            <select name="category_id" id="category" required>
+                <option value="null" selected>選択してください</option>
+                {% for category in categories %}
+                    <option value="{{ category.category_id }}">{{ category.category_name }}</option>
+                {% endfor %}
+            </select>
+            
+            <button type="button" class="action-button" onclick="fetchMembers()">メンバーを表示</button>
+        </form>
+
+        <div id="memberList">
+            <div class="member-list-header">
+                <h2>メンバー一覧</h2>
+                <button type="button" class="action-button" onclick="selectAllMembers()">全選択</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">選択</th>
+                        <th style="width: 30%;">名前</th>
+                        <th style="width: 30%;">生年月日</th>
+                        <th style="width: 30%;">役職</th>
+                    </tr>
+                </thead>
+                <tbody id="memberTableBodyModal">
+                    <!-- メンバー情報がここに表示される -->
+                </tbody>
+            </table>
+        </div>
+        <div class="button-container">
+            <button type="button" onclick="addSelectedMembers()">追加</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAddMemberWindow() {
+        document.getElementById('addMemberWindow').style.display = 'block';
+    }
+
+    function closeAddMemberWindow() {
+        document.getElementById('addMemberWindow').style.display = 'none';
+    }
+
+    function fetchMembers() {
+        var categorySelect = document.getElementById('category');
+        if (categorySelect.value === "null") {
+            alert("カテゴリーを選択してください。");
+            return;
+        }
+
+        var categoryId = categorySelect.value;
+        // API呼び出しでメンバー情報を取得
+        fetch(`{% url 'canri_app:get_members_by_member_list' category_id=0 %}`.replace("0", categoryId))
+            .then(response => response.json())
+            .then(data => {
+                // メンバーリストの表示をクリア
+                const memberTableBodyModal = document.getElementById('memberTableBodyModal');
+                memberTableBodyModal.innerHTML = '';
+
+                // メンバー情報をテーブルに追加
+                data.members.forEach(member => {
+                    const birthdate = member.birthdate.split('T')[0]; // T以降を削除
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="width: 10%;"><input type="checkbox" name="member" value="${member.member_id}"></td>
+                        <td style="width: 30%;">${member.name}</td>
+                        <td style="width: 30%;">${birthdate}</td>
+                        <td style="width: 30%;">${member.job_title}</td>
+                    `;
+                    memberTableBodyModal.appendChild(row);
+                });
+            })
+            .catch(error => console.error('データ取得エラー:', error));
+    }
+
+    function selectAllMembers() {
+        document.querySelectorAll('#memberTableBodyModal input[name="member"]').forEach(checkbox => {
+            checkbox.checked = true;
+        });
+    }
+
+    function addSelectedMembers() {
+        const memberTableBody = document.getElementById('memberTableBody');
+        const noMembersMessage = document.getElementById('noMembersMessage');
+        if (noMembersMessage) {
+            noMembersMessage.remove();
+        }
+
+        const existingMemberIds = Array.from(memberTableBody.querySelectorAll('tr'))
+            .map(row => row.dataset.memberId);
+
+        document.querySelectorAll('#memberTableBodyModal input[name="member"]:checked').forEach(checkbox => {
+            if (!existingMemberIds.includes(checkbox.value)) {
+                const row = document.createElement('tr');
+                row.dataset.memberId = checkbox.value;
+                row.innerHTML = `
+                    <td>${checkbox.parentElement.nextElementSibling.textContent}</td>
+                    <td><a href="#" class="remove-member" onclick="removeMember(this)">-</a></td>
+                `;
+                memberTableBody.insertBefore(row, memberTableBody.lastElementChild);
+            } else {
+                alert('このメンバーは既に追加されています。');
+            }
+        });
+        closeAddMemberWindow();
+    }
+
+    function removeMember(link) {
+        const row = link.parentElement.parentElement;
+        row.remove();
+        const memberTableBody = document.getElementById('memberTableBody');
+        if (memberTableBody.children.length === 1) {
+            const noMembersMessage = document.createElement('tr');
+            noMembersMessage.id = 'noMembersMessage';
+            noMembersMessage.innerHTML = '<td colspan="2">メンバーが存在しません</td>';
+            memberTableBody.insertBefore(noMembersMessage, memberTableBody.firstChild);
+        }
+    }
+</script>
 {% endblock %}

@@ -1,6 +1,12 @@
 {% extends 'base2.html' %}
 
+{% load static %}
+
 {% load custom_filters %} <!-- カスタムフィルターをロード -->
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/create_team.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="main-content">
@@ -16,6 +22,7 @@
         
         <label for="team_size">チームの人数</label>
         <select name="team_size" id="team_size" required>
+            <option value="5" selected>5人</option>
             {% for i in 1|range_filter:31 %}
             <option value="{{ i }}">{{ i }}人</option>
             {% endfor %}
@@ -30,9 +37,20 @@
         </select>
         
         <label for="auto_generate">チームを自動生成する</label>
-        <input type="checkbox" name="auto_generate" id="auto_generate">
+        <input type="checkbox" name="auto_generate" id="auto_generate" checked>
         
-        <input type="submit" value="次へ">
+        <div class="button-container">
+            <form method="post" action="{% url 'canri_app:new_project_edit' %}">
+                {% csrf_token %}
+                <input type="hidden" name="project_name" value="{{ project_name }}">
+                <input type="hidden" name="project_description" value="{{ project_description }}">
+                <input type="hidden" name="start_date" value="{{ start_date }}">
+                <input type="hidden" name="end_date" value="{{ end_date }}">
+                <input type="hidden" name="teams" value="{{ teams }}">
+                <button type="submit" class="action-button back-button">戻る</button>
+            </form>
+            <button type="submit" class="action-button next-button">次へ</button>
+        </div>
     </form>
 </div>
 {% endblock %}
