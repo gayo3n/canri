@@ -175,7 +175,32 @@ class NewProjectEditView(TemplateView):
         # 空のチームリストを追加
         teams = []
 
-        # 入力された情報を保持した状態でnew_project_edit.htmlに遷���
+        # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
+        return render(request, self.template_name, {'project': project_data, 'teams': teams})
+
+class NewProjectEdit2View(TemplateView):
+    template_name = "new_project_edit.html"
+
+    def post(self, request, *args, **kwargs):
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        teams = request.POST.get('teams')
+
+        # teams をリストとして扱う
+        if isinstance(teams, str):
+            teams = json.loads(teams)
+
+        # 入力された情報をリスト化
+        project_data = {
+            'project_name': project_name,
+            'project_description': project_description,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+
+        # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
         return render(request, self.template_name, {'project': project_data, 'teams': teams})
 
 class CreateTeamView(TemplateView):

@@ -40,7 +40,7 @@
         <input type="checkbox" name="auto_generate" id="auto_generate" checked>
         
         <div class="button-container">
-            <form method="post" action="{% url 'canri_app:new_project_edit' %}">
+            <form method="post" action="{% url 'canri_app:new_project_edit2' %}">
                 {% csrf_token %}
                 <input type="hidden" name="project_name" value="{{ project_name }}">
                 <input type="hidden" name="project_description" value="{{ project_description }}">

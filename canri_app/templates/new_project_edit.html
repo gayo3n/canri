@@ -4,7 +4,6 @@
 
 {% load static %}
 
-
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/new_project_edit.css' %}">
 {% endblock %}
@@ -18,18 +17,18 @@
     <p>完了予定日: {{ project.end_date }}</p>
 
     <h2>参加チーム一覧</h2>
-    <ul id="teamList">
+    <div id="teamList" class="team-list">
         {% if teams %}
             {% for team_id in teams %}
-                <li id="team-{{ team_id }}">チーム情報を取得中...</li>
+                <div id="team-{{ team_id }}" class="team-item">チーム情報を取得中...</div>
             {% endfor %}
         {% else %}
-            <li>チームが存在しません</li>
+            <div>チームが存在しません</div>
         {% endif %}
-    </ul>
+    </div>
 
     <div class="button-container">
-        <form method="post" action="{% url 'canri_app:create_team' %}">
+        <form method="post" action="{% url 'canri_app:create_team' %}" class="button-form">
             {% csrf_token %}
             <input type="hidden" name="project_name" value="{{ project.project_name }}">
             <input type="hidden" name="project_description" value="{{ project.project_description }}">
@@ -39,7 +38,7 @@
             <button type="submit" class="action-button back-button">チームを新規で作成</button>
         </form>
 
-        <form method="post" action="{% url 'canri_app:save_new_project' %}">
+        <form method="post" action="{% url 'canri_app:save_new_project' %}" class="button-form">
             {% csrf_token %}
             <input type="hidden" name="project_name" value="{{ project.project_name }}">
             <input type="hidden" name="project_description" value="{{ project.project_description }}">
