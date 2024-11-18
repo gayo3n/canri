@@ -23,7 +23,7 @@
                 <div id="team-{{ team_id }}" class="team-item">チーム情報を取得中...</div>
             {% endfor %}
         {% else %}
-            <div>チームが存在しません</div>
+            <div id="noTeamsMessage">チームが存在しません</div>
         {% endif %}
     </div>
 
@@ -38,14 +38,14 @@
             <button type="submit" class="action-button back-button">チームを新規で作成</button>
         </form>
 
-        <form method="post" action="{% url 'canri_app:save_new_project' %}" class="button-form">
+        <form id="saveProjectForm" method="post" action="{% url 'canri_app:save_new_project' %}" class="button-form">
             {% csrf_token %}
             <input type="hidden" name="project_name" value="{{ project.project_name }}">
             <input type="hidden" name="project_description" value="{{ project.project_description }}">
             <input type="hidden" name="start_date" value="{{ project.start_date }}">
             <input type="hidden" name="end_date" value="{{ project.end_date }}">
             <input type="hidden" name="teams" value="{{ teams|safe }}">
-            <button type="submit" class="action-button next-button">プロジェクトを保存</button>
+            <button type="button" class="action-button next-button" onclick="validateAndSubmit()">プロジェクトを保存</button>
         </form>
     </div>
 </div>
@@ -71,5 +71,14 @@
                 });
         });
     });
+
+    function validateAndSubmit() {
+        const noTeamsMessage = document.getElementById('noTeamsMessage');
+        if (noTeamsMessage) {
+            alert('少なくとも1つのチームを追加してください。');
+        } else {
+            document.getElementById('saveProjectForm').submit();
+        }
+    }
 </script>
 {% endblock %}

@@ -41,9 +41,10 @@ urlpatterns = [
     #新規プロジェクト作成
     path('new_project/', views.NewProjectView.as_view(), name='new_project'),    
     path('new_project_edit/', views.NewProjectEditView.as_view(), name='new_project_edit'),
-    path('new_project_edit/back', views.NewProjectEdit2View.as_view(), name='new_project_edit2'),
+    path('new_project_edit/back/', views.NewProjectEdit2View.as_view(), name='new_project_edit2'),
     path('create_team/', views.CreateTeamView.as_view(), name='create_team'),
     path('create_team2/', views.CreateTeam2View.as_view(), name='create_team2'),
+    path('create_team2/back/', views.CreateTeam2BackView.as_view(), name='create_team2_back'),
     path('create_team3/', views.CreateTeam3View.as_view(), name='create_team3'),
     path('create_team3/save/', views.SaveTeamView.as_view(), name='create_team3_save'),
     path('save_new_project/', views.SaveNewProjectView.as_view(), name='save_new_project'),

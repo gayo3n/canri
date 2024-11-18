@@ -53,6 +53,20 @@ select, input[type="text"], input[type="date"], input[type="submit"], button {
     background-color: #0056b3;
 }
 
+.back-button {
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    width: auto;
+    display: inline-block;
+    margin-right: 10px;
+    padding: 10px 20px; /* 横幅を調整 */
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+}
+
 label[for="auto_generate"] {
     display: inline-block;
     margin-right: 10px;
@@ -84,5 +98,5 @@ input[type="checkbox"]#auto_generate {
 }
 
 .back-button:hover {
-    background-color: #5a6268;
+    background-color: #0056b3;
 }

@@ -77,12 +77,8 @@ button:hover {
     background-color: #0056b3;
 }
 
-.back-button {
-    margin-right: auto;
-}
-
 .next-button {
-    margin-left: auto;
+    margin-left: 10px;
 }
 
 .error-message {
@@ -182,8 +178,33 @@ a:hover {
     text-decoration: underline;
 }
 
-/* 一の文字の大きさを2倍にする */
-a.remove-member{
-    font-size: 2em;
+.container {
+    display: flex;
+    justify-content: space-between;
 }
 
+.left-panel, .right-panel {
+    width: 48%;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.modal .button-container {
+    justify-content: flex-end;
+}
+
+.chart-container {
+    width: 100%;
+    height: 400px;
+    margin-bottom: 20px;
+    display: flex;
+    /* justify-content: flex-end; 右揃えに変更 */
+    padding-left: 13%; /* 中央と右揃えの中間に配置 */
+}
+
+.chart-wrapper {
+    width: 80%;
+}
