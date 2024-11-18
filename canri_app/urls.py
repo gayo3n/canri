@@ -59,4 +59,6 @@ urlpatterns = [
     path('api/get_teams_by_project/<int:project_id>/', api.get_teams_by_project, name='get_teams_by_project'),
     path('api/get_team_members/<int:team_id>/', api.get_team_members, name='get_team_members'),
     path('api/get_team_data/<int:team_id>/', api.get_team_data, name='get_team_data'),
+    path('api/save_team/', api.save_team_api, name='save_team'),
+    path('api/save_project/', api.save_project_api, name='save_project_api'),
 ]

@@ -3,8 +3,9 @@ from django.views.generic.base import TemplateView
 from django.views.generic import CreateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Team, ProjectAffiliationTeam, TeamMember, Category
+from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Team, ProjectAffiliationTeam, Project, Category, TeamMember
 import json
+from django.utils import timezone
 
 #API関係
 
@@ -129,7 +130,7 @@ def create_team_api(request):
 
 # チーム作成ロジック
 # team_type = チームを作成する際の目的 | members = 作成に使用するメンバーのリスト | team_size = 作成するチームの人数 
-# イベント用チーム = event | 研修用チーム = training | プロ���ェクト開発用チーム = project | ��イデア発想チーム = idea_generation 
+# イベント用チーム = event | 研修用チーム = training | プロジェクト開発用チーム = project | アイデア発想チーム = idea_generation 
 def create_team(team_type, members, team_size):
     # フィードバック情報を無条件で取得（削除フラグが False のもの）
     feedback_data = Feedback.objects.filter(deletion_flag=False)
@@ -280,3 +281,88 @@ def get_team_data(request, team_id):
         return JsonResponse({'error': 'Team not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+# チームを保存するAPI
+@require_http_methods(["POST"])
+def save_team_api(request):
+    try:
+        # リクエストボディからデータを取得
+        data = json.loads(request.body)
+        team_name = data.get('team_name')
+        team_type = data.get('team_type')
+        team_members = data.get('team')
+
+        # team_name, team_type, team_members のバリデーションチェック
+        if not team_name or not team_type or not isinstance(team_members, list):
+            return JsonResponse({"error": "無効なデータです"}, status=400)
+
+        # チームを作成
+        team = Team.objects.create(
+            team_name=team_name,
+            count=len(team_members),
+            objective=team_type,
+            creation_date=timezone.now()
+        )
+
+        # チームメンバーを追加
+        for member_id in team_members:
+            member = Member.objects.get(member_id=member_id)
+            TeamMember.objects.create(
+                team=team,
+                member=member,
+                creation_date=timezone.now(),
+                update_date=timezone.now()
+            )
+
+        return JsonResponse({'team_id': team.team_id})
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Member.DoesNotExist:
+        return JsonResponse({'error': 'Member not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+# プロジェクトを保存するAPI
+@require_http_methods(["POST"])
+def save_project_api(request):
+    try:
+        # リクエストボディからデータを取得
+        data = json.loads(request.body)
+        project_name = data.get('project_name')
+        project_description = data.get('project_description')
+        start_date = data.get('start_date')
+        end_date = data.get('end_date')
+        teams = data.get('teams')
+
+        # バリデーションチェック
+        if not project_name or not project_description or not start_date or not end_date or not isinstance(teams, list):
+            return JsonResponse({"error": "無効なデータです"}, status=400)
+
+        # プロジェクトを作成
+        project = Project.objects.create(
+            project_name=project_name,
+            project_detail=project_description,
+            project_start_date=start_date,
+            project_end_date=end_date,
+            creation_date=timezone.now()
+        )
+
+        # チームをプロジェクトに関連付け
+        for team_id in teams:
+            team = Team.objects.get(team_id=team_id)
+            ProjectAffiliationTeam.objects.create(
+                team=team,
+                project=project,
+                creation_date=timezone.now()
+            )
+
+        return JsonResponse({'project_id': project.project_id})
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Team.DoesNotExist:
+        return JsonResponse({'error': 'Team not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+

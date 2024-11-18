@@ -18,7 +18,7 @@
         <input type="hidden" name="project_description" value="{{ project_description }}">
         <input type="hidden" name="start_date" value="{{ start_date }}">
         <input type="hidden" name="end_date" value="{{ end_date }}">
-        <input type="hidden" name="teams" value="{{ teams }}">
+        <input type="hidden" name="teams" value="{{ teams|safe }}">
         
         <label for="team_size">チームの人数</label>
         <select name="team_size" id="team_size" required>
@@ -46,7 +46,7 @@
                 <input type="hidden" name="project_description" value="{{ project_description }}">
                 <input type="hidden" name="start_date" value="{{ start_date }}">
                 <input type="hidden" name="end_date" value="{{ end_date }}">
-                <input type="hidden" name="teams" value="{{ teams }}">
+                <input type="hidden" name="teams" value="{{ teams|safe }}">
                 <button type="submit" class="action-button back-button">戻る</button>
             </form>
             <button type="submit" class="action-button next-button">次へ</button>
