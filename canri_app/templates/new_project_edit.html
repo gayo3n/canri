@@ -17,40 +17,59 @@
     <p>完了予定日: {{ project.end_date }}</p>
 
     <h2>参加チーム一覧</h2>
-    <ul>
+    <div id="teamList" class="team-list">
         {% if teams %}
-            {% for team in teams %}
-                {% if team %}
-                    <li class="team-box">{{ team.team_name }}</li>
-                {% else %}
-                    <li>チームが存在しません</li>
-                {% endif %}
+            {% for team_id in teams %}
+                <div id="team-{{ team_id }}" class="team-item">チーム情報を取得中...</div>
             {% endfor %}
         {% else %}
-            <li>チームが存在しません</li>
+            <div>チームが存在しません</div>
         {% endif %}
-    </ul>
+    </div>
 
     <div class="button-container">
-        <form method="post" action="{% url 'canri_app:create_team' %}">
+        <form method="post" action="{% url 'canri_app:create_team' %}" class="button-form">
             {% csrf_token %}
             <input type="hidden" name="project_name" value="{{ project.project_name }}">
             <input type="hidden" name="project_description" value="{{ project.project_description }}">
             <input type="hidden" name="start_date" value="{{ project.start_date }}">
             <input type="hidden" name="end_date" value="{{ project.end_date }}">
-            <input type="hidden" name="teams" value="{{ teams }}">
+            <input type="hidden" name="teams" value="{{ teams|safe }}">
             <button type="submit" class="action-button back-button">チームを新規で作成</button>
         </form>
 
-        <form method="post" action="{% url 'canri_app:save_new_project' %}">
+        <form method="post" action="{% url 'canri_app:save_new_project' %}" class="button-form">
             {% csrf_token %}
             <input type="hidden" name="project_name" value="{{ project.project_name }}">
             <input type="hidden" name="project_description" value="{{ project.project_description }}">
             <input type="hidden" name="start_date" value="{{ project.start_date }}">
             <input type="hidden" name="end_date" value="{{ project.end_date }}">
-            <input type="hidden" name="teams" value="{{ teams }}">
+            <input type="hidden" name="teams" value="{{ teams|safe }}">
             <button type="submit" class="action-button next-button">プロジェクトを保存</button>
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const teamIds = {{ teams|safe }};
+        teamIds.forEach(teamId => {
+            fetch(`{% url 'canri_app:get_team_data' team_id=0 %}`.replace("0", teamId))
+                .then(response => response.json())
+                .then(data => {
+                    const teamElement = document.getElementById(`team-${teamId}`);
+                    if (data.team) {
+                        teamElement.textContent = data.team.team_name;
+                    } else {
+                        teamElement.textContent = 'チーム情報の取得に失敗しました';
+                    }
+                })
+                .catch(error => {
+                    const teamElement = document.getElementById(`team-${teamId}`);
+                    teamElement.textContent = 'チーム情報の取得に失敗しました';
+                    console.error('チーム情報の取得エラー:', error);
+                });
+        });
+    });
+</script>
 {% endblock %}

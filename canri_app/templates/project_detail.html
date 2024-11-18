@@ -1,7 +1,3 @@
-<!-- Font AwesomeのCDNを読み込む -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
-
 {% extends "base.html" %}
 
 {% block head %}
@@ -98,8 +94,17 @@
     .box a {
         text-decoration: none;
         color: #000;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .fas {
+        font-size: 14px;
     }
 </style>
+<!-- FontAwesome CSS の読み込み -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 {% endblock %}
 
 {% block content %}
@@ -109,13 +114,13 @@
     <div class="teams-grid">
         {% for affiliation in teams %}
             <div class="team-card">
-                <a href="*">{{ affiliation.team.team_name }}</a>
+                <a href="チーム詳細リンク">{{ affiliation.team.team_name }}</a>
             </div>
         {% endfor %}
     </div>
 
     <div class="team-add">
-        <a href="a">新規チーム追加</a>
+        <a href="新規チーム追加リンク">新規チーム追加</a>
     </div>
 
     <h3>フェーズ情報</h3>
@@ -124,23 +129,22 @@
             {% for phase in phases %}
                 <div class="task-item">
                     <input type="checkbox" {% if phase.complete_flag %}checked{% endif %}>
-                    <span class="task-name">{{ phase.phase_name }}</span>
+                    <span class="task-name"><a href="フェーズ詳細表示画面リンク">{{ phase.phase_name }}</a></span>
                     <span class="task-date">{{ phase.expiration_date |date:"Y年m月d日"}}</span>
-                    <!-- HTML部分 -->
-                    <i class="fas fa-trash" aria-hidden="true"></i>
+                    <a href="フェーズ削除リンク(ゴミ箱アイコン)"><i class="fas fa-trash" aria-hidden="true"></i></a>
                 </div>
             {% endfor %}
         </div>
 
         <div class="action-boxes">
             <div class="box">
-                <a href="a">フェーズ削除</a>
+                <a href="フェーズ追加画面リンク"> フェーズ追加</a>
             </div>
             <div class="box">
-                <a href="a">プロジェクト詳細</a>
+                <a href="プロジェクト詳細画面リンク"> プロジェクト詳細</a>
             </div>
             <div class="box">
-                <a href="a">保存</a>
+                <a href="保存確認画面リンク"> 保存</a>
             </div>
         </div>
     </div>

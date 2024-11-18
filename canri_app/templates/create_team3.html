@@ -22,7 +22,13 @@
     
     <form method="post" action="{% url 'canri_app:create_team3_save' %}">
         {% csrf_token %}
-        
+        <input type="hidden" name="project_name" value="{{ project_name }}">
+        <input type="hidden" name="project_description" value="{{ project_description }}">
+        <input type="hidden" name="start_date" value="{{ start_date }}">
+        <input type="hidden" name="end_date" value="{{ end_date }}">
+        <input type="hidden" name="teams" value="{{ teams|safe }}">
+        <input type="hidden" name="team_type" value="{{ team_type }}">
+        <input type="hidden" name="team" id="team">
         <label for="team_name">チーム名</label>
         <input type="text" name="team_name" id="team_name" required>
         
@@ -37,7 +43,7 @@
             <tbody id="memberTableBody">
                 {% if team %}
                     {% for member in team %}
-                    <tr>
+                    <tr data-member-id="{{ member.member_id }}">
                         <td>{{ member.name }}</td>
                         <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
                     </tr>
@@ -54,7 +60,7 @@
         </table>
         
         <div class="button-container">
-            <button type="submit" class="action-button next-button">保存</button>
+            <button type="submit" class="action-button next-button" onclick="setTeamMembers()">保存</button>
         </div>
     </form>
 </div>
@@ -186,6 +192,13 @@
             noMembersMessage.innerHTML = '<td colspan="2">メンバーが存在しません</td>';
             memberTableBody.insertBefore(noMembersMessage, memberTableBody.firstChild);
         }
+    }
+
+    function setTeamMembers() {
+        const memberIds = Array.from(document.querySelectorAll('#memberTableBody tr'))
+            .map(row => row.dataset.memberId)
+            .filter(id => id !== undefined);
+        document.getElementById('team').value = JSON.stringify(memberIds);
     }
 </script>
 {% endblock %}

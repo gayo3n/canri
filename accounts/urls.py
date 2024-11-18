@@ -18,5 +18,4 @@ urlpatterns = [
     path('account_created/', views.CreateComp.as_view(), name='account_created'),
     path('login/', account_login, name="login"),
     #path('#/<int:pk>/', views.ManageAcc.as_view(), name='#'),   #アカウントページ用url
-    
 ]

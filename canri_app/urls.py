@@ -22,8 +22,8 @@ urlpatterns = [
     path('member_make/delete/complete/', views.MemberMakeDeleteOkView.as_view(), name='member_make_delete_complete'),
     path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
     path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
-
     
+
     # path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
     # アカウント管理
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
@@ -41,6 +41,7 @@ urlpatterns = [
     #新規プロジェクト作成
     path('new_project/', views.NewProjectView.as_view(), name='new_project'),    
     path('new_project_edit/', views.NewProjectEditView.as_view(), name='new_project_edit'),
+    path('new_project_edit/back', views.NewProjectEdit2View.as_view(), name='new_project_edit2'),
     path('create_team/', views.CreateTeamView.as_view(), name='create_team'),
     path('create_team2/', views.CreateTeam2View.as_view(), name='create_team2'),
     path('create_team3/', views.CreateTeam3View.as_view(), name='create_team3'),
@@ -70,4 +71,6 @@ urlpatterns = [
     path('api/get_teams_by_project/<int:project_id>/', api.get_teams_by_project, name='get_teams_by_project'),
     path('api/get_team_members/<int:team_id>/', api.get_team_members, name='get_team_members'),
     path('api/get_team_data/<int:team_id>/', api.get_team_data, name='get_team_data'),
+    path('api/save_team/', api.save_team_api, name='save_team'),
+    path('api/save_project/', api.save_project_api, name='save_project_api'),
 ]

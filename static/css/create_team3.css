@@ -57,6 +57,34 @@ button:hover {
     justify-content: space-between;
 }
 
+.button-form {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.action-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.action-button:hover {
+    background-color: #0056b3;
+}
+
+.back-button {
+    margin-right: auto;
+}
+
+.next-button {
+    margin-left: auto;
+}
+
 .error-message {
     color: red;
     font-weight: bold;
