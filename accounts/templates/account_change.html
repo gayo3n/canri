@@ -11,8 +11,8 @@
         <label for="password">パスワード</label>
         <input type="password" id="password" name="password" required>
         
-        <a href="{% url 'canri_app:account_change_complete' %}">保存</a>
-        <a href="{% url 'canri_app:management_account' %}">キャンセル</a>
+        <a href="{% url 'accounts:account_change_complete' %}">保存</a>
+        <a href="{% url 'accounts:management_account' %}">キャンセル</a>
     </form>
 
 {% endblock %}
