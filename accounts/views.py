@@ -1,5 +1,5 @@
 from django.contrib.auth.views import LogoutView, LoginView 
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, redirect
 from django.contrib.auth import login, get_user_model, logout as auth_logout
 from django.urls import reverse
 from django.views import View, generic
@@ -16,19 +16,29 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 USer = get_user_model()
 
-class LoginView(TemplateView):
-    form_class = UserForm
-    template_name = 'login.html'
-    def post(self, request, *args, **kwargs):
-        return render(request, 'login_complete.html')
+# class LoginView(TemplateView):
+#     form_class = UserForm
+#     template_name = 'login.html'
+#     def post(self, request, *args, **kwargs):
+#         return render(request, 'login_complete.html')
 
-def logincomp(request):
-    user = request.user
+def acclogin(request):
+    if request.method == 'POST':
+        form = LoginForm(request, request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            if user:
+                login(request, user)
+                return redirect('login_complete', user.user_id)
+    else:
+        form = LoginForm()
+    
+    context = {'form': form}
+    return render(request, 'login.html', context)
 
-    params = {
-        'user': user
-    }
-    return render(request, 'logincomplete.html')
+def logincomp(request, user_id):
+    return render(request, 'login_complete.html', {'user_id': user_id})
+
     
 class LoginFailView(TemplateView):
     def get(self, request, *args, **kwargs):
