@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/past_project_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- 検索バー -->
+<div class="search-container">
+    <form method="GET" action="{% url 'canri_app:post_project' %}">
+        <input type="text" name="p" class="search-input" placeholder="キーワードを入力" value="{{ request.GET.q }}" required>
+        <button type="submit" class="search-button">検索</button>
+    </form>
+</div>
+
+<!-- プロジェクトテーブル -->
+<div class="project-table">
+    {% for project in project_list %}
+    <div class="project-row">
+        <div class="project-name">{{ project.project_name }}</div>
+        <div class="project-period">プロジェクト開始日：<br>{{ project.project_start_date|date:"Y年m月d日" }}</div>
+        <div class="project-complete">プロジェクト完了日：<br>{{ project.project_complete_date|date:"Y年m月d日" }}</div>
+        <div class="project-details">プロジェクト詳細：<br>{{ project.project_detail }}</div>
+        <button class="action-button">保存して終了</button>
+    </div>
+    {% empty %}
+    <div class="project-row">
+        <div class="project-details">完了済みのプロジェクトが存在しません</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

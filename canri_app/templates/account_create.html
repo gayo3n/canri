@@ -1,5 +1,3 @@
-{% comment %} 管理者 {% endcomment %}
-
 {% extends 'base2.html' %}
 {% load static %}
 
@@ -17,8 +15,7 @@
             <input type="text" value="パスワード" id="password" name="password" required>
         </div>
         <div>
-            <td><button type="submit" class="btn btn-danger">作成</button></td>
+            <td><a href="{% url 'canri_app:account_create_complete' %}" class="btn btn-danger">作成</a></td>
         </div>
 
 {% endblock %}
-
