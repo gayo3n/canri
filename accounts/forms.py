@@ -65,7 +65,7 @@ class AccountAddForm(forms.Form):
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('user_id', 'password', 'name')
+        fields = ['user_id', 'password', 'name']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -91,3 +91,7 @@ class UserCreationForm(UserCreationForm):
                 field.widget.attrs['placeholder'] = 'password'
             elif field.label == '名前':
                 field.widget.attrs['placeholder'] = '大原太郎'
+
+
+class LoginForm(AuthenticationForm):
+    pass

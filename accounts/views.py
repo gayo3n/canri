@@ -1,16 +1,17 @@
-from django.contrib.auth.views import LogoutView, LoginView as AuthLoginView
+from django.contrib.auth.views import LogoutView, LoginView 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, get_user_model
+from django.contrib.auth import login, get_user_model, logout as auth_logout
 from django.urls import reverse
 from django.views import View, generic
 from django.views.generic.base import TemplateView
-from .forms import AccountAddForm, UserCreationForm, UserForm, AccountAddForm
+from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
 from django.http import HttpResponse
 from .models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 USer = get_user_model()
@@ -21,47 +22,70 @@ class LoginView(TemplateView):
     def post(self, request, *args, **kwargs):
         return render(request, 'login_complete.html')
 
-class LoginCompView(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'login_complete.html')
+def logincomp(request):
+    user = request.user
+
+    params = {
+        'user': user
+    }
+    return render(request, 'logincomplete.html')
     
 class LoginFailView(TemplateView):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_failure.html')
     
-class LogoutConfView(TemplateView):
-    template_name = 'logout_confirmation.html'
+# class LogoutConfView(TemplateView):
+#     def post(self, request):
+#         return redirect('logout_confirmation')
 
 class LogoutCompView(TemplateView):
     def post(self, request, *args, **kwargs):
         return render(request, 'logout_complete.html')
 
-# def create(request):
-#     if request.method == 'GET':
-#         form = AccountAddForm
-#         context = {
-#             'form':form
+# class AccLoginView(LoginView):
+#     def login(request):
+#         if request.method == "POST":
+#             form = LoginForm(request, data=request.POST)
+#             if form.is_valid():
+#                 user = form.get_user()
+#                 if user:
+#                     login(request, user)
+#         else:
+#             form = LoginForm()
+        
+#         param = {
+#             'form': form,
 #         }
-#         return render(request, 'account_create.html', context)
-#     elif request.method == 'POST':
-#         form = AccountAddForm(request.POST)
-#         if form.is_valid():
-#             get_user_model().objects.create_user(
-#                 user_id=form.cleaned_data['user_id'],
-#                 password=form.cleaned_data['password'],
-#                 name=form.cleaned_data['name']
-#             )
-#             return redirect('management_account/account_creating/account_create_complete/')
-#         context = {
-#             'form': form
-#         }
-#         return render(request, 'account_create.html', context)
+#         return render(request, 'login.html', param)
+
+
+def logout(request):
+    auth_logout(request)
+    return render(request, 'logout_confirmation.html')
+
+
+class Account_User(LoginRequiredMixin, TemplateView):
+    template_name = ''
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        return context
+
+class LoginFailView(LoginRequiredMixin, TemplateView):
+    template_name = 'login_failure.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['users'] = User.objects.exclude(username=self.request.user.username)
+        return context
+ 
 
 def manage_account(request):
-    template_name = 'management_account.html'
     acc = {}
     user = User.objects.all()
     acc['object_list']
+    return render(request, 'management_account.html')
 
 
 def account_create_complete(request):
@@ -70,28 +94,28 @@ def account_create_complete(request):
         form.save()
     return render(request, 'account_create_complete.html')
 
-class AccountLogin(AuthLoginView):
-    template_name = "login.html"
-    def post(self, request, *args, **kwargs):
-        form = UserForm(data=request.POST)
-        if form.is_valid():
-            name = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            try:
-                user = User.objects.get(name=name)
-                if user.check_password(password):
-                    login(request, user)
-                    return redirect('login_complete')  # URL名を使用
-                else:
-                    error_message = "ユーザー名またはパスワードが正しくありません。"
-            except User.DoesNotExist:
-                error_message = "ユーザー名またはパスワードが正しくありません。"
-        else:
-            error_message = "フォームにエラーがあります。"
+# class AccountLogin(AuthLoginView):
+#     template_name = "login.html"
+#     def post(self, request, *args, **kwargs):
+#         form = UserForm(data=request.POST)
+#         if form.is_valid():
+#             name = form.cleaned_data.get('username')
+#             password = form.cleaned_data.get('password')
+#             try:
+#                 user = User.objects.get(name=name)
+#                 if user.check_password(password):
+#                     login(request, user)
+#                     return redirect('login_complete')  # URL名を使用
+#                 else:
+#                     error_message = "ユーザー名またはパスワードが正しくありません。"
+#             except User.DoesNotExist:
+#                 error_message = "ユーザー名またはパスワードが正しくありません。"
+#         else:
+#             error_message = "フォームにエラーがあります。"
 
-        return render(request, 'login.html', {'form': form, 'error_message': error_message})
+#         return render(request, 'login.html', {'form': form, 'error_message': error_message})
 
-account_login = AccountLogin.as_view()
+# account_login = AccountLogin.as_view()
 
 def account_create(request):
     form = AccountAddForm(request.POST)
