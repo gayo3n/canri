@@ -220,11 +220,11 @@
             .then(response => response.json())
             .then(data => {
                 const memberData = data.member_data;
-                const specialityHeight = Math.min(memberData.speciality_height / 10, 10); // スケーリング
-                const timeManagementAbility = Math.min(memberData.time_management_ability / 10, 10); // スケーリング
-                const problemSolvingAbility = Math.min(memberData.problem_solving_ability / 10, 10); // スケーリング
-                const planningPresentationPower = Math.min(memberData.planning_presentation_power / 10, 10); // スケーリング
-                const teamwork = Math.min(memberData.teamwork / 10, 10); // スケーリング
+                const specialityHeight = Math.min(memberData.speciality_height, 10); // スケーリング
+                const timeManagementAbility = Math.min(memberData.time_management_ability, 10); // スケーリング
+                const problemSolvingAbility = Math.min(memberData.problem_solving_ability, 10); // スケーリング
+                const planningPresentationPower = Math.min(memberData.planning_presentation_power, 10); // スケーリング
+                const teamwork = Math.min(memberData.teamwork, 10); // スケーリング
 
                 radarChart.data.datasets[0].data = [
                     specialityHeight,
@@ -311,9 +311,11 @@
             },
             options: {
                 scale: {
-                    ticks: {
+                    r: {
                         beginAtZero: true,
-                        max: 10
+                        min: 0,
+                        max: 10,
+                        stepSize: 1
                     }
                 }
             }
@@ -322,4 +324,4 @@
         updateRadarChart();
     });
 </script>
-{% endblock %}
+{% endblock %} 
