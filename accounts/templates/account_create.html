@@ -4,7 +4,9 @@
 {% block head %}<link rel="stylesheet" href="{% static 'css/account_creating.css' %}">{% endblock %}
 {% block content %}
 <h2>アカウント作成</h2>
-    <form action="アカウント作成完了" method="post">
+    <form action="account_create_complete/" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
         <div>
             <input type="text" value="ユーザ名" id="username" name="name" required>
         </div>
