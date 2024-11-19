@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
-
+from .models import User
 
 User = get_user_model()
 
@@ -40,6 +40,17 @@ class LogoutCompView(TemplateView):
 # アカウント管理
 class ManagementAccountView(TemplateView):
     template_name = "management_account.html"
+
+    def get(self, request, *args, **kwargs):
+        # データベースから全ユーザーを取得
+        users = User.objects.all()
+
+        # コンテキストにユーザー情報を渡す
+        context = {
+            'users': users,  # 全ユーザーをテンプレートに渡す
+        }
+
+        return render(request, 'management_account.html', context)
 
 class AccountCreateView(TemplateView):
     template_name = "account_create.html"

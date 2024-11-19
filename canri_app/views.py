@@ -380,7 +380,8 @@ class SaveNewProjectView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         project_name = request.POST.get('project_name')
-        project_description = request.POST.get('project_description')
+        project_description = request.POST.get
+        ('project_description')
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
         teams = request.POST.get('teams')
