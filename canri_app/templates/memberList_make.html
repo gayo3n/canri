@@ -33,7 +33,7 @@
         <button type="button" class="csv-upload-btn">CSVファイルアップロード</button>
         <form method="POST" action="{% url 'canri_app:member_make' %}">
             {% csrf_token %}
-            <button type="submit" class="btn">⊕新規メンバー追加</button>
+            <button type="submit" class="btn" action="{% url 'canri_app:member_make' %}">⊕新規メンバー追加</button>
         </form>
     </section>
 
@@ -42,7 +42,13 @@
         <ul>
             {% for member_id in memberID_list %}
                 <li>
-                    {{ member_id }}  <button type="button" class="delete-btn">️削除</button>
+                    {{ member_id }}
+                    <!-- 削除用のフォーム -->
+                    <form method="POST" action="{% url 'canri_app:memberlist_make' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="delete_member_id" value="{{ member_id }}">
+                        <button type="submit" class="delete-btn">️削除</button>
+                    </form>
                 </li>
             {% endfor %}
         </ul>
@@ -60,7 +66,7 @@
                 {{ error_message }}
             {% endif %}
             <button class="memberlist_save" type="submit">保存</button>
-            <button class="memberlist_cancel" type="button" action="{% url 'canri_app:memberlist_make_cancel' %}">キャンセル</button>
+            <button class="memberlist_cancel" type="button" action="{% url 'canri_app:memberlist' %}">キャンセル</button>
         </form>
     </section>
 {% endblock %}

@@ -16,10 +16,10 @@ urlpatterns = [
     path('memberlist/delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
     path('memberlist/delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
     # メンバー
-    path('member_make/', views.MemberMakeView.as_view(), name='member_make'),
-    path('member_make/complete/', views.MemberMakeCompleteView.as_view(), name='member_make_complete'),
-    path('member_make/delete/', views.MemberMakeDeleteView.as_view(), name='member_make_delete'),
-    path('member_make/delete/complete/', views.MemberListDeleteOkView.as_view(), name='member_make_delete_complete'),
+    path('member/make/', views.MemberMakeView.as_view(), name='member_make'),
+    path('member/make/complete/', views.MemberMakeCompleteView.as_view(), name='member_make_complete'),
+    path('member/delete/', views.MemberMakeDeleteView.as_view(), name='member_delete'),
+    path('member/delete/complete/', views.MemberListDeleteOkView.as_view(), name='member_delete_complete'),
     
     #path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
     path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
