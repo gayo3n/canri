@@ -10,7 +10,8 @@ from django.utils import timezone
 import json
 from .forms import SearchForm
 from django.http import HttpResponseBadRequest, HttpResponseNotFound
-
+from django.views import View
+from .api import get_member_data
 
 
 # -----システムメニュー-----
@@ -34,6 +35,16 @@ class IndexView(TemplateView):
 class MemberListView(TemplateView):
     template_name = "memberlist.html"
 
+    def get(self, request, *args, **kwargs):
+        member_list = MemberList.objects.all()  # MemberListの全データを取得
+        categories = [member.category for member in member_list]  # 各MemberListから関連するCategoryを取得
+
+        context = {
+            "categories": categories  # 関連するCategoryのリストを渡す
+        }
+        return render(request, self.template_name, context)
+
+
 class NewProjectView(TemplateView):
     template_name = "create_new_project.html"
 
@@ -42,59 +53,104 @@ class NewProjectView(TemplateView):
 # -----メンバーリスト作成-----
 class MemberListMakeView(TemplateView):
     template_name = "memberList_make.html"
-    
-    memberID_list = []
 
     def get(self, request, *args, **kwargs):
         form = SearchForm(request.GET)
-        members = Member.objects.all()
+        members = self.get_queryset()
+
+        # セッションから memberID_list を取得
+        memberID_list = request.session.get('memberID_list', [])
 
         context = {
             'form': form,
             'members': members,
-            'memberID_list': self.memberID_list
+            'memberID_list': memberID_list  # 現在のリストを表示
         }
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        members = Member.objects.all()
+        # セッションから memberID_list を取得
+        memberID_list = request.session.get('memberID_list', [])
 
-        # 検索処理
-        search_query = request.POST.get('query', '')
-        if search_query:
-            members = members.filter(name__icontains=search_query)
-        
-        # 複数のmember_id をリクエストから取得
-        member_ids = request.POST.getlist('member_id')
+        # メンバー追加処理
+        member_id = request.POST.get('member_id')
+        if member_id and member_id.isdigit():
+            member_id = int(member_id)
+            if member_id not in memberID_list:
+                # メンバーが存在するか確認
+                try:
+                    Member.objects.get(member_id=member_id)  # メンバーIDの確認
+                    memberID_list.append(member_id)  # リストに追加
+                except Member.DoesNotExist:
+                    print(f"Member with ID {member_id} not found")
 
-        # member_idが複数選ばれている場合
-        if member_ids:
-            for member_id in member_ids:
-                if member_id.isdigit():  # 数値チェック
-                    try:
-                        # メンバーを取得
-                        member = Member.objects.get(member_id=int(member_id))
-                        if member_id not in self.memberID_list:
-                            self.memberID_list.append(member_id)
-                    except Member.DoesNotExist:
-                        pass  # メンバーが存在しない場合は無視
+        # セッションに memberID_list を保存
+        request.session['memberID_list'] = memberID_list
 
-        # member_id が追加されていれば、そのメンバー情報を取得
-        members_in_list = Member.objects.filter(member_id__in=self.memberID_list)
-
+        members = self.get_queryset()
         context = {
-            'members': members,
-            'memberID_list': self.memberID_list,
-            'members_in_list': members_in_list  # 追加されたメンバーを表示するための変数
+            'members': members, # 検索エリアメンバー
+            'memberID_list': memberID_list  # 更新されたリストメンバー
         }
-
         return render(request, self.template_name, context)
+    
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            members = Member.objects.filter(name__icontains=query)
+        else:
+            members = Member.objects.all()
+        return members
 
 
-
-
+# -----メンバーリスト保存-----
 class MemberListMakeCompleteView(TemplateView):
-    template_name = "memberList_make_complete.html"
+    template_name = "memberlist_make_complete.html"
+
+    def post(self, request, *args, **kwargs):
+        # リスト名と詳細を取得
+        member_list_name = request.POST.get('member_list_name')
+        member_list_details = request.POST.get('member_list_details')
+
+        if member_list_name and member_list_details:
+            # 新しいカテゴリを作成
+            category = Category(
+                category_name=member_list_name,
+                detail=member_list_details,
+                creation_date=timezone.now()
+            )
+            category.save()
+
+            # POSTデータから memberID_list を取得
+            member_id_list = request.POST.getlist('memberID_list')
+
+            # 各 member_id に対して MemberList を作成
+            for member_id in member_id_list:
+                try:
+                    # メンバーを取得
+                    member = Member.objects.get(member_id=member_id)
+                    # MemberList オブジェクトを作成して保存
+                    member_list = MemberList(
+                        member=member,
+                        category=category,
+                        creation_date=timezone.now()
+                    )
+                    member_list.save()
+                except Member.DoesNotExist:
+                    print(f"Member with ID {member_id} not found")
+
+            # 成功したらメンバーリストページにリダイレクト
+            return redirect('canri_app:memberlist')
+        else:
+            # 入力漏れがあればエラーメッセージを表示
+            context = {'error_message': 'すべてのフィールドを入力してください。'}
+            return render(request, 'canri_app/memberlist_make.html', context)    # メンバー情報を表示するビュー
+        
+
+        
+class MemberListMakeCancel(TemplateView):
+    template_name = "memberlist.html"
 
 # メンバー作成
 class MemberMakeView(TemplateView):
