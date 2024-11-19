@@ -1,79 +1,8 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<style>
-    /* 検索バーのスタイル */
-    .search-container {
-        padding: 20px;
-        background-color: white;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-    }
-
-    /* 検索入力フィールドのスタイル */
-    .search-input {
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        width: 300px;
-    }
-
-    /* 検索ボタンのスタイル */
-    .search-button {
-        padding: 8px 16px;
-        background-color: #f0f0f0;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    /* プロジェクトテーブルのスタイル */
-    .project-table {
-        width: 100%;
-        background-color: white;
-        margin-top: 20px;
-    }
-
-    /* プロジェクト行のスタイル */
-    .project-row {
-        display: flex;
-        padding: 15px;
-        border-bottom: 1px solid #ddd;
-        align-items: center;
-    }
-
-    /* プロジェクト名のスタイル */
-    .project-name {
-        width: 150px;
-        font-weight: bold;
-    }
-
-    /* プロジェクト期間のスタイル */
-    .project-period {
-        width: 200px;
-    }
-
-    /* プロジェクト詳細のスタイル */
-    .project-details {
-        flex-grow: 1;
-    }
-
-    /* アクションボタンのスタイル */
-    .action-button {
-        padding: 8px 16px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    /* アクションボタンのホバー時のスタイル */
-    .action-button:hover {
-        background-color: #0056b3;
-    }
-</style>
+<!-- 外部CSSファイルを読み込む -->
+<link rel="stylesheet" href="{% static 'css/project_list.css' %}">
 {% endblock %}
 
 {% block content %}
