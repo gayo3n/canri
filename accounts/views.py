@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from .models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -78,6 +78,59 @@ def logout(request):
 class Account_User(LoginRequiredMixin, TemplateView):
     template_name = ''
 
+
+# アカウント管理
+class ManagementAccountView(TemplateView):
+    template_name = "management_account.html"
+
+    def get(self, request, *args, **kwargs):
+        # データベースから全ユーザーを取得
+        users = User.objects.all()
+
+        # コンテキストにユーザー情報を渡す
+        context = {
+            'users': users,  # 全ユーザーをテンプレートに渡す
+        }
+
+        return render(request, 'management_account.html', context)
+
+class AccountCreateView(TemplateView):
+    template_name = "account_create.html"
+
+class CreateCompleteView(TemplateView):
+    template_name = "account_create_complete.html"
+
+class AccountChangeView(TemplateView):
+    template_name = "account_change.html"
+
+class AccountChangeCompleteView(TemplateView):
+    template_name = "account_change_complete.html"
+
+class AccountDeleteView(TemplateView):
+    template_name = "account_delete.html"
+
+class DeleteCompleteView(TemplateView):
+    template_name = "account_delete_complete.html"
+
+# アイコン
+class AccountChangeEmployeeView(TemplateView):
+    template_name = "account_change_employee.html"
+
+class AccountChangeEmployeeCompleteView(TemplateView):
+    template_name = "account_change_complete_employee.html"
+
+
+class Create(generic.CreateView):
+    template_name = 'account_creating.html'
+    form_class = UserForm
+
+    def form_valid(self, form):
+        user = form.save()
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse('account_created')  # URL名を正しく指定
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
@@ -95,8 +148,8 @@ class LoginFailView(LoginRequiredMixin, TemplateView):
 def manage_account(request):
     acc = {}
     user = User.objects.all()
-    acc['object_list']
-    return render(request, 'management_account.html')
+    acc['object_list'] = user
+    return render(request, 'management_account.html', acc)
 
 
 def account_create_complete(request):
@@ -157,3 +210,6 @@ def account_delete(request, user):
     obj = get_object_or_404(User, user=user)
     context = {'object': obj}
     return render(request, template_name, context)
+
+def account_change_employee(request):
+    template_name = "account_change_employee"

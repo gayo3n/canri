@@ -1,57 +1,43 @@
 {% extends 'base2.html' %}
 {% load static %}
-{% block head %}<link rel="stylesheet" href="{% static 'css/management_account.css' %}">{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/management_account.css' %}">
+{% endblock %}
 {% block content %}
 <h2>ユーザーのアカウント一覧</h2>
 
 <!-- ユーザー情報のテーブル -->
 <table border="1">
-    <tr>
-        <th>名前</th>
-        <th>ユーザーID</th>
-        <th>削除</th> 
-    </tr>
-    <tr>
-        <td name="user_name"><a href="{% url 'accounts:account_change' %}" class="btn save">大原太郎</a></td>
-        <td id="OHARA0001">OHARA0001</td>
-        <td>
-            <a href="{% url 'accounts:account_delete' %}" class="btn btn-danger" data-user-id="OHARA0001">🗑️</a>
-        </td>
-    </tr>
-    <tr>
-        <td name="user_name">大原次郎</td>
-        <td id="OHARA0002">OHARA0002</td>
-        <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0002">🗑️</button>
-        </td>
-    </tr>
-    <tr>
-        <td name="user_name">大原三郎</td>
-        <td id="OHARA0003">OHARA0003</td>
-        <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0003">🗑️</button>
-        </td>
-    </tr>
-    <tr>
-        <td name="user_name">大原四郎</td>
-        <td id="OHARA0004">OHARA0004</td>
-        <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0004">🗑️</button>
-        </td>
-    </tr> 
-    <tbody>
-        {% for user in user_list %}
+    <thead>
         <tr>
-            <td>{{ user.user_id }}</td>
-            <td>{{ user.password }}</td>
-            <td>{{ user.name }}</td>
+            <th>名前</th>
+            <th>ユーザーID</th>
+            <th>削除</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <!-- ユーザー名を表示し、編集リンクを作成 -->
+            <td>
+                <a href="m" class="btn save">
+                    {{ user.name }}
+                </a>
+            </td>
+            <!-- ユーザーIDを表示 -->
+            <td id="{{ forloop.counter }}">{{ user.user_id }}</td>
+            <!-- 削除リンクを作成 -->
+            <td>
+                <a href="m" class="btn btn-danger" data-user-id="{{ user.user_id }}">
+                    🗑️
+                </a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
+
 </table>
 
-<div class="add-account-container">
-    <a href="{% url "accounts:account_create" %}" class="delete-btn">＋ </a>
-</div>
+
 
 {% endblock %}
