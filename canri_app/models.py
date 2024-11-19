@@ -21,11 +21,11 @@ class Project(models.Model):
     project_id = models.AutoField(primary_key=True)
     project_name = models.CharField(max_length=255)
     project_detail = models.TextField(null=True, blank=True)
-    project_start_date = models.DateTimeField()
-    project_end_date = models.DateTimeField()
+    project_start_date = models.DateField()
+    project_end_date = models.DateField()
     creation_date = models.DateTimeField()
     update_date = models.DateTimeField(null=True, blank=True)
-    complete_date = models.DateTimeField(null=True, blank=True)
+    complete_date = models.DateField(null=True, blank=True)
     deletion_date = models.DateTimeField(null=True, blank=True)
     post_evaluation_memo = models.TextField(null=True, blank=True)
     deletion_flag = models.BooleanField(default=False)
@@ -65,10 +65,10 @@ class ProjectAffiliationTeam(models.Model):
 class MBTI(models.Model):
     mbti_id = models.AutoField(primary_key=True)
     mbti_name = models.CharField(max_length=255)
-    planning_presentation_power = models.CharField(max_length=255)
-    teamwork = models.CharField(max_length=255)
-    time_management_ability = models.CharField(max_length=255)
-    problem_solving_ability = models.CharField(max_length=255)
+    planning_presentation_power = models.IntegerField(max_length=255)
+    teamwork = models.IntegerField(max_length=255)
+    time_management_ability = models.IntegerField(max_length=255)
+    problem_solving_ability = models.IntegerField(max_length=255)
 
     class Meta:
         db_table = 'MBTI'

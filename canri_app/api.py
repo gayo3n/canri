@@ -305,7 +305,7 @@ def get_team_data(request, team_id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-# チームを保存するAPI
+# 新規チームを保存するAPI
 @require_http_methods(["POST"])
 def save_team_api(request):
     try:
