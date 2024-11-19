@@ -2,6 +2,8 @@
 from django.urls import path
 from . import views
 from .views import projectListView,Post_projectListView,project_detail_view,team_detail_view
+from . import api
+
 app_name = 'canri_app'
 
 urlpatterns = [
@@ -21,22 +23,28 @@ urlpatterns = [
     path('member/delete/', views.MemberMakeDeleteView.as_view(), name='member_delete'),
     path('member/delete/complete/', views.MemberListDeleteOkView.as_view(), name='member_delete_complete'),
     
-    #path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
-    path('management_account/', views.ManagementAccountView.as_view(), name='management_account'),
+
+    # path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
     
     #新規プロジェクト作成
     path('new_project/', views.NewProjectView.as_view(), name='new_project'),    
     path('new_project_edit/', views.NewProjectEditView.as_view(), name='new_project_edit'),
+    path('new_project_edit/back/', views.NewProjectEdit2View.as_view(), name='new_project_edit2'),
     path('create_team/', views.CreateTeamView.as_view(), name='create_team'),
     path('create_team2/', views.CreateTeam2View.as_view(), name='create_team2'),
+    path('create_team2/back/', views.CreateTeam2BackView.as_view(), name='create_team2_back'),
     path('create_team3/', views.CreateTeam3View.as_view(), name='create_team3'),
+    path('create_team3/save/', views.SaveTeamView.as_view(), name='create_team3_save'),
     path('save_new_project/', views.SaveNewProjectView.as_view(), name='save_new_project'),
+    path('team_edit/<int:team_id>/', views.TeamEditView.as_view(), name='team_edit'),
+    path('team_edit/complete/', views.TeamEditCompleteView.as_view(), name='team_edit_complete'),
+    path('team_member_edit/', views.TeamMemberEditView.as_view(), name='team_member_edit'),
 
     #プロジェクト一覧
     path('progress_within_projectlist/', views.progress_within_ProjectlistView.as_view(), name='projectlist'),
     path('post_projectlist/', views.progress_within_ProjectlistView.as_view(), name='post_projectlist'),
     path('project/', projectListView, name='project'),
-    path('post_project/', Post_projectListView, name='post_project'),
+    path('post_project/', views.post_ProjectlistView.as_view(), name='post_project'),
 
     #プロジェクト詳細
     path('project_detail/',views.Project_detailView.as_view(), name='project_detail'),
@@ -47,4 +55,14 @@ urlpatterns = [
     #チーム詳細
     # path('team_detail/',views.team_detailView.as_view(), name='team_detail'),
     # path('team/<int:team_id>/', team_detail_view, name='project_detail'),
+
+    # APIエンドポイント
+    path('api/get_member_data/<int:member_id>/', api.get_member_data, name='get_member_data'),
+    path('api/get_members_by_member_list/<int:category_id>/', api.get_members_by_member_list, name='get_members_by_member_list'),
+    path('api/create_team/', api.create_team_api, name='create_team_api'),
+    path('api/get_teams_by_project/<int:project_id>/', api.get_teams_by_project, name='get_teams_by_project'),
+    path('api/get_team_members/<int:team_id>/', api.get_team_members, name='get_team_members'),
+    path('api/get_team_data/<int:team_id>/', api.get_team_data, name='get_team_data'),
+    path('api/save_team/', api.save_team_api, name='save_team'),
+    path('api/save_project/', api.save_project_api, name='save_project_api'),
 ]

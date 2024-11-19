@@ -1,0 +1,210 @@
+/* ボディのスタイル */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 10px 0;
+}
+
+.main-content {
+    max-width: 1200px; /* 横幅を広げる */
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+}
+
+h1 {
+    font-size: 40px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+select, input[type="text"], input[type="date"], input[type="submit"], button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button[type="button"], .action-button {
+    width: auto;
+    display: inline-block;
+    margin-right: 10px;
+    padding: 10px 20px; /* 横幅を調整 */
+    background-color: #007bff;
+    color: #fff;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.button-form {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.action-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.action-button:hover {
+    background-color: #0056b3;
+}
+
+.next-button {
+    margin-left: 10px;
+}
+
+.error-message {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.form-inline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 横方向にスペースを均等に配置 */
+}
+
+.form-inline label {
+    margin-right: 10px;
+}
+
+.form-inline select {
+    margin-right: 10px;
+}
+
+.member-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table th, table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center; /* 中央揃え */
+    vertical-align: middle; /* 縦方向に中央揃え */
+}
+
+table th {
+    background-color: #f4f4f9;
+    font-weight: bold;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* モーダルウィンドウのスタイル */
+.modal {
+    display: none; /* デフォルトでは非表示 */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* リンクの下線を消す */
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.left-panel, .right-panel {
+    width: 48%;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.modal .button-container {
+    justify-content: flex-end;
+}
+
+.chart-container {
+    width: 100%;
+    height: 400px;
+    margin-bottom: 20px;
+    display: flex;
+    /* justify-content: flex-end; 右揃えに変更 */
+    padding-left: 13%; /* 中央と右揃えの中間に配置 */
+}
+
+.chart-wrapper {
+    width: 80%;
+}

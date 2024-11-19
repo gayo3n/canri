@@ -1,14 +1,11 @@
 {% extends 'base2.html' %}
-
-{% comment %} 管理者 {% endcomment %}
-
 {% block content %}
 
 <body>
     <p>
         アカウントの作成が完了しました
     </p>
-    <a href="{% url 'user_list' %}">←アカウント一覧へ戻る</a>
+    <a href="{% url 'management_account' %}">←アカウント一覧へ戻る</a>
 </body>
 
 {% endblock %}

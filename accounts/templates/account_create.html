@@ -1,7 +1,4 @@
 {% extends 'base2.html' %}
-
-{% comment %} 管理者 {% endcomment %}
-
 {% load static %}
 
 {% block head %}<link rel="stylesheet" href="{% static 'css/account_creating.css' %}">{% endblock %}
@@ -9,6 +6,7 @@
 <h2>アカウント作成</h2>
     <form action="account_create_complete/" method="post">
         {% csrf_token %}
+        {{ form.as_p }}
         <div>
             <input type="text" value="ユーザ名" id="username" name="name" required>
         </div>
@@ -19,8 +17,7 @@
             <input type="text" value="パスワード" id="password" name="password" required>
         </div>
         <div>
-            <td><button type="submit" class="btn btn-danger">作成</button></td>
+            <td><a href="{% url 'accounts:account_create_complete' %}" class="btn btn-danger">作成</a></td>
         </div>
 
 {% endblock %}
-

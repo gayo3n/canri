@@ -7,13 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<!-- ポップアップダイアログ -->
-<div id="deletePopup" class="popup">
-    <div class="popup-content">
         <p>メンバー情報を削除しますか？</p>
-        <a href="{% url 'canri_app:memberlist_delete_complete' %}" class="confirm-delete-btn">削除</a>
-        <a href="{% url 'canri_app:member_make' %}">キャンセル</a>
-    </div>
-</div>
-
+        <a href="{% url 'canri_app:member_make_delete_complete' %}" class="confirm-delete-btn">削除</a>
+        <button type="button" onclick="history.back()">キャンセル</button>
 {% endblock %}

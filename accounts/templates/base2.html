@@ -5,6 +5,7 @@
     <title>Can理</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'canri_app:css/menu.css' %}">
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -19,14 +20,14 @@
                 <a href="{% url 'canri_app:project' %}">進行中プロジェクト</a>
                 <a href="{% url 'canri_app:post_project'%}">過去プロジェクト</a>
                 <a href="{% url 'canri_app:memberlist' %}">メンバーリスト</a>
-                <a href="{% url 'canri_app:management_account' %}">アカウント管理</a>
+                <a href="{% url 'accounts:manage_account' %}">アカウント管理</a>
             </div>
             <div class="navbar-right">
-                <a href="#" class="user-icon">
+                <!-- <a href="{% url 'accounts:account_change_employee' %}" class="user-icon"> -->
                     <img src="{% static 'images/user-icon.png' %}" alt="管理者アイコン">
                     管理者
                 </a>
-                <a href="logout_confirmation">ログアウト</a>
+                <a href="{% url 'accounts:logout_confirmation' %}">ログアウト</a>
             </div>
         </nav>
     </header>

@@ -5,6 +5,7 @@
     <title>Can理</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'canri_app:css/menu.css' %}">
     <!--追加のcss記入-->
     {% block head %}{% endblock %}
 </head>
@@ -23,11 +24,11 @@
                     <a href="{% url 'canri_app:memberlist' %}">メンバーリスト</a>
                 </div>
                 <div class="navbar-right">
-                    <a href="#" class="user-icon">
+
                         <img src="{% static 'images/user-icon.png' %}" alt="管理者アイコン">
                         社員名
                     </a>
-                    <a href="/logout_confirmation">ログアウト</a>
+                    <a href="{% url 'accounts:logout_confirmation' %}">ログアウト</a>
                 </div>
             </nav>
         </header>

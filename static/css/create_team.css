@@ -1,0 +1,102 @@
+/* ボディのスタイル */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 10px 0;
+}
+
+.main-content {
+    max-width: 1200px; /* 横幅を広げる */
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+}
+
+h1 {
+    font-size: 40px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+select, input[type="text"], input[type="date"], input[type="submit"], button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.next-button {
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    width: auto;
+    display: inline-block;
+    margin-right: 10px;
+    padding: 10px 20px; /* 横幅を調整 */
+}
+
+.next-button:hover {
+    background-color: #0056b3;
+}
+
+.back-button {
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    width: auto;
+    display: inline-block;
+    margin-right: 10px;
+    padding: 10px 20px; /* 横幅を調整 */
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+}
+
+label[for="auto_generate"] {
+    display: inline-block;
+    margin-right: 10px;
+    font-weight: bold;
+    color: #555;
+}
+
+input[type="checkbox"]#auto_generate {
+    width: auto;
+    margin-right: 10px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.back-button, .next-button {
+    width: auto;
+    display: inline-block;
+    margin-right: 10px;
+    padding: 10px 20px; /* 横幅を調整 */
+}
+
+.back-button {
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+}
+
+.back-button:hover {
+    background-color: #0056b3;
+}

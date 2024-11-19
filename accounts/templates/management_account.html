@@ -1,8 +1,4 @@
 {% extends 'base2.html' %}
-
-{% comment %} 管理者のみ {% endcomment %}
-
-
 {% load static %}
 {% block head %}<link rel="stylesheet" href="{% static 'css/management_account.css' %}">{% endblock %}
 {% block content %}
@@ -16,10 +12,10 @@
         <th>削除</th> 
     </tr>
     <tr>
-        <td name="user_name">大原太郎</td>
+        <td name="user_name"><a href="{% url 'accounts:account_change' %}" class="btn save">大原太郎</a></td>
         <td id="OHARA0001">OHARA0001</td>
         <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0001">🗑️</button>
+            <a href="{% url 'accounts:account_delete' %}" class="btn btn-danger" data-user-id="OHARA0001">🗑️</a>
         </td>
     </tr>
     <tr>
@@ -40,13 +36,25 @@
         <td name="user_name">大原四郎</td>
         <td id="OHARA0004">OHARA0004</td>
         <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0004">🗑️</button>
+            <button type="button" class="btn btn-danger" data-user-id="{% user_id %}">🗑️</button>
         </td>
-    </tr>
+    </tr> 
+    <tbody>
+        {% for user in object_list %}
+        <tr>
+            <td>{{ user.user_id }}</td>
+            <td>{{ user.password }}</td>
+            <td>{{ user.name }}</td>
+            <td>
+                <button type="button" class="btn btn-danger" data-user-id="{% user_id %}">🗑️</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 
 <div class="add-account-container">
-    <button type="button" class="btn btn-success add-account-btn" onclick="location.href='account_creating'">＋ </button>
+    <a href="{% url "accounts:account_create" %}" class="delete-btn">＋ </a>
 </div>
 
 {% endblock %}

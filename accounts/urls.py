@@ -3,18 +3,26 @@ from django.urls import path, include
 from django.contrib.auth.views import LoginView, LogoutView
 from . import views
 
-from.views import account_login, create, account_create_complete,user_list
+from.views import acclogin, logincomp, logout, account_create, account_create_complete,manage_account, account_delete, account_change_employee
+
+app_name = 'accounts'
 
 urlpatterns = [
-    #path('login/', views.LoginView.as_view(), name='login'),
-    path('login_complete/', views.LoginCompView.as_view(), name='login_complete'), #ログイン完了
+    # アカウント管理
+    path('login/', views.acclogin, name="login"), #ログイン
+    path('login_complete/', views.logincomp, name='login_complete'), #ログイン完了
     path('login_failure/', views.LoginFailView.as_view(), name='login_failure'), #ログイン失敗
-    path('logout_confirmation/', views.LogoutConfView.as_view(), name='logout_confirmation'), #ログアウト
-    path('user_list/', views.user_list, name='user_list'),
+    path('logout_confirmation/', views.logout, name='logout_confirmation'), #ログアウト
     path('logout_complete/', views.LogoutCompView.as_view(), name='logout_complete'), #ログアウト完了
-    path('management_account/account_creating/', views.create, name='account_creating'), #アカウント作成
-    path('management_account/account_creating/account_create_complete/', views.account_create_complete, name='account_create_complete'),  
-    path('login/', account_login, name="login"), #ログイン
-    #path('#/<int:pk>/', views.ManageAcc.as_view(), name='#'),   #アカウントページ用url
+    path('management_account/', views.manage_account, name='manage_account'), #アカウント一覧
+    path('management_account/account_creating/', views.account_create, name='account_creating'), #アカウント作成
+    path('management_account/create/account_create_complete/', views.account_create_complete, name='account_create_complete'),  #アカウント作成完了
+    path('account_delete/', views.account_delete, name='account_delete'), #アカウント削除
+    path('account_change_employee/', views.account_change_employee, name='account_change_employee'),
     
+    # アイコン
+    # path('change_employee/', views.AccountChangeEmployeeView.as_view(), name='account_change_employee'),
+    # path('change_employee/complete/', views.AccountChangeEmployeeCompleteView.as_view(), name='account_change_complete_employee'),
+
+    #path('#/<int:pk>/', views.ManageAcc.as_view(), name='#'),   #アカウントページ用url
 ]

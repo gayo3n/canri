@@ -4,16 +4,16 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/create_team3.css' %}">
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block content %}
 <div class="main-content">
-    <h1>新規チーム作成</h1>
-    <div class="container">
-        <div class="left-panel">
-            <h2>作成中のチーム</h2>
+    <h1>チーム編集</h1>
+    <div class="container" style="justify-content: space-around;">
+        <div class="left-spacer" style="flex: 0.5;"></div>
+        <div class="left-panel" style="flex: 3;">
+            <h2>チームメンバー</h2>
             <table>
                 <thead>
                     <tr>
@@ -22,36 +22,35 @@
                     </tr>
                 </thead>
                 <tbody id="memberTableBody">
-                    {% if team %}
-                        {% for member in team %}
-                        <tr data-member-id="{{ member.member_id }}">
-                            <td>{{ member.name }}</td>
-                            <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
-                        </tr>
-                        {% endfor %}
-                    {% else %}
-                        <tr id="noMembersMessage">
-                            <td colspan="2">メンバーが存在しません</td>
-                        </tr>
-                    {% endif %}
+                    {% for member in members %}
+                    <tr data-member-id="{{ member.member.member_id }}">
+                        <td>{{ member.member.name }}</td>
+                        <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
+                    </tr>
+                    {% endfor %}
                     <tr>
                         <td colspan="2"><a href="#" class="add-member" onclick="openAddMemberWindow()">＋</a></td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div class="right-panel">
-            <form method="post" action="{% url 'canri_app:create_team3_save' %}">
+        <div class="middle-spacer" style="flex: 0.5;"></div>
+        <div class="middle-panel" style="flex: 3;">
+            <h2>メモ欄</h2>
+            <textarea id="team_memo" name="team_memo" rows="10" style="width: 100%;">{{ team.memo }}</textarea>
+        </div>
+        <div class="right-spacer" style="flex: 0.5;"></div>
+        <div class="right-panel" style="flex: 3;">
+            <form method="post" action="{% url 'canri_app:team_edit' team_id=team.team_id %}">
                 {% csrf_token %}
+                <input type="hidden" name="team" id="team">
                 <input type="hidden" name="project_name" value="{{ project_name }}">
                 <input type="hidden" name="project_description" value="{{ project_description }}">
                 <input type="hidden" name="start_date" value="{{ start_date }}">
                 <input type="hidden" name="end_date" value="{{ end_date }}">
                 <input type="hidden" name="teams" value="{{ teams|safe }}">
-                <input type="hidden" name="team_type" value="{{ team_type }}">
-                <input type="hidden" name="team" id="team">
                 <label for="team_name">チーム名</label>
-                <input type="text" name="team_name" id="team_name" required>
+                <input type="text" name="team_name" id="team_name" value="{{ team.team_name }}" required>
                 
                 <div class="chart-container">
                     <div class="chart-wrapper">
@@ -65,6 +64,7 @@
                 </div>
             </form>
         </div>
+        <div class="right-spacer" style="flex: 0.5;"></div>
     </div>
 </div>
 
@@ -241,7 +241,7 @@
     function goBack() {
         const form = document.createElement('form');
         form.method = 'post';
-        form.action = "{% url 'canri_app:create_team2_back' %}";
+        form.action = "{% url 'canri_app:new_project_edit2' %}";
 
         const csrfToken = document.createElement('input');
         csrfToken.type = 'hidden';
@@ -278,18 +278,6 @@
         teams.name = 'teams';
         teams.value = '{{ teams|safe }}';
         form.appendChild(teams);
-
-        const teamSize = document.createElement('input');
-        teamSize.type = 'hidden';
-        teamSize.name = 'team_size';
-        teamSize.value = '{{ team_size }}';
-        form.appendChild(teamSize);
-
-        const teamType = document.createElement('input');
-        teamType.type = 'hidden';
-        teamType.name = 'team_type';
-        teamType.value = '{{ team_type }}';
-        form.appendChild(teamType);
 
         document.body.appendChild(form);
         form.submit();

@@ -2,6 +2,12 @@
 
 {% load custom_filters %} <!-- カスタムフィルターをロード -->
 
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/new_project_edit.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="main-content">
     <h1>新規プロジェクト作成</h1>
@@ -11,38 +17,70 @@
     <p>完了予定日: {{ project.end_date }}</p>
 
     <h2>参加チーム一覧</h2>
-    <ul>
+    <div id="teamList" class="team-list">
         {% if teams %}
-            {% for team in teams %}
-                {% if team %}
-                    <li class="team-box">{{ team.team_name }}</li>
-                {% else %}
-                    <li>チームが存在しません</li>
-                {% endif %}
+            {% for team_id in teams %}
+                <a href="{% url 'canri_app:team_edit' team_id=team_id %}?project_name={{ project.project_name }}&project_description={{ project.project_description }}&start_date={{ project.start_date }}&end_date={{ project.end_date }}&teams={{ teams|safe }}">
+                    <div id="team-{{ team_id }}" class="team-item">チーム情報を取得中...</div>
+                </a>
             {% endfor %}
         {% else %}
-            <li>チームが存在しません</li>
+            <div id="noTeamsMessage">チームが存在しません</div>
         {% endif %}
-    </ul>
+    </div>
 
-    <form method="post" action="{% url 'canri_app:create_team' %}">
-        {% csrf_token %}
-        <input type="hidden" name="project_name" value="{{ project.project_name }}">
-        <input type="hidden" name="project_description" value="{{ project.project_description }}">
-        <input type="hidden" name="start_date" value="{{ project.start_date }}">
-        <input type="hidden" name="end_date" value="{{ project.end_date }}">
-        <input type="hidden" name="teams" value="{{ teams }}">
-        <input type="submit" value="チームを新規で作成">
-    </form>
+    <div class="button-container">
+        <form method="post" action="{% url 'canri_app:create_team' %}" class="button-form">
+            {% csrf_token %}
+            <input type="hidden" name="project_name" value="{{ project.project_name }}">
+            <input type="hidden" name="project_description" value="{{ project.project_description }}">
+            <input type="hidden" name="start_date" value="{{ project.start_date }}">
+            <input type="hidden" name="end_date" value="{{ project.end_date }}">
+            <input type="hidden" name="teams" value="{{ teams|safe }}">
+            <button type="submit" class="action-button back-button">チームを新規で作成</button>
+        </form>
 
-    <form method="post" action="{% url 'canri_app:save_new_project' %}">
-        {% csrf_token %}
-        <input type="hidden" name="project_name" value="{{ project.project_name }}">
-        <input type="hidden" name="project_description" value="{{ project.project_description }}">
-        <input type="hidden" name="start_date" value="{{ project.start_date }}">
-        <input type="hidden" name="end_date" value="{{ project.end_date }}">
-        <input type="hidden" name="teams" value="{{ teams }}">
-        <input type="submit" value="プロジェクトを保存">
-    </form>
+        <form id="saveProjectForm" method="post" action="{% url 'canri_app:save_new_project' %}" class="button-form">
+            {% csrf_token %}
+            <input type="hidden" name="project_name" value="{{ project.project_name }}">
+            <input type="hidden" name="project_description" value="{{ project.project_description }}">
+            <input type="hidden" name="start_date" value="{{ project.start_date }}">
+            <input type="hidden" name="end_date" value="{{ project.end_date }}">
+            <input type="hidden" name="teams" value="{{ teams|safe }}">
+            <button type="button" class="action-button next-button" onclick="validateAndSubmit()">プロジェクトを保存</button>
+        </form>
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const teamIds = {{ teams|safe }};
+        teamIds.forEach(teamId => {
+            fetch(`{% url 'canri_app:get_team_data' team_id=0 %}`.replace("0", teamId))
+                .then(response => response.json())
+                .then(data => {
+                    const teamElement = document.getElementById(`team-${teamId}`);
+                    if (data.team) {
+                        teamElement.textContent = data.team.team_name;
+                    } else {
+                        teamElement.textContent = 'チーム情報の取得に失敗しました';
+                    }
+                })
+                .catch(error => {
+                    const teamElement = document.getElementById(`team-${teamId}`);
+                    teamElement.textContent = 'チーム情報の取得に失敗しました';
+                    console.error('チーム情報の取得エラー:', error);
+                });
+        });
+    });
+
+    function validateAndSubmit() {
+        const noTeamsMessage = document.getElementById('noTeamsMessage');
+        if (noTeamsMessage) {
+            alert('少なくとも1つのチームを追加してください。');
+        } else {
+            document.getElementById('saveProjectForm').submit();
+        }
+    }
+</script>
 {% endblock %}

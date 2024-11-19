@@ -1,6 +1,60 @@
-a{% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block head %}
+<script>
+    // ページが完全に読み込まれた後にスクリプトを実行
+    // 読み込みが完了したらこのスクリプトを起動
+    //addEventListener 設定したイベントが発生時処理を実行
+    // DOMContentLoaded DOMツリー読み込み完了後に発火
+    document.addEventListener("DOMContentLoaded", () => {
+        // モーダル要素を取得
+        // 作成したhtmlの要素をmodalに設定
+        // getElementById 任意のHTMLタグで指定したIDにマッチするドキュメント要素を取得するメソッド
+        const modal = document.getElementById("projectDetailModal");
+
+        // 「プロジェクト詳細入力モーダル」を開くリンクを取得
+        // openButtonにリンクを設定
+        // querySelector 指定されたセレクターまたはセレクター群に一致する、文書内の最初の Elementを指定
+        const openButton = document.querySelector("a[href='プロジェクト詳細入力モーダル']");
+
+        // モーダルを閉じるボタンを取得
+        // 上と同じ
+        // 開いたモーダルからelementを指定
+        const closeButton = modal.querySelector(".close-button");
+
+        // モーダルを開く処理
+        // openbuttonが押されたとき
+        //event.preventDefault submitイベントの発生元であるフォームが持つデフォルトの動作をキャンセルする
+            // クリック時のリンクの遷移をキャンセル
+        // style.displayで表示
+        openButton.addEventListener("click", (e) => {
+            e.preventDefault(); // リンクのデフォルト動作（遷移）を防止
+            modal.style.display = "block"; // モーダルを表示
+        });
+
+        // モーダルを閉じる処理
+        // 上と同じ
+        // noneで閉じる
+        closeButton.addEventListener("click", () => {
+            modal.style.display = "none"; // モーダルを非表示
+        });
+
+        // モーダルの外側をクリックした際にモーダルを閉じる処理
+        // targetがmodal全体の場合閉じる
+        // modal内部の場合 e.targetが具体的な要素になり全体にならない
+        // 外部の場合要素がないからmodal全体になる
+        //モーダルを開いた時点で画面全体がそのドキュメントになる(projectDetailModel)
+        window.addEventListener("click", (e) => {
+            // クリックした対象がモーダル自体である場合に閉じる
+            if (e.target === modal) {
+                modal.style.display = "none"; // モーダルを非表示
+            }
+        });
+    });
+</script>
+
+
+
 <style>
     .container {
         padding: 20px;
@@ -75,34 +129,163 @@ a{% extends "base.html" %}
         color: #666;
     }
 
-    .action-buttons {
+    .action-boxes {
         display: flex;
-        gap: 10px;
+        gap: 20px;
         margin-top: 20px;
     }
 
-    .action-button {
-        padding: 8px 20px;
+    .box {
+        width: fit-content;
+        height: 30px;
+        border: solid 3px #000000;
+        background-color: #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .box a {
+        text-decoration: none;
+        color: #000;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .fas {
+        font-size: 14px;
+    }
+
+
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 20px;
         border: 1px solid #ddd;
-        border-radius: 4px;
-        background: white;
+        border-radius: 8px;
+        width: 50%;
+        position: relative;
+    }
+
+    .close-button {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 20px;
+        font-weight: bold;
+        color: #333;
         cursor: pointer;
     }
+
+    .submit-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .submit-button:hover {
+        background-color: #0056b3;
+    }
+
 </style>
+<!-- FontAwesome CSS の読み込み -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 {% endblock %}
 
-
-
 {% block content %}
+
+
+<!-- プロジェクト詳細モーダル -->
+<div id="projectDetailModal" class="modal">
+    <!-- モーダルの内容を包む要素 -->
+    <div class="modal-content">
+        <!-- モーダルを閉じるボタン -->
+        <span class="close-button">&times;</span>
+
+        <!-- モーダルのタイトル -->
+        <h3>プロジェクト詳細入力</h3>
+
+        <!-- プロジェクト詳細を保存するフォーム -->
+        <form method="POST" action="プロジェクト詳細保存リンク">
+            <!-- プロジェクト名の入力欄 -->
+            <label for="projectName">プロジェクト名:</label>
+            <input
+                type="text"
+                id="projectName"
+                name="project_name"
+                value="{{ project.project_name }}"
+                required
+            >
+
+            <!-- プロジェクト説明の入力欄 -->
+            <label for="description">プロジェクト説明:</label>
+            <textarea
+                id="description"
+                name="description"
+                rows="4"
+                required
+            >{{ project.project_detail }}</textarea>
+
+            <!-- 開始日の入力欄 -->
+            <label for="startDate">開始日:</label>
+            <input
+                type="date"
+                id="startDate"
+                name="start_date"
+                value="{{ project.project_start_date }}"
+                required
+            >
+
+            <!-- 終了日の入力欄 -->
+            <label for="endDate">終了日:</label>
+            <input
+                type="date"
+                id="endDate"
+                name="end_date"
+                value="{{ project.project_end_date }}"
+                required
+            >
+
+            <!-- フォームの送信ボタン -->
+            <button type="submit" class="submit-button">保存</button>
+        </form>
+    </div>
+</div>
+
+
+
+
+
 <div class="container">
     <h2>{{ project.project_name }}</h2>
     <h3>関連チーム</h3>
     <div class="teams-grid">
         {% for affiliation in teams %}
             <div class="team-card">
-                <a href="{% url 'canri_app:' team.team_id %}">{{ affiliation.team.team_name }}</a>
+                <a href="チーム詳細リンク">{{ affiliation.team.team_name }}</a>
             </div>
         {% endfor %}
+    </div>
+
+    <div class="team-add">
+        <a href="新規チーム追加リンク">新規チーム追加</a>
     </div>
 
     <h3>フェーズ情報</h3>
@@ -110,10 +293,24 @@ a{% extends "base.html" %}
         <div class="task-list">
             {% for phase in phases %}
                 <div class="task-item">
-                    <span class="task-name">{{ phase.phase_name }}</span>
-                    <span class="task-date">{{ phase.expiration_date }}</span>
+                    <input type="checkbox" {% if phase.complete_flag %}checked{% endif %}>
+                    <span class="task-name"><a href="フェーズ詳細表示画面リンク">{{ phase.phase_name }}</a></span>
+                    <span class="task-date">{{ phase.expiration_date |date:"Y年m月d日"}}</span>
+                    <a href="フェーズ削除リンク(ゴミ箱アイコン)"><i class="fas fa-trash" aria-hidden="true"></i></a>
                 </div>
             {% endfor %}
+        </div>
+
+        <div class="action-boxes">
+            <div class="box">
+                <a href="フェーズ追加画面モーダル"> フェーズ追加</a>
+            </div>
+            <div class="box">
+                <a href="プロジェクト詳細入力モーダル"> プロジェクト詳細</a>
+            </div>
+            <div class="box">
+                <a href="保存確認画面モーダル"> 保存</a>
+            </div>
         </div>
     </div>
 </div>
