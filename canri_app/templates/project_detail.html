@@ -243,25 +243,24 @@
                 required
             >{{ project.project_detail }}</textarea>
 
-            <!-- 開始日の入力欄 -->
-            <label for="startDate">開始日:</label>
             <input
-                type="date"
-                id="startDate"
-                name="start_date"
-                value="{{ project.project_start_date }}"
-                required
-            >
+            type="date"
+            id="startDate"
+            name="start_date"
+            value="{{ project.project_start_date|date:'Y-m-d' }}"
+            required
+            onchange="document.getElementById('endDate').min = this.value;"
+        >
+        <input
+            type="date"
+            id="endDate"
+            name="end_date"
+            value="{{ project.project_end_date|date:'Y-m-d' }}"
+            required
+            min="{{ project.project_start_date|date:'Y-m-d' }}"
+        >
 
-            <!-- 終了日の入力欄 -->
-            <label for="endDate">終了日:</label>
-            <input
-                type="date"
-                id="endDate"
-                name="end_date"
-                value="{{ project.project_end_date }}"
-                required
-            >
+
 
             <!-- フォームの送信ボタン -->
             <button type="submit" class="submit-button">保存</button>

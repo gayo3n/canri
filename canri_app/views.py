@@ -607,9 +607,6 @@ def team_detail_view(request, team_id):
 
         # ctx["project_list"] = qsequest, self.template_name, {'members': members}
 
-<<<<<<< HEAD
 
 
 
-=======
->>>>>>> 031f362d46f949b0fc405b4806e743c28b1b6f7b
