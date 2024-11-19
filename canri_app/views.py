@@ -461,7 +461,7 @@ def Post_projectListView(request):
 
 
 
-
+# プロジェクト詳細表示
 class Project_detailView(TemplateView):
     template_name="project_detail.html"
 
@@ -507,4 +507,7 @@ def team_detail_view(request, team_id):
 
 
         # ctx["project_list"] = qsequest, self.template_name, {'members': members}
-    
+
+
+
+
