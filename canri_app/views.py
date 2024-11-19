@@ -417,7 +417,7 @@ class SaveNewProjectView(TemplateView):
 
         if response.status_code == 200:
             project_id = response_data['project_id']
-            print("プロジェクトが保存されました:", project_id)  # プロジェクトIDをターミナルに表示
+            print("プロジェクトが保存されました:", project_id)  # プロジェ��トIDをターミナルに表示
         else:
             print(response_data)
             print("プロジェクトの保存に失敗しました")  # エラーメッセージをターミナルに表示
@@ -468,6 +468,7 @@ class TeamEditView(TemplateView):
         team_name = request.POST.get('team_name')
         team_memo = request.POST.get('team_memo')
         team_members = json.loads(request.POST.get('team'))
+        print("team_memo:", team_memo)
 
         team.team_name = team_name
         team.memo = team_memo
@@ -491,6 +492,7 @@ class TeamEditView(TemplateView):
 
         return HttpResponseRedirect(f"{reverse('canri_app:team_edit_complete')}?project_name={project_name}&project_description={project_description}&start_date={start_date}&end_date={end_date}&teams={teams}")
 
+#チーム編集完了
 class TeamEditCompleteView(TemplateView):
     template_name = "new_project_edit.html"
 
@@ -512,6 +514,46 @@ class TeamEditCompleteView(TemplateView):
             'end_date': end_date
         }
 
+        return render(request, self.template_name, {'project': project_data, 'teams': teams})
+
+#チーム削除
+class TeamDeleteView(TemplateView):
+    template_name = "new_project_edit.html"
+
+    def post(self, request, *args, **kwargs):
+        team_id = request.POST.get('team_id')
+        teams = request.POST.get('teams')
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        # teams をリストとして扱う
+        if isinstance(teams, str):
+            teams = json.loads(teams)
+
+        try:
+            # チームとチームメンバーの削除フラグを1に設定
+            team = Team.objects.get(team_id=team_id)
+            team.deletion_flag = True
+            team.save()
+
+            TeamMember.objects.filter(team=team).update(deletion_flag=True)
+
+            # teamsからチームIDを削除
+            teams = [t for t in teams if t != int(team_id)]
+        except Team.DoesNotExist:
+            return HttpResponseNotFound("Team not found")
+
+        # 入力された情報をリスト化
+        project_data = {
+            'project_name': project_name,
+            'project_description': project_description,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+
+        # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
         return render(request, self.template_name, {'project': project_data, 'teams': teams})
 
 #チームメンバー編集
@@ -560,7 +602,7 @@ def Post_projectListView(request):
 
 
 
-
+# プロジェクト詳細表示
 class Project_detailView(TemplateView):
     template_name="project_detail.html"
 
@@ -606,4 +648,7 @@ def team_detail_view(request, team_id):
 
 
         # ctx["project_list"] = qsequest, self.template_name, {'members': members}
+
+
+
 

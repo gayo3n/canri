@@ -39,6 +39,7 @@ urlpatterns = [
     path('team_edit/<int:team_id>/', views.TeamEditView.as_view(), name='team_edit'),
     path('team_edit/complete/', views.TeamEditCompleteView.as_view(), name='team_edit_complete'),
     path('team_member_edit/', views.TeamMemberEditView.as_view(), name='team_member_edit'),
+    path('team_delete/', views.TeamDeleteView.as_view(), name='team_delete'),
 
     #プロジェクト一覧
     path('progress_within_projectlist/', views.progress_within_ProjectlistView.as_view(), name='projectlist'),
@@ -65,4 +66,5 @@ urlpatterns = [
     path('api/get_team_data/<int:team_id>/', api.get_team_data, name='get_team_data'),
     path('api/save_team/', api.save_team_api, name='save_team'),
     path('api/save_project/', api.save_project_api, name='save_project_api'),
+    path('api/delete_team/', api.delete_team_api, name='delete_team_api'),
 ]

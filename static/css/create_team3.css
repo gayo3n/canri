@@ -77,10 +77,6 @@ button:hover {
     background-color: #0056b3;
 }
 
-.next-button {
-    margin-left: 10px;
-}
-
 .error-message {
     color: red;
     font-weight: bold;

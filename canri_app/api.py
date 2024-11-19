@@ -389,3 +389,47 @@ def save_project_api(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+# チーム削除API
+@require_http_methods(["POST"])
+def delete_team_api(request):
+    try:
+        data = json.loads(request.body)
+        team_id = data.get('team_id')
+        teams = data.get('teams')
+        project_name = data.get('project_name')
+        project_description = data.get('project_description')
+        start_date = data.get('start_date')
+        end_date = data.get('end_date')
+
+        # teams をリストとして扱う
+        if isinstance(teams, str):
+            teams = json.loads(teams)
+
+        try:
+            # チームとチームメンバーの削除フラグを1に設定
+            team = Team.objects.get(team_id=team_id)
+            team.deletion_flag = 1
+            team.save()
+
+            TeamMember.objects.filter(team=team).update(deletion_flag=1)
+
+            # teamsからチームIDを削除
+            teams = [t for t in teams if t != int(team_id)]
+        except Team.DoesNotExist:
+            return JsonResponse({'error': 'Team not found'}, status=404)
+
+        # 入力された情報をリスト化
+        project_data = {
+            'project_name': project_name,
+            'project_description': project_description,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+
+        return JsonResponse({'project': project_data, 'teams': teams})
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
