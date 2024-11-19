@@ -9,8 +9,9 @@ from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer,
 from django.utils import timezone
 import json
 from .forms import SearchForm
-from django.http import HttpResponseBadRequest, HttpResponseNotFound
+from django.http import HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect
 from .api import create_team_api, save_team_api, save_project_api
+from django.urls import reverse
 
 
 
@@ -65,24 +66,30 @@ class MemberListMakeView(TemplateView):
         if search_query:
             members = members.filter(name__icontains=search_query)
         
-        # member_id をリクエストから取得
-        member_id = request.POST.get('member_id')
+        # 複数のmember_id をリクエストから取得
+        member_ids = request.POST.getlist('member_id')
 
-        if member_id and member_id.isdigit():  # 数値チェック
-            try:
-                member = Member.objects.get(member_id=int(member_id))
-                if member_id not in self.memberID_list:
-                    self.memberID_list.append(member_id)
-            except Member.DoesNotExist:
-                member = None
-        else:
-            member = None
-        
+        # member_idが複数選ばれている場合
+        if member_ids:
+            for member_id in member_ids:
+                if member_id.isdigit():  # 数値チェック
+                    try:
+                        # メンバーを取得
+                        member = Member.objects.get(member_id=int(member_id))
+                        if member_id not in self.memberID_list:
+                            self.memberID_list.append(member_id)
+                    except Member.DoesNotExist:
+                        pass  # メンバーが存在しない場合は無視
+
+        # member_id が追加されていれば、そのメンバー情報を取得
+        members_in_list = Member.objects.filter(member_id__in=self.memberID_list)
+
         context = {
             'members': members,
             'memberID_list': self.memberID_list,
-            'member': member
+            'members_in_list': members_in_list  # 追加されたメンバーを表示するための変数
         }
+
         return render(request, self.template_name, context)
 
 
@@ -126,6 +133,7 @@ class MemberMakeDeleteOkView(TemplateView):
 class NewProjectView(TemplateView):
     template_name = "new_project.html"
 
+#新規プロジェクト編集
 class NewProjectEditView(TemplateView):
     template_name = "new_project_edit.html"
 
@@ -146,9 +154,10 @@ class NewProjectEditView(TemplateView):
         # 空のチームリストを追加
         teams = []
 
-        # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
+        # 入力された情��を保持した状態でnew_project_edit.htmlに遷移
         return render(request, self.template_name, {'project': project_data, 'teams': teams})
 
+#新規プロジェクト編集に戻る
 class NewProjectEdit2View(TemplateView):
     template_name = "new_project_edit.html"
 
@@ -174,6 +183,7 @@ class NewProjectEdit2View(TemplateView):
         # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
         return render(request, self.template_name, {'project': project_data, 'teams': teams})
 
+#チーム追加１
 class CreateTeamView(TemplateView):
     template_name = "create_team.html"
 
@@ -197,6 +207,7 @@ class CreateTeamView(TemplateView):
             'teams': teams
         })
 
+#チーム追加2
 class CreateTeam2View(TemplateView):
     template_name = "create_team2.html"
 
@@ -239,6 +250,7 @@ class CreateTeam2View(TemplateView):
                 'categories': categories,
             })
 
+#チーム追加2に戻る
 class CreateTeam2BackView(TemplateView):
     template_name = "create_team2.html"
 
@@ -267,6 +279,8 @@ class CreateTeam2BackView(TemplateView):
                 'team_type': team_type,
                 'categories': categories,
             })
+    
+#チーム追加3
 class CreateTeam3View(TemplateView):
     template_name = "create_team3.html"
 
@@ -317,7 +331,8 @@ class CreateTeam3View(TemplateView):
             'selected_members': selected_members,
             'team': team
         })
-    
+
+#チーム保存
 class SaveTeamView(TemplateView):
     template_name = "new_project_edit.html"
 
@@ -375,6 +390,7 @@ class SaveTeamView(TemplateView):
         # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
         return render(request, self.template_name, {'project': project_data, 'teams': teams})
 
+#新規プロジェクト保存
 class SaveNewProjectView(TemplateView):
     template_name = "save_new_project.html"
 
@@ -415,6 +431,95 @@ class SaveNewProjectView(TemplateView):
             'end_date': end_date,
             'teams': teams
         })
+    
+#チーム編集
+class TeamEditView(TemplateView):
+    template_name = "team_edit.html"
+
+    def get(self, request, *args, **kwargs):
+        team_id = kwargs.get('team_id')
+        team = Team.objects.get(team_id=team_id)
+        members = TeamMember.objects.filter(team=team)
+        categories = Category.objects.filter(deletion_flag=False)
+
+        project_name = request.GET.get('project_name')
+        project_description = request.GET.get('project_description')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        teams = request.GET.get('teams')
+        # teams をリストとして扱う
+        if isinstance(teams, str):
+            teams = json.loads(teams)
+
+        context = {
+            'team': team,
+            'members': members,
+            'categories': categories,
+            'project_name': project_name,
+            'project_description': project_description,
+            'start_date': start_date,
+            'end_date': end_date,
+            'teams': teams,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        team_id = kwargs.get('team_id')
+        team = Team.objects.get(team_id=team_id)
+        team_name = request.POST.get('team_name')
+        team_memo = request.POST.get('team_memo')
+        team_members = json.loads(request.POST.get('team'))
+
+        team.team_name = team_name
+        team.memo = team_memo
+        team.save()
+
+        TeamMember.objects.filter(team=team).delete()
+        for member_id in team_members:
+            member = Member.objects.get(member_id=member_id)
+            TeamMember.objects.create(
+                team=team,
+                member=member,
+                creation_date=timezone.now(),
+                update_date=timezone.now()
+            )
+
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        teams = request.POST.get('teams')
+
+        return HttpResponseRedirect(f"{reverse('canri_app:team_edit_complete')}?project_name={project_name}&project_description={project_description}&start_date={start_date}&end_date={end_date}&teams={teams}")
+
+class TeamEditCompleteView(TemplateView):
+    template_name = "new_project_edit.html"
+
+    def get(self, request, *args, **kwargs):
+        project_name = request.GET.get('project_name')
+        project_description = request.GET.get('project_description')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        teams = request.GET.get('teams')
+
+        # teams をリストとして扱う
+        if isinstance(teams, str):
+            teams = json.loads(teams)
+
+        project_data = {
+            'project_name': project_name,
+            'project_description': project_description,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+
+        return render(request, self.template_name, {'project': project_data, 'teams': teams})
+
+#チームメンバー編集
+class TeamMemberEditView(TemplateView):
+    template_name = "team_member_edit.html"
+
+
 
 #プロジェクトリスト
 class ProjectlistView(TemplateView):
@@ -456,7 +561,7 @@ def Post_projectListView(request):
 
 
 
-
+# プロジェクト詳細表示
 class Project_detailView(TemplateView):
     template_name="project_detail.html"
 
@@ -502,4 +607,7 @@ def team_detail_view(request, team_id):
 
 
         # ctx["project_list"] = qsequest, self.template_name, {'members': members}
-    
+
+
+
+

@@ -60,28 +60,64 @@
 {% endblock %}
 
 {% block content %}
+
+
 <!-- プロジェクト詳細モーダル -->
 <div id="projectDetailModal" class="modal">
+    <!-- モーダルの内容を包む要素 -->
     <div class="modal-content">
+        <!-- モーダルを閉じるボタン -->
         <span class="close-button">&times;</span>
+
+        <!-- モーダルのタイトル -->
         <h3>プロジェクト詳細入力</h3>
+
+        <!-- プロジェクト詳細を保存するフォーム -->
         <form method="POST" action="プロジェクト詳細保存リンク">
+            <!-- プロジェクト名の入力欄 -->
             <label for="projectName">プロジェクト名:</label>
-            <input type="text" id="projectName" name="project_name" required>
+            <input
+                type="text"
+                id="projectName"
+                name="project_name"
+                value="{{ project.project_name }}"
+                required
+            >
 
+            <!-- プロジェクト説明の入力欄 -->
             <label for="description">プロジェクト説明:</label>
-            <textarea id="description" name="description" rows="4" required></textarea>
+            <textarea
+                id="description"
+                name="description"
+                rows="4"
+                required
+            >{{ project.project_detail }}</textarea>
 
-            <label for="startDate">開始日:</label>
-            <input type="date" id="startDate" name="start_date" required>
+            <input
+            type="date"
+            id="startDate"
+            name="start_date"
+            value="{{ project.project_start_date|date:'Y-m-d' }}"
+            required
+            onchange="document.getElementById('endDate').min = this.value;"
+        >
+        <input
+            type="date"
+            id="endDate"
+            name="end_date"
+            value="{{ project.project_end_date|date:'Y-m-d' }}"
+            required
+            min="{{ project.project_start_date|date:'Y-m-d' }}"
+        >
 
-            <label for="endDate">終了日:</label>
-            <input type="date" id="endDate" name="end_date" required>
 
+
+            <!-- フォームの送信ボタン -->
             <button type="submit" class="submit-button">保存</button>
         </form>
     </div>
 </div>
+
 
 <div class="container">
     <h2>{{ project.project_name }}</h2>
