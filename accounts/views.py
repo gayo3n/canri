@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from .models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -95,8 +95,8 @@ class LoginFailView(LoginRequiredMixin, TemplateView):
 def manage_account(request):
     acc = {}
     user = User.objects.all()
-    acc['object_list']
-    return render(request, 'management_account.html')
+    acc['object_list'] = user
+    return render(request, 'management_account.html', acc)
 
 
 def account_create_complete(request):
@@ -157,3 +157,6 @@ def account_delete(request, user):
     obj = get_object_or_404(User, user=user)
     context = {'object': obj}
     return render(request, template_name, context)
+
+def account_change_employee(request):
+    template_name = "account_change_employee"

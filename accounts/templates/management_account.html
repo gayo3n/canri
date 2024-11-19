@@ -36,15 +36,18 @@
         <td name="user_name">大原四郎</td>
         <td id="OHARA0004">OHARA0004</td>
         <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0004">🗑️</button>
+            <button type="button" class="btn btn-danger" data-user-id="{% user_id %}">🗑️</button>
         </td>
     </tr> 
     <tbody>
-        {% for user in user_list %}
+        {% for user in object_list %}
         <tr>
             <td>{{ user.user_id }}</td>
             <td>{{ user.password }}</td>
             <td>{{ user.name }}</td>
+            <td>
+                <button type="button" class="btn btn-danger" data-user-id="{% user_id %}">🗑️</button>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
