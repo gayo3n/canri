@@ -36,6 +36,9 @@ urlpatterns = [
     path('create_team3/', views.CreateTeam3View.as_view(), name='create_team3'),
     path('create_team3/save/', views.SaveTeamView.as_view(), name='create_team3_save'),
     path('save_new_project/', views.SaveNewProjectView.as_view(), name='save_new_project'),
+    path('team_edit/<int:team_id>/', views.TeamEditView.as_view(), name='team_edit'),
+    path('team_edit/complete/', views.TeamEditCompleteView.as_view(), name='team_edit_complete'),
+    path('team_member_edit/', views.TeamMemberEditView.as_view(), name='team_member_edit'),
 
     #プロジェクト一覧
     path('progress_within_projectlist/', views.progress_within_ProjectlistView.as_view(), name='projectlist'),

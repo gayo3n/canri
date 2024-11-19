@@ -20,7 +20,9 @@
     <div id="teamList" class="team-list">
         {% if teams %}
             {% for team_id in teams %}
-                <div id="team-{{ team_id }}" class="team-item">チーム情報を取得中...</div>
+                <a href="{% url 'canri_app:team_edit' team_id=team_id %}?project_name={{ project.project_name }}&project_description={{ project.project_description }}&start_date={{ project.start_date }}&end_date={{ project.end_date }}&teams={{ teams|safe }}">
+                    <div id="team-{{ team_id }}" class="team-item">チーム情報を取得中...</div>
+                </a>
             {% endfor %}
         {% else %}
             <div id="noTeamsMessage">チームが存在しません</div>
