@@ -239,6 +239,34 @@ class CreateTeam2View(TemplateView):
                 'categories': categories,
             })
 
+class CreateTeam2BackView(TemplateView):
+    template_name = "create_team2.html"
+
+    def post(self, request, *args, **kwargs):
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        teams = request.POST.get('teams')
+        team_size = request.POST.get('team_size')
+        team_type = request.POST.get('team_type')
+        categories = Category.objects.filter(deletion_flag=False)
+
+        # teams をリストとして扱う
+        if isinstance(teams, str):
+            teams = json.loads(teams)
+
+        # 入力された情報を保持した状態でcreate_team.htmlに遷移
+        return render(request, self.template_name, {
+                'project_name': project_name,
+                'project_description': project_description,
+                'start_date': start_date,
+                'end_date': end_date,
+                'teams': teams,
+                'team_size': team_size,
+                'team_type': team_type,
+                'categories': categories,
+            })
 class CreateTeam3View(TemplateView):
     template_name = "create_team3.html"
 
