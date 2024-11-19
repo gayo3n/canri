@@ -91,3 +91,7 @@ class UserCreationForm(UserCreationForm):
                 field.widget.attrs['placeholder'] = 'password'
             elif field.label == '名前':
                 field.widget.attrs['placeholder'] = '大原太郎'
+
+
+class LoginForm(AuthenticationForm):
+    pass

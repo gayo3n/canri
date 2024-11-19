@@ -48,13 +48,12 @@
 
     <!-- リスト内メンバー -->
     <section class="section_two">
-        <p>リスト内メンバー</p>
-        {{ MemberList.member }}
-        {% for member_id in memberID_list %}
-            <input type="hidden" name="memberID_list" value="{{ member_id }}">
-            <li>{{ member.name }}</li>
-        {% endfor %}
-    </section>
+        <section class="section_two">
+            <p>リスト内メンバー</p>
+            {% for member in members_in_list %}
+                <li>{{ member.name }}</li>
+            {% endfor %}
+        </section>
 
     <!-- メンバーリスト保存・キャンセルフォーム -->
     <section class="section_three">

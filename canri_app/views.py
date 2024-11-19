@@ -65,24 +65,30 @@ class MemberListMakeView(TemplateView):
         if search_query:
             members = members.filter(name__icontains=search_query)
         
-        # member_id をリクエストから取得
-        member_id = request.POST.get('member_id')
+        # 複数のmember_id をリクエストから取得
+        member_ids = request.POST.getlist('member_id')
 
-        if member_id and member_id.isdigit():  # 数値チェック
-            try:
-                member = Member.objects.get(member_id=int(member_id))
-                if member_id not in self.memberID_list:
-                    self.memberID_list.append(member_id)
-            except Member.DoesNotExist:
-                member = None
-        else:
-            member = None
-        
+        # member_idが複数選ばれている場合
+        if member_ids:
+            for member_id in member_ids:
+                if member_id.isdigit():  # 数値チェック
+                    try:
+                        # メンバーを取得
+                        member = Member.objects.get(member_id=int(member_id))
+                        if member_id not in self.memberID_list:
+                            self.memberID_list.append(member_id)
+                    except Member.DoesNotExist:
+                        pass  # メンバーが存在しない場合は無視
+
+        # member_id が追加されていれば、そのメンバー情報を取得
+        members_in_list = Member.objects.filter(member_id__in=self.memberID_list)
+
         context = {
             'members': members,
             'memberID_list': self.memberID_list,
-            'member': member
+            'members_in_list': members_in_list  # 追加されたメンバーを表示するための変数
         }
+
         return render(request, self.template_name, context)
 
 

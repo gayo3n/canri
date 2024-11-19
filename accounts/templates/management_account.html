@@ -38,7 +38,16 @@
         <td>
             <button type="button" class="btn btn-danger" data-user-id="OHARA0004">🗑️</button>
         </td>
-    </tr>
+    </tr> 
+    <tbody>
+        {% for user in user_list %}
+        <tr>
+            <td>{{ user.user_id }}</td>
+            <td>{{ user.password }}</td>
+            <td>{{ user.name }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 
 <div class="add-account-container">
