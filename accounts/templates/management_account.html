@@ -12,10 +12,10 @@
         <th>削除</th> 
     </tr>
     <tr>
-        <td name="user_name"><a href="{% url 'canri_app:account_change' %}" class="btn save">大原太郎</a></td>
+        <td name="user_name"><a href="{% url 'accounts:account_change' %}" class="btn save">大原太郎</a></td>
         <td id="OHARA0001">OHARA0001</td>
         <td>
-            <a href="{% url 'canri_app:account_delete' %}" class="btn btn-danger" data-user-id="OHARA0001">🗑️</a>
+            <a href="{% url 'accounts:account_delete' %}" class="btn btn-danger" data-user-id="OHARA0001">🗑️</a>
         </td>
     </tr>
     <tr>
@@ -51,7 +51,7 @@
 </table>
 
 <div class="add-account-container">
-    <a href="{% url "canri_app:account_create" %}" class="delete-btn">＋ </a>
+    <a href="{% url "accounts:account_create" %}" class="delete-btn">＋ </a>
 </div>
 
 {% endblock %}

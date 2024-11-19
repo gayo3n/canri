@@ -10,7 +10,7 @@ from django.utils import timezone
 import json
 from .forms import SearchForm
 from django.http import HttpResponseBadRequest, HttpResponseNotFound
-from .api import create_team_api
+from .api import create_team_api, save_team_api, save_project_api
 
 
 
@@ -128,35 +128,6 @@ class MemberListDeleteOkView(TemplateView):
 class MemberMakeDeleteOkView(TemplateView):
     template_name = "member_make_delete_complete.html"
 
-# アカウント管理
-class ManagementAccountView(TemplateView):
-    template_name = "management_account.html"
-
-class AccountCreateView(TemplateView):
-    template_name = "account_create.html"
-
-class CreateCompleteView(TemplateView):
-    template_name = "account_create_complete.html"
-
-class AccountChangeView(TemplateView):
-    template_name = "account_change.html"
-
-class AccountChangeCompleteView(TemplateView):
-    template_name = "account_change_complete.html"
-
-class AccountDeleteView(TemplateView):
-    template_name = "account_delete.html"
-
-class DeleteCompleteView(TemplateView):
-    template_name = "account_delete_complete.html"
-
-# アイコン
-class AccountChangeEmployeeView(TemplateView):
-    template_name = "account_change_employee.html"
-
-class AccountChangeEmployeeCompleteView(TemplateView):
-    template_name = "account_change_complete_employee.html"
-
 #新規プロジェクト作成
 class NewProjectView(TemplateView):
     template_name = "new_project.html"
@@ -184,6 +155,31 @@ class NewProjectEditView(TemplateView):
         # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
         return render(request, self.template_name, {'project': project_data, 'teams': teams})
 
+class NewProjectEdit2View(TemplateView):
+    template_name = "new_project_edit.html"
+
+    def post(self, request, *args, **kwargs):
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        teams = request.POST.get('teams')
+
+        # teams をリストとして扱う
+        if isinstance(teams, str):
+            teams = json.loads(teams)
+
+        # 入力された情報をリスト化
+        project_data = {
+            'project_name': project_name,
+            'project_description': project_description,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+
+        # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
+        return render(request, self.template_name, {'project': project_data, 'teams': teams})
+
 class CreateTeamView(TemplateView):
     template_name = "create_team.html"
 
@@ -193,6 +189,10 @@ class CreateTeamView(TemplateView):
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
         teams = request.POST.get('teams')
+
+        # teams をリストとして扱う
+        if isinstance(teams, str):
+            teams = json.loads(teams)
 
         # 入力された情報を保持した状態でcreate_team.htmlに遷移
         return render(request, self.template_name, {
@@ -211,11 +211,16 @@ class CreateTeam2View(TemplateView):
         project_description = request.POST.get('project_description')
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
-        teams = request.POST.getlist('teams')
+        teams = request.POST.get('teams')
         team_size = request.POST.get('team_size')
         team_type = request.POST.get('team_type')
         auto_generate = request.POST.get('auto_generate')
         categories = Category.objects.filter(deletion_flag=False)
+
+        # teams をリストとして扱う
+        if isinstance(teams, str):
+            teams = json.loads(teams)
+
         if auto_generate:
             # 入力された情報を保持した状態でcreate_team2.htmlに遷移
             return render(request, self.template_name, {
@@ -248,11 +253,15 @@ class CreateTeam3View(TemplateView):
         project_description = request.POST.get('project_description')
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
-        teams = request.POST.getlist('teams')
+        teams = request.POST.get('teams')
         team_size = request.POST.get('team_size')
         team_type = request.POST.get('team_type')
         categories = Category.objects.filter(deletion_flag=False)
         selected_members = json.loads(request.POST.get('selected_members'))
+
+        # teams をリストとして扱う
+        if isinstance(teams, str):
+            teams = json.loads(teams)
 
         # チームを編成するためのデータを作成
         data = {
@@ -260,9 +269,6 @@ class CreateTeam3View(TemplateView):
             'members': selected_members,
             'team_size': team_size
         }
-
-        # selected_members の情報をターミナルに表示
-        print("selected_members:", selected_members)
 
         # create_team_api を呼び出してチームを編成
         request._body = json.dumps(data).encode('utf-8')
@@ -293,6 +299,60 @@ class CreateTeam3View(TemplateView):
 class SaveTeamView(TemplateView):
     template_name = "new_project_edit.html"
 
+    def post(self, request, *args, **kwargs):
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        teams = request.POST.get('teams')
+        team_name = request.POST.get('team_name')
+        team_type = request.POST.get('team_type')
+        team = request.POST.get('team')
+
+        # デバッグ用にリクエストボディを表示
+        print("リクエストボディ:", request.body)
+
+        try:
+            teams = json.loads(teams)
+            team = json.loads(team)
+        except json.JSONDecodeError as e:
+            print("JSONDecodeError:", e)
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        
+        # チームを保存するためのデータを作成
+        data = {
+            'team_name': team_name,
+            'team_type': team_type,
+            'team': team
+        }
+
+        # save_team_api を呼び出してチームを保存
+        request._body = json.dumps(data).encode('utf-8')
+        response = save_team_api(request)
+        response_data = json.loads(response.content)
+
+        if response.status_code == 200:
+            team_id = response_data['team_id']
+            if isinstance(teams, list):
+                teams.append(team_id)
+            else:
+                teams = [team_id]
+            print("チームが保存されました:", team_id)  # チームIDをターミナルに表示
+        else:
+            print(response_data)
+            print("チームの保存に失敗しました")  # エラーメッセージをターミナルに表示
+
+        # 入力された情報をリスト化
+        project_data = {
+            'project_name': project_name,
+            'project_description': project_description,
+            'start_date': start_date,
+            'end_date': end_date
+        }
+
+        # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
+        return render(request, self.template_name, {'project': project_data, 'teams': teams})
+
 class SaveNewProjectView(TemplateView):
     template_name = "save_new_project.html"
 
@@ -303,7 +363,26 @@ class SaveNewProjectView(TemplateView):
         end_date = request.POST.get('end_date')
         teams = request.POST.get('teams')
 
-        # プロジェクトを保存するロジックをここに追加
+        # プロジェクトを保存するためのデータを作成
+        data = {
+            'project_name': project_name,
+            'project_description': project_description,
+            'start_date': start_date,
+            'end_date': end_date,
+            'teams': json.loads(teams)
+        }
+
+        # save_project_api を呼び出してプロジェクトを保存
+        request._body = json.dumps(data).encode('utf-8')
+        response = save_project_api(request)
+        response_data = json.loads(response.content)
+
+        if response.status_code == 200:
+            project_id = response_data['project_id']
+            print("プロジェクトが保存されました:", project_id)  # プロジェクトIDをターミナルに表示
+        else:
+            print(response_data)
+            print("プロジェクトの保存に失敗しました")  # エラーメッセージをターミナルに表示
 
         # 入力された情報を保持した状態でsave_new_project.htmlに遷移
         return render(request, self.template_name, {
