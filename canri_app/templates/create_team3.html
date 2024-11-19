@@ -4,65 +4,68 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/create_team3.css' %}">
-<style>
-    .button-container {
-        display: flex;
-        justify-content: flex-end;
-    }
 
-    .modal .button-container {
-        justify-content: flex-end;
-    }
-</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block content %}
 <div class="main-content">
     <h1>新規チーム作成</h1>
-    
-    <form method="post" action="{% url 'canri_app:create_team3_save' %}">
-        {% csrf_token %}
-        <input type="hidden" name="project_name" value="{{ project_name }}">
-        <input type="hidden" name="project_description" value="{{ project_description }}">
-        <input type="hidden" name="start_date" value="{{ start_date }}">
-        <input type="hidden" name="end_date" value="{{ end_date }}">
-        <input type="hidden" name="teams" value="{{ teams|safe }}">
-        <input type="hidden" name="team_type" value="{{ team_type }}">
-        <input type="hidden" name="team" id="team">
-        <label for="team_name">チーム名</label>
-        <input type="text" name="team_name" id="team_name" required>
-        
-        <h2>メンバー一覧</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 90%;">メンバー名</th>
-                    <th style="width: 10%;">削除</th>
-                </tr>
-            </thead>
-            <tbody id="memberTableBody">
-                {% if team %}
-                    {% for member in team %}
-                    <tr data-member-id="{{ member.member_id }}">
-                        <td>{{ member.name }}</td>
-                        <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
+    <div class="container">
+        <div class="left-panel">
+            <h2>作成中のチーム</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 90%;">メンバー名</th>
+                        <th style="width: 10%;">削除</th>
                     </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr id="noMembersMessage">
-                        <td colspan="2">メンバーが存在しません</td>
+                </thead>
+                <tbody id="memberTableBody">
+                    {% if team %}
+                        {% for member in team %}
+                        <tr data-member-id="{{ member.member_id }}">
+                            <td>{{ member.name }}</td>
+                            <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr id="noMembersMessage">
+                            <td colspan="2">メンバーが存在しません</td>
+                        </tr>
+                    {% endif %}
+                    <tr>
+                        <td colspan="2"><a href="#" class="add-member" onclick="openAddMemberWindow()">＋</a></td>
                     </tr>
-                {% endif %}
-                <tr>
-                    <td colspan="2"><a href="#" class="add-member" onclick="openAddMemberWindow()">＋</a></td>
-                </tr>
-            </tbody>
-        </table>
-        
-        <div class="button-container">
-            <button type="submit" class="action-button next-button" onclick="setTeamMembers()">保存</button>
+                </tbody>
+            </table>
         </div>
-    </form>
+        <div class="right-panel">
+            <form method="post" action="{% url 'canri_app:create_team3_save' %}">
+                {% csrf_token %}
+                <input type="hidden" name="project_name" value="{{ project_name }}">
+                <input type="hidden" name="project_description" value="{{ project_description }}">
+                <input type="hidden" name="start_date" value="{{ start_date }}">
+                <input type="hidden" name="end_date" value="{{ end_date }}">
+                <input type="hidden" name="teams" value="{{ teams|safe }}">
+                <input type="hidden" name="team_type" value="{{ team_type }}">
+                <input type="hidden" name="team" id="team">
+                <label for="team_name">チーム名</label>
+                <input type="text" name="team_name" id="team_name" required>
+                
+                <div class="chart-container">
+                    <div class="chart-wrapper">
+                        <canvas id="teamRadarChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="button-container">
+                    <button type="button" class="action-button back-button" onclick="goBack()">戻る</button>
+                    <button type="submit" class="action-button next-button" onclick="setTeamMembers()">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <!-- 小ウィンドウのHTML -->
@@ -172,7 +175,7 @@
                 row.dataset.memberId = checkbox.value;
                 row.innerHTML = `
                     <td>${checkbox.parentElement.nextElementSibling.textContent}</td>
-                    <td><a href="#" class="remove-member" onclick="removeMember(this)">-</a></td>
+                    <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
                 `;
                 memberTableBody.insertBefore(row, memberTableBody.lastElementChild);
             } else {
@@ -180,6 +183,7 @@
             }
         });
         closeAddMemberWindow();
+        updateRadarChart();
     }
 
     function removeMember(link) {
@@ -192,6 +196,7 @@
             noMembersMessage.innerHTML = '<td colspan="2">メンバーが存在しません</td>';
             memberTableBody.insertBefore(noMembersMessage, memberTableBody.firstChild);
         }
+        updateRadarChart();
     }
 
     function setTeamMembers() {
@@ -200,5 +205,121 @@
             .filter(id => id !== undefined);
         document.getElementById('team').value = JSON.stringify(memberIds);
     }
+
+    function updateRadarChart() {
+        const memberRows = document.querySelectorAll('#memberTableBody tr[data-member-id]');
+        const memberIds = Array.from(memberRows).map(row => row.dataset.memberId);
+
+        if (memberIds.length === 0) {
+            radarChart.data.datasets[0].data = [0, 0, 0, 0, 0];
+            radarChart.update();
+            return;
+        }
+
+        fetch(`{% url 'canri_app:get_member_data' member_id=0 %}`.replace("0", memberIds[0]))
+            .then(response => response.json())
+            .then(data => {
+                const memberData = data.member_data;
+                const specialityHeight = Math.min(memberData.speciality_height / 10, 10); // スケーリング
+                const timeManagementAbility = Math.min(memberData.time_management_ability / 10, 10); // スケーリング
+                const problemSolvingAbility = Math.min(memberData.problem_solving_ability / 10, 10); // スケーリング
+                const planningPresentationPower = Math.min(memberData.planning_presentation_power / 10, 10); // スケーリング
+                const teamwork = Math.min(memberData.teamwork / 10, 10); // スケーリング
+
+                radarChart.data.datasets[0].data = [
+                    specialityHeight,
+                    timeManagementAbility,
+                    problemSolvingAbility,
+                    planningPresentationPower,
+                    teamwork
+                ];
+                radarChart.update();
+            })
+            .catch(error => console.error('データ取得エラー:', error));
+    }
+
+    function goBack() {
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = "{% url 'canri_app:create_team2_back' %}";
+
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = 'csrfmiddlewaretoken';
+        csrfToken.value = '{{ csrf_token }}';
+        form.appendChild(csrfToken);
+
+        const projectName = document.createElement('input');
+        projectName.type = 'hidden';
+        projectName.name = 'project_name';
+        projectName.value = '{{ project_name }}';
+        form.appendChild(projectName);
+
+        const projectDescription = document.createElement('input');
+        projectDescription.type = 'hidden';
+        projectDescription.name = 'project_description';
+        projectDescription.value = '{{ project_description }}';
+        form.appendChild(projectDescription);
+
+        const startDate = document.createElement('input');
+        startDate.type = 'hidden';
+        startDate.name = 'start_date';
+        startDate.value = '{{ start_date }}';
+        form.appendChild(startDate);
+
+        const endDate = document.createElement('input');
+        endDate.type = 'hidden';
+        endDate.name = 'end_date';
+        endDate.value = '{{ end_date }}';
+        form.appendChild(endDate);
+
+        const teams = document.createElement('input');
+        teams.type = 'hidden';
+        teams.name = 'teams';
+        teams.value = '{{ teams|safe }}';
+        form.appendChild(teams);
+
+        const teamSize = document.createElement('input');
+        teamSize.type = 'hidden';
+        teamSize.name = 'team_size';
+        teamSize.value = '{{ team_size }}';
+        form.appendChild(teamSize);
+
+        const teamType = document.createElement('input');
+        teamType.type = 'hidden';
+        teamType.name = 'team_type';
+        teamType.value = '{{ team_type }}';
+        form.appendChild(teamType);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('teamRadarChart').getContext('2d');
+        window.radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['専門性の高さ', '時間管理能力', '問題解決能力', '企画・プレゼン力', 'チームワーク'],
+                datasets: [{
+                    label: 'チームの能力評価',
+                    data: [0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scale: {
+                    ticks: {
+                        beginAtZero: true,
+                        max: 10
+                    }
+                }
+            }
+        });
+
+        updateRadarChart();
+    });
 </script>
 {% endblock %}

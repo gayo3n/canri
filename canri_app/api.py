@@ -17,7 +17,10 @@ def get_member_data(request, member_id):
         member = Member.objects.get(member_id=member_id)
         carrer = MemberCareer.objects.get(member=member_id)
         memberparameter = MemberParameter.objects.get(member=member_id)
-        memberjob = JobTitleInformation.objects.get(job_title=member.job_title)
+        try:
+            memberjob = JobTitleInformation.objects.get(job_title=member.job_title)
+        except JobTitleInformation.DoesNotExist:
+            memberjob = None
         # 同じメンバーIDを持つ資格を3件まで取得
         memberqualification = MemberHoldingQualification.objects.filter(member=member_id)[:3]
         # メンバー情報を辞書として返す
@@ -25,10 +28,18 @@ def get_member_data(request, member_id):
             'member_id': member.member_id,#メンバーID
             'name': member.name,#名前
             'birthdate': member.birthdate,#生年月日
-            'career_id': carrer.career,#職歴ID
-            'job_id_title_id': memberjob.job_title_id,#役職ID
+            'career_id': carrer.career.career_id,#職歴ID
+            'career_name': carrer.career.career,#職歴名
+            'job_id_title_id': memberjob.job_title_id if memberjob else None,#役職ID
             'job_title': member.job_title,#役職名
-            'mbti': member.mbti,#MBTI
+            'mbti': {
+                'mbti_id': member.mbti.mbti_id,
+                'mbti_name': member.mbti.mbti_name,
+                'planning_presentation_power': member.mbti.planning_presentation_power,
+                'teamwork': member.mbti.teamwork,
+                'time_management_ability': member.mbti.time_management_ability,
+                'problem_solving_ability': member.mbti.problem_solving_ability
+            },#MBTI
             'planning_presentation_power': memberparameter.planning_presentation_power,#企画・プレゼン力
             'teamwork': memberparameter.teamwork,#チームワーク
             'time_management_ability': memberparameter.time_management_ability,#時間管理能力
@@ -107,14 +118,8 @@ def create_team_api(request):
             except MemberParameter.DoesNotExist:
                 return JsonResponse({'error': f'MemberParameter for member ID {member_id} not found'}, status=404)
 
-        # メンバー情報をターミナルに表示
-        print("チーム作成前のメンバー情報:", members)
-
         # チーム作成ロジックを呼び出し
         team = create_team(team_type, members, team_size)
-        
-        # チーム作成後の情報をターミナルに表示
-        print("チーム作成後の情報:", team)
         
         # チーム作成に失敗した場合のエラーハンドリング
         if isinstance(team, dict) and "error" in team:
@@ -130,7 +135,7 @@ def create_team_api(request):
 
 # チーム作成ロジック
 # team_type = チームを作成する際の目的 | members = 作成に使用するメンバーのリスト | team_size = 作成するチームの人数 
-# イベント用チーム = event | 研修用チーム = training | プロジェクト開発用チーム = project | アイデア発想チーム = idea_generation 
+# イベント用チーム = event
 def create_team(team_type, members, team_size):
     # フィードバック情報を無条件で取得（削除フラグが False のもの）
     feedback_data = Feedback.objects.filter(deletion_flag=False)
@@ -146,7 +151,7 @@ def create_team(team_type, members, team_size):
         sorted_members = sorted(members, key=lambda x: x['birthdate'])
         team = []
         left, right = 0, len(sorted_members) - 1
-        while len(team) < team_size and left <= right:
+        while len(team) < int(team_size) and left <= right:
             if len(team) % 2 == 0:
                 member = sorted_members[left]
                 left += 1
@@ -158,16 +163,16 @@ def create_team(team_type, members, team_size):
                 team.append(member)
 
     elif team_type == 'training':
-        sorted_members = sorted(members, key=lambda x: x['level_of_expertise'], reverse=True)
+        sorted_members = sorted(members, key=lambda x: x['speciality_height'], reverse=True)
         team = []
         for member in sorted_members:
-            if len(team) < team_size:
+            if len(team) < int(team_size):
                 if all(feedback_dict.get((member['member_id'], teammate['member_id']), False) for teammate in team):
                     team.append(member)
 
     elif team_type == 'project':
         sorted_members = sorted(members, key=lambda x: (
-            x['level_of_expertise'], 
+            x['speciality_height'], 
             x['planning_presentation_power'], 
             x['teamwork'], 
             x['time_management_ability'], 
@@ -175,7 +180,7 @@ def create_team(team_type, members, team_size):
         ), reverse=True)
         team = []
         for member in sorted_members:
-            if len(team) < team_size:
+            if len(team) < int(team_size):
                 if all(feedback_dict.get((member['member_id'], teammate['member_id']), False) for teammate in team):
                     team.append(member)
 
@@ -183,11 +188,13 @@ def create_team(team_type, members, team_size):
         sorted_members = sorted(members, key=lambda x: x['planning_presentation_power'], reverse=True)
         team = []
         for member in sorted_members:
-            if len(team) < team_size:
+            if len(team) < int(team_size):
                 if all(feedback_dict.get((member['member_id'], teammate['member_id']), False) for teammate in team):
                     team.append(member)
     else:
         return {"error": "無効なチームタイプです"}
+
+    return team
 
 #プロジェクトチームの一覧を取得するAPI
 @require_http_methods(["GET"])
@@ -230,37 +237,53 @@ def get_team_members(request, team_id):
         # メンバー情報をリストに格納
         member_data = []
         for team_member in team_members:
-            member = team_member.member_id
+            member = team_member.member
             memberparameter = MemberParameter.objects.get(member=member)
+            carrer = MemberCareer.objects.get(member=member)
+            try:
+                memberjob = JobTitleInformation.objects.get(job_title=member.job_title)
+            except JobTitleInformation.DoesNotExist:
+                memberjob = None
             member_data.append({
-                'team_member_id': team_member.team_member_id,
-                'member_id': member.member_id,
-                'name': member.name,
-                'birthdate': member.birthdate,
-                'job_title': member.job_title,
-                'mbti': member.mbti,
-                'creation_date': team_member.creation_date,
-                'update_date': team_member.update_date,
-                'planning_presentation_power': memberparameter.planning_presentation_power,#企画・プレゼン力
-                'teamwork': memberparameter.teamwork,#チームワーク
-                'time_management_ability': memberparameter.time_management_ability,#時間管理能力
-                'problem_solving_ability': memberparameter.problem_solving_ability,#問題解決能力
-                'speciality_height': memberparameter.speciality_height,#専門性の高さ
+                'member_id': member.member_id,#メンバーID
+            'name': member.name,#名前
+            'birthdate': member.birthdate,#生年月日
+            'career_id': carrer.career.career_id,#職歴ID
+            'career_name': carrer.career.career,#職歴名
+            'job_id_title_id': memberjob.job_title_id if memberjob else None,#役職ID
+            'job_title': member.job_title,#役職名
+            'mbti': {
+                'mbti_id': member.mbti.mbti_id,
+                'mbti_name': member.mbti.mbti_name,
+                'planning_presentation_power': member.mbti.planning_presentation_power,
+                'teamwork': member.mbti.teamwork,
+                'time_management_ability': member.mbti.time_management_ability,
+                'problem_solving_ability': member.mbti.problem_solving_ability
+            },#MBTI
+            'planning_presentation_power': memberparameter.planning_presentation_power,#企画・プレゼン力
+            'teamwork': memberparameter.teamwork,#チームワーク
+            'time_management_ability': memberparameter.time_management_ability,#時間管理能力
+            'problem_solving_ability': memberparameter.problem_solving_ability,#問題解決能力
+            'speciality_height': memberparameter.speciality_height,#専門性の高さ
+            'memo': member.memo,#メンバー個人メモ
             })
-
+        
         # 辞書形式でメンバー情報を返す
         return JsonResponse({'members': member_data})
 
     except TeamMember.DoesNotExist:
         return JsonResponse({'error': 'TeamMember not found'}, status=404)
+    except MemberParameter.DoesNotExist:
+        return JsonResponse({'error': 'MemberParameter not found'}, status=404)
     except Exception as e:
+        print(f"Error: {str(e)}")  # エラーメッセージを出力
         return JsonResponse({'error': str(e)}, status=500)
 
 # チーム情報を取得するAPI
 @require_http_methods(["GET"])
 def get_team_data(request, team_id):
     try:
-        # 指定された team_id に一致するチーム情報を取得
+        # 指定されたteam_id に一致するチーム情報を取得
         team = Team.objects.get(team_id=team_id)
         
         # チーム情報を辞書として返す
@@ -274,7 +297,7 @@ def get_team_data(request, team_id):
             'update_date': team.update_date,
             'deletion_date': team.deletion_date,
         }
-
+        
         return JsonResponse({'team': team_data})
     
     except Team.DoesNotExist:
