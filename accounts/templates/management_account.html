@@ -8,24 +8,36 @@
 
 <!-- ユーザー情報のテーブル -->
 <table border="1">
-    <tr>
-        <th>名前</th>
-        <th>ユーザーID</th>
-        <th>削除</th> 
-    </tr>
-    {% for user in users %}
-    <tr>
-        <td name="user_name"><a href="{% url 'accounts:account_change' user.user_id %}" class="btn save">{{ user.name }}</a></td>
-        <td id="{{ forloop.counter }}">{{ user.user_id }}</td>
-        <td>
-            <a href="{% url 'accounts:account_delete' user.user_id %}" class="btn btn-danger" data-user-id="{{ user.user_id }}">🗑️</a>
-        </td>
-    </tr>
-    {% endfor %}
+    <thead>
+        <tr>
+            <th>名前</th>
+            <th>ユーザーID</th>
+            <th>削除</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <!-- ユーザー名を表示し、編集リンクを作成 -->
+            <td>
+                <a href="m" class="btn save">
+                    {{ user.name }}
+                </a>
+            </td>
+            <!-- ユーザーIDを表示 -->
+            <td id="{{ forloop.counter }}">{{ user.user_id }}</td>
+            <!-- 削除リンクを作成 -->
+            <td>
+                <a href="m" class="btn btn-danger" data-user-id="{{ user.user_id }}">
+                    🗑️
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
 </table>
 
-<div class="add-account-container">
-    <a href="{% url 'accounts:account_create' %}" class="delete-btn">＋</a>
-</div>
+
 
 {% endblock %}
