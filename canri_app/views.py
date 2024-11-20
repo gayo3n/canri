@@ -1,5 +1,5 @@
 # views.py
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.base import TemplateView
 from django.views.generic import CreateView
 from django.http import JsonResponse
@@ -648,23 +648,6 @@ def projectListView(request):
 
 
 
-class post_ProjectlistView(TemplateView):
-    template_name="post_projectlist.html"
-
-
-def Post_projectListView(request):
-    template_name = "past_project_list.html"
-    ctx = {}
-    query = request.GET.get('p')
-    qs = Project.objects.all()
-    qs=qs.filter(complete_flag=1,deletion_flag=0)
-    if query:
-        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
-
-    ctx["project_list"] = qs
-    return render(request, template_name, ctx)
-
-
 
 # プロジェクト詳細表示
 class Project_detailView(TemplateView):
@@ -714,11 +697,25 @@ def team_detail_view(request, team_id):
         # ctx["project_list"] = qsequest, self.template_name, {'members': members}
 
     # 過去プロジェクト
-class Past_ProjectListView(TemplateView):
+def Post_projectListView(request):
     template_name = "past_project_list.html"
+    ctx = {}
+    query = request.GET.get('p')
+    qs = Project.objects.all()
+    qs=qs.filter(complete_flag=1,deletion_flag=0)
+    if query:
+        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+
+    ctx["project_list"] = qs
+    return render(request, template_name, ctx)
 
 class Past_ProjectView(TemplateView):
     template_name = "past_project_view.html"
+
+def project_detail(request, project_id):
+    template_name = "past_project_view.html"
+    project = get_object_or_404(Project, pk=project_id)
+    return render(request, template_name, {'project': project})
 
 class Past_ProjectDeletingView(TemplateView):
     template_name = "past_project_deleting_confirmation.html"
