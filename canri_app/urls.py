@@ -51,7 +51,8 @@ urlpatterns = [
     path('project_detail/',views.Project_detailView.as_view(), name='project_detail'),
     path('project/<int:project_id>/', project_detail_view, name='project_detail'),
 
-
+    # 過去プロジェクト
+    path('past_project_view/', views.Past_ProjectView.as_view(), name='past_project_view'),
 
     #チーム詳細
     # path('team_detail/',views.team_detailView.as_view(), name='team_detail'),

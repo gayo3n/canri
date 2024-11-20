@@ -651,5 +651,6 @@ def team_detail_view(request, team_id):
         # ctx["project_list"] = qsequest, self.template_name, {'members': members}
 
 
-
+class Past_ProjectView(TemplateView):
+    template_name = "past_project_view.html"
 
