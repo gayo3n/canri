@@ -463,3 +463,37 @@ def save_member_memo(request):
     except Exception as e:
         print("Error:", str(e))  # デバッグ用ログ
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+# チーム移動API
+@csrf_exempt
+@require_http_methods(["POST"])
+def move_member_to_team(request):
+    try:
+        data = json.loads(request.body)
+        member_id = data.get('member_id')
+        new_team_id = data.get('new_team_id')
+        current_team_id = data.get('current_team_id')
+
+        # 現在のチームメンバー情報を削除
+        TeamMember.objects.filter(member_id=member_id, team_id=current_team_id, deletion_flag=0).update(deletion_flag=True)
+
+        # 新しいチームメンバー情報を作成
+        new_team = Team.objects.get(team_id=new_team_id)
+        member = Member.objects.get(member_id=member_id)
+        TeamMember.objects.create(
+            team=new_team,
+            member=member,
+            creation_date=timezone.now(),
+            update_date=timezone.now()
+        )
+
+        return JsonResponse({'status': 'success'})
+
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+    except Team.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Team not found'}, status=404)
+    except Member.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Member not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

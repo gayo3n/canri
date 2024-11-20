@@ -70,4 +70,5 @@ urlpatterns = [
     path('api/save_project/', api.save_project_api, name='save_project_api'),
     path('api/delete_team/', api.delete_team_api, name='delete_team_api'),
     path('api/save_member_memo/', api.save_member_memo, name='save_member_memo'),
+    path('api/move_member_to_team/', api.move_member_to_team, name='move_member_to_team'),
 ]
