@@ -179,6 +179,7 @@
     </div>
 </div>
 
+<!-- チーム移動ウィンドウ -->
 <div class="modal" id="moveTeamWindow">
     <div class="modal-content">
         <span class="close" onclick="closeMoveTeamWindow()">&times;</span>
@@ -451,6 +452,61 @@
           });
     }
 
+    // チーム移動ウィンドウを開く処理
+    function moveToAnotherTeam() {
+        const teamSelect = document.getElementById('teamSelect');
+        if (teamSelect.options.length === 0) {
+            alert('移動先のチームが存在しません。');
+        } else {
+            document.getElementById('moveTeamWindow').style.display = 'block';
+        }
+    }
+
+    // チーム移動ウィンドウを閉じる処理
+    function closeMoveTeamWindow() {
+        document.getElementById('moveTeamWindow').style.display = 'none';
+    }
+
+    // メンバーを別のチームに移動
+    function moveMemberToTeam() {
+        const memberId = document.querySelector('input[name="member_id"]').value;
+        const newTeamId = document.getElementById('teamSelect').value;
+        const currentTeamId = document.getElementById('currentTeamId').value;
+
+        fetch(`/api/move_member_to_team/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                member_id: memberId,
+                new_team_id: newTeamId,
+                current_team_id: currentTeamId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('メンバーが移動されました。');
+                closeMoveTeamWindow();
+                closeMemberEditWindow();
+                removeMemberFromTable(memberId);
+            } else {
+                alert('メンバーの移動に失敗しました。');
+            }
+        })
+        .catch(error => console.error('メンバー移動エラー:', error));
+    }
+
+    // テーブルからメンバーを削除
+    function removeMemberFromTable(memberId) {
+        const memberRow = document.querySelector(`#memberTableBody tr[data-member-id="${memberId}"]`);
+        if (memberRow) {
+            memberRow.remove();
+        }
+    }
+
     // レーダーチャートの更新処理
     function updateRadarChart() {
         const memberRows = document.querySelectorAll('#memberTableBody tr[data-member-id]');
@@ -484,6 +540,7 @@
             .catch(error => console.error('データ取得エラー:', error));
     }
 
+    //　レーダーチャートの初期化
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('teamRadarChart').getContext('2d');
         window.radarChart = new Chart(ctx, {
@@ -529,6 +586,7 @@
         });
     });
 
+    // 戻るボタンの処理
     function goBack() {
         const form = document.createElement('form');
         form.method = 'post';
@@ -572,57 +630,6 @@
 
         document.body.appendChild(form);
         form.submit();
-    }
-
-    function moveToAnotherTeam() {
-        const teamSelect = document.getElementById('teamSelect');
-        if (teamSelect.options.length === 0) {
-            alert('移動先のチームが存在しません。');
-        } else {
-            document.getElementById('moveTeamWindow').style.display = 'block';
-        }
-    }
-
-    function closeMoveTeamWindow() {
-        document.getElementById('moveTeamWindow').style.display = 'none';
-    }
-
-    function moveMemberToTeam() {
-        const memberId = document.querySelector('input[name="member_id"]').value;
-        const newTeamId = document.getElementById('teamSelect').value;
-        const currentTeamId = document.getElementById('currentTeamId').value;
-
-        fetch(`/api/move_member_to_team/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({
-                member_id: memberId,
-                new_team_id: newTeamId,
-                current_team_id: currentTeamId
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert('メンバーが移動されました。');
-                closeMoveTeamWindow();
-                closeMemberEditWindow();
-                removeMemberFromTable(memberId);
-            } else {
-                alert('メンバーの移動に失敗しました。');
-            }
-        })
-        .catch(error => console.error('メンバー移動エラー:', error));
-    }
-
-    function removeMemberFromTable(memberId) {
-        const memberRow = document.querySelector(`#memberTableBody tr[data-member-id="${memberId}"]`);
-        if (memberRow) {
-            memberRow.remove();
-        }
     }
 </script>
 {% endblock %}
