@@ -55,18 +55,16 @@
         });
     });
 
-
-
     document.addEventListener("DOMContentLoaded", () => {
         // モーダル要素を取得
         // 作成したhtmlの要素をmodalに設定
         // getElementById 任意のHTMLタグで指定したIDにマッチするドキュメント要素を取得するメソッド
-        const modal = document.getElementById("projectDetailModal");
+        const modal = document.getElementById("phase_additionModal");
 
         // 「プロジェクト詳細入力モーダル」を開くリンクを取得
         // openButtonにリンクを設定
         // querySelector 指定されたセレクターまたはセレクター群に一致する、文書内の最初の Elementを指定
-        const openButton = document.querySelector("a[href='プロジェクト詳細入力モーダル']");
+        const openButton = document.querySelector("a[href='フェーズ追加画面モーダル']");
 
         // モーダルを閉じるボタンを取得
         // 上と同じ
@@ -157,7 +155,41 @@
             min="{{ project.project_start_date|date:'Y-m-d' }}"
         >
 
+            <!-- フォームの送信ボタン -->
+            <button type="submit" class="submit-button">保存</button>
+        </form>
+    </div>
+</div>
 
+<div id="phase_additionModal" class="modal">
+    <!-- モーダルの内容を包む要素 -->
+    <div class="modal-content">
+        <!-- モーダルを閉じるボタン -->
+        <span class="close-button">&times;</span>
+
+        <!-- モーダルのタイトル -->
+        <h3>フェーズ追加</h3>
+
+        <!-- プロジェクト詳細を保存するフォーム -->
+        <form method="POST" action="プロジェクト詳細保存リンク">
+            <!-- プロジェクト名の入力欄 -->
+            <label for="phase_Name">フェーズ名:</label>
+            <input
+                type="text"
+                id="Name"
+                name="project_name"
+                value="{{ project.project_name }}"
+                required
+            >
+
+        <input
+            type="date"
+            id="endDate"
+            name="end_date"
+            value="{{ project.project_end_date|date:'Y-m-d' }}"
+            required
+            min="{{ project.project_start_date|date:'Y-m-d' }}"
+        >
 
             <!-- フォームの送信ボタン -->
             <button type="submit" class="submit-button">保存</button>
