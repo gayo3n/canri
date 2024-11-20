@@ -55,6 +55,7 @@ urlpatterns = [
 
     # 過去プロジェクト
     path('past_project_list/', views.Past_ProjectListView.as_view(), name='past_project_list'),
+    path('past_project/', Post_projectListView, name='past_project'),
     path('past_project_view/', views.Past_ProjectView.as_view(), name='past_project_view'),
     path('past_project_deleting/', views.Past_ProjectDeletingView.as_view(), name='past_project_deleting_confirmation'),
     path('past_project_deleting/deleted/', views.Project_DeletedView.as_view(), name='project_deleted'),

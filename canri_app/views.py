@@ -654,7 +654,7 @@ class post_ProjectlistView(TemplateView):
 
 
 def Post_projectListView(request):
-    template_name = "post_projectlist.html"
+    template_name = "past_project_list.html"
     ctx = {}
     query = request.GET.get('p')
     qs = Project.objects.all()
@@ -664,7 +664,6 @@ def Post_projectListView(request):
 
     ctx["project_list"] = qs
     return render(request, template_name, ctx)
-
 
 
 
