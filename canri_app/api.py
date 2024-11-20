@@ -33,14 +33,8 @@ def get_member_data(request, member_id):
             'career_name': carrer.career.career,#職歴名
             'job_id_title_id': memberjob.job_title_id if memberjob else None,#役職ID
             'job_title': member.job_title,#役職名
-            'mbti': {
-                'mbti_id': member.mbti.mbti_id,
-                'mbti_name': member.mbti.mbti_name,
-                'planning_presentation_power': member.mbti.planning_presentation_power,
-                'teamwork': member.mbti.teamwork,
-                'time_management_ability': member.mbti.time_management_ability,
-                'problem_solving_ability': member.mbti.problem_solving_ability
-            },#MBTI
+            'mbti_id': member.mbti.mbti_id,#MBTIタイプID
+            'mbti_name': member.mbti.mbti_name,#MBTIタイプ名
             'planning_presentation_power': memberparameter.planning_presentation_power,#企画・プレゼン力
             'teamwork': memberparameter.teamwork,#チームワーク
             'time_management_ability': memberparameter.time_management_ability,#時間管理能力
@@ -59,6 +53,9 @@ def get_member_data(request, member_id):
 
         # メンバー情報に資格情報を追加
         member_data['qualifications'] = qualifications_data
+
+        # デバッグ用ログ
+        print("Member data:", member_data)
 
         return JsonResponse({'member_data': member_data})
     
@@ -253,14 +250,8 @@ def get_team_members(request, team_id):
             'career_name': carrer.career.career,#職歴名
             'job_id_title_id': memberjob.job_title_id if memberjob else None,#役職ID
             'job_title': member.job_title,#役職名
-            'mbti': {
-                'mbti_id': member.mbti.mbti_id,
-                'mbti_name': member.mbti.mbti_name,
-                'planning_presentation_power': member.mbti.planning_presentation_power,
-                'teamwork': member.mbti.teamwork,
-                'time_management_ability': member.mbti.time_management_ability,
-                'problem_solving_ability': member.mbti.problem_solving_ability
-            },#MBTI
+            'mbti_id': member.mbti.mbti_id,#MBTIタイプID
+            'mbti_name': member.mbti.mbti_name,#MBTIタイプ名
             'planning_presentation_power': memberparameter.planning_presentation_power,#企画・プレゼン力
             'teamwork': memberparameter.teamwork,#チームワーク
             'time_management_ability': memberparameter.time_management_ability,#時間管理能力
