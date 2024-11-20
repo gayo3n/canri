@@ -1,5 +1,5 @@
 # views.py
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.base import TemplateView
 from django.views.generic import CreateView
 from django.http import JsonResponse
@@ -306,7 +306,7 @@ class CreateTeam3View(TemplateView):
             'team_size': team_size
         }
 
-        # create_team_api を呼び出してチームを編成
+        # create_team_api を呼び出し���チームを編成
         request._body = json.dumps(data).encode('utf-8')
         response = create_team_api(request)
         response_data = json.loads(response.content)
@@ -396,8 +396,7 @@ class SaveNewProjectView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         project_name = request.POST.get('project_name')
-        project_description = request.POST.get
-        ('project_description')
+        project_description = request.POST.get('project_description') 
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
         teams = request.POST.get('teams')
@@ -418,7 +417,7 @@ class SaveNewProjectView(TemplateView):
 
         if response.status_code == 200:
             project_id = response_data['project_id']
-            print("プロジェクトが保存されました:", project_id)  # プロジェ��トIDをターミナルに表示
+            print("プロジェクト��保存されました:", project_id)  # プロジェクトIDをターミナルに表示
         else:
             print(response_data)
             print("プロジェクトの保存に失敗しました")  # エラーメッセージをターミナルに表示
@@ -827,6 +826,35 @@ def team_detail_view(request, team_id):
 
         # ctx["project_list"] = qsequest, self.template_name, {'members': members}
 
+<<<<<<< HEAD
+=======
+    # 過去プロジェクト
+def Post_projectListView(request):
+    template_name = "past_project_list.html"
+    ctx = {}
+    query = request.GET.get('p')
+    qs = Project.objects.all()
+    qs=qs.filter(complete_flag=1,deletion_flag=0)
+    if query:
+        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+
+    ctx["project_list"] = qs
+    return render(request, template_name, ctx)
+
+>>>>>>> 2271881c3dce0c6ae0080371dcd1c5ce18349c6e
 class Past_ProjectView(TemplateView):
     template_name = "past_project_view.html"
 
+def project_detail(request, project_id):
+    template_name = "past_project_view.html"
+    project = get_object_or_404(Project, pk=project_id)
+    return render(request, template_name, {'project': project})
+
+class Past_ProjectDeletingView(TemplateView):
+    template_name = "past_project_deleting_confirmation.html"
+
+class Project_DeletedView(TemplateView):
+    template_name = "project_deleted.html"
+
+class Project_Save_CompleteView(TemplateView):
+    template_name = "project_save_complete.html"

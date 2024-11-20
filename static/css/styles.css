@@ -3,7 +3,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f5f7fa; /* 背景色 */
+    background-color: #fafaf5; /* 背景色 */
     padding: 10px 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 影を追加 */
 }

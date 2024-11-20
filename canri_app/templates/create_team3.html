@@ -70,7 +70,7 @@
 
 <!-- 小ウィンドウのHTML -->
 <div id="addMemberWindow" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="width: 70%; max-width: 1000px;">
         <span class="close" onclick="closeAddMemberWindow()">&times;</span>
         <h2>メンバーを追加</h2>
         <form id="categoryForm" class="form-inline">
@@ -304,6 +304,7 @@
         form.submit();
     }
 
+    // レーダーチャートの初期化
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('teamRadarChart').getContext('2d');
         window.radarChart = new Chart(ctx, {

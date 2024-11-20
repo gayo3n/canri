@@ -33,14 +33,8 @@ def get_member_data(request, member_id):
             'career_name': carrer.career.career,#職歴名
             'job_id_title_id': memberjob.job_title_id if memberjob else None,#役職ID
             'job_title': member.job_title,#役職名
-            'mbti': {
-                'mbti_id': member.mbti.mbti_id,
-                'mbti_name': member.mbti.mbti_name,
-                'planning_presentation_power': member.mbti.planning_presentation_power,
-                'teamwork': member.mbti.teamwork,
-                'time_management_ability': member.mbti.time_management_ability,
-                'problem_solving_ability': member.mbti.problem_solving_ability
-            },#MBTI
+            'mbti_id': member.mbti.mbti_id,#MBTIタイプID
+            'mbti_name': member.mbti.mbti_name,#MBTIタイプ名
             'planning_presentation_power': memberparameter.planning_presentation_power,#企画・プレゼン力
             'teamwork': memberparameter.teamwork,#チームワーク
             'time_management_ability': memberparameter.time_management_ability,#時間管理能力
@@ -59,6 +53,9 @@ def get_member_data(request, member_id):
 
         # メンバー情報に資格情報を追加
         member_data['qualifications'] = qualifications_data
+
+        # デバッグ用ログ
+        print("Member data:", member_data)
 
         return JsonResponse({'member_data': member_data})
     
@@ -253,14 +250,8 @@ def get_team_members(request, team_id):
             'career_name': carrer.career.career,#職歴名
             'job_id_title_id': memberjob.job_title_id if memberjob else None,#役職ID
             'job_title': member.job_title,#役職名
-            'mbti': {
-                'mbti_id': member.mbti.mbti_id,
-                'mbti_name': member.mbti.mbti_name,
-                'planning_presentation_power': member.mbti.planning_presentation_power,
-                'teamwork': member.mbti.teamwork,
-                'time_management_ability': member.mbti.time_management_ability,
-                'problem_solving_ability': member.mbti.problem_solving_ability
-            },#MBTI
+            'mbti_id': member.mbti.mbti_id,#MBTIタイプID
+            'mbti_name': member.mbti.mbti_name,#MBTIタイプ名
             'planning_presentation_power': memberparameter.planning_presentation_power,#企画・プレゼン力
             'teamwork': memberparameter.teamwork,#チームワーク
             'time_management_ability': memberparameter.time_management_ability,#時間管理能力
@@ -462,4 +453,38 @@ def save_member_memo(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
     except Exception as e:
         print("Error:", str(e))  # デバッグ用ログ
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+# チーム移動API
+@csrf_exempt
+@require_http_methods(["POST"])
+def move_member_to_team(request):
+    try:
+        data = json.loads(request.body)
+        member_id = data.get('member_id')
+        new_team_id = data.get('new_team_id')
+        current_team_id = data.get('current_team_id')
+
+        # 現在のチームメンバー情報を削除
+        TeamMember.objects.filter(member_id=member_id, team_id=current_team_id, deletion_flag=0).update(deletion_flag=True)
+
+        # 新しいチームメンバー情報を作成
+        new_team = Team.objects.get(team_id=new_team_id)
+        member = Member.objects.get(member_id=member_id)
+        TeamMember.objects.create(
+            team=new_team,
+            member=member,
+            creation_date=timezone.now(),
+            update_date=timezone.now()
+        )
+
+        return JsonResponse({'status': 'success'})
+
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+    except Team.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Team not found'}, status=404)
+    except Member.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Member not found'}, status=404)
+    except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

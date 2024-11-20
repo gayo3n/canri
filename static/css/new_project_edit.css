@@ -1,8 +1,6 @@
 /* ボディのスタイル */
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 10px 0;
 }
 
 .main-content {
@@ -34,12 +32,13 @@ h2 {
 .team-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 10px; /* チーム間のスペースを調整 */
+    justify-content: space-between; /* 横幅を可能な限り使用 */
 }
 
 .team-item {
-    flex: 1 1 calc(33.333% - 10px); /* 3つごとに次の列に移動 */
-    padding: 20px 40px; /* 大きさを2倍に */
+    flex: 1 1 calc(20% - 10px); /* 幅を50%に設定し、間隔を考慮 */
+    padding: 20px 110px;
     border: 2px solid #007bff;
     border-radius: 4px;
     background-color: #f4f4f9;
@@ -48,6 +47,7 @@ h2 {
     transition: background-color 0.3s, color 0.3s;
     font-size: 1.5em; /* フォントサイズを大きく */
     text-align: center;
+    box-sizing: border-box; /* パディングとボーダーを含む */
 }
 
 .team-item:hover {

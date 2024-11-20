@@ -2,6 +2,7 @@
 from django.urls import path
 from . import views
 from .views import projectListView,Post_projectListView,project_detail_view,team_detail_view,project_detail_update
+from .views import projectListView,Post_projectListView,project_detail_view,team_detail_view,project_detail
 from . import api
 
 app_name = 'canri_app'
@@ -47,7 +48,6 @@ urlpatterns = [
     path('progress_within_projectlist/', views.progress_within_ProjectlistView.as_view(), name='projectlist'),
     path('post_projectlist/', views.progress_within_ProjectlistView.as_view(), name='post_projectlist'),
     path('project/', projectListView, name='project'),
-    path('post_project/', views.post_ProjectlistView.as_view(), name='post_project'),
 
     #プロジェクト詳細
     path('project_detail/',views.Project_detailView.as_view(), name='project_detail'),
@@ -55,7 +55,12 @@ urlpatterns = [
     path('project_detail_update/<int:project_id>/', project_detail_update, name='project_detail_update'),
 
     # 過去プロジェクト
+    path('past_project/', Post_projectListView, name='past_project'),
     path('past_project_view/', views.Past_ProjectView.as_view(), name='past_project_view'),
+    path('past_project/view/<int:id>/', views.project_detail, name='past_project_view'),
+    path('past_project_deleting/', views.Past_ProjectDeletingView.as_view(), name='past_project_deleting_confirmation'),
+    path('past_project_deleting/deleted/', views.Project_DeletedView.as_view(), name='project_deleted'),
+    path('project_save/', views.Project_Save_CompleteView.as_view(), name='project_save_complete'),
 
     #チーム詳細
     # path('team_detail/',views.team_detailView.as_view(), name='team_detail'),
@@ -72,4 +77,5 @@ urlpatterns = [
     path('api/save_project/', api.save_project_api, name='save_project_api'),
     path('api/delete_team/', api.delete_team_api, name='delete_team_api'),
     path('api/save_member_memo/', api.save_member_memo, name='save_member_memo'),
+    path('api/move_member_to_team/', api.move_member_to_team, name='move_member_to_team'),
 ]
