@@ -10,8 +10,6 @@
 
 <!-- モーダル (確認ダイアログ) -->
 <div class="modal">
-    <!-- 削除取りやめボタン -->
-    <button class="btn btn-cancel" onclick="closeModal()">✕</button>
     <div class="modal-content">
         <p>プロジェクトを削除しますか？</p>
         <!-- 任意のプロジェクト名 -->
@@ -19,8 +17,9 @@
         <div class="modal-buttons">
             <!-- 確認ボタン -->
             <a href="{% url 'canri_app:project_deleted' %}" class="btn btn-confirm">削除</a>
-            
         </div>
+    <!-- 削除取りやめボタン -->
+    <a href="{% url 'canri_app:past_project' %}" class="btn btn-cancel">キャンセル</a>
     </div>
 </div>
 

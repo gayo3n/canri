@@ -55,6 +55,7 @@ urlpatterns = [
 
     # 過去プロジェクト
     path('past_project_list/', views.Past_ProjectListView.as_view(), name='past_project_list'),
+    path('past_project/', Post_projectListView, name='past_project'),
     path('past_project_view/', views.Past_ProjectView.as_view(), name='past_project_view'),
     path('past_project_deleting/', views.Past_ProjectDeletingView.as_view(), name='past_project_deleting_confirmation'),
     path('past_project_deleting/deleted/', views.Project_DeletedView.as_view(), name='project_deleted'),
@@ -75,4 +76,5 @@ urlpatterns = [
     path('api/save_project/', api.save_project_api, name='save_project_api'),
     path('api/delete_team/', api.delete_team_api, name='delete_team_api'),
     path('api/save_member_memo/', api.save_member_memo, name='save_member_memo'),
+    path('api/move_member_to_team/', api.move_member_to_team, name='move_member_to_team'),
 ]

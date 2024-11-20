@@ -71,7 +71,7 @@
 
 <!-- メンバーウィンドウのHTML -->
 <div id="addMemberWindow" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="width: 70%; max-width: 1000px;">
         <span class="close" onclick="closeAddMemberWindow()">&times;</span>
         <h2>メンバーを追加</h2>
         <form id="categoryForm" class="form-inline">
@@ -157,7 +157,7 @@
                 </div>
                 <div class="right-spacer" style="flex: 0.5;"></div>
                 <div class="right-panel" style="flex: 1;">
-                    <div class="button-container" style="flex-direction: column;">
+                    <div class="button-container" style="flex-direction: column; justify-content: flex-end; height: 100%;">
                         <button type="button" class="action-button" onclick="moveToAnotherTeam()">チーム移動</button>
                         <button type="button" class="action-button" onclick="saveMemberMemo()">保存</button>
                     </div>
@@ -176,6 +176,27 @@
         <div class="button-container">
             <button type="button" class="action-button" onclick="deleteTeam()">削除</button>
         </div>
+    </div>
+</div>
+
+<div class="modal" id="moveTeamWindow">
+    <div class="modal-content">
+        <span class="close" onclick="closeMoveTeamWindow()">&times;</span>
+        <h2>チーム移動</h2>
+        <form id="moveTeamForm">
+            <input type="hidden" id="currentTeamId" name="current_team_id" value="{{ team.team_id }}">
+            <label for="teamSelect">移動先のチームを選択</label>
+            <select id="teamSelect" name="team_id" required>
+                {% for team_id in teams %}
+                    {% if team_id != team.team_id %}
+                        <option value="{{ team_id }}">チーム{{ team_id }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <div class="button-container" style="justify-content: flex-end;">
+                <button type="button" class="action-button" onclick="moveMemberToTeam()">移動</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -312,7 +333,7 @@
                 const row = document.createElement('tr');
                 row.dataset.memberId = checkbox.value;
                 row.innerHTML = `
-                    <td><a href="#" class="member-link" onclick="openMemberEditWindow(${checkbox.value})">${checkbox.parentElement.nextElementSibling.textContent}</a></td>
+                    <td><a href="#" class="member-link" onclick="openMemberEditWindow(${checkbox.value})">${checkbox.parentElement.nextElementSibling.textContent}</td>
                     <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
                 `;
                 memberTableBody.insertBefore(row, memberTableBody.lastElementChild);
@@ -490,6 +511,22 @@
         });
 
         updateRadarChart();
+
+        const teamSelect = document.getElementById('teamSelect');
+        const teamIds = {{ teams|safe }};
+        teamIds.forEach(teamId => {
+            if (teamId !== {{ team.team_id }}) {
+                fetch(`{% url 'canri_app:get_team_data' team_id=0 %}`.replace("0", teamId))
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.team) {
+                            const option = document.querySelector(`#teamSelect option[value="${teamId}"]`);
+                            option.textContent = data.team.team_name;
+                        }
+                    })
+                    .catch(error => console.error('チーム情報の取得エラー:', error));
+            }
+        });
     });
 
     function goBack() {
@@ -538,7 +575,54 @@
     }
 
     function moveToAnotherTeam() {
-        // チーム移動の処理を実装
+        const teamSelect = document.getElementById('teamSelect');
+        if (teamSelect.options.length === 0) {
+            alert('移動先のチームが存在しません。');
+        } else {
+            document.getElementById('moveTeamWindow').style.display = 'block';
+        }
+    }
+
+    function closeMoveTeamWindow() {
+        document.getElementById('moveTeamWindow').style.display = 'none';
+    }
+
+    function moveMemberToTeam() {
+        const memberId = document.querySelector('input[name="member_id"]').value;
+        const newTeamId = document.getElementById('teamSelect').value;
+        const currentTeamId = document.getElementById('currentTeamId').value;
+
+        fetch(`/api/move_member_to_team/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                member_id: memberId,
+                new_team_id: newTeamId,
+                current_team_id: currentTeamId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('メンバーが移動されました。');
+                closeMoveTeamWindow();
+                closeMemberEditWindow();
+                removeMemberFromTable(memberId);
+            } else {
+                alert('メンバーの移動に失敗しました。');
+            }
+        })
+        .catch(error => console.error('メンバー移動エラー:', error));
+    }
+
+    function removeMemberFromTable(memberId) {
+        const memberRow = document.querySelector(`#memberTableBody tr[data-member-id="${memberId}"]`);
+        if (memberRow) {
+            memberRow.remove();
+        }
     }
 </script>
-{% endblock %} 
+{% endblock %}
