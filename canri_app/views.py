@@ -634,7 +634,7 @@ class ProjectlistView(TemplateView):
 class progress_within_ProjectlistView(TemplateView):
     template_name="progress_within_projectlist.html"
 
-
+# プロジェクトリスト表示
 def projectListView(request):
     template_name = "progress_within_projectlist.html"
     ctx = {}
@@ -647,12 +647,11 @@ def projectListView(request):
     ctx["project_list"] = qs
     return render(request, template_name, ctx)
 
-
-
+# 過去プロジェクト
 class post_ProjectlistView(TemplateView):
     template_name="post_projectlist.html"
 
-
+# 過去プロジェクト表示
 def Post_projectListView(request):
     template_name = "post_projectlist.html"
     ctx = {}
@@ -666,8 +665,6 @@ def Post_projectListView(request):
     return render(request, template_name, ctx)
 
 
-
-
 # プロジェクト詳細表示
 class Project_detailView(TemplateView):
     template_name="project_detail.html"
@@ -676,23 +673,138 @@ class Project_detailView(TemplateView):
 from django.shortcuts import render, get_object_or_404
 from .models import Project, ProjectAffiliationTeam, ProjectProgressStatus
 
+#プロジェクト詳細表示時に利用
+#project_idを使用してデータを取得
 def project_detail_view(request, project_id):
     # プロジェクトを取得
+    #project_idに当てはまるprojectテーブルのデータを取得
     project = get_object_or_404(Project, project_id=project_id)
 
-    # プロジェクトに関連するチームを取得
+    #プロジェクトに関連するチームを取得
+    #プロジェクト所属チームテーブルのprojectに当てはまるデータを取得
     teams = ProjectAffiliationTeam.objects.filter(project=project).select_related('team')
 
     # プロジェクトに関連するフェーズを取得
+    # 上と同じ感じ
     phases = ProjectProgressStatus.objects.filter(project=project)
 
     context = {
+        #プロジェクトテーブルの情報
         'project': project,
+        #プロジェクト所属チームテーブルの情報
         'teams': teams,
+        #フェーズテーブルの情報
         'phases': phases,
     }
-
+    # 情報を保持した状態でrender
     return render(request, 'project_detail.html', context)
+
+
+
+# プロジェクト詳細変更
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.utils import timezone
+from .models import Project
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
+
+# @login_required  # 認証が必要な場合はコメントを解除
+@require_http_methods(["GET", "POST"])  # HTTPメソッドをGETとPOSTのみに制限
+# project_idを持ってくる
+def project_detail_update(request, project_id):
+    """
+    プロジェクト詳細の更新処理を行うビュー関数
+
+    Args:
+        request: HTTPリクエストオブジェクト
+        project_id: 更新対象のプロジェクトID
+
+    Returns:
+        GET: プロジェクト詳細編集フォームを表示
+        POST: 更新処理後、成功時はプロジェクト詳細ページにリダイレクト
+            失敗時は編集フォームを再表示
+    """
+    # 指定されたproject_idのプロジェクトを取得（存在しない場合は404エラー）
+    # deletion_flag=Falseで論理削除されていないプロジェクトのみを取得
+    project = get_object_or_404(Project, project_id=project_id, deletion_flag=False)
+
+    # POSTリクエスト（フォーム送信）の場合の処理
+    # getの場合は無視
+    if request.method == "POST":
+        try:
+            # フォームからデータを取得
+            # request.POST.get()を使用することで、値が存在しない場合はNoneを返す
+
+            #html内のフォームのデータを取得
+            project_name = request.POST.get('project_name')
+            project_description = request.POST.get('project_description')
+            start_date = request.POST.get('start_date')
+            end_date = request.POST.get('end_date')
+
+            # 必須フィールドのバリデーション
+            # all()関数で全ての値が存在することを確認
+            # 入力されていないフィールドがある場合falseを返す
+            # 一か所でも空いている場合エラーメッセージを付けて値を戻した状態で再表示
+            if not all([project_name, project_description, start_date, end_date]):
+                #エラーメッセージ
+                messages.error(request, '全ての必須項目を入力してください。')
+                # バリデーションエラー時は入力値を保持して編集フォームを再表示
+                return render(request, 'project/project_detail.html', {
+                    'project': project,
+                    'project_name': project_name,
+                    'project_description': project_description,
+                    'start_date': start_date,
+                    'end_date': end_date,
+                })
+
+            # 日付の論理チェック
+            # 開始日が終了日より後の日付になっていないかを確認
+            # 後になってたら上と同様に戻る
+            if start_date > end_date:
+                messages.error(request, '開始日は終了日よりも前の日付である必要があります。')
+                # 日付エラー時も入力値を保持して編集フォームを再表示
+                return render(request, 'project/project_detail.html', {
+                    'project': project,
+                    'project_name': project_name,
+                    'project_description': project_description,
+                    'start_date': start_date,
+                    'end_date': end_date,
+                })
+
+            # プロジェクト情報の更新
+            project.project_name = project_name
+            project.project_detail = project_description
+            project.project_start_date = start_date
+            project.project_end_date = end_date
+            project.update_date = timezone.now()  # 更新日時を現在時刻で設定
+
+            # データベースに変更を保存
+            project.save()
+
+            # 成功メッセージを設定
+            messages.success(request, 'プロジェクトが正常に更新されました。')
+            # 詳細表示ページにリダイレクト
+            return redirect('project.project_detail', project_id=project.project_id)
+
+        except Exception as e:
+            # 予期しないエラーが発生した場合の処理
+            messages.error(request, f'更新中にエラーが発生しました: {str(e)}')
+            # エラー時は入力値を保持して編集フォームを再表示
+            return render(request, 'project/project_detail.html', {
+                'project': project,
+                'project_name': project_name,
+                'project_description': project_description,
+                'start_date': start_date,
+                'end_date': end_date,
+            })
+
+    # GETリクエストの場合は編集フォームを表示
+    # プロジェクトの現在の情報をテンプレートに渡す
+    return render(request, 'project/project_detail.html', {
+        'project': project
+    })
+
 
 
 
@@ -714,7 +826,6 @@ def team_detail_view(request, team_id):
 
 
         # ctx["project_list"] = qsequest, self.template_name, {'members': members}
-
 
 class Past_ProjectView(TemplateView):
     template_name = "past_project_view.html"
