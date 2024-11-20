@@ -39,6 +39,8 @@ urlpatterns = [
     path('team_edit/<int:team_id>/', views.TeamEditView.as_view(), name='team_edit'),
     path('team_edit/complete/', views.TeamEditCompleteView.as_view(), name='team_edit_complete'),
     path('team_member_edit/', views.TeamMemberEditView.as_view(), name='team_member_edit'),
+    path('team_member_edit/<int:member_id>/', views.TeamMemberEditView.as_view(), name='team_member_edit'),
+    path('team_member_edit_save/', views.TeamMemberEditSaveView.as_view(), name='team_member_edit_save'),
     path('team_delete/', views.TeamDeleteView.as_view(), name='team_delete'),
 
     #プロジェクト一覧
@@ -51,7 +53,8 @@ urlpatterns = [
     path('project_detail/',views.Project_detailView.as_view(), name='project_detail'),
     path('project/<int:project_id>/', project_detail_view, name='project_detail'),
 
-
+    # 過去プロジェクト
+    path('past_project_view/', views.Past_ProjectView.as_view(), name='past_project_view'),
 
     #チーム詳細
     # path('team_detail/',views.team_detailView.as_view(), name='team_detail'),
@@ -67,4 +70,5 @@ urlpatterns = [
     path('api/save_team/', api.save_team_api, name='save_team'),
     path('api/save_project/', api.save_project_api, name='save_project_api'),
     path('api/delete_team/', api.delete_team_api, name='delete_team_api'),
+    path('api/save_member_memo/', api.save_member_memo, name='save_member_memo'),
 ]

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView
 from django.views.generic import CreateView
 from django.http import JsonResponse
@@ -433,3 +434,32 @@ def delete_team_api(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+#メモ保存API
+@csrf_exempt
+@require_http_methods(["POST"])
+def save_member_memo(request):
+    try:
+        data = json.loads(request.body)
+        member_id = data.get('member_id')
+        member_memo = data.get('member_memo')
+
+        # デバッグ用ログ
+        print("Received data:", data)
+        print("Member ID:", member_id)
+        print("Member Memo:", member_memo)
+
+        try:
+            member = Member.objects.get(member_id=member_id)
+            member.memo = member_memo
+            member.save()
+            return JsonResponse({'status': 'success'})
+        except Member.DoesNotExist:
+            print("Error: Member not found")  # デバッグ用ログ
+            return JsonResponse({'status': 'error', 'message': 'Member not found'}, status=404)
+
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON")  # デバッグ用ログ
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        print("Error:", str(e))  # デバッグ用ログ
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
