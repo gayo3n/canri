@@ -49,5 +49,5 @@ header nav a {
 .box1 { background-color: #d3d3d3; } /* ライトグレー - 進行中プロジェクト */
 .box2 { background-color: #87ceeb; } /* ライトブルー - 過去プロジェクト */
 .box3 { background-color: #8bc34a; } /* グリーン - アカウント管理 */
-.box4 { background-color: #800080; } /* パープル - メンバーリスト */
-.box5 { background-color: #ff69b4; } /* ピンク - 進行中プロジェクト */
+.box4 { background-color: #d74ed7; } /* パープル - メンバーリスト */
+.box5 { background-color: #ff6db6; } /* ピンク - 進行中プロジェクト */

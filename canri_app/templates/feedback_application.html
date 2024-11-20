@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/feedback_save_complete.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- モーダル (確認ダイアログ) -->
+<div class="modal">
+    <!-- 削除取りやめボタン -->
+    <button class="btn btn-cancel" onclick="closeModal()">✕</button>
+    <div class="modal-content">
+        <h2>フィードバックの反映</h2>
+    </div>
+</div>
+
+<!-- スクリプトでモーダルを閉じる動作 -->
+<script>
+function closeModal() {
+    document.querySelector('.modal').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
+{% endblock %}
