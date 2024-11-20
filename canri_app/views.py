@@ -306,7 +306,7 @@ class CreateTeam3View(TemplateView):
             'team_size': team_size
         }
 
-        # create_team_api を呼び出してチームを編成
+        # create_team_api を呼び出し���チームを編成
         request._body = json.dumps(data).encode('utf-8')
         response = create_team_api(request)
         response_data = json.loads(response.content)
@@ -396,8 +396,7 @@ class SaveNewProjectView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         project_name = request.POST.get('project_name')
-        project_description = request.POST.get
-        ('project_description')
+        project_description = request.POST.get('project_description') 
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
         teams = request.POST.get('teams')
@@ -418,7 +417,7 @@ class SaveNewProjectView(TemplateView):
 
         if response.status_code == 200:
             project_id = response_data['project_id']
-            print("プロジェクトが保存されました:", project_id)  # プロジェ��トIDをターミナルに表示
+            print("プロジェクト��保存されました:", project_id)  # プロジェクトIDをターミナルに表示
         else:
             print(response_data)
             print("プロジェクトの保存に失敗しました")  # エラーメッセージをターミナルに表示
