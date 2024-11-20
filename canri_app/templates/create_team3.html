@@ -113,14 +113,17 @@
 </div>
 
 <script>
+    // 小ウィンドウを表示する処理
     function openAddMemberWindow() {
         document.getElementById('addMemberWindow').style.display = 'block';
     }
 
+    // 小ウィンドウを閉じる処理
     function closeAddMemberWindow() {
         document.getElementById('addMemberWindow').style.display = 'none';
     }
 
+    // メンバー情報を取得する処理
     function fetchMembers() {
         var categorySelect = document.getElementById('category');
         if (categorySelect.value === "null") {
@@ -153,12 +156,14 @@
             .catch(error => console.error('データ取得エラー:', error));
     }
 
+    // 全選択処理
     function selectAllMembers() {
         document.querySelectorAll('#memberTableBodyModal input[name="member"]').forEach(checkbox => {
             checkbox.checked = true;
         });
     }
 
+    // 選択されたメンバーを追加する処理
     function addSelectedMembers() {
         const memberTableBody = document.getElementById('memberTableBody');
         const noMembersMessage = document.getElementById('noMembersMessage');
@@ -186,6 +191,7 @@
         updateRadarChart();
     }
 
+    // メンバーを削除する処理
     function removeMember(link) {
         const row = link.parentElement.parentElement;
         row.remove();
@@ -199,6 +205,7 @@
         updateRadarChart();
     }
 
+    // チームメンバーを設定する処理
     function setTeamMembers() {
         const memberIds = Array.from(document.querySelectorAll('#memberTableBody tr'))
             .map(row => row.dataset.memberId)
@@ -206,6 +213,7 @@
         document.getElementById('team').value = JSON.stringify(memberIds);
     }
 
+    // レーダーチャートを更新する処理
     function updateRadarChart() {
         const memberRows = document.querySelectorAll('#memberTableBody tr[data-member-id]');
         const memberIds = Array.from(memberRows).map(row => row.dataset.memberId);
@@ -238,6 +246,7 @@
             .catch(error => console.error('データ取得エラー:', error));
     }
 
+    // 戻るボタンを押したときの処理
     function goBack() {
         const form = document.createElement('form');
         form.method = 'post';

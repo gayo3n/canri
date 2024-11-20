@@ -10,7 +10,7 @@ from django.utils import timezone
 import json
 from .forms import SearchForm
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect
-from .api import create_team_api, save_team_api, save_project_api
+from .api import create_team_api, save_team_api, save_project_api, get_member_data
 from django.urls import reverse
 
 
@@ -72,7 +72,7 @@ class MemberListMakeView(TemplateView):
         # member_idが複数選ばれている場合
         if member_ids:
             for member_id in member_ids:
-                if member_id.isdigit():  # 数値チェック
+                if member_id.isdigit():  # 数値チェッ��
                     try:
                         # メンバーを取得
                         member = Member.objects.get(member_id=int(member_id))
@@ -468,7 +468,11 @@ class TeamEditView(TemplateView):
         team = Team.objects.get(team_id=team_id)
         team_name = request.POST.get('team_name')
         team_memo = request.POST.get('team_memo')
-        team_members = json.loads(request.POST.get('team'))
+        team_members = request.POST.get('team')
+        if not team_members:
+            team_members = []
+        else:
+            team_members = json.loads(team_members)
         print("team_memo:", team_memo)
 
         team.team_name = team_name
@@ -491,7 +495,7 @@ class TeamEditView(TemplateView):
         end_date = request.POST.get('end_date')
         teams = request.POST.get('teams')
 
-        return HttpResponseRedirect(f"{reverse('canri_app:team_edit_complete')}?project_name={project_name}&project_description={project_description}&start_date={start_date}&end_date={end_date}&teams={teams}")
+        return HttpResponseRedirect(f"{reverse('canri_app:team_edit_complete')}?project_name={project_name}&project_description={project_description}&start_date={start_date}&end_date={end_date}&teams={teams}&team_members={team_members}")
 
 #チーム編集完了
 class TeamEditCompleteView(TemplateView):
@@ -559,9 +563,70 @@ class TeamDeleteView(TemplateView):
 
 #チームメンバー編集
 class TeamMemberEditView(TemplateView):
-    template_name = "team_member_edit.html"
+    template_name = "team_edit.html"
 
+    def get(self, request, *args, **kwargs):
+        member_id = kwargs.get('member_id')
+        member = Member.objects.get(member_id=member_id)
 
+        project_name = request.GET.get('project_name')
+        project_description = request.GET.get('project_description')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        teams = request.GET.get('teams')
+        team_id = request.GET.get('team_id')
+        team_name = request.GET.get('team_name')
+        team_memo = request.GET.get('team_memo')
+        team_members = request.GET.get('team_members')
+        # teams をリストとして扱う
+        if isinstance(teams, str):
+            teams = json.loads(teams)
+
+        # APIエンドポイントを呼び出してメンバー情報を取得
+        response = get_member_data(request, member_id)
+        member_info = json.loads(response.content).get('member_data')
+
+        context = {
+            'member': member_info,
+            'project_name': project_name,
+            'project_description': project_description,
+            'start_date': start_date,
+            'end_date': end_date,
+            'teams': teams,
+            'team_id': team_id,
+            'team_name': team_name,
+            'team_memo': team_memo,
+            'team_members': team_members,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        member_id = kwargs.get('member_id')
+        member = Member.objects.get(member_id=member_id)
+        member_name = request.POST.get('member_name')
+        member_memo = request.POST.get('member_memo')
+
+        member.name = member_name
+        member.memo = member_memo
+        member.save()
+
+        return JsonResponse({'status': 'success'})
+
+#チームメンバー編集保存
+class TeamMemberEditSaveView(TemplateView):
+    template_name = "team_edit.html"
+
+    def post(self, request, *args, **kwargs):
+        member_id = request.POST.get('member_id')
+        member = Member.objects.get(member_id=member_id)
+        member_name = request.POST.get('member_name')
+        member_memo = request.POST.get('member_memo')
+
+        member.name = member_name
+        member.memo = member_memo
+        member.save()
+
+        return JsonResponse({'status': 'success'})
 
 #プロジェクトリスト
 class ProjectlistView(TemplateView):

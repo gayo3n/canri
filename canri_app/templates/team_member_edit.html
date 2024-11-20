@@ -1,0 +1,83 @@
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/create_team3.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <h1>メンバー詳細</h1>
+    <div class="container" style="justify-content: space-around;">
+        <div class="left-spacer" style="flex: 0.5;"></div>
+        <div class="left-panel" style="flex: 3;">
+            <form id="memberEditForm" method="post" action="{% url 'canri_app:team_member_edit_save' member.member_id %}">
+                {% csrf_token %}
+                <input type="hidden" name="member_id" value="{{ member.member_id }}">
+                <input type="hidden" name="team_id" value="{{ team_id }}">
+                <input type="hidden" name="project_name" value="{{ project_name }}">
+                <input type="hidden" name="project_description" value="{{ project_description }}">
+                <input type="hidden" name="start_date" value="{{ start_date }}">
+                <input type="hidden" name="end_date" value="{{ end_date }}">
+                <input type="hidden" name="teams" value="{{ teams|safe }}">
+                <input type="hidden" name="team_name" value="{{ team_name }}">
+                <input type="hidden" name="team_memo" value="{{ team_memo }}">
+                <input type="hidden" name="team_members" value="{{ team_members }}">
+                <label for="member_name">メンバー名</label>
+                <input type="text" name="member_name" id="member_name" value="{{ member.name }}" required readonly>
+                <label for="member_job">役職</label>
+                <input type="text" name="member_job" id="member_job" value="{{ member.job_title|default:"なし" }}" required readonly>
+                <label for="member_career">職歴</label>
+                <input type="text" name="member_career" id="member_career" value="{{ member.career_name|default:"なし" }}" required readonly>
+                <label for="qualification1">資格1</label>
+                <input type="text" name="qualification1" id="qualification1" value="{{ member.qualification_name1|default:"なし" }}" required readonly>
+                <label for="qualification2">資格2</label>
+                <input type="text" name="qualification2" id="qualification2" value="{{ member.qualification_name2|default:"なし" }}" required readonly>
+                <label for="qualification3">資格3</label>
+                <input type="text" name="qualification3" id="qualification3" value="{{ member.qualification_name3|default:"なし" }}" required readonly>
+                <label for="mbti">MBTI</label>
+                <input type="text" name="mbti" id="mbti" value="{{ member.mbti.mbti_name|default:"なし" }}" required readonly>
+            </form>
+        </div>
+        <div class="middle-spacer" style="flex: 0.5;"></div>
+        <div class="middle-panel" style="flex: 3;">
+            <h2>メモ欄</h2>
+            <textarea id="member_memo" name="member_memo" rows="10" style="width: 100%;">{{ member.memo }}</textarea>
+        </div>
+        <div class="right-spacer" style="flex: 0.5;"></div>
+        <div class="right-panel" style="flex: 1;">
+            <div class="button-container" style="flex-direction: column;">
+                <button type="button" class="action-button" onclick="moveToAnotherTeam()">チーム移動</button>
+                <button type="button" class="action-button" onclick="saveMemberMemo()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function moveToAnotherTeam() {
+        // チーム移動の処理を実装
+    }
+
+    function saveMemberMemo() {
+        const form = document.getElementById('memberEditForm');
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('メモが保存されました。');
+            } else {
+                alert('メモの保存に失敗しました。');
+            }
+        })
+        .catch(error => console.error('メモの保存エラー:', error));
+    }
+</script>
+{% endblock %}
