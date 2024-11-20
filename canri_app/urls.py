@@ -54,7 +54,11 @@ urlpatterns = [
     path('project/<int:project_id>/', project_detail_view, name='project_detail'),
 
     # 過去プロジェクト
+    path('past_project_list/', views.Past_ProjectListView.as_view(), name='past_project_list'),
     path('past_project_view/', views.Past_ProjectView.as_view(), name='past_project_view'),
+    path('past_project_deleting/', views.Past_ProjectDeletingView.as_view(), name='past_project_deleting_confirmation'),
+    path('past_project_deleting/deleted/', views.Project_DeletedView.as_view(), name='project_deleted'),
+    path('project_save/', views.Project_Save_CompleteView.as_view(), name='project_save_complete'),
 
     #チーム詳細
     # path('team_detail/',views.team_detailView.as_view(), name='team_detail'),

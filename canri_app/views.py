@@ -715,7 +715,18 @@ def team_detail_view(request, team_id):
 
         # ctx["project_list"] = qsequest, self.template_name, {'members': members}
 
+    # 過去プロジェクト
+class Past_ProjectListView(TemplateView):
+    template_name = "past_project_list.html"
 
 class Past_ProjectView(TemplateView):
     template_name = "past_project_view.html"
 
+class Past_ProjectDeletingView(TemplateView):
+    template_name = "past_project_deleting_confirmation.html"
+
+class Project_DeletedView(TemplateView):
+    template_name = "project_deleted.html"
+
+class Project_Save_CompleteView(TemplateView):
+    template_name = "project_save_complete.html"
