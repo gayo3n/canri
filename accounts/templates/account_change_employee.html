@@ -5,15 +5,15 @@
     <div>
         <form action="ユーザアカウント変更" method="post">
             <div>
-                <input type="text" value="ユーザ名" id="user_name" name="name" required>
+                <input type="text" id="user_name" name="name" required>
             </div>
 
             <div>
-                <input type="text" value="ユーザID" id="user_id" name="id" required>
+                <input type="text" id="user_id" name="id" required>
             </div>
 
             <div>
-                <input type="text" value="password" id="user_password" name="password" required>
+                <input type="text" id="user_password" name="password" required>
             </div>
 
             <div>
@@ -22,7 +22,6 @@
             <div>
                 <td><a href="{% url 'canri_app:index' %}" class="btn btn-danger">キャンセル</a></td>
             </div>
-    
     </div>
 
 {% endblock %}

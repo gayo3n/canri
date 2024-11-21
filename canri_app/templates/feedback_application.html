@@ -1,23 +1,64 @@
-{% load static %}
+{% extends 'base.html' %} 
+{% load static %} 
 
-{% block head %}
+{% block head %} 
 <link rel="stylesheet" href="{% static 'css/feedback_application.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="feedback-form">
-    <h2>フィードバックの反映</h2>
-    <form method="post" action="{% url 'canri_app:feedback_save' %}">
-        {% csrf_token %}
-        <input type="hidden" name="project_id" value="{{ project_id }}">
-        <div class="form-group">
-            <label for="feedback">フィードバック内容</label>
-            <textarea id="feedback" name="feedback" rows="4" required></textarea>
+
+<!-- モーダル (確認ダイアログ) -->
+<div class="modal">
+    <!-- モーダルを閉じるボタン -->
+    <button class="btn btn-cancel" onclick="closeModal()">✕</button>
+    <div class="modal-content">
+        <h2>フィードバックの反映</h2>
+        <table border="1">
+        <!-- フィードバックコンテナ -->
+        <div id="feedback-container">
+            {% for feedback in feedbacks %}
+            <!-- 初期フィードバック行 -->
+            <div class="feedback-row">
+                <form method="post" class="feedback-form">
+                    {% csrf_token %}
+                    <select name="human1" title="human1">
+                        {% for user in users %}
+                        <option value="{{ user.id }}" {% if user.id == feedback.human1_id %}selected{% endif %}>{{ user.name }}</option>
+                        {% endfor %}
+                    </select>
+                    と
+                    <select name="human2" title="human2">
+                        {% for user in users %}
+                        <option value="{{ user.id }}" {% if user.id == feedback.human2_id %}selected{% endif %}>{{ user.name }}</option>
+                        {% endfor %}
+                    </select>
+                    を
+                    <select name="priority" title="condition:">
+                        <option value="1" {% if feedback.priority == 1 %}selected{% endif %}>優先的に同じチームに編成する</option>
+                        <option value="2" {% if feedback.priority == 2 %}selected{% endif %}>同じチームに編成しない</option>
+                    </select>
+                    <a href="{% url 'canri_app:feedback_application' %}" class="btn btn-danger" data-user-id="{{ user.user_id }}">
+                        🗑️
+                    </a>
+        </table>
+                </form>
+            </div>
+            {% endfor %}
         </div>
-        <div class="form-group">
-            <button type="button" class="btn btn-primary" onclick="saveFeedback()">保存</button>
-        </div>
-    </form>
+
+        <!-- フィードバック追加ボタン -->
+        <button class="add-feedback">＋ フィードバックを追加</button>
+        <!-- 保存ボタン -->
+        <button class="btn-save" onclick="saveFeedback()">保存</button>
+    </div>
 </div>
+
+<script>
+
+function closeModal() {
+    document.querySelector('.modal').style.display = 'none';
+}
+
+</script>
 
 {% endblock %}

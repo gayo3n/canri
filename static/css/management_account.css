@@ -16,10 +16,27 @@ table th, table td {
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 5px;
+    text-decoration: none;
 }
 
 .btn-danger:hover {
     background-color: #e60800;
+    text-decoration: underline; /* ホバー時に下線を追加 */
+}
+
+.btn-create {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-decoration: none; 
+}
+
+.btn-create:hover {
+    background-color: #007bffd5;
+    text-decoration: underline; /* ホバー時に下線を追加 */
 }
 
 /* テーブルのヘッダーのスタイル */
