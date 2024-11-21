@@ -56,10 +56,12 @@ urlpatterns = [
     # 過去プロジェクト
     path('past_project_list/', views.Past_ProjectListView.as_view(), name='past_project_list'),
     path('past_project/', Post_projectListView, name='past_project'),
-    path('past_project_view/', views.Past_ProjectView.as_view(), name='past_project_view'),
+    path('past_project_view/<int:project_id>/', views.Past_ProjectView.as_view(), name='past_project_view'),
     path('past_project_deleting/', views.Past_ProjectDeletingView.as_view(), name='past_project_deleting_confirmation'),
     path('past_project_deleting/deleted/', views.Project_DeletedView.as_view(), name='project_deleted'),
     path('project_save/', views.Project_Save_CompleteView.as_view(), name='project_save_complete'),
+    path('feedback/save/', views.FeedbackSaveView.as_view(), name='feedback_save'),
+    path('feedback/<int:project_id>/', views.FeedbackView.as_view(), name='feedback'),
 
     #チーム詳細
     # path('team_detail/',views.team_detailView.as_view(), name='team_detail'),
@@ -77,4 +79,5 @@ urlpatterns = [
     path('api/delete_team/', api.delete_team_api, name='delete_team_api'),
     path('api/save_member_memo/', api.save_member_memo, name='save_member_memo'),
     path('api/move_member_to_team/', api.move_member_to_team, name='move_member_to_team'),
+    path('api/get_p_project_detail/<int:project_id>/', api.get_p_project_detail, name='get_p_project_detail'),
 ]

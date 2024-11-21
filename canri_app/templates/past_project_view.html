@@ -6,38 +6,107 @@
 {% block content %}
 
 <main class="main-content">
+    <!-- チームセクション -->
+    <section class="teams-section">
+        <div class="container">
+            <h3>関連チーム</h3>
+            <div class="teams-grid">
+                {% for affiliation in teams %}
+                    <div class="team-card">
+                        <a href="チーム詳細リンク">{{ affiliation.team.team_name }}</a>
+                    </div>
+                {% endfor %}
+            </div>  
+        </div>
+    </section>
+
+    <!-- プロジェクト詳細セクション -->
     <section class="project-section">
         <!--各プロジェクト名-->
         <h2>{{ project.project_name }}</h2>
         <div class="project-list">
             <div class="project-card">
+                <input type="hidden" name="project_id" value="{{ project.project_id }}">
                 <h3 class="project-name">{{ project.project_name }}</h3>
                 <p>開始日: {{ project.creation_date|date:"Y年m月d日" }}</p>
                 <p>完了日: {{ project.complete_date|date:"Y年m月d日" }}</p>
                 <p>事後評価メモ: {{ project.post_evaluation_memo }}</p>
+                <button class="feedbackbutton" onclick="openAddFeedback()">フィードバック</button>
                 <button class="delete-button">削除</button>
                 <button class="action-button">保存</button>
             </div>
         </div>
     </section>
-
-    <!-- チームメンバー情報 -->
-    <section class="team-section">
-        <h3>チームメンバー情報</h3>
-        <div class="team-list">
-            {% for member in team_members %}
-            <div class="team-name">
-                <p><strong>メンバーID:</strong> {{ member.id }}</p>
-                <p><strong>名前:</strong> {{ member.name }}</p>
-                <p><strong>生年月日:</strong> {{ member.birthday }}</p>
-                <p><strong>役職:</strong> {{ member.role }}</p>
-                <p><strong>職歴:</strong> {{ member.work_experience }}</p>
-                <p><strong>資格:</strong> {{ member.qualification }}</p>
-                <p><strong>MBTI:</strong> {{ member.mbti }}</p>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
 </main>
 
+<!-- フィードバックモーダルのHTML -->
+<div class="modal" style="display: none;">
+    <div class="modal-content" style="width: 70%; max-width: 1000px;">
+        <span class="close" onclick="closeFeedbackModal()">&times;</span>
+        <div id="modal-body">
+            <!-- feedback_application.htmlの内容がここに読み込まれる -->        
+        </div>
+    </div>
+</div>
+
+<!-- フィードバック保存完了モーダルのHTML -->
+<div class="modal" id="saveCompleteModal" style="display: none;">
+    <div class="modal-content" style="width: 70%; max-width: 1000px;">
+        <span class="close" onclick="closeSaveCompleteModal()">&times;</span>
+        <div id="save-complete-body">
+            <!-- feedback_save_complete.htmlの内容がここに読み込まれる -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // フィードバックモーダルを開く
+    function openAddFeedback() {
+        const projectId = document.querySelector('input[name="project_id"]').value;
+        if (!projectId) {
+            console.error('Project ID is missing');
+            return;
+        }
+
+        fetch("{% url 'canri_app:feedback' project_id=0 %}".replace('0', projectId))
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('modal-body').innerHTML = html;
+                document.querySelector('.modal').style.display = 'block';
+            })
+            .catch(error => console.error('Error loading feedback application:', error));
+    }
+
+    // フィードバックモーダルを閉じる
+    function closeFeedbackModal() {
+        document.querySelector('.modal').style.display = 'none';
+    }
+
+    // フィードバック保存完了モーダルを閉じる
+    function closeSaveCompleteModal() {
+        document.getElementById('saveCompleteModal').style.display = 'none';
+    }
+
+    // フィードバックを保存する
+    function saveFeedback() {
+        const form = document.querySelector('#modal-body form');
+        const formData = new FormData(form);
+
+        fetch("{% url 'canri_app:feedback_save' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.modal').style.display = 'none';
+            document.getElementById('save-complete-body').innerHTML = html;
+            document.getElementById('saveCompleteModal').style.display = 'block';
+            console.log('Feedback saved successfully');
+        })
+        .catch(error => console.error('Error saving feedback:', error));
+    }
+</script>
 {% endblock %}

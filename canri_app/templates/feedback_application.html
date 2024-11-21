@@ -1,29 +1,23 @@
-{% extends 'base.html' %}
-
 {% load static %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/feedback_save_complete.css' %}">
+<link rel="stylesheet" href="{% static 'css/feedback_application.css' %}">
 {% endblock %}
 
 {% block content %}
-
-<!-- モーダル (確認ダイアログ) -->
-<div class="modal">
-    <!-- 削除取りやめボタン -->
-    <button class="btn btn-cancel" onclick="closeModal()">✕</button>
-    <div class="modal-content">
-        <h2>フィードバックの反映</h2>
-    </div>
+<div class="feedback-form">
+    <h2>フィードバックの反映</h2>
+    <form method="post" action="{% url 'canri_app:feedback_save' %}">
+        {% csrf_token %}
+        <input type="hidden" name="project_id" value="{{ project_id }}">
+        <div class="form-group">
+            <label for="feedback">フィードバック内容</label>
+            <textarea id="feedback" name="feedback" rows="4" required></textarea>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-primary" onclick="saveFeedback()">保存</button>
+        </div>
+    </form>
 </div>
 
-<!-- スクリプトでモーダルを閉じる動作 -->
-<script>
-function closeModal() {
-    document.querySelector('.modal').style.display = 'none';
-}
-</script>
-
-</body>
-</html>
 {% endblock %}
