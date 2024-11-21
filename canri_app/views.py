@@ -826,8 +826,6 @@ def team_detail_view(request, team_id):
 
         # ctx["project_list"] = qsequest, self.template_name, {'members': members}
 
-<<<<<<< HEAD
-=======
     # 過去プロジェクト
 def Post_projectListView(request):
     template_name = "past_project_list.html"
@@ -841,7 +839,6 @@ def Post_projectListView(request):
     ctx["project_list"] = qs
     return render(request, template_name, ctx)
 
->>>>>>> 2271881c3dce0c6ae0080371dcd1c5ce18349c6e
 class Past_ProjectView(TemplateView):
     template_name = "past_project_view.html"
 
