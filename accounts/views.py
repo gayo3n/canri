@@ -99,6 +99,43 @@ def manage_account(request):
     return render(request, 'management_account.html', acc)
 
 
+def create(request):
+    if request.method == 'GET':
+        form = AccountAddForm()
+    elif request.method== 'POST':
+        form= AccountAddForm(request.POST)
+        if form.is_valid():
+            get_user_model().objects.create_user(
+                name=form.cleaned_data['name'],
+                user_id=form.changed_data['user_id'],
+                password=form.cleaned_data['password']
+            )
+            return render(request, 'account_create_complete.html')
+        else:
+            form = AccountAddForm()
+    context = {'form':form}
+    return render(request,'account_create.html', context)
+    # if request.method == 'GET':
+    #     form = AccountAddForm
+    #     context = {
+    #         'form':form
+    #     }
+    #     return render(request, 'account_create.html', context)
+    # elif request.method == 'POST':
+    #     form = AccountAddForm(request.POST)
+    #     if form.is_valid():
+    #         get_user_model().objects.create_user(
+    #             user_id=form.cleaned_data['ユーザー名'],
+    #             password=form.cleaned_data['password'],
+    #             name=form.cleaned_data['name']
+    #         )
+    #         return redirect('management_account/account_creating/account_create_complete/')
+    #     context = {
+    #         'form': form
+    #     }
+    #     return render(request, 'account_create.html', context)
+
+
 def account_create_complete(request):
     form = UserForm(request.POST)
     if form.is_valid():
@@ -128,21 +165,13 @@ def account_create_complete(request):
 
 # account_login = AccountLogin.as_view()
 
-def account_create(request):
-    form = AccountAddForm(request.POST)
-    if form.is_valid():
-            form.save()
-            return redirect('account_create_complete')
-    else:
-        form = UserForm()
 
-    return render(request, "account_create.html")
 
 
 def account_chaenge(request):
     user_change = get_object_or_404(User, user=user_id)
     form = UserForm(instance=user_change)
-    return render(request, 'account_change.html', {'form': form})
+    return render(request, 'account_change_employee.html', {'form': form})
 
 def account_change_complete(request):
     user_change = get_object_or_404(User, user=user_id)
@@ -150,7 +179,7 @@ def account_change_complete(request):
         form = UserForm(request.POST, instance=user_change)
         if form.is_valid():
             form.save()
-    return render(request, 'account_change_complete')
+    return render(request, 'account_change_employee_complete.html')
 
 def account_delete(request, user):
     template_name = "account_delete.html"
@@ -158,5 +187,3 @@ def account_delete(request, user):
     context = {'object': obj}
     return render(request, template_name, context)
 
-def account_change_employee(request):
-    template_name = "account_change_employee"
