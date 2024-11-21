@@ -12,15 +12,15 @@
         <input name="query" value="{{ request.GET.query }}" type="text" />
         <button type="submit">検索する</button>
         </form>
-        <a href="{% url 'canri_app:memberList_make' %}" class="create-member-btn">新規メンバーリスト作成</a>
+        <a href="{% url 'canri_app:memberlist_make' %}" class="create-member-btn">新規メンバーリスト作成</a>
     </div>
     <!--メンバーリスト名を繰り返し表示させる（まだつなげてない）-->
-    {% for member in members %}
+    {% for category in categories %}
     <div class="member-list">
         <div class="member-item">
             <!--メンバーリストの中のリスト名-->
-            <span>{{ member.member_id }}</span>
-            <a href="#" class="detail-btn">詳細</a>
+            <span>{{ category.category_name }}</span>
+            <a href="" class="detail-btn">詳細</a>
             <a href="{% url "canri_app:memberlist_delete" %}" class="delete-btn">&#128465;</a>
         </div>
     </div>
