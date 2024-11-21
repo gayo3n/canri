@@ -1,11 +1,18 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/account_employee_complete.css' %}">
+{% endblock %}
+
 {% block content %}
 
-<body>
-    <p>
-        アカウントの変更が完了しました
-    </p>
-    <a href="{% url 'canri_app:index' %}">←システムメニューへ</a>
+<body class="account-complete">
+    <div class="change">
+        <h2>アカウントの変更が完了しました</h2>
+        <a href="{% url 'canri_app:index' %}">←システムメニューへ</a>
+    </div>
 </body>
+
 
 {% endblock %}
