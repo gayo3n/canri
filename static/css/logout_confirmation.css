@@ -43,10 +43,14 @@ button[type="submit2"] {
     margin-bottom: 15px;
     border: 1px solid #ffffff;
     border-radius: 4px;
-    background-color: #4ad5ff;
+    background-color: #3c80ff;
     font-size: 14px;
     box-sizing: border-box;
 }
 
+button[type="submit2"]:hover {
+    background-color: #ff4a4a; /* ホバー時の色 */
+    transition: background-color 0.3s ease; /* 色の変化を滑らかに */
+}
 
 
