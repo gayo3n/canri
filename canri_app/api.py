@@ -19,7 +19,7 @@ def get_member_data(request, member_id):
         carrer = MemberCareer.objects.get(member=member_id)
         memberparameter = MemberParameter.objects.get(member=member_id)
         try:
-            memberjob = JobTitleInformation.objects.get(job_title=member.job_title)
+            memberjob = JobTitleInformation.objects.get(job_title_id=member.job)
         except JobTitleInformation.DoesNotExist:
             memberjob = None
         # 同じメンバーIDを持つ資格を3件まで取得
@@ -31,8 +31,8 @@ def get_member_data(request, member_id):
             'birthdate': member.birthdate,#生年月日
             'career_id': carrer.career.career_id,#職歴ID
             'career_name': carrer.career.career,#職歴名
-            'job_id_title_id': memberjob.job_title_id if memberjob else None,#役職ID
-            'job_title': member.job_title,#役職名
+            'job_id': member.job,#役職ID
+            'job_title': memberjob.job_title,#役職名
             'mbti_id': member.mbti.mbti_id,#MBTIタイプID
             'mbti_name': member.mbti.mbti_name,#MBTIタイプ名
             'planning_presentation_power': memberparameter.planning_presentation_power,#企画・プレゼン力
@@ -239,7 +239,7 @@ def get_team_members(request, team_id):
             memberparameter = MemberParameter.objects.get(member=member)
             carrer = MemberCareer.objects.get(member=member)
             try:
-                memberjob = JobTitleInformation.objects.get(job_title=member.job_title)
+                memberjob = JobTitleInformation.objects.get(job_title_id=member.job)
             except JobTitleInformation.DoesNotExist:
                 memberjob = None
             member_data.append({
@@ -248,8 +248,8 @@ def get_team_members(request, team_id):
             'birthdate': member.birthdate,#生年月日
             'career_id': carrer.career.career_id,#職歴ID
             'career_name': carrer.career.career,#職歴名
-            'job_id_title_id': memberjob.job_title_id if memberjob else None,#役職ID
-            'job_title': member.job_title,#役職名
+            'job_id': member.job,#役職ID
+            'job_title': memberjob.job_title,#役職名
             'mbti_id': member.mbti.mbti_id,#MBTIタイプID
             'mbti_name': member.mbti.mbti_name,#MBTIタイプ名
             'planning_presentation_power': memberparameter.planning_presentation_power,#企画・プレゼン力
@@ -354,7 +354,7 @@ def save_project_api(request):
         if not project_name or not project_description or not start_date or not end_date or not isinstance(teams, list):
             return JsonResponse({"error": "無効なデータです"}, status=400)
 
-        # プロジェク���を作成
+        # プロジェクトを作成
         project = Project.objects.create(
             project_name=project_name,
             project_detail=project_description,

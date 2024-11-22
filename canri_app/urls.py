@@ -49,17 +49,9 @@ urlpatterns = [
     path('project/', projectListView, name='project'),                                                      #進行中プロジェクト選択時利用
 
     #プロジェクト詳細
-<<<<<<< HEAD
-    # path('project_detail/', views.Project_detailView.as_view(), name='project_detail'),
-    path('project/<int:project_id>/', project_detail_view, name='project_detail'),                          #進行中プロジェクト一覧でプロジェクト選択時利用
-    path('project_detail_update/<int:project_id>/', project_detail_update, name='project_detail_update'),   #プロジェクト詳細更新時利用
-    path('project_detail_create_team/', views.project_detail_Create_TeamView.as_view(), name='detail_create_team'),
-    # path('project_detail_update/<int:project_id>/project/', project_detail_view, name='project_detail_a'),
-=======
     path('project_detail/',views.Project_detailView.as_view(), name='project_detail'),
     path('project/<int:project_id>/', project_detail_view, name='project_detail_view'),
     path('project_detail_update/<int:project_id>/', project_detail_update, name='project_detail_update'),
->>>>>>> 7a51e6c4f8ee3173f7e904dadb3d9d40804eaf57
 
     # 過去プロジェクト
     path('past_project/', Post_projectListView, name='past_project'),
