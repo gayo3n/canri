@@ -1,18 +1,21 @@
-{% extends "base.html" %}
-
+{% load static %}
 {% block content %}
-    <h1>ご確認</h1>
-    <h2>ログアウトします<h2>
+<link rel="stylesheet" href="{% static 'css/logout_confirmation.css' %}">
+<body>
+    <div class="logout_confirmation">
+        <h1>ご確認</h1>
+        <h2>ログアウトします<h2>
         <h2>よろしいですか？</h2>
 
-    <form action="#" method="post">
-        {% csrf_token %}
-        <button type="submit">キャンセル</button>
-    </form>
+        <form action="#" method="post">
+            {% csrf_token %}
+            <button type="submit1">キャンセル</button>
+        </form>
     
-    <form action="/logout_complete/" method="post">
-        {% csrf_token %}
-        <button type="submit">OK</button>
-    </form>
-    
+        <form action="/logout_complete/" method="post">
+            {% csrf_token %}
+            <button type="submit2">OK</button>
+        </form>
+    </div>
+</body>
 {% endblock %}

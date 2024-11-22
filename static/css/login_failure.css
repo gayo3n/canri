@@ -1,0 +1,19 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5; /* 背景色を追加 */
+}
+
+.login_failure {
+    width: 500px;
+    padding: 100px;
+    border: 1px solid #dfdfdf;
+    border-radius: 8px;
+    background-color: #ffffff;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* ボックスの影を追加 */
+}
