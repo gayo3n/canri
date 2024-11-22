@@ -1,0 +1,28 @@
+/* ボディのスタイル */
+.main-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 60vh; /* ビューポートの高さを100%に設定 */
+    text-align: center;
+}
+
+h1 {
+    font-size: 45px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+a{
+    font-size: 20px;
+    color: #007bff;
+    text-decoration: none;
+    align-items: center;
+}
+
+a:hover{
+    color: #0056b3;
+    text-decoration: underline;
+}
