@@ -370,7 +370,7 @@ class SaveTeamView(TemplateView):
             'team': team
         }
 
-        # save_team_api を呼び出してチームを保存
+        # save_team_api を呼���出してチームを保存
         request._body = json.dumps(data).encode('utf-8')
         response = save_team_api(request)
         response_data = json.loads(response.content)
@@ -394,7 +394,7 @@ class SaveTeamView(TemplateView):
             'end_date': end_date
         }
 
-        # ���力された情報を保持した状態でnew_project_edit.htmlに遷移
+        # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
         return render(request, self.template_name, {'project': project_data, 'teams': teams})
 
 #新規プロジェクト保存
@@ -424,7 +424,7 @@ class SaveNewProjectView(TemplateView):
 
         if response.status_code == 200:
             project_id = response_data['project_id']
-            print("プロジェクト��保存されました:", project_id)  # プロジェクトIDをターミナルに表示
+            print("プロジェクトが保存されました:", project_id)  # プロジェクトIDをターミナルに表示
         else:
             print(response_data)
             print("プロジェクトの保存に失敗しました")  # エラーメッセージをターミナルに表示
@@ -1067,9 +1067,15 @@ class Past_ProjectView(TemplateView):
         if not project_data:
             return HttpResponseNotFound("Project not found")
 
+        # project_idに当てはまるProjectAffiliationTeamテーブルのデータを取得
+        affiliation_teams = ProjectAffiliationTeam.objects.filter(project_id=project_id)
+        teams = Team.objects.filter(team_id__in=[team.team.team_id for team in affiliation_teams])
+
         context = {
-            'project': project_data
+            'project': project_data,
+            'teams': teams
         }
+
         return render(request, self.template_name, context)
 
 class Past_ProjectDeletingView(TemplateView):

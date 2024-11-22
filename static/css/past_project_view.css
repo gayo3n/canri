@@ -13,6 +13,23 @@ h1 {
     color: #333;
 }
 
+/* チームテーブルのスタイル */
+.teams-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    flex: 3;
+    padding-right: 20px;
+}
+
+.team-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    min-height: 150px;
+}
+
 /* ボタンのスタイル */
 button[type="button"], .action-button {
     width: auto;
