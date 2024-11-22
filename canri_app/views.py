@@ -180,71 +180,81 @@ class NewProjectEdit2View(TemplateView):
         # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
         return render(request, self.template_name, {'project': project_data, 'teams': teams})
 
-#チーム追加１
+# チーム追加用のビュー
 class CreateTeamView(TemplateView):
     template_name = "create_team.html"
 
     def post(self, request, *args, **kwargs):
-        project_name = request.POST.get('project_name')
-        project_description = request.POST.get('project_description')
-        start_date = request.POST.get('start_date')
-        end_date = request.POST.get('end_date')
-        teams = request.POST.get('teams')
+        # POSTデータからプロジェクト情報を取得
+        project_name = request.POST.get('project_name')  # プロジェクト名
+        project_description = request.POST.get('project_description')  # プロジェクト説明
+        start_date = request.POST.get('start_date')  # 開始日
+        end_date = request.POST.get('end_date')  # 終了日
+        teams = request.POST.get('teams')  # チーム情報（JSON文字列）
 
-        # teams をリストとして扱う
+        # チーム情報をリスト形式に変換
+        # POSTデータでは文字列として受け取るため、JSON形式でパースする
         if isinstance(teams, str):
             teams = json.loads(teams)
 
-        # 入力された情報を保持した状態でcreate_team.htmlに遷移
+        # 入力された情報を保持したまま create_team.html テンプレートをレンダリング
         return render(request, self.template_name, {
-            'project_name': project_name,
-            'project_description': project_description,
-            'start_date': start_date,
-            'end_date': end_date,
-            'teams': teams
+            'project_name': project_name,  # プロジェクト名
+            'project_description': project_description,  # プロジェクト説明
+            'start_date': start_date,  # 開始日
+            'end_date': end_date,  # 終了日
+            'teams': teams  # チーム情報（リスト形式）
         })
 
-#チーム追加2
+
+
+# チーム追加のステップ2用ビュー
 class CreateTeam2View(TemplateView):
     template_name = "create_team2.html"
 
     def post(self, request, *args, **kwargs):
-        project_name = request.POST.get('project_name')
-        project_description = request.POST.get('project_description')
-        start_date = request.POST.get('start_date')
-        end_date = request.POST.get('end_date')
-        teams = request.POST.get('teams')
-        team_size = request.POST.get('team_size')
-        team_type = request.POST.get('team_type')
-        auto_generate = request.POST.get('auto_generate')
+        # POSTデータからプロジェクトとチーム関連の情報を取得
+        #プロジェクト情報
+        project_name = request.POST.get('project_name')  # プロジェクト名
+        project_description = request.POST.get('project_description')  # プロジェクト説明
+        start_date = request.POST.get('start_date')  # 開始日
+        end_date = request.POST.get('end_date')  # 終了日
+        #チーム情報
+        teams = request.POST.get('teams')  # チーム情報（JSON文字列）
+        team_size = request.POST.get('team_size')  # チームの規模
+        team_type = request.POST.get('team_type')  # チームの種類
+        auto_generate = request.POST.get('auto_generate')  # 自動生成フラグ
+        # 削除フラグが立っていないカテゴリを取得
         categories = Category.objects.filter(deletion_flag=False)
 
-        # teams をリストとして扱う
+        # チーム情報をリスト形式に変換
         if isinstance(teams, str):
             teams = json.loads(teams)
 
         if auto_generate:
-            # 入力された情報を保持した状態でcreate_team2.htmlに遷移
+            # 自動生成が有効な場合、create_team2.html にレンダリング
+            # メンバー選択画面
             return render(request, self.template_name, {
-                'project_name': project_name,
-                'project_description': project_description,
-                'start_date': start_date,
-                'end_date': end_date,
-                'teams': teams,
-                'team_size': team_size,
-                'team_type': team_type,
-                'categories': categories,
+                'project_name': project_name,  # プロジェクト名
+                'project_description': project_description,  # プロジェクト説明
+                'start_date': start_date,  # 開始日
+                'end_date': end_date,  # 終了日
+                'teams': teams,  # チーム情報（リスト形式）
+                'team_size': team_size,  # チームの規模
+                'team_type': team_type,  # チームの種類
+                'categories': categories,  # カテゴリ情報
             })
         else:
-            # 入力された情報を保持した状態でcreate_team3.htmlに遷移
+            # 自動生成が無効な場合、create_team3.html にレンダリング
+            # チーム詳細画面
             return render(request, 'create_team3.html', {
-                'project_name': project_name,
-                'project_description': project_description,
-                'start_date': start_date,
-                'end_date': end_date,
-                'teams': teams,
-                'team_type': team_type,
-                'categories': categories,
+                'project_name': project_name,  # プロジェクト名
+                'project_description': project_description,  # プロジェクト説明
+                'start_date': start_date,  # 開始日
+                'end_date': end_date,  # 終了日
+                'teams': teams,  # チーム情報（リスト形式）
+                'team_type': team_type,  # チームの種類
+                'categories': categories,  # カテゴリ情報
             })
 
 #チーム追加2に戻る
@@ -643,6 +653,8 @@ def projectListView(request):
     ctx["project_list"] = qs
     return render(request, template_name, ctx)
 
+
+
 # 過去プロジェクト
 class post_ProjectlistView(TemplateView):
     template_name="post_projectlist.html"
@@ -771,10 +783,6 @@ def project_detail_update(request, project_id):
 
 
 
-
-
-
-
             # プロジェクトを取得
             #project_idに当てはまるprojectテーブルのデータを取得
             project = get_object_or_404(Project, project_id=project_id)
@@ -830,7 +838,7 @@ from .models import Project
 from django.views.decorators.http import require_http_methods
 @require_http_methods(["GET", "POST"])
 # フェーズ追加
-def project_detail_update(request, project_id):
+def project_phase_add(request, project_id):
 
     # テンプレート名の定義
     templatename = f"project_detail.html"
@@ -931,9 +939,32 @@ def project_detail_update(request, project_id):
 
 
 
+# 進行中プロジェクト用のチーム追加用のビュー
+class project_detail_Create_TeamView(TemplateView):
+    template_name = "create_team.html"
 
+    def post(self, request, *args, **kwargs):
+        # POSTデータからプロジェクト情報を取得
+        project_name = request.POST.get('project_name')  # プロジェクト名
+        project_description = request.POST.get('project_description')  # プロジェクト説明
+        start_date = request.POST.get('start_date')  # 開始日
+        end_date = request.POST.get('end_date')  # 終了日
 
+        # teams = request.POST.get('teams')  # チーム情報（JSON文字列）
 
+        # チーム情報をリスト形式に変換
+        # POSTデータでは文字列として受け取るため、JSON形式でパースする
+        # if isinstance(teams, str):
+        #     teams = json.loads(teams)
+
+        # 入力された情報を保持したまま create_team.html テンプレートをレンダリング
+        return render(request, self.template_name, {
+            'project_name': project_name,  # プロジェクト名
+            'project_description': project_description,  # プロジェクト説明
+            'start_date': start_date,  # 開始日
+            'end_date': end_date,  # 終了日
+            # 'teams': teams  # チーム情報（リスト形式）
+        })
 
 class team_detailView(TemplateView):
     template_name="team_detail.html"

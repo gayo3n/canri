@@ -32,7 +32,7 @@ urlpatterns = [
     path('new_project_edit/', views.NewProjectEditView.as_view(), name='new_project_edit'),
     path('new_project_edit/back/', views.NewProjectEdit2View.as_view(), name='new_project_edit2'),
     path('create_team/', views.CreateTeamView.as_view(), name='create_team'),
-    path('create_team2/', views.CreateTeam2View.as_view(), name='create_team2'),
+    path('create_team2/', views.CreateTeam2View.as_view(), name='create_team2'),                            #チーム追加
     path('create_team2/back/', views.CreateTeam2BackView.as_view(), name='create_team2_back'),
     path('create_team3/', views.CreateTeam3View.as_view(), name='create_team3'),
     path('create_team3/save/', views.SaveTeamView.as_view(), name='create_team3_save'),
@@ -47,13 +47,13 @@ urlpatterns = [
     #プロジェクト一覧
     path('progress_within_projectlist/', views.progress_within_ProjectlistView.as_view(), name='projectlist'),
     path('post_projectlist/', views.progress_within_ProjectlistView.as_view(), name='post_projectlist'),
-    path('project/', projectListView, name='project'),#進行中プロジェクト選択時利用
+    path('project/', projectListView, name='project'),                                                      #進行中プロジェクト選択時利用
 
     #プロジェクト詳細
     # path('project_detail/', views.Project_detailView.as_view(), name='project_detail'),
-    path('project/<int:project_id>/', project_detail_view, name='project_detail'),#進行中プロジェクト一覧でプロジェクト選択時利用
-    path('project_detail_update/<int:project_id>/', project_detail_update, name='project_detail_update'),#プロジェクト詳細更新時利用
-
+    path('project/<int:project_id>/', project_detail_view, name='project_detail'),                          #進行中プロジェクト一覧でプロジェクト選択時利用
+    path('project_detail_update/<int:project_id>/', project_detail_update, name='project_detail_update'),   #プロジェクト詳細更新時利用
+    path('project_detail_create_team/', views.project_detail_Create_TeamView.as_view(), name='detail_create_team'),
     # path('project_detail_update/<int:project_id>/project/', project_detail_view, name='project_detail_a'),
 
     # 過去プロジェクト

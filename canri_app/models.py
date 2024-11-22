@@ -73,11 +73,23 @@ class MBTI(models.Model):
     class Meta:
         db_table = 'MBTI'
 
+class JobTitleInformation(models.Model):
+    job_title_id = models.AutoField(primary_key=True)
+    job_title = models.CharField(max_length=255)
+    speciality_height = models.IntegerField()
+    planning_presentation_power = models.IntegerField()
+    teamwork = models.IntegerField()
+    time_management_ability = models.IntegerField()
+    problem_solving_ability = models.IntegerField()
+
+    class Meta:
+        db_table = 'job_title_information'
+
 class Member(models.Model):
     member_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     birthdate = models.DateTimeField()
-    job_title = models.CharField(max_length=255)
+    job = models.ForeignKey(JobTitleInformation, on_delete=models.CASCADE)
     memo = models.TextField()
     mbti = models.ForeignKey(MBTI, on_delete=models.CASCADE)
     creation_date = models.DateTimeField()
@@ -199,14 +211,14 @@ class MemberParameter(models.Model):
         db_table = 'member_parameter'
 
 
-class JobTitleInformation(models.Model):
-    job_title_id = models.AutoField(primary_key=True)
-    job_title = models.CharField(max_length=255)
-    speciality_height = models.IntegerField()
-    planning_presentation_power = models.IntegerField()
-    teamwork = models.IntegerField()
-    time_management_ability = models.IntegerField()
-    problem_solving_ability = models.IntegerField()
+# class JobTitleInformation(models.Model):
+#     job_title_id = models.AutoField(primary_key=True)
+#     job_title = models.CharField(max_length=255)
+#     speciality_height = models.IntegerField()
+#     planning_presentation_power = models.IntegerField()
+#     teamwork = models.IntegerField()
+#     time_management_ability = models.IntegerField()
+#     problem_solving_ability = models.IntegerField()
 
-    class Meta:
-        db_table = 'job_title_information'
+#     class Meta:
+#         db_table = 'job_title_information'
