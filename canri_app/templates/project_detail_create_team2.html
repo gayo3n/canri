@@ -9,10 +9,10 @@
 {% block content %}
 <div class="main-content">
     <h1>新規チーム作成</h1>
-    
+
     <form id="categoryForm" class="form-inline">
         {% csrf_token %}
-        
+
         <!-- メンバーリスト(カテゴリー選択) -->
         <label for="category">メンバーリストを選択</label>
 
@@ -53,7 +53,7 @@
             <input type="hidden" name="project_description" value="{{ project_description }}">
             <input type="hidden" name="start_date" value="{{ start_date }}">
             <input type="hidden" name="end_date" value="{{ end_date }}">
-            <input type="hidden" name="teams" value="{{ teams|safe }}">
+            <!-- <input type="hidden" name="teams" value="{{ teams|safe }}"> -->
             <button type="submit" class="action-button">戻る</button>
         </form>
 
@@ -63,7 +63,7 @@
             <input type="hidden" name="project_description" value="{{ project_description }}">
             <input type="hidden" name="start_date" value="{{ start_date }}">
             <input type="hidden" name="end_date" value="{{ end_date }}">
-            <input type="hidden" name="teams" value="{{ teams|safe }}">
+            <!-- <input type="hidden" name="teams" value="{{ teams|safe }}"> -->
             <input type="hidden" name="team_size" value="{{ team_size }}">
             <input type="hidden" name="team_type" value="{{ team_type }}">
             <input type="hidden" name="selected_members" id="selected_members">
@@ -120,7 +120,7 @@
                         <td style="width: 10%;"><input type="checkbox" name="member" value="${member.member_id}"></td>
                         <td style="width: 30%;">${member.name}</td>
                         <td style="width: 30%;">${birthdate}</td>
-                        <td style="width: 30%;">${member.job_title}</td>
+                        <td style="width: 30%;">${member.job_id}</td>
                     `;
 
                     // 作成した行をテーブルに追加
@@ -141,78 +141,106 @@
 
 
 
+/**
+ * 選択されたメンバーの検証とフォーム送信を行う関数
+ * - チーム人数の要件を確認
+ * - 既存チームとのメンバー重複をチェック
+ * - 有効なメンバーリストでフォームを送信
+ *
+ * 処理フロー：
+ * 1. チェックボックスで選択されたメンバーを収集
+ * 2. 設定されたチームサイズとの比較検証
+ * 3. 既存チームの有無による分岐処理
+ * 4. 重複メンバーのフィルタリングと結果の送信
+ */
+ function submitNextForm() {
+    // チェックされたメンバーのIDを配列に収集
+    // input[name="member"]の中からチェックされている要素のvalueを取得
+    const selectedMembers = [];
+    document.querySelectorAll('input[name="member"]:checked').forEach(checkbox => {
+        selectedMembers.push(checkbox.value);
+    });
 
-    /**
-     * 選択されたメンバーの検証とフォーム送信を行う関数
-     * - チーム人数の要件を確認
-     * - 既存チームとのメンバー重複をチェック
-     * - 有効なメンバーリストでフォームを送信
-     */
+    // 設定されたチームサイズを取得
+    // input要素から文字列として取得した値を数値に変換
+    const teamSize = parseInt(document.querySelector('input[name="team_size"]').value);
 
-
-    function submitNextForm() {
-        // チェックされたメンバーのIDを配列に収集
-        const selectedMembers = [];
-        document.querySelectorAll('input[name="member"]:checked').forEach(checkbox => {
-            selectedMembers.push(checkbox.value);
-        });
-
-        // 設定されたチームサイズを取得
-        const teamSize = parseInt(document.querySelector('input[name="team_size"]').value);
-
-        // 選択メンバー数がチームサイズの要件を満たしているか確認
-        if (selectedMembers.length < teamSize) {
-            alert(`選択されたメンバーがチームサイズ(${teamSize})以上である必要があります。`);
-            return;
-        }
-
-        // Django templateから既存チームの情報を取得
-        const teams = {{ teams|safe }};
-
-        // 既存チームが存在しない場合の処理
-        if (teams.length === 0) {
-            // 選択されたメンバーリストをJSON文字列に変換してフォームに設定
-            document.getElementById('selected_members').value = JSON.stringify(selectedMembers);
-            document.getElementById('nextForm').submit();
-        }
-        // 既存チームが存在する場合の処理
-        else {
-            // 既存チームに所属しているメンバーIDを格納するSet
-            const existingMemberIds = new Set();
-            // 重複メンバーに関する警告メッセージの表示フラグ
-            let messageShown = false;
-
-            // 各既存チームのメンバー情報を取得
-            {% for team_id in teams %}
-                fetch(`{% url 'canri_app:get_team_members' team_id=0 %}`.replace("0", {{ team_id }}))
-                    .then(response => response.json())
-                    .then(data => {
-                        // 既存チームのメンバーIDをSetに追加
-                        data.members.forEach(member => {
-                            existingMemberIds.add(member.member_id);
-                        });
-
-                        // 選択されたメンバーから既存チームのメンバーを除外
-                        const filteredMembers = selectedMembers.filter(memberId => {
-                            if (existingMemberIds.has(parseInt(memberId))) {
-                                // 重複メンバーが見つかった場合の警告表示（初回のみ）
-                                if (!messageShown) {
-                                    alert('既存のチームに所属しているメンバーはチーム作成に使用しません。');
-                                    messageShown = true;
-                                }
-                                return false;
-                            }
-                            return true;
-                        });
-
-                        // フィルタリング済みのメンバーリストをフォームに設定して送信
-                        document.getElementById('selected_members').value = JSON.stringify(filteredMembers);
-                        document.getElementById('nextForm').submit();
-                    })
-                    // エラーハンドリング
-                    .catch(error => console.error('データ取得エラー:', error));
-            {% endfor %}
-        }
+    // 選択メンバー数がチームサイズの要件を満たしているか確認
+    // 選択メンバー数が設定されたチームサイズより少ない場合はエラー
+    if (selectedMembers.length < teamSize) {
+        alert(`選択されたメンバーがチームサイズ(${teamSize})以上である必要があります。`);
+        return;
     }
+
+
+
+
+    // Django templateから既存チームの情報を取得
+    // テンプレート変数teamsをJavaScriptで使用可能な形で展開
+    const teams = {{ teams|safe }};
+
+    // 既存チームが存在しない場合の処理
+    // 新規チーム作成の場合は直接フォームを送信
+    if (teams.length === 0) {
+        // 選択されたメンバーリストをJSON文字列に変換してフォームに設定
+        // hidden inputにJSON形式で選択メンバーを格納
+        document.getElementById('selected_members').value = JSON.stringify(selectedMembers);
+        document.getElementById('nextForm').submit();
+    }
+
+
+
+    // 既存チームが存在する場合の処理
+    // 既存チームのメンバーとの重複チェックを行う
+    else {
+        // 既存チームに所属しているメンバーIDを格納するSet
+        // 重複を自動的に排除するためSetを使用
+        const existingMemberIds = new Set();
+        // 重複メンバーに関する警告メッセージの表示フラグ
+        // メッセージの重複表示を防ぐためのフラグ
+        let messageShown = false;
+
+        // 各既存チームのメンバー情報を取得
+        // Django URLconf経由でチームメンバー情報を非同期取得
+        {% for team_id in teams %}
+            fetch(`{% url 'canri_app:get_team_members' team_id=0 %}`.replace("0", {{ team_id }}))
+                .then(response => response.json())
+                .then(data => {
+                    // 既存チームのメンバーIDをSetに追加
+                    // 取得したメンバー情報からIDのみを抽出してSetに追加
+                    data.members.forEach(member => {
+                        existingMemberIds.add(member.member_id);
+                    });
+
+                    // 選択されたメンバーから既存チームのメンバーを除外
+                    // filter関数で重複メンバーを除外した新しい配列を生成
+                    const filteredMembers = selectedMembers.filter(memberId => {
+                        if (existingMemberIds.has(parseInt(memberId))) {
+                            // 重複メンバーが見つかった場合の警告表示（初回のみ）
+                            // メッセージの重複表示を防ぐためフラグをチェック
+                            if (!messageShown) {
+                                alert('既存のチームに所属しているメンバーはチーム作成に使用しません。');
+                                messageShown = true;
+                            }
+                            return false;
+                        }
+                        return true;
+                    });
+
+                    // フィルタリング済みのメンバーリストをフォームに設定して送信
+                    // フィルタリング結果をJSON形式でhidden inputに設定し、フォームを送信
+                    document.getElementById('selected_members').value = JSON.stringify(filteredMembers);
+                    document.getElementById('nextForm').submit();
+                })
+                // エラーハンドリング
+                // APIリクエスト失敗時のエラーをコンソールに出力
+                .catch(error => console.error('データ取得エラー:', error));
+        {% endfor %}
+    }
+}
+
+
+
+
 </script>
 {% endblock %}

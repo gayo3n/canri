@@ -507,7 +507,7 @@
         }
     }
 
-    // レーダーチャートの更新処理
+    // レーダーチャートを更新する処理
     function updateRadarChart() {
         const memberRows = document.querySelectorAll('#memberTableBody tr[data-member-id]');
         const memberIds = Array.from(memberRows).map(row => row.dataset.memberId);
@@ -518,22 +518,35 @@
             return;
         }
 
-        fetch(`{% url 'canri_app:get_member_data' member_id=0 %}`.replace("0", memberIds[0]))
-            .then(response => response.json())
-            .then(data => {
-                const memberData = data.member_data;
-                const specialityHeight = Math.min(memberData.speciality_height, 10); // スケーリング
-                const timeManagementAbility = Math.min(memberData.time_management_ability, 10); // スケーリング
-                const problemSolvingAbility = Math.min(memberData.problem_solving_ability, 10); // スケーリング
-                const planningPresentationPower = Math.min(memberData.planning_presentation_power, 10); // スケーリング
-                const teamwork = Math.min(memberData.teamwork, 10); // スケーリング
+        const promises = memberIds.map(memberId => 
+            fetch(`{% url 'canri_app:get_member_data' member_id=0 %}`.replace("0", memberId))
+                .then(response => response.json())
+        );
 
+        Promise.all(promises)
+            .then(results => {
+                let totalSpecialityHeight = 0;
+                let totalTimeManagementAbility = 0;
+                let totalProblemSolvingAbility = 0;
+                let totalPlanningPresentationPower = 0;
+                let totalTeamwork = 0;
+
+                results.forEach(data => {
+                    const memberData = data.member_data;
+                    totalSpecialityHeight += memberData.speciality_height;
+                    totalTimeManagementAbility += memberData.time_management_ability;
+                    totalProblemSolvingAbility += memberData.problem_solving_ability;
+                    totalPlanningPresentationPower += memberData.planning_presentation_power;
+                    totalTeamwork += memberData.teamwork;
+                });
+
+                const memberCount = results.length;
                 radarChart.data.datasets[0].data = [
-                    specialityHeight,
-                    timeManagementAbility,
-                    problemSolvingAbility,
-                    planningPresentationPower,
-                    teamwork
+                    totalSpecialityHeight / memberCount,
+                    totalTimeManagementAbility / memberCount,
+                    totalProblemSolvingAbility / memberCount,
+                    totalPlanningPresentationPower / memberCount,
+                    totalTeamwork / memberCount
                 ];
                 radarChart.update();
             })
