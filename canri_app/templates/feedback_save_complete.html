@@ -1,5 +1,3 @@
-{% extends 'base.html' %}
-
 {% load static %}
 
 {% block head %}
@@ -8,23 +6,8 @@
 
 {% block content %}
 
-<!-- モーダル (確認ダイアログ) -->
-<div class="modal">
-    <!-- 削除取りやめボタン -->
-    <button class="btn btn-cancel" onclick="closeModal()">✕</button>
-    <div class="modal-content">
-        <p>フィードバックを保存しました
-        </p>
-    </div>
-</div>
-
-<!-- スクリプトでモーダルを閉じる動作 -->
-<script>
-function closeModal() {
-    document.querySelector('.modal').style.display = 'none';
-}
-</script>
-
+<div class="save-complete">
+    <h1>フィードバックの保存が完了しました</h1>
 </body>
 </html>
 {% endblock %}
