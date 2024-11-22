@@ -1,10 +1,4 @@
 /* ボディのスタイル */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 10px 0;
-}
-
 .main-content {
     max-width: 1200px; /* 横幅を広げる */
     margin: 20px auto;
@@ -17,17 +11,6 @@ h1 {
     font-size: 40px;
     margin-bottom: 20px;
     color: #333;
-}
-
-form {
-    margin-bottom: 20px;
-}
-
-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #555;
 }
 
 select, input[type="text"], input[type="date"], input[type="submit"], button {
@@ -77,21 +60,17 @@ button:hover {
     background-color: #0056b3;
 }
 
-.next-button {
-    margin-left: 10px;
-}
-
 .error-message {
     color: red;
     font-weight: bold;
     margin-bottom: 10px;
 }
 
-.form-inline {
+/* .form-inline {
     display: flex;
     align-items: center;
     justify-content: space-between; /* 横方向にスペースを均等に配置 */
-}
+/* } */ */
 
 .form-inline label {
     margin-right: 10px;
@@ -178,6 +157,15 @@ a:hover {
     text-decoration: underline;
 }
 
+.member-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.member-link:hover {
+    text-decoration: underline;
+}
+
 .container {
     display: flex;
     justify-content: space-between;
@@ -207,4 +195,15 @@ a:hover {
 
 .chart-wrapper {
     width: 80%;
+}
+
+.float-right {
+    float: right;
+}
+
+.member-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
 }

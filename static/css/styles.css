@@ -3,7 +3,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f5f7fa; /* 背景色 */
+    background-color: #fffff9; /* 背景色 */
     padding: 10px 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 影を追加 */
 }
@@ -24,12 +24,12 @@
 .navbar-right a {
     margin-left: 15px;
     text-decoration: none;
-    color: #333;
+    color: #000000;
     font-size: 16px;
 }
 
 .navbar-right a:hover {
-    color: #007bff;
+    color: #ff0000;
 }
 
 /* ロゴアイコン */

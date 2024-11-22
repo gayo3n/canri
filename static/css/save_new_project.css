@@ -1,11 +1,4 @@
-
 /* ボディのスタイル */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 10px 0;
-}
-
 .main-content {
     max-width: 800px;
     margin: 20px auto;

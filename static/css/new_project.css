@@ -1,11 +1,5 @@
 
 /* ボディのスタイル */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 10px 0;
-}
-
 .main-content {
     max-width: 1200px; /* 横幅を広げる */
     margin: 20px auto;
@@ -26,9 +20,6 @@ form {
 
 label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #555;
 }
 
 select, input[type="text"], input[type="date"], input[type="submit"], button {
@@ -66,12 +57,6 @@ button[type="button"], .action-button {
     color: red;
     font-weight: bold;
     margin-bottom: 10px;
-}
-
-.form-inline {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* 横方向にスペースを均等に配置 */
 }
 
 .form-inline label {
