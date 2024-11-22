@@ -1,33 +1,39 @@
 {% extends 'base2.html' %}
 
 {% load static %}
-
 {% load custom_filters %} <!-- カスタムフィルターをロード -->
 
 {% block head %}
+<!-- このページ専用のCSSファイルを読み込む -->
 <link rel="stylesheet" href="{% static 'css/create_team.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="main-content">
     <h1>新規チーム作成</h1>
+    <!-- チーム作成フォーム -->
+     <!--cretefomr2移行 -->
     <form id="createTeamForm" method="post" action="{% url 'canri_app:create_team2' %}">
-        {% csrf_token %}
-        
+        {% csrf_token %} <!-- CSRFトークンを追加 -->
+
+        <!-- プロジェクト情報をhiddenで送信 -->
+         <!-- project情報を保持 -->
         <input type="hidden" name="project_name" value="{{ project_name }}">
         <input type="hidden" name="project_description" value="{{ project_description }}">
         <input type="hidden" name="start_date" value="{{ start_date }}">
         <input type="hidden" name="end_date" value="{{ end_date }}">
         <input type="hidden" name="teams" value="{{ teams|safe }}">
-        
+
+        <!-- チーム人数選択 -->
         <label for="team_size">チームの人数</label>
         <select name="team_size" id="team_size" required>
             <option value="5" selected>5人</option>
-            {% for i in 1|range_filter:31 %}
+            {% for i in 1|range_filter:31 %} <!-- 1～30までの人数を選択肢として生成 -->
             <option value="{{ i }}">{{ i }}人</option>
             {% endfor %}
         </select>
-        
+
+        <!-- チームの目的選択 -->
         <label for="team_type">チームの目的</label>
         <select name="team_type" id="team_type" required>
             <option value="event">イベント用チーム</option>
@@ -35,10 +41,12 @@
             <option value="project">プロジェクト開発用チーム</option>
             <option value="idea_generation">アイデア発想チーム</option>
         </select>
-        
+
+        <!-- チーム自動生成の選択 -->
         <label for="auto_generate">チームを自動生成する</label>
         <input type="checkbox" name="auto_generate" id="auto_generate" checked>
-        
+
+        <!-- ボタンコンテナ -->
         <div class="button-container">
             <button type="button" class="action-button back-button" onclick="goBack()">戻る</button>
             <button type="submit" class="action-button next-button">次へ</button>
@@ -46,19 +54,24 @@
     </form>
 </div>
 
+
+
 <script>
     // 戻るボタンの処理
     function goBack() {
+        // 動的にフォームを生成して送信
         const form = document.createElement('form');
         form.method = 'post';
         form.action = "{% url 'canri_app:new_project_edit2' %}";
 
+        // CSRFトークンを追加
         const csrfToken = document.createElement('input');
         csrfToken.type = 'hidden';
         csrfToken.name = 'csrfmiddlewaretoken';
         csrfToken.value = '{{ csrf_token }}';
         form.appendChild(csrfToken);
 
+        // プロジェクト関連情報をhiddenフィールドとして追加
         const projectName = document.createElement('input');
         projectName.type = 'hidden';
         projectName.name = 'project_name';
@@ -89,6 +102,7 @@
         teams.value = '{{ teams|safe }}';
         form.appendChild(teams);
 
+        // フォームをドキュメントに追加して送信
         document.body.appendChild(form);
         form.submit();
     }
