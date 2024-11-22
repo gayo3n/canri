@@ -10,7 +10,7 @@ from django.utils import timezone
 import json
 from .forms import SearchForm
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect
-from .api import create_team_api, save_team_api, save_project_api, get_member_data
+from .api import create_team_api, save_team_api, save_project_api, get_member_data, get_p_project_detail
 from django.urls import reverse
 
 
@@ -306,7 +306,7 @@ class CreateTeam3View(TemplateView):
         if isinstance(teams, str):
             teams = json.loads(teams)
 
-        # チームを編成するためのデータを作成
+        # チームを編��するためのデータを作成
         data = {
             'team_type': team_type,
             'members': selected_members,
@@ -394,7 +394,7 @@ class SaveTeamView(TemplateView):
             'end_date': end_date
         }
 
-        # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
+        # ���力された情報を保持した状態でnew_project_edit.htmlに遷移
         return render(request, self.template_name, {'project': project_data, 'teams': teams})
 
 #新規プロジェクト保存
@@ -658,19 +658,6 @@ def projectListView(request):
 # 過去プロジェクト
 class post_ProjectlistView(TemplateView):
     template_name="post_projectlist.html"
-
-# 過去プロジェクト表示
-def Post_projectListView(request):
-    template_name = "post_projectlist.html"
-    ctx = {}
-    query = request.GET.get('p')
-    qs = Project.objects.all()
-    qs=qs.filter(complete_flag=1,deletion_flag=0)
-    if query:
-        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
-
-    ctx["project_list"] = qs
-    return render(request, template_name, ctx)
 
 
 # プロジェクト詳細表示
@@ -968,6 +955,7 @@ class project_detail_Create_TeamView(TemplateView):
 
 class team_detailView(TemplateView):
     template_name="team_detail.html"
+    
 
 def team_detail_view(request, team_id):
     template_name = "post_projectlist.html"
@@ -983,7 +971,23 @@ def team_detail_view(request, team_id):
 
     # ctx["project_list"] = qsequest, self.template_name, {'members': members}
 
-    # 過去プロジェクト
+# 過去プロジェクトリスト
+class Past_ProjectListView(TemplateView):
+    template_name = "past_project_list.html"
+
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('p')
+        qs = Project.objects.all()
+        qs=qs.filter(complete_flag=1,deletion_flag=0)
+        if query:
+            qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+
+        context = {
+            'project_list': qs
+        }
+        return render(request, self.template_name, context)
+
+# 過去プロジェクト検索
 def Post_projectListView(request):
     template_name = "past_project_list.html"
     ctx = {}
@@ -996,13 +1000,22 @@ def Post_projectListView(request):
     ctx["project_list"] = qs
     return render(request, template_name, ctx)
 
+# 過去プロジェクト閲覧
 class Past_ProjectView(TemplateView):
     template_name = "past_project_view.html"
 
-def project_detail(request, project_id):
-    template_name = "past_project_view.html"
-    project = get_object_or_404(Project, pk=project_id)
-    return render(request, template_name, {'project': project})
+    def get(self, request, *args, **kwargs):
+        project_id = kwargs.get('project_id')
+        response = get_p_project_detail(request, project_id)
+        project_data = json.loads(response.content).get('project_data')
+
+        if not project_data:
+            return HttpResponseNotFound("Project not found")
+
+        context = {
+            'project': project_data
+        }
+        return render(request, self.template_name, context)
 
 class Past_ProjectDeletingView(TemplateView):
     template_name = "past_project_deleting_confirmation.html"
@@ -1012,3 +1025,35 @@ class Project_DeletedView(TemplateView):
 
 class Project_Save_CompleteView(TemplateView):
     template_name = "project_save_complete.html"
+
+#フィードバックモーダル表示
+class FeedbackView(TemplateView):
+    template_name = "feedback_application.html"
+
+    def get(self, request, *args, **kwargs):
+        project_id = kwargs.get('project_id')
+        context = {
+            'project_id': project_id
+        }
+        return render(request, self.template_name, context)
+
+#フィードバック保存
+class FeedbackSaveView(TemplateView):
+    template_name = "feedback_save_complete.html"
+
+    def post(self, request, *args, **kwargs):
+        context = {}
+        return render(request, self.template_name, context)
+    # def post(self, request, *args, **kwargs):
+    #     project_id = request.POST.get('project_id')
+    #     feedback_content = request.POST.get('feedback')
+
+    #     # デバッグ用に受け取った値を表示
+    #     print("Received project_id:", project_id)
+    #     print("Received feedback_content:", feedback_content)
+
+    #     context = {
+    #         'project_id': project_id,
+    #         'feedback_content': feedback_content
+    #     }
+    #     return render(request, self.template_name, context)
