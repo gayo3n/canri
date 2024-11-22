@@ -94,4 +94,18 @@ class UserCreationForm(UserCreationForm):
 
 
 class LoginForm(AuthenticationForm):
-    pass
+    user_id = forms.CharField(
+        required=True,
+        max_length=6,
+        widget=forms.TextInput(
+            attrs={'placeholder': 'ユーザーID'}
+        )
+    )
+    password = forms.CharField(
+        required=True,
+        max_length=255,
+        min_length=6,
+        widget=forms.PasswordInput(
+            attrs={'placeholder': '******'}
+        )
+    )

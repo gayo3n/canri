@@ -1,6 +1,6 @@
 from django.contrib.auth.views import LogoutView, LoginView 
 from django.shortcuts import render, redirect, get_object_or_404, redirect
-from django.contrib.auth import login, get_user_model, logout as auth_logout
+from django.contrib.auth import login, get_user_model, logout as auth_logout, authenticate
 from django.urls import reverse
 from django.views import View, generic
 from django.views.generic.base import TemplateView
@@ -24,17 +24,17 @@ USer = get_user_model()
 
 def acclogin(request):
     if request.method == 'POST':
-        form = LoginForm(request, request.POST)
+        form = LoginForm(request, data=request.POST)
         if form.is_valid():
-            user = form.get_user()
-            if user:
+            user_id = form.cleaned_data.get('user_id')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, user_id=user_id, password=password)
+            if user is not None:
                 login(request, user)
-                return redirect('login_complete', user.user_id)
+                return redirect('login_complete', user_id=user.id)  
     else:
         form = LoginForm()
-    
-    context = {'form': form}
-    return render(request, 'login.html', context)
+    return render(request, 'login.html', {'form': form})
 
 def logincomp(request, user_id):
     return render(request, 'login_complete.html', {'user_id': user_id})
@@ -102,19 +102,17 @@ def manage_account(request):
 def create(request):
     if request.method == 'GET':
         form = AccountAddForm()
-    elif request.method== 'POST':
-        form= AccountAddForm(request.POST)
+    elif request.method == 'POST':
+        form = AccountAddForm(request.POST)
         if form.is_valid():
             get_user_model().objects.create_user(
                 name=form.cleaned_data['name'],
-                user_id=form.changed_data['user_id'],
+                user_id=form.cleaned_data['user_id'],
                 password=form.cleaned_data['password']
             )
             return render(request, 'account_create_complete.html')
-        else:
-            form = AccountAddForm()
-    context = {'form':form}
-    return render(request,'account_create.html', context)
+    context = {'form': form}
+    return render(request, 'account_create.html', context)
     # if request.method == 'GET':
     #     form = AccountAddForm
     #     context = {
