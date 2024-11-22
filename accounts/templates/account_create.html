@@ -6,7 +6,6 @@
 <h2>アカウント作成</h2>
     <form action="account_create_complete/" method="post">
         {% csrf_token %}
-        {{ form.as_p }}
         <div>
            <dt>アカウント名</dt>
            <dt>{{ form.name }}{{ form.name.errors }}</dt>

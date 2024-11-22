@@ -10,7 +10,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import User
+from .models import UserManager, User
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -105,7 +105,7 @@ def create(request):
     elif request.method == 'POST':
         form = AccountAddForm(request.POST)
         if form.is_valid():
-            get_user_model().objects.create_user(
+            user = User.objects.create_user(
                 name=form.cleaned_data['name'],
                 user_id=form.cleaned_data['user_id'],
                 password=form.cleaned_data['password']
@@ -113,6 +113,8 @@ def create(request):
             return render(request, 'account_create_complete.html')
     context = {'form': form}
     return render(request, 'account_create.html', context)
+
+
     # if request.method == 'GET':
     #     form = AccountAddForm
     #     context = {
