@@ -47,15 +47,17 @@ urlpatterns = [
     #プロジェクト一覧
     path('progress_within_projectlist/', views.progress_within_ProjectlistView.as_view(), name='projectlist'),
     path('post_projectlist/', views.progress_within_ProjectlistView.as_view(), name='post_projectlist'),
-    path('project/', projectListView, name='project'),
+    path('project/', projectListView, name='project'),#進行中プロジェクト選択時利用
 
     #プロジェクト詳細
-    path('project_detail/',views.Project_detailView.as_view(), name='project_detail'),
-    path('project/<int:project_id>/', project_detail_view, name='project_detail'),
-    path('project_detail_update/<int:project_id>/', project_detail_update, name='project_detail_update'),
+    # path('project_detail/', views.Project_detailView.as_view(), name='project_detail'),
+    path('project/<int:project_id>/', project_detail_view, name='project_detail'),#進行中プロジェクト一覧でプロジェクト選択時利用
+    path('project_detail_update/<int:project_id>/', project_detail_update, name='project_detail_update'),#プロジェクト詳細更新時利用
+
+    # path('project_detail_update/<int:project_id>/project/', project_detail_view, name='project_detail_a'),
 
     # 過去プロジェクト
-    path('past_project/', Post_projectListView, name='past_project'),
+    path('past_project/', Post_projectListView, name='past_project'),#過去プロジェクト選択時利用
     path('past_project_view/', views.Past_ProjectView.as_view(), name='past_project_view'),
     path('past_project/view/<int:id>/', views.project_detail, name='past_project_view'),
     path('past_project_deleting/', views.Past_ProjectDeletingView.as_view(), name='past_project_deleting_confirmation'),

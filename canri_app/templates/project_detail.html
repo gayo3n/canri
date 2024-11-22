@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-
-{% block head %}
 {% load static %}
+{% block head %}
+
 <!-- 外部CSSファイルを読み込む -->
 <link rel="stylesheet" href="{% static 'css/project_detail.css' %}">
 
@@ -108,8 +108,12 @@
 {% block content %}
 
 <!-- プロジェクト詳細変更モーブル -->
-<!--  -->
-<form method="POST" action="{% url 'canri_app:project_detail_update' project_id=project.id %}" class="project-form">
+<!-- --------------------------------------------------- -->
+<div id="projectDetailModal" class="modal">
+    <div class="modal-content">
+    <!-- モーダルを閉じるボタン -->
+    <span class="close-button">&times;</span>
+<form method="POST" action="{% url 'canri_app:project_detail_update' project.project_id %}" class="project-form">
 
     {% csrf_token %}
 
@@ -174,10 +178,12 @@
 
     <button type="submit" class="btn btn-primary">保存</button>
 </form>
+</div>
+</div>
+<!-- ---------------------------------------------------- -->
 
 
-
-<script>
+<!-- <script>
 function updateEndDateMin(startDate) {
     document.getElementById('endDate').min = startDate;
     const endDate = document.getElementById('endDate');
@@ -185,8 +191,10 @@ function updateEndDateMin(startDate) {
         endDate.value = startDate;
     }
 }
-</script>
+</script> -->
 
+<!-- フェーズ追加モーダル -->
+ <!-- ーーーーーーーーーーーーーーーーーーーーーーーーーーー -->
 <div id="phase_additionModal" class="modal">
     <!-- モーダルの内容を包む要素 -->
     <div class="modal-content">
@@ -197,13 +205,14 @@ function updateEndDateMin(startDate) {
         <h3>フェーズ追加</h3>
 
         <!-- プロジェクト詳細を保存するフォーム -->
-        <form method="POST" action="プロジェクト詳細保存リンク">
+        <form method="POST" action="{% url 'canri_app:project_detail_update' project.project_id %}">
+            {% csrf_token %}
             <!-- プロジェクト名の入力欄 -->
             <label for="phase_Name">フェーズ名:</label>
             <input
                 type="text"
                 id="Name"
-                name="project_name"
+                name="phase_name"
                 value="{{ project.project_name }}"
                 required
             >
@@ -211,7 +220,7 @@ function updateEndDateMin(startDate) {
         <input
             type="date"
             id="endDate"
-            name="end_date"
+            name="end_date2"
             value="{{ project.project_end_date|date:'Y-m-d' }}"
             required
         >
@@ -221,7 +230,7 @@ function updateEndDateMin(startDate) {
         </form>
     </div>
 </div>
-
+<!-- ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー -->
 
 <div class="container">
     <h2>{{ project.project_name }}</h2>
@@ -238,6 +247,11 @@ function updateEndDateMin(startDate) {
         <a href="新規チーム追加リンク">新規チーム追加</a>
     </div>
 
+
+
+
+
+    <!-- プロジェクト所属フェーズ情報表示 -->
     <h3>フェーズ情報</h3>
     <div class="tasks-panel">
         <div class="task-list">
@@ -251,7 +265,8 @@ function updateEndDateMin(startDate) {
             {% endfor %}
         </div>
 
-
+<!-- ボタンボックス -->
+ <!-- モーダルリンク -->
         <div class="action-boxes">
             <div class="box">
                 <a href="フェーズ追加画面モーダル"> フェーズ追加</a>
