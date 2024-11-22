@@ -10,22 +10,22 @@
 <body>
     <header>
         <nav class="navbar">
+            <!-- ハンバーガーメニューアイコン -->
+            <div class="hamburger-menu" onclick="toggleMenu()">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
             <div class="navbar-left">
-                <img src="{% static 'images/logo.png' %}" alt="ロゴ" class="logo-icon">
-                <a href="{% url 'canri_app:index' %}" class="logo">
-                    ホーム
-                </a>
+                <a href="{% url 'canri_app:index' %}" class="logo">ホーム</a>
                 <a href="{% url 'canri_app:new_project' %}">新規プロジェクト</a>
                 <a href="{% url 'canri_app:project' %}">進行中プロジェクト</a>
                 <a href="{% url 'canri_app:past_project'%}">過去プロジェクト</a>
                 <a href="{% url 'canri_app:memberlist' %}">メンバーリスト</a>
-                
-                
             </div>
             <div class="navbar-right">
                 <a href="{% url 'accounts:account_change_employee' %}" class="user-icon">
-                    <img src="{% static 'images/user-icon.png' %}" alt="管理者アイコン">
-                    管理者
+                    <img src="{% static 'images/user-icon.png' %}" alt="管理者アイコン">管理者
                 </a>
                 <a href="{% url 'accounts:logout_confirmation' %}">ログアウト</a>
             </div>
@@ -34,5 +34,13 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.querySelector('.navbar-left');
+            navLinks.classList.toggle('active');
+        }
+    </script>
+    
 </body>
 </html>
