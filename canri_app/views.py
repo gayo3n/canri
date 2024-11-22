@@ -885,15 +885,18 @@ class FeedbackSaveView(TemplateView):
     template_name = "feedback_save_complete.html"
 
     def post(self, request, *args, **kwargs):
-        project_id = request.POST.get('project_id')
-        feedback_content = request.POST.get('feedback')
-
-        # デバッグ用に受け取った値を表示
-        print("Received project_id:", project_id)
-        print("Received feedback_content:", feedback_content)
-
-        context = {
-            'project_id': project_id,
-            'feedback_content': feedback_content
-        }
+        context = {}
         return render(request, self.template_name, context)
+    # def post(self, request, *args, **kwargs):
+    #     project_id = request.POST.get('project_id')
+    #     feedback_content = request.POST.get('feedback')
+
+    #     # デバッグ用に受け取った値を表示
+    #     print("Received project_id:", project_id)
+    #     print("Received feedback_content:", feedback_content)
+
+    #     context = {
+    #         'project_id': project_id,
+    #         'feedback_content': feedback_content
+    #     }
+    #     return render(request, self.template_name, context)

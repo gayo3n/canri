@@ -1,4 +1,3 @@
-{% extends 'base.html' %} 
 {% load static %} 
 
 {% block head %} 
@@ -7,13 +6,9 @@
 
 {% block content %}
 
-<!-- モーダル (確認ダイアログ) -->
-<div class="modal">
-    <!-- モーダルを閉じるボタン -->
-    <button class="btn btn-cancel" onclick="closeModal()">✕</button>
-    <div class="modal-content">
-        <h2>フィードバックの反映</h2>
-        <table border="1">
+<div class="feedback-form">
+    <h2>フィードバックの反映</h2>
+    <table border="1">
         <!-- フィードバックコンテナ -->
         <div id="feedback-container">
             {% for feedback in feedbacks %}
@@ -40,25 +35,16 @@
                     <a href="{% url 'canri_app:feedback_application' %}" class="btn btn-danger" data-user-id="{{ user.user_id }}">
                         🗑️
                     </a>
-        </table>
                 </form>
             </div>
             {% endfor %}
         </div>
+    </table>
 
-        <!-- フィードバック追加ボタン -->
-        <button class="add-feedback">＋ フィードバックを追加</button>
-        <!-- 保存ボタン -->
-        <button class="btn-save" onclick="saveFeedback()">保存</button>
-    </div>
+    <!-- フィードバック追加ボタン -->
+    <button class="add-feedback">＋ フィードバックを追加</button>
+    <!-- 保存ボタン -->
+    <button class="btn-save" type="button" onclick="saveFeedback()">保存</button>
 </div>
-
-<script>
-
-function closeModal() {
-    document.querySelector('.modal').style.display = 'none';
-}
-
-</script>
 
 {% endblock %}

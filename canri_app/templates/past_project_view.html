@@ -89,22 +89,18 @@
 
     // フィードバックを保存する
     function saveFeedback() {
-        const form = document.querySelector('#modal-body form');
-        const formData = new FormData(form);
-
-        fetch("{% url 'canri_app:feedback_save' %}", {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-            }
-        })
+        fetch("{% url 'canri_app:feedback_save' %}")
+        // , {
+        //     method: 'POST',
+        //     headers: {
+        //         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        //     }
+        // })
         .then(response => response.text())
         .then(html => {
             document.querySelector('.modal').style.display = 'none';
             document.getElementById('save-complete-body').innerHTML = html;
             document.getElementById('saveCompleteModal').style.display = 'block';
-            console.log('Feedback saved successfully');
         })
         .catch(error => console.error('Error saving feedback:', error));
     }
