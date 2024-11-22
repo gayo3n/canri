@@ -46,3 +46,16 @@
     text-decoration: none;
     cursor: pointer;
 }
+
+.split-container {
+    display: flex;
+}
+
+.teams-section {
+    flex: 7;
+    padding-right: 20px;
+}
+
+.project-section {
+    flex: 3;
+}

@@ -6,37 +6,39 @@
 {% block content %}
 
 <main class="main-content">
-    <!-- チームセクション -->
-    <section class="teams-section">
-        <div class="container">
-            <h3>関連チーム</h3>
-            <div class="teams-grid">
-                {% for affiliation in teams %}
-                    <div class="team-card">
-                        <a href="チーム詳細リンク">{{ affiliation.team.team_name }}</a>
-                    </div>
-                {% endfor %}
-            </div>  
-        </div>
-    </section>
-
-    <!-- プロジェクト詳細セクション -->
-    <section class="project-section">
-        <!--各プロジェクト名-->
-        <h2>{{ project.project_name }}</h2>
-        <div class="project-list">
-            <div class="project-card">
-                <input type="hidden" name="project_id" value="{{ project.project_id }}">
-                <h3 class="project-name">{{ project.project_name }}</h3>
-                <p>開始日: {{ project.creation_date|date:"Y年m月d日" }}</p>
-                <p>完了日: {{ project.complete_date|date:"Y年m月d日" }}</p>
-                <p>事後評価メモ: {{ project.post_evaluation_memo }}</p>
-                <button class="feedbackbutton" onclick="openAddFeedback()">フィードバック</button>
-                <button class="delete-button">削除</button>
-                <button class="action-button">保存</button>
+    <div class="split-container">
+        <!-- チームセクション -->
+        <section class="teams-section">
+            <div class="container">
+                <h3>関連チーム</h3>
+                <div class="teams-grid">
+                    {% for affiliation in teams %}
+                        <div class="team-card">
+                            <a href="チーム詳細リンク">{{ affiliation.team.team_name }}</a>
+                        </div>
+                    {% endfor %}
+                </div>  
             </div>
-        </div>
-    </section>
+        </section>
+
+        <!-- プロジェクト詳細セクション -->
+        <section class="project-section">
+            <!--プロジェクト情報-->
+            <div class="project-list">
+                <div class="project-card">
+                    <input type="hidden" name="project_id" value="{{ project.project_id }}">
+                    <h1>{{ project.project_name }}</h1>
+                    <p>開始日: {{ project.creation_date|date:"Y年m月d日" }}</p>
+                    <p>完了日: {{ project.complete_date|date:"Y年m月d日" }}</p>
+                    <p>プロジェクト詳細: {{ project.project_detail }}</p>
+                    <p>事後評価メモ: {{ project.post_evaluation_memo }}</p>
+                    <button class="feedbackbutton" onclick="openAddFeedback()">フィードバック</button>
+                    <button class="delete-button">削除</button>
+                    <button class="action-button">保存</button>
+                </div>
+            </div>
+        </section>
+    </div>
 </main>
 
 <!-- フィードバックモーダルのHTML -->
@@ -90,12 +92,6 @@
     // フィードバックを保存する
     function saveFeedback() {
         fetch("{% url 'canri_app:feedback_save' %}")
-        // , {
-        //     method: 'POST',
-        //     headers: {
-        //         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        //     }
-        // })
         .then(response => response.text())
         .then(html => {
             document.querySelector('.modal').style.display = 'none';
