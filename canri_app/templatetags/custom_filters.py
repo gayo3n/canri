@@ -7,3 +7,10 @@ register = template.Library()
 def range_filter(start, end):
     return range(start, end)
 
+# メンバーリスト作成
+@register.filter
+def get_item(list, index):
+    try:
+        return list[index]
+    except IndexError:
+        return None

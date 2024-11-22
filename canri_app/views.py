@@ -8,10 +8,12 @@ from .models import *
 from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Project,CareerInformation,MBTI,Credentials,Category
 from django.utils import timezone
 import json
-from .forms import SearchForm
+from .forms import CSVUploadForm
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect
 from .api import create_team_api, save_team_api, save_project_api
 from django.urls import reverse
+import csv
+from django.contrib import messages
 
 
 
@@ -51,34 +53,43 @@ class NewProjectView(TemplateView):
 
 
 
+
 # -----メンバーリスト作成-----
 class MemberListMakeView(TemplateView):
     template_name = "memberList_make.html"
 
     def get(self, request, *args, **kwargs):
 
-        # フォーム内容get
-        form = SearchForm(request.GET)
+        # フォームget
+        form = CSVUploadForm()
         # メンバー検索(未入力の場合はすべて)
         members = self.get_queryset()
 
         # セッションから memberID_list を取得
         memberID_list = request.session.get('memberID_list', [])
 
+        # `memberID_list` の各 `member_id` に対応する `member_name` を取得
+        members_in_list = Member.objects.filter(member_id__in=memberID_list)
+
+        # member_dict を作成する
+        member_dict = {member.member_id: member.name for member in members_in_list}
+
+        messages.error(request , '')
+
         context = {
             'form': form, # フォーム
             'members': members, # 検索メンバー
-            'memberID_list': memberID_list  # 現在のリストを表示
+            'memberID_list': memberID_list,  # 現在のリストを表示
+            'member_dict':member_dict,
         }
         return render(request, self.template_name, context)
-
+    
     def post(self, request, *args, **kwargs):
         # セッションから memberID_list を取得
         memberID_list = request.session.get('memberID_list', [])
 
         # 削除リクエストがあるか判定
         delete_member_id = request.POST.get('delete_member_id')
-        # IDが空でなく、かつ数字のみであれば削除処理を行う
         if delete_member_id and delete_member_id.isdigit():
             delete_member_id = int(delete_member_id)
             if delete_member_id in memberID_list:
@@ -89,7 +100,6 @@ class MemberListMakeView(TemplateView):
             if member_id and member_id.isdigit():
                 member_id = int(member_id)
                 if member_id not in memberID_list:
-                    # メンバーが存在するか確認
                     try:
                         Member.objects.get(member_id=member_id)  # メンバーIDの確認
                         memberID_list.append(member_id)  # リストに追加
@@ -99,13 +109,20 @@ class MemberListMakeView(TemplateView):
         # セッションに memberID_list を保存
         request.session['memberID_list'] = memberID_list
 
+        # `memberID_list` の各 `member_id` に対応する `member_name` を取得
+        members_in_list = Member.objects.filter(member_id__in=memberID_list)
+
+        # member_dict を作成する
+        member_dict = {member.member_id: member.name for member in members_in_list}
+
         members = self.get_queryset()
         context = {
             'members': members,
-            'memberID_list': memberID_list
+            'memberID_list': memberID_list,
+            'member_dict': member_dict,  # member_dict を渡す
         }
         return render(request, self.template_name, context)
-    
+
 
     # メンバー検索
     def get_queryset(self):
@@ -116,7 +133,25 @@ class MemberListMakeView(TemplateView):
             # フォーム未入力の場合はすべて
             members = Member.objects.all()
         return members
+    
+    def upload_csv(request):
+        if request.method == 'POST':
+            form = CSVUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                csv_file = request.FILES['csv_file']
+                decoded_file = csv_file.read().decode('utf-8').splitlines()
+                reader = csv.reader(decoded_file)
+                
+                for row in reader:
+                    # 各行のデータを処理する
+                    print(row)
+                
+                # 成功した場合のレスポンス
+                return render(request, 'upload_success.html')
+        else:
+            form = CSVUploadForm()
 
+        return render(request, 'upload_csv.html', {'form': form})
 
 
 
@@ -124,17 +159,26 @@ class MemberListMakeView(TemplateView):
 class MemberListMakeCompleteView(TemplateView):
     template_name = "memberlist_make_complete.html"
 
+
     def post(self, request, *args, **kwargs):
         # カテゴリ名（リスト名）と詳細を取得
         member_list_name = request.POST.get('member_list_name')
         member_list_details = request.POST.get('member_list_details')
 
+        # エラーリストを作成
+        errors = []
+
+        # 入力チェック
+        if not member_list_name:
+            errors.append("メンバーリスト名を入力してください。")
+        if not member_list_details:
+            errors.append("メンバーリストの詳細を入力してください。")
+
+        # カテゴリ名重複チェック
+        if member_list_name and Category.objects.filter(category_name=member_list_name).exists():
+            errors.append("このカテゴリ名はすでに存在します。別の名前を使用してください。")
+
         if member_list_name and member_list_details:
-            # カテゴリ名の重複をチェック
-            if Category.objects.filter(category_name=member_list_name).exists():
-                # 重複していたらエラーメッセージを表示
-                context = {'error_message': 'このカテゴリ名はすでに存在します。別の名前を使用してください。'}
-                return render(request, 'canri_app/memberlist_make.html', context)
 
             # 新しいカテゴリを作成
             category = Category(
@@ -147,11 +191,6 @@ class MemberListMakeCompleteView(TemplateView):
 
             # POSTデータから memberID_list を取得
             member_id_list = request.POST.getlist('memberID_list')
-
-            # メンバーが選択されていなかった場合のエラーチェック
-            if not member_id_list:
-                context = {'error_message': 'メンバーを選択してください。'}
-                return render(request, 'canri_app/memberlist_make.html', context)
 
             # 各 member_id に対して MemberList を作成
             for member_id in member_id_list:
@@ -175,19 +214,15 @@ class MemberListMakeCompleteView(TemplateView):
                     print(f"Member with ID {member_id} not found")
 
             # 成功したらメンバーリストページにリダイレクト
-            return redirect('canri_app:memberlist_make_complete')
+            return redirect(request, 'canri_app:memberlist_make_complete')
 
         else:
-            # 入力漏れがあればエラーメッセージを表示
-            context = {
-                'error_message': 'すべてのフィールドを入力してください。'
-                }
-            return redirect(reverse('canri_app:memberlist_make'))
+            # エラーメッセージを1回にまとめて表示
+            if errors:
+                for error in errors:
+                    messages.error(request, error)
+                return redirect(reverse('canri_app:memberList_make'))
 
-
-
-class MemberListMakeCancel(TemplateView):
-    template_name = "memberlist.html"
 
 # -----メンバー作成-----
 class MemberMakeView(TemplateView):
@@ -204,9 +239,69 @@ class MemberMakeView(TemplateView):
         'careerinformation': careerinformation,
     }
         return render(request, 'member_make.html', context)
+    
+# -----CSVファイル処理-----
+class FileUploadView(TemplateView):
+    def upload_csv(request):
+        if request.method == 'POST':
+            form = CSVUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                csv_file = request.FILES['csv_file']
+                decoded_file = csv_file.read().decode('utf-8').splitlines()
+                reader = csv.reader(decoded_file)
+                
+                for row in reader:
+                    # 各行のデータを処理する
+                    print(row)
+                
+                # 成功した場合のレスポンス
+                return render(request, 'upload_success.html')
+        else:
+            form = CSVUploadForm()
 
+        return render(request, 'upload_csv.html', {'form': form})
+
+
+# -----メンバー保存-----
 class MemberMakeCompleteView(TemplateView):
     template_name = "member_make_complete.html"
+    
+    def post(self, request, *args, **kwargs):
+        # フォームからの入力を取得
+        name = request.POST.get('name')
+        birthdate = request.POST.get('birthday')  # 日付は適切なフォーマットで受け取る
+        job_title = request.POST.get('job_title')
+        memo = request.POST.get('memo', '')  # メモは任意なのでデフォルト値を設定
+        mbti_id = request.POST.get('MBTI')  # MBTI ID を取得
+
+        # 入力検証
+        if not name:
+            messages.error(request, "名前を入力してください。")
+            return redirect('canri_app:member_make')
+        if not birthdate:
+            messages.error(request, "生年月日を設定してください。")
+            return redirect('canri_app:member_make')
+        
+        try:
+            # Member オブジェクトを作成して保存
+            member = Member(
+                name=name,
+                birthdate=birthdate,
+                job_id=job_title.job_id,
+                memo=memo,
+                mbti=mbti_id,  # 外部キーとして関連付け
+                creation_date=timezone.now(),  # 作成日を現在時刻に設定
+                deletion_flag=False,  # 削除フラグは初期状態でFalse
+            )
+            member.save()
+        except Exception as e:
+            # 保存に失敗した場合の処理
+            messages.error(request, f"An error occurred while saving the member: {e}")
+            return redirect('canri_app:member_make')
+        
+        # 保存が成功した場合にmember_make_completeへ遷移
+        return render(request, self.template_name, {"member": member})
+
 
 class MemberMakeDeleteView(TemplateView):
     template_name = "member_make_delete.html"

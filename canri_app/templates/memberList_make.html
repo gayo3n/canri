@@ -1,6 +1,7 @@
 {% extends 'base2.html' %}
 
 {% load static %}
+{% load custom_filters %}
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/memberlist_make.css' %}">
@@ -30,10 +31,14 @@
             {% endfor %}
         </ul>
 
-        <button type="button" class="csv-upload-btn">CSVファイルアップロード</button>
-        <form method="POST" action="{% url 'canri_app:member_make' %}">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <button type="submit" class="btn" action="{% url 'canri_app:member_make' %}">⊕新規メンバー追加</button>
+            {{ form.as_p }}
+            <button type="submit">アップロード</button>
+        </form>
+        <form method="GET" action="{% url 'canri_app:member_make' %}">
+            {% csrf_token %}
+            <button type="submit">⊕新規メンバー追加</button>
         </form>
     </section>
 
@@ -42,7 +47,7 @@
         <ul>
             {% for member_id in memberID_list %}
                 <li>
-                    {{ member_id }}
+                    {{ member_dict|get_item:member_id }} <!-- member_id に対応する name を取得 -->
                     <!-- 削除用のフォーム -->
                     <form method="POST" action="{% url 'canri_app:memberlist_make' %}">
                         {% csrf_token %}
@@ -59,14 +64,19 @@
             {% csrf_token %}
             <input type="text" name="member_list_name" placeholder="メンバーリスト名を入力してください">
             <input type="text" name="member_list_details" placeholder="メンバーリストの詳細を入力してください">
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
             {% for member_id in memberID_list %}
             <input type="hidden" name="memberID_list" value="{{ member_id }}">
             {% endfor %}
-            {% if error_message %}
-                {{ error_message }}
-            {% endif %}
             <button class="memberlist_save" type="submit">保存</button>
-            <button class="memberlist_cancel" type="button" action="{% url 'canri_app:memberlist' %}">キャンセル</button>
+            <button class="memberlist_cancel" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
+
         </form>
     </section>
 {% endblock %}
