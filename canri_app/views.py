@@ -937,12 +937,7 @@ class project_detail_Create_TeamView(TemplateView):
         start_date = request.POST.get('start_date')  # 開始日
         end_date = request.POST.get('end_date')  # 終了日
 
-        # teams = request.POST.get('teams')  # チーム情報（JSON文字列）
 
-        # チーム情報をリスト形式に変換
-        # POSTデータでは文字列として受け取るため、JSON形式でパースする
-        # if isinstance(teams, str):
-        #     teams = json.loads(teams)
 
         # 入力された情報を保持したまま create_team.html テンプレートをレンダリング
         return render(request, self.template_name, {
@@ -952,6 +947,66 @@ class project_detail_Create_TeamView(TemplateView):
             'end_date': end_date,  # 終了日
             # 'teams': teams  # チーム情報（リスト形式）
         })
+
+
+
+
+
+
+# 進行中プロジェクト用のチーム追加のステップ2用ビュー
+class project_detail_CreateTeam2View(TemplateView):
+    template_name = "create_team2.html"
+
+    def post(self, request, *args, **kwargs):
+        # POSTデータからプロジェクトとチーム関連の情報を取得
+        #プロジェクト情報
+        project_name = request.POST.get('project_name')  # プロジェクト名
+        project_description = request.POST.get('project_description')  # プロジェクト説明
+        start_date = request.POST.get('start_date')  # 開始日
+        end_date = request.POST.get('end_date')  # 終了日
+        #チーム情報
+        # teams = request.POST.get('teams')  # チーム情報（JSON文字列）
+        team_size = request.POST.get('team_size')  # チームの規模
+        team_type = request.POST.get('team_type')  # チームの種類
+        auto_generate = request.POST.get('auto_generate')  # 自動生成フラグ
+        # 削除フラグが立っていないカテゴリを取得
+        categories = Category.objects.filter(deletion_flag=False)
+
+        # # チーム情報をリスト形式に変換
+        # if isinstance(teams, str):
+        #     teams = json.loads(teams)
+
+        if auto_generate:
+            # 自動生成が有効な場合、create_team2.html にレンダリング
+            # メンバー選択画面
+            return render(request, self.template_name, {
+                'project_name': project_name,  # プロジェクト名
+                'project_description': project_description,  # プロジェクト説明
+                'start_date': start_date,  # 開始日
+                'end_date': end_date,  # 終了日
+                # 'teams': teams,  # チーム情報（リスト形式）
+                'team_size': team_size,  # チームの規模
+                'team_type': team_type,  # チームの種類
+                'categories': categories,  # カテゴリ情報
+            })
+        else:
+            # 自動生成が無効な場合、create_team3.html にレンダリング
+            # チーム詳細画面
+            return render(request, 'create_team3.html', {
+                'project_name': project_name,  # プロジェクト名
+                'project_description': project_description,  # プロジェクト説明
+                'start_date': start_date,  # 開始日
+                'end_date': end_date,  # 終了日
+                # 'teams': teams,  # チーム情報（リスト形式）
+                'team_type': team_type,  # チームの種類
+                'categories': categories,  # カテゴリ情報
+            })
+
+
+
+
+
+
 
 class team_detailView(TemplateView):
     template_name="team_detail.html"
