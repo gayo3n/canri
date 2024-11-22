@@ -17,3 +17,36 @@ body {
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* ボックスの影を追加 */
 }
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: #333;
+}
+
+button[type="submit1"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+button[type="submit2"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    background-color: #4ad5ff;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+
+
