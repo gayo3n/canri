@@ -49,21 +49,23 @@
     <div class="button-container">
         <form method="post" action="{% url 'canri_app:create_team' %}">
             {% csrf_token %}
+            <input type="hidden" name="project_id" value="{{ project_id }}">
             <input type="hidden" name="project_name" value="{{ project_name }}">
             <input type="hidden" name="project_description" value="{{ project_description }}">
             <input type="hidden" name="start_date" value="{{ start_date }}">
             <input type="hidden" name="end_date" value="{{ end_date }}">
-            <!-- <input type="hidden" name="teams" value="{{ teams|safe }}"> -->
+
             <button type="submit" class="action-button">戻る</button>
         </form>
 
         <form id="nextForm" method="post" action="{% url 'canri_app:create_team3' %}">
             {% csrf_token %}
+            <input type="hidden" name="project_id" value="{{ project_id }}">
             <input type="hidden" name="project_name" value="{{ project_name }}">
             <input type="hidden" name="project_description" value="{{ project_description }}">
             <input type="hidden" name="start_date" value="{{ start_date }}">
             <input type="hidden" name="end_date" value="{{ end_date }}">
-            <!-- <input type="hidden" name="teams" value="{{ teams|safe }}"> -->
+
             <input type="hidden" name="team_size" value="{{ team_size }}">
             <input type="hidden" name="team_type" value="{{ team_type }}">
             <input type="hidden" name="selected_members" id="selected_members">
@@ -161,9 +163,21 @@
         selectedMembers.push(checkbox.value);
     });
 
+
+
     // 設定されたチームサイズを取得
     // input要素から文字列として取得した値を数値に変換
     const teamSize = parseInt(document.querySelector('input[name="team_size"]').value);
+
+
+
+
+
+// ここから要変更
+// teamではなくDBからプロジェクトＩＤで所属しているチームを検索
+// 検索したチームからメンバーＩＤを抽出
+//
+
 
     // 選択メンバー数がチームサイズの要件を満たしているか確認
     // 選択メンバー数が設定されたチームサイズより少ない場合はエラー
@@ -171,9 +185,6 @@
         alert(`選択されたメンバーがチームサイズ(${teamSize})以上である必要があります。`);
         return;
     }
-
-
-
 
     // Django templateから既存チームの情報を取得
     // テンプレート変数teamsをJavaScriptで使用可能な形で展開
@@ -187,6 +198,12 @@
         document.getElementById('selected_members').value = JSON.stringify(selectedMembers);
         document.getElementById('nextForm').submit();
     }
+
+
+
+
+
+
 
 
 

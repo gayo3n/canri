@@ -927,24 +927,48 @@ def project_phase_add(request, project_id):
 
 
 # 進行中プロジェクト用のチーム追加用のビュー
+# 元々のからteamを削除
+#プロジェクトIDを追加
+#
+import logging
 class project_detail_Create_TeamView(TemplateView):
-    template_name = "create_team.html"
+    template_name = "project_detail_create_team.html"
 
     def post(self, request, *args, **kwargs):
         # POSTデータからプロジェクト情報を取得
-        project_name = request.POST.get('project_name')  # プロジェクト名
+        project_id = request.POST.get('project_id')     # プロジェクト名
+        project_name = request.POST.get('project_name') # プロジェクト名
         project_description = request.POST.get('project_description')  # プロジェクト説明
-        start_date = request.POST.get('start_date')  # 開始日
-        end_date = request.POST.get('end_date')  # 終了日
+        start_date = request.POST.get('start_date')     # 開始日
+        end_date = request.POST.get('end_date')         # 終了日
+
+        projectaffilitionteam_all= ProjectAffiliationTeam.objects.all()  #プロジェクト所属チームを全部取得
+
+
+        teams=projectaffilitionteam_all.filter(project=project_id)        #プロジェクト所属チームから
+
+        # teamにプロジェクトに所属しているチームが入っている
+        # projectaffilitionteamテーブルの
+        # チームIDを取得
+        # それをもとにチームテーブルから情報を取得
+        #そこからメンバー情報を抽出
+
+
+        team_ids=teams.values_list('team_id',flat=True)
+        members = Member.objects.filter(team_id__in=team_ids)  # チームIDに基づいてメンバーをフィルタリング
+
 
 
 
         # 入力された情報を保持したまま create_team.html テンプレートをレンダリング
         return render(request, self.template_name, {
+            'project_id':project_id,
             'project_name': project_name,  # プロジェクト名
             'project_description': project_description,  # プロジェクト説明
             'start_date': start_date,  # 開始日
             'end_date': end_date,  # 終了日
+
+            'member':members,
             # 'teams': teams  # チーム情報（リスト形式）
         })
 
@@ -954,7 +978,7 @@ class project_detail_Create_TeamView(TemplateView):
 
 
 # 進行中プロジェクト用のチーム追加のステップ2用ビュー
-class project_detail_CreateTeam2View(TemplateView):
+class project_detail_Create_Team2View(TemplateView):
     template_name = "create_team2.html"
 
     def post(self, request, *args, **kwargs):

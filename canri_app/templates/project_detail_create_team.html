@@ -13,7 +13,7 @@
     <h1>新規チーム作成</h1>
     <!-- チーム作成フォーム -->
     <!--cretefomr2移行 -->
-    <form id="createTeamForm" method="post" action="{% url 'canri_app:create_team2' %}">
+    <form id="createTeamForm" method="post" action="{% url 'canri_app:project_detail_create_team2' %}">
         {% csrf_token %} <!-- CSRFトークンを追加 -->
 
         <!-- プロジェクト情報をhiddenで送信 -->

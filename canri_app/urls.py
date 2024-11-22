@@ -12,7 +12,6 @@ urlpatterns = [
     path('memberlist/', views.MemberListView.as_view(), name='memberlist'),
     path('memberlist/make/', views.MemberListMakeView.as_view(), name='memberList_make'),
     path('memberlist/make/complete/', views.MemberListMakeCompleteView.as_view(), name='memberList_make_complete'),
-    
     path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
     path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
     # メンバー
@@ -52,8 +51,13 @@ urlpatterns = [
     # path('project_detail/', views.Project_detailView.as_view(), name='project_detail'),
     path('project/<int:project_id>/', project_detail_view, name='project_detail'),                          #進行中プロジェクト一覧でプロジェクト選択時利用
     path('project_detail_update/<int:project_id>/', project_detail_update, name='project_detail_update'),   #プロジェクト詳細更新時利用
-    path('project_detail_create_team/', views.project_detail_Create_TeamView.as_view(), name='detail_create_team'),
+    path('project_detail_create_team/', views.project_detail_Create_TeamView.as_view(), name='project_detail_create_team'),
+    path('project_detail_create_team2/', views.project_detail_Create_Team2View.as_view(), name='project_detail_create_team2'),
+
     # path('project_detail_update/<int:project_id>/project/', project_detail_view, name='project_detail_a'),
+
+
+
 
     # 過去プロジェクト
     path('past_project/', Post_projectListView, name='past_project'),

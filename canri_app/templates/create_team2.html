@@ -160,6 +160,7 @@
         // 設定されたチームサイズを取得
         const teamSize = parseInt(document.querySelector('input[name="team_size"]').value);
 
+
         // 選択メンバー数がチームサイズの要件を満たしているか確認
         if (selectedMembers.length < teamSize) {
             alert(`選択されたメンバーがチームサイズ(${teamSize})以上である必要があります。`);
@@ -168,6 +169,9 @@
 
         // Django templateから既存チームの情報を取得
         const teams = {{ teams|safe }};
+
+
+
 
         // 既存チームが存在しない場合の処理
         if (teams.length === 0) {
