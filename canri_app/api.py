@@ -354,7 +354,7 @@ def save_project_api(request):
         if not project_name or not project_description or not start_date or not end_date or not isinstance(teams, list):
             return JsonResponse({"error": "無効なデータです"}, status=400)
 
-        # プロジェクトを作成
+        # プロジェク���を作成
         project = Project.objects.create(
             project_name=project_name,
             project_detail=project_description,
@@ -488,3 +488,33 @@ def move_member_to_team(request):
         return JsonResponse({'status': 'error', 'message': 'Member not found'}, status=404)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+# プロジェクト詳細情報を取得するAPI
+@require_http_methods(["GET"])
+def get_p_project_detail(request, project_id):
+    try:
+        # 指定された project_id に一致するプロジェクト情報を取得
+        project = Project.objects.get(project_id=project_id)
+        teams = ProjectAffiliationTeam.objects.filter(project=project, deletion_flag=False).select_related('team')
+        
+        # プロジェクト情報を辞書として返す
+        project_data = {
+            'project_id': project.project_id,
+            'project_name': project.project_name,
+            'project_detail': project.project_detail,
+            'project_start_date': project.project_start_date,
+            'project_end_date': project.project_end_date,
+            'creation_date': project.creation_date,
+            'update_date': project.update_date,
+            'complete_date': project.complete_date,
+            'post_evaluation_memo': project.post_evaluation_memo,
+            'complete_flag': project.complete_flag,
+            'teams': [{'team_id': team.team.team_id, 'team_name': team.team.team_name} for team in teams],
+        }
+
+        return JsonResponse({'project_data': project_data})
+
+    except Project.DoesNotExist:
+        return JsonResponse({'error': 'Project not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

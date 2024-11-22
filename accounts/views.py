@@ -13,12 +13,6 @@ from django.views.generic.edit import CreateView
 
 User = get_user_model()
 
-class LoginView(TemplateView):
-    form_class = UserForm
-    template_name = 'login.html'
-    def post(self, request, *args, **kwargs):
-        return render(request, 'login_complete.html')
-
 def acclogin(request):
     if request.method == 'POST':
         form = LoginForm(request, request.POST)

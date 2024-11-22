@@ -1,8 +1,4 @@
 /* ボディのスタイル */
-body {
-    font-family: Arial, sans-serif;
-}
-
 .main-content {
     max-width: 1200px; /* 横幅を広げる */
     margin: 20px auto;
@@ -15,13 +11,6 @@ h1 {
     font-size: 40px;
     margin-bottom: 20px;
     color: #333;
-}
-
-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #555;
 }
 
 select, input[type="text"], input[type="date"], input[type="submit"], button {
@@ -77,11 +66,11 @@ button:hover {
     margin-bottom: 10px;
 }
 
-.form-inline {
+/* .form-inline {
     display: flex;
     align-items: center;
     justify-content: space-between; /* 横方向にスペースを均等に配置 */
-}
+/* } */ */
 
 .form-inline label {
     margin-right: 10px;
@@ -206,4 +195,15 @@ a:hover {
 
 .chart-wrapper {
     width: 80%;
+}
+
+.float-right {
+    float: right;
+}
+
+.member-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
 }
