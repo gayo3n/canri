@@ -1,11 +1,18 @@
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/logout_complete.css' %}">
+
 <!DOCTYPE html>
 <html>
     <body>
-        <p>
-            ログアウトしました
-        </p>
+        <div class="logout_complete">
+        <h2>
+            ✅ログアウトが完了しました
+        </h2>
         <a href="{% url 'accounts:login' %}">再度ログインする</a>
-
+    </div>
     </body>
+
 </html>
+{% endblock %}
 
