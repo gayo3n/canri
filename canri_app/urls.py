@@ -26,7 +26,7 @@ urlpatterns = [
     # path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
 
     #新規プロジェクト作成
-    path('new_project/', views.NewProjectView.as_view(), name='new_project'),    
+    path('new_project/', views.NewProjectView.as_view(), name='new_project'),
     path('new_project_edit/', views.NewProjectEditView.as_view(), name='new_project_edit'),
     path('new_project_edit/back/', views.NewProjectEdit2View.as_view(), name='new_project_edit2'),
     path('create_team/', views.CreateTeamView.as_view(), name='create_team'),

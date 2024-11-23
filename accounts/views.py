@@ -16,19 +16,29 @@ from django.contrib.auth.hashers import make_password
 from .models import User
 
 def login_view(request):
+    # リクエストメソッドがPOSTかどうかを確認
     if request.method == "POST":
+        # リクエストからユーザー名とパスワードを取得
         username = request.POST.get("username")
         password = request.POST.get("password")
+
         try:
+            # ユーザー名でユーザーを取得しようとする
             user = User.objects.get(username=username)
-            if auth_logout(request, username=user.name, password=user.password):  # ハッシュ化されたパスワードを比較
+            # 提供されたパスワードが保存されたパスワードと一致するか確認
+            if auth_logout(request, username=user.username, password=password):  # ハッシュ化されたパスワードを比較
                 login(request, user)  # ユーザーをログインさせる
-                return redirect("accounts:login_complete")
+                return redirect("accounts:login_complete")  # ログイン完了ページにリダイレクト
             else:
+                # パスワードが間違っている場合、エラーメッセージを表示
                 return render(request, "login.html", {"error_message": "パスワードが正しくありません"})
         except User.DoesNotExist:
+            # ユーザーが存在しない場合、エラーメッセージを表示
             return render(request, "login.html", {"error_message": "ユーザーが存在しません"})
+
+    # リクエストメソッドがPOSTでない場合、ログインページを表示
     return render(request, "login.html")
+
 
 @login_required  # ログイン必須にするデコレータ
 def login_complete_view(request):

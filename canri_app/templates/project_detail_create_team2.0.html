@@ -81,11 +81,11 @@
 
 
 <script>
-    /**
-     * カテゴリーに基づいてメンバー情報を取得し、テーブルに表示する関数
-     * 選択されたカテゴリーIDに応じてAPIを呼び出し、結果をテーブルに反映する
-     */
-     function fetchMembers() {
+/**
+ * カテゴリーに基づいてメンバー情報を取得し、テーブルに表示する関数
+ * 選択されたカテゴリーIDに応じてAPIを呼び出し、結果をテーブルに反映する
+ */
+function fetchMembers() {
     // カテゴリー選択要素の取得
     var categorySelect = document.getElementById('category');
 
@@ -142,90 +142,115 @@
             alert('メンバー情報の取得に失敗しました。'); // ユーザーにエラーメッセージを表示
         });
 }
+// -------------------------------------------------------------------------------
 
-    /**
-     * 全選択・全解除の切り替え関数
-     */
-     function selectAllMembers() {
+
+
+
+    // 全選択ボタンをクリックしたときに全てのメンバーを選択状態にする
+    function selectAllMembers() {
         document.querySelectorAll('input[name="member"]').forEach(checkbox => {
             checkbox.checked = true;
         });
     }
 
-    /**
-     * 選択されたメンバーの検証とフォーム送信を行う関数
-     */
-     function submitNextForm() {
-    // 選択されたメンバーを取得
-    const selectedMembers = [];
-    document.querySelectorAll('input[name="member"]:checked').forEach(checkbox => {
-        selectedMembers.push(checkbox.value);  // string型で保存される
-    });
 
-    // チームサイズを取得
-    const teamSizeInput = document.querySelector('input[name="team_size"]');
-    const teamSize = parseInt(teamSizeInput.value, 10);
 
-    // チームサイズの検証
-    if (isNaN(teamSize) || teamSize <= 0) {
-        alert('有効なチームサイズを入力してください。');
-        return;
-    }
-    if (selectedMembers.length < teamSize) {
-        alert(`選択されたメンバーがチームサイズ(${teamSize})以上である必要があります。`);
-        return;
-    }
 
-    // 既存チームのメンバー情報を取得
-    const existingMemberIds = new Set();
-    let messageShown = false;
 
-    // hidden input から member の値を取得
-    const memberInput = document.querySelector('input[name="member"]');
-    let memberData = [];
+// 要編集
+// 編集なしだとエラーでボタンが機能しなくなる
+// 原因不明
+// ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+/**
+ * 選択されたメンバーの検証とフォーム送信を行う関数
+ * - チーム人数の要件を確認
+ * - 既存チームとのメンバー重複をチェック
+ * - 有効なメンバーリストでフォームを送信
+ *
+ * 処理フロー：
+ * 1. チェックボックスで選択されたメンバーを収集
+ * 2. 設定されたチームサイズとの比較検証
+ * 3. 既存チームの有無による分岐処理
+ * 4. 重複メンバーのフィルタリングと結果の送信
+ */
+    function submitNextForm() {
+        // チェックされたメンバーのIDを配列に収集
+        // input[name="member"]の中からチェックされている要素のvalueを取得
+        const selectedMembers = [];
+        document.querySelectorAll('input[name="member"]:checked').forEach(checkbox => {
+            selectedMembers.push(checkbox.value);
+        });
 
-    try {
-        // メンバーIDをJSON形式で渡していることを確認
-        const parsedData = memberInput ? JSON.parse(memberInput.value) : [];
-        if (Array.isArray(parsedData)) {
-            memberData = parsedData;
-        } else {
-            console.error('メンバーデータは配列形式ではありません:', parsedData);
-            alert('メンバーデータの形式が不正です。');
+
+
+//     // 設定されたチームサイズを取得
+//     // input要素から文字列として取得した値を数値に変換
+        const teamSize = parseInt(document.querySelector('input[name="team_size"]').value);
+
+
+    // ここから要変更
+    // teamではなくDBからプロジェクトＩＤで所属しているチームを検索
+    // 検索したチームからメンバーＩＤを抽出
+    //
+
+
+        // 選択メンバー数がチームサイズの要件を満たしているか確認
+        // 選択メンバー数が設定されたチームサイズより少ない場合はエラー
+        if (selectedMembers.length < teamSize) {
+            alert(`選択されたメンバーがチームサイズ(${teamSize})以上である必要があります。`);
             return;
         }
-    } catch (error) {
-        console.error('メンバーデータの解析エラー:', error);
-        alert('メンバーデータの形式が不正です。');
-        return;
+
+
+
+        // 既存チームに所属しているメンバーIDを格納するSet
+        // 重複を自動的に排除するためSetを使用
+        member=document.getElementById('member')
+        const existingMemberIds = new Set();
+        // 重複メンバーに関する警告メッセージの表示フラグ
+        // メッセージの重複表示を防ぐためのフラグ
+        let messageShown = false;
+
+        // 各既存チームのメンバー情報を取得
+        // Django URLconf経由でチームメンバー情報を非同期取得
+
+
+
+        //取得したデータからmembersプロパティーを参照   forEachを利用して配列内の各メンバーに対して処理を実行
+
+        existingMemberIds.add(member.member_id);//参照したmemberからexisitiongmemberidsにデータを追加
+                    //この段階でexistingmemberidsにmember_idが入っている
+
+                    // 選択されたメンバーから既存チームのメンバーを除外
+                    // filter関数で重複メンバーを除外した新しい配列を生成
+                    const filteredMembers = selectedMembers.filter(memberId => {    //filterメソッドを使用してselectedmember配列(チェックボックスを選択したメンバー)から条件に合うメンバーを抽出
+                                                                                    //filtermembersを新しく生成
+                        if (existingMemberIds.has(parseInt(memberId))) {            //選択されているmemberidがexistingmemberids(既存のチームのメンバーID)に含まれているかどうか確認
+                            // 重複メンバーが見つかった場合の警告表示（初回のみ）
+                            // メッセージの重複表示を防ぐためフラグをチェック
+                            if (!messageShown) {                    //メッセージが一度表示されているかどうかの確認  初回はメッセージを表示
+                                alert('既存のチームに所属しているメンバーはチーム作成に使用しません。');    //
+                                messageShown = true;
+                            }
+                            return false;       //falseでfilteerdmembersに入れない
+                        }
+                        return true;        //重複がない場合treuを返してメンバーIDをfilterdmembersに入れる
+                    });
+
+                    // フィルタリング済みのメンバーリストをフォームに設定して送信
+                    // フィルタリング結果をJSON形式でhidden inputに設定し、フォームを送信
+                    document.getElementById('selected_members').value = JSON.stringify(filteredMembers);    //filterdmembersをjson形式に変換
+                                                                                                            //変換後にselected_membersにデータを設定
+                    document.getElementById('nextForm').submit();                                           //ここでフォームが送信される
+                // エラーハンドリング
+                // APIリクエスト失敗時のエラーをコンソールに出力
+                .catch(error => console.error('データ取得エラー:', error));
+        {% endfor %}
     }
 
-    // メンバーIDをセットに追加（整数として保存）
-    memberData.forEach(member => {
-        existingMemberIds.add(Number(member)); // member自体がIDの配列である場合
-    });
-
-    // 重複チェック
-    const filteredMembers = selectedMembers.filter(memberId => {
-        if (existingMemberIds.has(Number(memberId))) {
-            if (!messageShown) {
-                alert('既存のチームに所属しているメンバーはチーム作成に使用しません。');
-                messageShown = true;
-            }
-            return false;
-        }
-        return true;
-    });
-
-    // フィルタリング済みメンバーを設定してフォーム送信
-    document.getElementById('selected_members').value = JSON.stringify(filteredMembers);
-    document.getElementById('nextForm').submit();
-}
 
 
 
-
-
-    </script>
-
+</script>
 {% endblock %}

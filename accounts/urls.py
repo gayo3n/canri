@@ -20,7 +20,7 @@ urlpatterns = [
     path('account_change/', views.AccountChangeView.as_view(), name='account_change'),
     path('account_delete/complete/', views.DeleteCompleteView.as_view(), name='account_delete_complete'),
     path('account_change_employee/complete/', views.AccountChangeCompleteView.as_view(), name='account_change_complete'),
-    
+
     # アイコン
     path('change_employee/', views.AccountChangeEmployeeView.as_view(), name='account_change_employee'),
     path('change_employee/complete/', views.AccountChangeEmployeeCompleteView.as_view(), name='account_change_complete_employee'),

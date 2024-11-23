@@ -945,7 +945,8 @@ class project_detail_Create_TeamView(TemplateView):
         projectaffilitionteam_all= ProjectAffiliationTeam.objects.all()  #プロジェクト所属チームを全部取得
 
 
-        teams=projectaffilitionteam_all.filter(project=project_id)        #プロジェクト所属チームから
+        teams=projectaffilitionteam_all.filter(project=project_id)      #プロジェクト所属チームからプロジェクト情報を利用して
+                                                                        #プロジェクトに所属するものを取得
 
         # teamにプロジェクトに所属しているチームが入っている
         # projectaffilitionteamテーブルの
@@ -954,19 +955,22 @@ class project_detail_Create_TeamView(TemplateView):
         #そこからメンバー情報を抽出
 
 
-        team_ids=teams.values_list('team_id',flat=True)
-        members = Member.objects.filter(team_id__in=team_ids)  # チームIDに基づいてメンバーをフィルタリング
+        team_ids=teams.values_list('team_id',flat=True)                 #テーブルからteam_idだけ取得
+        #team_idsにはteeam_idだけが入っている
 
+        #エラー吐く
+        teammembers = TeamMember.objects.filter(team_id__in=team_ids)  # チームIDに基づいてメンバーをフィルタリング
+        members=teammembers.values_list('member_id',flat=True)
 
 
 
         # 入力された情報を保持したまま create_team.html テンプレートをレンダリング
         return render(request, self.template_name, {
             'project_id':project_id,
-            'project_name': project_name,  # プロジェクト名
-            'project_description': project_description,  # プロジェクト説明
-            'start_date': start_date,  # 開始日
-            'end_date': end_date,  # 終了日
+            'project_name': project_name,                   # プロジェクト名
+            'project_description': project_description,     # プロジェクト説明
+            'start_date': start_date,                       # 開始日
+            'end_date': end_date,                           # 終了日
 
             'member':members,
             # 'teams': teams  # チーム情報（リスト形式）
@@ -978,27 +982,35 @@ class project_detail_Create_TeamView(TemplateView):
 
 
 # 進行中プロジェクト用のチーム追加のステップ2用ビュー
+import json
+from django.shortcuts import render
+from .models import TeamMember  # あなたのモデルに合わせてインポートしてください
+
 class project_detail_Create_Team2View(TemplateView):
-    template_name = "create_team2.html"
+    template_name = "project_detail_create_team2.html"
 
     def post(self, request, *args, **kwargs):
-        # POSTデータからプロジェクトとチーム関連の情報を取得
-        #プロジェクト情報
-        project_name = request.POST.get('project_name')  # プロジェクト名
-        project_description = request.POST.get('project_description')  # プロジェクト説明
-        start_date = request.POST.get('start_date')  # 開始日
-        end_date = request.POST.get('end_date')  # 終了日
-        #チーム情報
-        # teams = request.POST.get('teams')  # チーム情報（JSON文字列）
-        team_size = request.POST.get('team_size')  # チームの規模
-        team_type = request.POST.get('team_type')  # チームの種類
-        auto_generate = request.POST.get('auto_generate')  # 自動生成フラグ
-        # 削除フラグが立っていないカテゴリを取得
-        categories = Category.objects.filter(deletion_flag=False)
+        # プロジェクト情報の取得
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        member = request.POST.get('member')
+        category=request.POST.get('category')
+
+        # チーム情報の取得
+        team_size = request.POST.get('team_size')
+        team_type = request.POST.get('team_type')
+        auto_generate = request.POST.get('auto_generate')
+
+        # メンバー情報をQuerySetからJSON形式に変換
+        members = TeamMember.objects.filter(member_id__in=[1, 2, 5, 6, 9, 10])  # member_idを使ってフィルタリング
+        member_ids = [member.member_id for member in members]  # member_idをリストに保存
 
         # # チーム情報をリスト形式に変換
         # if isinstance(teams, str):
         #     teams = json.loads(teams)
+        #
 
         if auto_generate:
             # 自動生成が有効な場合、create_team2.html にレンダリング
@@ -1008,10 +1020,11 @@ class project_detail_Create_Team2View(TemplateView):
                 'project_description': project_description,  # プロジェクト説明
                 'start_date': start_date,  # 開始日
                 'end_date': end_date,  # 終了日
+                'member': json.dumps(member_ids),  # メンバーIDをJSON形式で渡す
                 # 'teams': teams,  # チーム情報（リスト形式）
                 'team_size': team_size,  # チームの規模
                 'team_type': team_type,  # チームの種類
-                'categories': categories,  # カテゴリ情報
+                'categorie': category,  # カテゴリ情報
             })
         else:
             # 自動生成が無効な場合、create_team3.html にレンダリング
@@ -1021,10 +1034,25 @@ class project_detail_Create_Team2View(TemplateView):
                 'project_description': project_description,  # プロジェクト説明
                 'start_date': start_date,  # 開始日
                 'end_date': end_date,  # 終了日
+                'member' : member,
                 # 'teams': teams,  # チーム情報（リスト形式）
                 'team_type': team_type,  # チームの種類
-                'categories': categories,  # カテゴリ情報
+                'categorie': category,  # カテゴリ情報
             })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

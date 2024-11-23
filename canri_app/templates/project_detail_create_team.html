@@ -11,6 +11,7 @@
 {% block content %}
 <div class="main-content">
     <h1>新規チーム作成</h1>
+
     <!-- チーム作成フォーム -->
     <!--cretefomr2移行 -->
     <form id="createTeamForm" method="post" action="{% url 'canri_app:project_detail_create_team2' %}">
@@ -18,12 +19,14 @@
 
         <!-- プロジェクト情報をhiddenで送信 -->
         <!-- project情報を保持 -->
+        <!-- 進行中から来た場合のメンバー情報 -->
         <input type="hidden" name="project_id" value="{{ project_id }}">
         <input type="hidden" name="project_name" value="{{ project_name }}">
         <input type="hidden" name="project_description" value="{{ project_description }}">
         <input type="hidden" name="start_date" value="{{ start_date }}">
         <input type="hidden" name="end_date" value="{{ end_date }}">
-        <!-- <input type="hidden" name="teams" value="{{ teams|safe }}"> -->
+        <input type="hidden" name="member" value="{{ member }}">
+
 
         <!-- チーム人数選択 -->
         <label for="team_size">チームの人数</label>
