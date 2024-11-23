@@ -930,7 +930,7 @@ def project_phase_add(request, project_id):
 # 元々のからteamを削除
 #プロジェクトIDを追加
 #
-import logging
+
 class project_detail_Create_TeamView(TemplateView):
     template_name = "project_detail_create_team.html"
 
@@ -959,8 +959,8 @@ class project_detail_Create_TeamView(TemplateView):
         #team_idsにはteeam_idだけが入っている
 
         #エラー吐く
-        teammembers = TeamMember.objects.filter(team_id__in=team_ids)  # チームIDに基づいてメンバーをフィルタリング
-        members=teammembers.values_list('member_id',flat=True)
+        teammembers = TeamMember.objects.filter(team_id__in=team_ids)  # チームIDに基づいてメンバーをフィルタリング チームが同じ奴だけ取得
+        members = list(teammembers.values_list('member_id', flat=True))
 
 
 
@@ -996,21 +996,19 @@ class project_detail_Create_Team2View(TemplateView):
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
         member = request.POST.get('member')
-        category=request.POST.get('category')
+        # category=request.POST.get('category')
 
         # チーム情報の取得
         team_size = request.POST.get('team_size')
         team_type = request.POST.get('team_type')
         auto_generate = request.POST.get('auto_generate')
 
-        # メンバー情報をQuerySetからJSON形式に変換
-        members = TeamMember.objects.filter(member_id__in=[1, 2, 5, 6, 9, 10])  # member_idを使ってフィルタリング
-        member_ids = [member.member_id for member in members]  # member_idをリストに保存
+        categories = Category.objects.filter(deletion_flag=False)
 
-        # # チーム情報をリスト形式に変換
-        # if isinstance(teams, str):
-        #     teams = json.loads(teams)
-        #
+        # メンバー情報をQuerySetからJSON形式に変換
+        # members = TeamMember.objects.filter(member_id__in=[1, 2, 5, 6, 9, 10])  # member_idを使ってフィルタリング
+        # member_ids = [member.member_id for member in member]  # member_idをリストに保存
+
 
         if auto_generate:
             # 自動生成が有効な場合、create_team2.html にレンダリング
@@ -1020,11 +1018,11 @@ class project_detail_Create_Team2View(TemplateView):
                 'project_description': project_description,  # プロジェクト説明
                 'start_date': start_date,  # 開始日
                 'end_date': end_date,  # 終了日
-                'member': json.dumps(member_ids),  # メンバーIDをJSON形式で渡す
+                'member': json.dumps(member),  # メンバーIDをJSON形式で渡す
                 # 'teams': teams,  # チーム情報（リスト形式）
                 'team_size': team_size,  # チームの規模
                 'team_type': team_type,  # チームの種類
-                'categorie': category,  # カテゴリ情報
+                'categories': categories,  # カテゴリ情報
             })
         else:
             # 自動生成が無効な場合、create_team3.html にレンダリング
@@ -1037,7 +1035,7 @@ class project_detail_Create_Team2View(TemplateView):
                 'member' : member,
                 # 'teams': teams,  # チーム情報（リスト形式）
                 'team_type': team_type,  # チームの種類
-                'categorie': category,  # カテゴリ情報
+                'categories': categories,  # カテゴリ情報
             })
 
 

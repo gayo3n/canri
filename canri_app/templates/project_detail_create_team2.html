@@ -67,7 +67,7 @@
             <input type="hidden" name="project_description" value="{{ project_description }}">
             <input type="hidden" name="start_date" value="{{ start_date }}">
             <input type="hidden" name="end_date" value="{{ end_date }}">
-            <input type="hidden" name="member" value="{{ member }}">
+            <input type="text" name="member" value="{{ member }}">
 
             <input type="hidden" name="team_size" value="{{ team_size }}">
             <input type="hidden" name="team_type" value="{{ team_type }}">
@@ -125,7 +125,7 @@
 
                 // 行の内容をHTMLとして設定
                 row.innerHTML = `
-                    <td style="width: 10%;"><input type="checkbox" name="member" value="${member.member_id}"></td>
+                    <td style="width: 10%;"><input type="checkbox" name="members" value="${member.member_id}"></td>
                     <td>${member.name}</td>            <!-- メンバー名 -->
                     <td>${birthdate}</td>              <!-- 生年月日 -->
                     <td>${member.job_title}</td>          <!-- 役職 -->
@@ -147,10 +147,17 @@
      * 全選択・全解除の切り替え関数
      */
      function selectAllMembers() {
-        document.querySelectorAll('input[name="member"]').forEach(checkbox => {
+        document.querySelectorAll('input[name="members"]').forEach(checkbox => {
             checkbox.checked = true;
         });
     }
+
+
+
+
+
+
+
 
     /**
      * 選択されたメンバーの検証とフォーム送信を行う関数
@@ -158,7 +165,7 @@
      function submitNextForm() {
     // 選択されたメンバーを取得
     const selectedMembers = [];
-    document.querySelectorAll('input[name="member"]:checked').forEach(checkbox => {
+    document.querySelectorAll('input[name="members"]:checked').forEach(checkbox => {
         selectedMembers.push(checkbox.value);  // string型で保存される
     });
 
@@ -180,25 +187,76 @@
     const existingMemberIds = new Set();
     let messageShown = false;
 
+
+
+
+
+
+
     // hidden input から member の値を取得
+    // ここでデータを取得
+    // membreが2つあったせいでおかしかった
+    // 入力フィールドを取得
     const memberInput = document.querySelector('input[name="member"]');
-    let memberData = [];
+
+    // デバッグ用の情報を出力
+    // この段階だとobject形式
+    console.log('デバッグ情報:', {
+        memberInput, // DOM要素
+        type: typeof memberInput, // typeof結果
+        isArray: Array.isArray(memberInput), // 配列判定（常にfalse）
+        constructor: memberInput.constructor.name, // コンストラクタ名
+    });
+
+
 
     try {
-        // メンバーIDをJSON形式で渡していることを確認
-        const parsedData = memberInput ? JSON.parse(memberInput.value) : [];
-        if (Array.isArray(parsedData)) {
-            memberData = parsedData;
+        // 入力値を取得
+        const rawValue = memberInput.value;
+
+        // エンティティ文字列 (&quot;) を置換
+        const decodedValue = rawValue.replace(/&quot;/g, '"');
+        console.log('デコード済み文字列:', decodedValue);
+
+        // JSON文字列を配列に変換
+        const memberArray = JSON.parse(decodedValue);
+
+
+        console.log('デバッグ情報:', {
+        decodedValue, // DOM要素
+        type: typeof decodedValue, // typeof結果
+        isArray: Array.isArray(decodedValue), // 配列判定（常にfalse）
+        constructor: decodedValue.constructor.name, // コンストラクタ名
+    });
+        console.log('デバッグ情報:', {
+        memberArray, // DOM要素
+        type: typeof memberArray, // typeof結果
+        isArray: Array.isArray(memberArray), // 配列判定（常にfalse）
+        constructor: memberArray.constructor.name, // コンストラクタ名
+    });
+
+        // 配列かどうかを判定
+        if (Array.isArray(memberArray)) {
+            console.log('配列変換成功:', memberArray);
+            // 配列データを必要な変数に格納
+            memberData = memberArray;
         } else {
-            console.error('メンバーデータは配列形式ではありません:', parsedData);
+            console.error('デコード後のデータは配列ではありません:', memberArray);
             alert('メンバーデータの形式が不正です。');
-            return;
         }
     } catch (error) {
-        console.error('メンバーデータの解析エラー:', error);
+        // JSON解析エラー時の処理
+        console.error('JSON変換エラー:', error);
         alert('メンバーデータの形式が不正です。');
-        return;
     }
+
+
+
+
+
+
+
+
 
     // メンバーIDをセットに追加（整数として保存）
     memberData.forEach(member => {
