@@ -51,7 +51,7 @@
 
         <!-- 右側のパネル: チーム情報の入力フォーム -->
         <div class="right-panel">
-            <form method="post" action="{% url 'canri_app:create_team3_save' %}">
+            <form method="post" action="{% url 'canri_app:project_detail_save_team' %}">
                 {% csrf_token %} <!-- CSRFトークンを含めてセキュリティを確保 -->
                 <!-- プロジェクト情報をhiddenフィールドで送信 -->
                 <input type="hidden" name="project_id" value="{{ project_id }}">

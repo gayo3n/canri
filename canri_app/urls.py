@@ -53,7 +53,8 @@ urlpatterns = [
     path('project_detail_update/<int:project_id>/', project_detail_update, name='project_detail_update'),   #プロジェクト詳細更新時利用
     path('project_detail_create_team/', views.project_detail_Create_TeamView.as_view(), name='project_detail_create_team'),
     path('project_detail_create_team2/', views.project_detail_Create_Team2View.as_view(), name='project_detail_create_team2'),
-
+    path('project_detail_create_team3/', views.project_detail_CreateTeam3View.as_view(), name='project_detail_create_team3'),
+    path('project_detail_save_team/', views.project_detail_SaveTeamView.as_view(), name='project_detail_save_team'),
     # path('project_detail_update/<int:project_id>/project/', project_detail_view, name='project_detail_a'),
 
 
@@ -85,4 +86,5 @@ urlpatterns = [
     path('api/save_member_memo/', api.save_member_memo, name='save_member_memo'),
     path('api/move_member_to_team/', api.move_member_to_team, name='move_member_to_team'),
     path('api/get_p_project_detail/<int:project_id>/', api.get_p_project_detail, name='get_p_project_detail'),
+
 ]

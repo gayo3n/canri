@@ -1108,9 +1108,13 @@ class project_detail_CreateTeam3View(TemplateView):
             'team': team  # 作成されたチーム情報（または失敗した場合はNone）
         })
 
-#チーム保存class project_detail_SaveTeamView(TemplateView):
+
+
+
+#チーム保存
+class project_detail_SaveTeamView(TemplateView):
     # 保存後の画面に使用するテンプレート
-    template_name = "new_project_edit.html"
+    template_name = "project_detail_create_team_complete.html"
 
     def post(self, request, *args, **kwargs):
         # POSTリクエストからプロジェクト情報を取得
