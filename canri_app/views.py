@@ -1108,6 +1108,73 @@ class project_detail_CreateTeam3View(TemplateView):
             'team': team  # 作成されたチーム情報（または失敗した場合はNone）
         })
 
+#チーム保存class project_detail_SaveTeamView(TemplateView):
+    # 保存後の画面に使用するテンプレート
+    template_name = "new_project_edit.html"
+
+    def post(self, request, *args, **kwargs):
+        # POSTリクエストからプロジェクト情報を取得
+        # projectの情報
+        project_id = request.POST.get('project_id')  # プロジェクトID
+        project_name = request.POST.get('project_name')  # プロジェクト名
+        project_description = request.POST.get('project_description')  # プロジェクトの説明
+        start_date = request.POST.get('start_date')  # プロジェクト開始日
+        end_date = request.POST.get('end_date')  # プロジェクト終了日
+
+        #
+        team_name = request.POST.get('team_name')  # チーム名
+        team_type = request.POST.get('team_type')  # チームの種類
+        team = request.POST.get('team')  # チーム情報（JSON形式）
+
+        # デバッグ用: リクエストボディをターミナルに表示
+        print("リクエストボディ:", request.body)
+
+        try:
+            # JSON形式のデータをPythonオブジェクトに変換
+            teams = json.loads(teams)  # チームリスト
+            team = json.loads(team)  # チームメンバー情報
+        except json.JSONDecodeError as e:
+            # JSONの解析エラー時の処理
+            print("JSONDecodeError:", e)
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+        # チームを保存するためのデータを作成
+        data = {
+            'team_name': team_name,  # チーム名
+            'team_type': team_type,  # チームの種類
+            'team': team             # チームメンバー情報
+        }
+
+        # チーム保存APIを呼び出し
+        request._body = json.dumps(data).encode('utf-8')  # データをJSON形式に変換しリクエストボディとして設定
+        response = save_team_api(request)  # API呼び出し
+        response_data = json.loads(response.content)  # APIのレスポンスをJSON形式で取得
+
+        if response.status_code == 200:
+            # チーム保存成功時の処理
+            team_id = response_data['team_id']  # 保存されたチームIDを取得
+            if isinstance(teams, list):
+                # 既存のチームリストに新しいチームIDを追加
+                teams.append(team_id)
+            else:
+                # チームリストが存在しない場合、新規リストを作成
+                teams = [team_id]
+            print("チームが保存されました:", team_id)  # チームIDをターミナルに表示
+        else:
+            # チーム保存失敗時の処理
+            print(response_data)  # レスポンスのエラー内容を表示
+            print("チームの保存に失敗しました")  # エラーメッセージをターミナルに表示
+
+        # プロジェクト情報を辞書形式にまとめる
+        project_data = {
+            'project_name': project_name,            # プロジェクト名
+            'project_description': project_description,  # プロジェクトの説明
+            'start_date': start_date,               # プロジェクト開始日
+            'end_date': end_date                    # プロジェクト終了日
+        }
+
+        # プロジェクト情報とチームリストをテンプレートに渡し、新しいプロジェクト編集画面をレンダリング
+        return render(request, self.template_name, {'project': project_data, 'teams': teams})
 
 
 
