@@ -1,0 +1,386 @@
+{% extends 'base2.html' %}
+
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/create_team3.css' %}">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+
+
+<!-- 画面の表示 -->
+<div class="main-content">
+    <!-- メインコンテンツの見出し -->
+    <h1>新規チーム作成</h1>
+    <div class="container">
+        <!-- 左側のパネル: チームのメンバーリスト -->
+        <div class="left-panel">
+            <h2>作成中のチーム</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 90%;">メンバー名</th>
+                        <th style="width: 10%;">削除</th>
+                    </tr>
+                </thead>
+                <tbody id="memberTableBody">
+                    <!-- 既存のチームメンバーが存在する場合 -->
+                    {% if team %}
+                        {% for member in team %}
+                        <tr data-member-id="{{ member.member_id }}">
+                            <td>{{ member.name }}</td> <!-- メンバー名を表示 -->
+                            <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td> <!-- 削除ボタン -->
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <!-- メンバーがいない場合のメッセージ -->
+                        <tr id="noMembersMessage">
+                            <td colspan="2">メンバーが存在しません</td>
+                        </tr>
+                    {% endif %}
+                    <!-- メンバー追加ボタン -->
+                    <tr>
+                        <td colspan="2"><a href="#" class="add-member" onclick="openAddMemberWindow()">＋</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 右側のパネル: チーム情報の入力フォーム -->
+        <div class="right-panel">
+            <form method="post" action="{% url 'canri_app:create_team3_save' %}">
+                {% csrf_token %} <!-- CSRFトークンを含めてセキュリティを確保 -->
+                <!-- プロジェクト情報をhiddenフィールドで送信 -->
+                <input type="hidden" name="project_id" value="{{ project_id }}">
+                <input type="hidden" name="project_name" value="{{ project_name }}">
+                <input type="hidden" name="project_description" value="{{ project_description }}">
+                <input type="hidden" name="start_date" value="{{ start_date }}">
+                <input type="hidden" name="end_date" value="{{ end_date }}">
+
+                <input type="hidden" name="team_type" value="{{ team_type }}">
+                <input type="hidden" name="team" id="team"> <!-- 選択されたメンバー情報を格納 -->
+
+                <!-- チーム名の入力 -->
+                <label for="team_name">チーム名</label>
+                <input type="text" name="team_name" id="team_name" required>
+
+                <!-- チームの特徴を表示するレーダーチャート -->
+                <div class="chart-container">
+                    <div class="chart-wrapper">
+                        <canvas id="teamRadarChart"></canvas> <!-- レーダーチャート用のCanvas -->
+                    </div>
+                </div>
+
+                <!-- ボタンコンテナ -->
+                <div class="button-container">
+                    <!-- 戻るボタン -->
+                    <button type="button" class="action-button back-button" onclick="goBack()">戻る</button>
+                    <!-- 保存ボタン -->
+                    <button type="submit" class="action-button next-button" onclick="setTeamMembers()">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- --------------------------------------------------------------------------- -->
+
+
+
+
+<!-- 小ウィンドウのHTML -->
+<div id="addMemberWindow" class="modal">
+    <div class="modal-content" style="width: 70%; max-width: 1000px;">
+        <span class="close" onclick="closeAddMemberWindow()">&times;</span>
+        <h2>メンバーを追加</h2>
+        <form id="categoryForm" class="form-inline">
+            {% csrf_token %}
+
+            <label for="category">メンバーリストを選択</label>
+            <select name="category_id" id="category" required>
+                <option value="null" selected>選択してください</option>
+                {% for category in categories %}
+                    <option value="{{ category.category_id }}">{{ category.category_name }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="button" class="action-button float-right" onclick="fetchMembers()">メンバーを表示</button>
+        </form>
+
+        <div id="memberList">
+            <div class="member-list-header" style="margin-top: 56px;">
+                <h2>メンバー一覧</h2>
+                <button type="button" class="action-button" onclick="selectAllMembers()">全選択</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 10%;">選択</th>
+                        <th style="width: 30%;">名前</th>
+                        <th style="width: 30%;">生年月日</th>
+                        <th style="width: 30%;">役職</th>
+                    </tr>
+                </thead>
+                <tbody id="memberTableBodyModal">
+                    <!-- メンバー情報がここに表示される -->
+                </tbody>
+            </table>
+        </div>
+        <div class="button-container">
+            <button type="button" onclick="addSelectedMembers()">追加</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 小ウィンドウを表示する処理
+    function openAddMemberWindow() {
+        document.getElementById('addMemberWindow').style.display = 'block';
+    }
+
+    // 小ウィンドウを閉じる処理
+    function closeAddMemberWindow() {
+        document.getElementById('addMemberWindow').style.display = 'none';
+    }
+
+    // メンバー情報を取得する処理
+    function fetchMembers() {
+        var categorySelect = document.getElementById('category');
+        if (categorySelect.value === "null") {
+            alert("カテゴリーを選択してください。");
+            return;
+        }
+
+        var categoryId = categorySelect.value;
+        // API呼び出しでメンバー情報を取得
+        fetch(`{% url 'canri_app:get_members_by_member_list' category_id=0 %}`.replace("0", categoryId))
+            .then(response => response.json())
+            .then(data => {
+                // メンバーリストの表示をクリア
+                const memberTableBodyModal = document.getElementById('memberTableBodyModal');
+                memberTableBodyModal.innerHTML = '';
+
+                // メンバー情報をテーブルに追加
+                data.members.forEach(member => {
+                    const birthdate = member.birthdate.split('T')[0]; // T以降を削除
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="width: 10%;"><input type="checkbox" name="member" value="${member.member_id}"></td>
+                        <td style="width: 30%;">${member.name}</td>
+                        <td style="width: 30%;">${birthdate}</td>
+                        <td style="width: 30%;">${member.job_title}</td>
+                    `;
+                    memberTableBodyModal.appendChild(row);
+                });
+            })
+            .catch(error => console.error('データ取得エラー:', error));
+    }
+
+    // 全選択処理
+    function selectAllMembers() {
+        document.querySelectorAll('#memberTableBodyModal input[name="member"]').forEach(checkbox => {
+            checkbox.checked = true;
+        });
+    }
+
+    // 選択されたメンバーを追加する処理
+    function addSelectedMembers() {
+        const memberTableBody = document.getElementById('memberTableBody');
+        const noMembersMessage = document.getElementById('noMembersMessage');
+        if (noMembersMessage) {
+            noMembersMessage.remove();
+        }
+
+        const existingMemberIds = Array.from(memberTableBody.querySelectorAll('tr'))
+            .map(row => row.dataset.memberId);
+
+        document.querySelectorAll('#memberTableBodyModal input[name="member"]:checked').forEach(checkbox => {
+            if (!existingMemberIds.includes(checkbox.value)) {
+                const row = document.createElement('tr');
+                row.dataset.memberId = checkbox.value;
+                row.innerHTML = `
+                    <td>${checkbox.parentElement.nextElementSibling.textContent}</td>
+                    <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
+                `;
+                memberTableBody.insertBefore(row, memberTableBody.lastElementChild);
+            } else {
+                alert('このメンバーは既に追加されています。');
+            }
+        });
+        closeAddMemberWindow();
+        updateRadarChart();
+    }
+
+// メンバーを削除する処理
+function removeMember(link) {
+    // 削除対象の行（tr要素）を取得
+    const row = link.parentElement.parentElement;
+
+    // 行をテーブルから削除
+    row.remove();
+
+    // メンバーリストのテーブルボディ要素を取得
+    const memberTableBody = document.getElementById('memberTableBody');
+
+    // メンバーが存在しなくなった場合、"メンバーが存在しません"メッセージを表示
+    if (memberTableBody.children.length === 1) { // "+ボタン"の行のみが残った場合
+        const noMembersMessage = document.createElement('tr');
+        noMembersMessage.id = 'noMembersMessage'; // メッセージ行のIDを設定
+        noMembersMessage.innerHTML = '<td colspan="2">メンバーが存在しません</td>'; // メッセージ内容を設定
+        memberTableBody.insertBefore(noMembersMessage, memberTableBody.firstChild); // メッセージ行をテーブルの最初に追加
+    }
+
+    // レーダーチャートを更新
+    updateRadarChart();
+}
+
+// チームメンバーを設定する処理
+function setTeamMembers() {
+    // テーブル内の全てのメンバー行を取得し、データ属性 `memberId` を抽出
+    const memberIds = Array.from(document.querySelectorAll('#memberTableBody tr')) // テーブルの行を配列に変換
+        .map(row => row.dataset.memberId) // 各行のデータ属性 `memberId` を取得
+        .filter(id => id !== undefined); // `memberId` が存在するものだけをフィルタリング
+
+    // メンバーIDリストをJSON文字列に変換してhiddenフィールドに設定
+    document.getElementById('team').value = JSON.stringify(memberIds);
+}
+
+
+    // レーダーチャートを更新する処理
+    function updateRadarChart() {
+        const memberRows = document.querySelectorAll('#memberTableBody tr[data-member-id]');
+        const memberIds = Array.from(memberRows).map(row => row.dataset.memberId);
+
+        if (memberIds.length === 0) {
+            radarChart.data.datasets[0].data = [0, 0, 0, 0, 0];
+            radarChart.update();
+            return;
+        }
+
+        const promises = memberIds.map(memberId =>
+            fetch(`{% url 'canri_app:get_member_data' member_id=0 %}`.replace("0", memberId))
+                .then(response => response.json())
+        );
+
+        Promise.all(promises)
+            .then(results => {
+                let totalSpecialityHeight = 0;
+                let totalTimeManagementAbility = 0;
+                let totalProblemSolvingAbility = 0;
+                let totalPlanningPresentationPower = 0;
+                let totalTeamwork = 0;
+
+                results.forEach(data => {
+                    const memberData = data.member_data;
+                    totalSpecialityHeight += memberData.speciality_height;
+                    totalTimeManagementAbility += memberData.time_management_ability;
+                    totalProblemSolvingAbility += memberData.problem_solving_ability;
+                    totalPlanningPresentationPower += memberData.planning_presentation_power;
+                    totalTeamwork += memberData.teamwork;
+                });
+
+                const memberCount = results.length;
+                radarChart.data.datasets[0].data = [
+                    totalSpecialityHeight / memberCount,
+                    totalTimeManagementAbility / memberCount,
+                    totalProblemSolvingAbility / memberCount,
+                    totalPlanningPresentationPower / memberCount,
+                    totalTeamwork / memberCount
+                ];
+                radarChart.update();
+            })
+            .catch(error => console.error('データ取得エラー:', error));
+    }
+
+    // 戻るボタンを押したときの処理
+    function goBack() {
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = "{% url 'canri_app:create_team2_back' %}";
+
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = 'csrfmiddlewaretoken';
+        csrfToken.value = '{{ csrf_token }}';
+        form.appendChild(csrfToken);
+
+        const projectName = document.createElement('input');
+        projectName.type = 'hidden';
+        projectName.name = 'project_name';
+        projectName.value = '{{ project_name }}';
+        form.appendChild(projectName);
+
+        const projectDescription = document.createElement('input');
+        projectDescription.type = 'hidden';
+        projectDescription.name = 'project_description';
+        projectDescription.value = '{{ project_description }}';
+        form.appendChild(projectDescription);
+
+        const startDate = document.createElement('input');
+        startDate.type = 'hidden';
+        startDate.name = 'start_date';
+        startDate.value = '{{ start_date }}';
+        form.appendChild(startDate);
+
+        const endDate = document.createElement('input');
+        endDate.type = 'hidden';
+        endDate.name = 'end_date';
+        endDate.value = '{{ end_date }}';
+        form.appendChild(endDate);
+
+        const teams = document.createElement('input');
+        teams.type = 'hidden';
+        teams.name = 'teams';
+        teams.value = '{{ teams|safe }}';
+        form.appendChild(teams);
+
+        const teamSize = document.createElement('input');
+        teamSize.type = 'hidden';
+        teamSize.name = 'team_size';
+        teamSize.value = '{{ team_size }}';
+        form.appendChild(teamSize);
+
+        const teamType = document.createElement('input');
+        teamType.type = 'hidden';
+        teamType.name = 'team_type';
+        teamType.value = '{{ team_type }}';
+        form.appendChild(teamType);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    // レーダーチャートの初期化
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('teamRadarChart').getContext('2d');
+        window.radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['専門性の高さ', '時間管理能力', '問題解決能力', '企画・プレゼン力', 'チームワーク'],
+                datasets: [{
+                    label: 'チームの能力評価',
+                    data: [0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scale: {
+                    r: {
+                        beginAtZero: true,
+                        min: 0,
+                        max: 10,
+                        stepSize: 1
+                    }
+                }
+            }
+        });
+
+        updateRadarChart();
+    });
+</script>
+{% endblock %}

@@ -199,56 +199,57 @@
     // 入力フィールドを取得
     const memberInput = document.querySelector('input[name="member"]');
 
-    // デバッグ用の情報を出力
-    // この段階だとobject形式
+// デバッグ用の情報を出力
+console.log('デバッグ情報:', {
+    memberInput, // DOM要素
+    type: typeof memberInput, // typeof結果
+    isArray: Array.isArray(memberInput), // 配列判定（常にfalse）
+    constructor: memberInput.constructor.name, // コンストラクタ名
+});
+
+try {
+    // 入力値を取得
+    const rawValue = memberInput.value;
+
+    // エンティティ文字列 (&quot;) を置換
+    const decodedValue = rawValue.replace(/&quot;/g, '"');
+    console.log('デコード済み文字列:', decodedValue);
+
+    // JSON文字列の中の不必要な二重引用符を除去
+    const cleanedValue = decodedValue.replace(/^"|"$/g, '');
+    console.log('整形済み文字列:', cleanedValue);
+
+    // JSON文字列を配列に変換
+    const memberArray = JSON.parse(cleanedValue);
+
     console.log('デバッグ情報:', {
-        memberInput, // DOM要素
-        type: typeof memberInput, // typeof結果
-        isArray: Array.isArray(memberInput), // 配列判定（常にfalse）
-        constructor: memberInput.constructor.name, // コンストラクタ名
+        cleanedValue, // 整形済み文字列
+        type: typeof cleanedValue, // typeof結果
+        isArray: Array.isArray(cleanedValue), // 配列判定（常にfalse）
+        constructor: cleanedValue.constructor.name, // コンストラクタ名
     });
-
-
-
-    try {
-        // 入力値を取得
-        const rawValue = memberInput.value;
-
-        // エンティティ文字列 (&quot;) を置換
-        const decodedValue = rawValue.replace(/&quot;/g, '"');
-        console.log('デコード済み文字列:', decodedValue);
-
-        // JSON文字列を配列に変換
-        const memberArray = JSON.parse(decodedValue);
-
-
-        console.log('デバッグ情報:', {
-        decodedValue, // DOM要素
-        type: typeof decodedValue, // typeof結果
-        isArray: Array.isArray(decodedValue), // 配列判定（常にfalse）
-        constructor: decodedValue.constructor.name, // コンストラクタ名
-    });
-        console.log('デバッグ情報:', {
-        memberArray, // DOM要素
+    console.log('デバッグ情報:', {
+        memberArray, // 配列に変換されたデータ
         type: typeof memberArray, // typeof結果
-        isArray: Array.isArray(memberArray), // 配列判定（常にfalse）
+        isArray: Array.isArray(memberArray), // 配列判定（常にtrue）
         constructor: memberArray.constructor.name, // コンストラクタ名
     });
 
-        // 配列かどうかを判定
-        if (Array.isArray(memberArray)) {
-            console.log('配列変換成功:', memberArray);
-            // 配列データを必要な変数に格納
-            memberData = memberArray;
-        } else {
-            console.error('デコード後のデータは配列ではありません:', memberArray);
-            alert('メンバーデータの形式が不正です。');
-        }
-    } catch (error) {
-        // JSON解析エラー時の処理
-        console.error('JSON変換エラー:', error);
+    // 配列かどうかを判定
+    if (Array.isArray(memberArray)) {
+        console.log('配列変換成功:', memberArray);
+        // 配列データを必要な変数に格納
+        memberData = memberArray;
+    } else {
+        console.error('デコード後のデータは配列ではありません:', memberArray);
         alert('メンバーデータの形式が不正です。');
     }
+} catch (error) {
+    // JSON解析エラー時の処理
+    console.error('JSON変換エラー:', error);
+    alert('メンバーデータの形式が不正です。');
+}
+
 
 
 

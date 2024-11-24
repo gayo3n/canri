@@ -1044,7 +1044,69 @@ class project_detail_Create_Team2View(TemplateView):
 
 
 
+#プロジェクト進行チーム追加3
+# memberが必要かどうか
+# 多分メンバー追加時に必要になる気がする
+# わからん
+class project_detail_CreateTeam3View(TemplateView):
+    # 使用するテンプレートファイルを指定
+    template_name = "project_detail_create_team3.html"
 
+    def post(self, request, *args, **kwargs):
+        # フォームから送信されたデータを取得
+        project_id=request.POST.get('project_id')
+        project_name = request.POST.get('project_name')  # プロジェクト名
+        project_description = request.POST.get('project_description')  # プロジェクトの説明
+        start_date = request.POST.get('start_date')  # 開始日
+        end_date = request.POST.get('end_date')  # 終了日
+        # teams = request.POST.get('teams')
+        # チームの編成に関する情報を取得
+        team_size = request.POST.get('team_size')  # チームサイズ
+        team_type = request.POST.get('team_type')  # チームタイプ
+        categories = Category.objects.filter(deletion_flag=False)  # 削除されていないカテゴリを取得
+        selected_members = json.loads(request.POST.get('selected_members'))  # 選択されたメンバー情報をJSON形式からPythonオブジェクトに変換
+
+        # もし `teams` を使用する場合、文字列ならリストに変換
+        # if isinstance(teams, str):
+        #     teams = json.loads(teams)
+
+        # チーム編成APIに送信するデータを準備
+        data = {
+            'team_type': team_type,  # チームタイプ
+            'members': selected_members,  # 選択されたメンバー
+            'team_size': team_size  # チームサイズ
+        }
+
+        # `request` の `_body` 属性にAPIリクエスト用のデータを設定
+        request._body = json.dumps(data).encode('utf-8')
+        response = create_team_api(request)  # 外部API呼び出し
+
+        # APIのレスポンスを解析
+        response_data = json.loads(response.content)
+
+        if response.status_code == 200:
+            # チーム作成成功時の処理
+            team = response_data['team']
+            print("チームが作成されました:", team)  # ターミナルに作成されたチーム情報を表示
+        else:
+            # チーム作成失敗時の処理
+            team = None
+            print("チームの作成に失敗しました")  # エラーメッセージをターミナルに表示
+
+        # ユーザー入力の内容を保持しながらテンプレートをレンダリング
+        return render(request, self.template_name, {
+            'project_id' : project_id,
+            'project_name': project_name,  # プロジェクト名
+            'project_description': project_description,  # プロジェクトの説明
+            'start_date': start_date,  # 開始日
+            'end_date': end_date,  # 終了日
+            # 'teams': teams,
+            'team_size': team_size,  # チームサイズ
+            'team_type': team_type,  # チームタイプ
+            'categories': categories,  # 利用可能なカテゴリリスト
+            'selected_members': selected_members,  # 選択されたメンバー
+            'team': team  # 作成されたチーム情報（または失敗した場合はNone）
+        })
 
 
 
