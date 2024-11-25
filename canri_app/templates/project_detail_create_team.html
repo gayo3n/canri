@@ -18,11 +18,12 @@
 
         <!-- プロジェクト情報をhiddenで送信 -->
         <!-- project情報を保持 -->
+        <input type="hidden" name="project_id" value="{{ project_id }}">
         <input type="hidden" name="project_name" value="{{ project_name }}">
         <input type="hidden" name="project_description" value="{{ project_description }}">
         <input type="hidden" name="start_date" value="{{ start_date }}">
         <input type="hidden" name="end_date" value="{{ end_date }}">
-        <input type="hidden" name="teams" value="{{ teams|safe }}">
+        <!-- <input type="hidden" name="teams" value="{{ teams|safe }}"> -->
 
         <!-- チーム人数選択 -->
         <label for="team_size">チームの人数</label>
@@ -71,6 +72,16 @@
         csrfToken.value = '{{ csrf_token }}';
         form.appendChild(csrfToken);
 
+
+
+
+        // プロジェクト関連情報をhiddenフィールドとして追加
+        const project_id = document.createElement('input');
+        project_id.type = 'hidden';
+        project_id.name = 'project_';
+        project_id.value = '{{ project_id }}';
+        form.appendChild(project_id);
+
         // プロジェクト関連情報をhiddenフィールドとして追加
         const projectName = document.createElement('input');
         projectName.type = 'hidden';
@@ -96,11 +107,11 @@
         endDate.value = '{{ end_date }}';
         form.appendChild(endDate);
 
-        const teams = document.createElement('input');
-        teams.type = 'hidden';
-        teams.name = 'teams';
-        teams.value = '{{ teams|safe }}';
-        form.appendChild(teams);
+        // const teams = document.createElement('input');
+        // teams.type = 'hidden';
+        // teams.name = 'teams';
+        // teams.value = '{{ teams|safe }}';
+        // form.appendChild(teams);
 
         // フォームをドキュメントに追加して送信
         document.body.appendChild(form);
