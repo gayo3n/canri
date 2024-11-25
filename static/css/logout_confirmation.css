@@ -24,7 +24,7 @@ h1 {
     color: #333;
 }
 
-button[type="submit1"] {
+.b {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
@@ -34,9 +34,11 @@ button[type="submit1"] {
     background-color: #f9f9f9;
     font-size: 14px;
     box-sizing: border-box;
+    text-decoration: none;
+    color: #000;
 }
 
-button[type="submit2"] {
+.a {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
@@ -46,11 +48,18 @@ button[type="submit2"] {
     background-color: #3c80ff;
     font-size: 14px;
     box-sizing: border-box;
+    text-decoration: none;
+    color: #000;
 }
 
-button[type="submit2"]:hover {
-    background-color: #ff4a4a; /* ホバー時の色 */
+.a:hover {
+    background-color: #83adfc; /* ホバー時の色 */
     transition: background-color 0.3s ease; /* 色の変化を滑らかに */
+    text-decoration: underline; /* ホバー時に下線を追加 */
 }
 
-
+.b:hover {
+    background-color: #ccc; /* ホバー時の色 */
+    transition: background-color 0.3s ease; /* 色の変化を滑らかに */
+    text-decoration: underline; /* ホバー時に下線を追加 */
+}

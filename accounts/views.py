@@ -76,11 +76,15 @@ class LoginFailView(TemplateView):
 #     def post(self, request):
 #         return redirect('logout_confirmation')
 
-class LogoutCompView(TemplateView):
-    template_name = 'logout_confirmation_complete.html'
-    def post(self, request, *args, **kwargs):
-        return render(request, 'logout_complete.html')
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
+    success_url = reverse_lazy('login_complete')  # ログイン成功時のリダイレクト先
 
+class LoginCompView(TemplateView):
+    template_name = 'login_complete.html'
+
+class LogoutCompView(TemplateView):
+    template_name = 'logout_complete.html'
 # class AccLoginView(LoginView):
 #     def login(request):
 #         if request.method == "POST":
@@ -97,10 +101,8 @@ class LogoutCompView(TemplateView):
 #         }
 #         return render(request, 'login.html', param)
 
-
-def logout(request):
-    auth_logout(request)
-    return render(request, 'logout_confirmation.html')
+class LogoutConfView(TemplateView):
+    template_name = 'logout_confirmation.html'
 
 # アカウント管理
 class ManagementAccountView(TemplateView):
