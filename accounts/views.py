@@ -1,7 +1,7 @@
 from django.contrib.auth.views import LogoutView, LoginView 
 from django.shortcuts import render, redirect, get_object_or_404, redirect
 from django.contrib.auth import login, get_user_model, logout, authenticate as auth_logout
-from django.urls import reverse
+from django.urls import reverse_lazy
 from django.views import View, generic
 from django.views.generic.base import TemplateView
 from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm
@@ -15,25 +15,6 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
 from .models import User
 
-def login_view(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        try:
-            user = User.objects.get(username=username)
-            if auth_logout(request, username=user.name, password=user.password):  # ハッシュ化されたパスワードを比較
-                login(request, user)  # ユーザーをログインさせる
-                return redirect("accounts:login_complete")
-            else:
-                return render(request, "login.html", {"error_message": "パスワードが正しくありません"})
-        except User.DoesNotExist:
-            return render(request, "login.html", {"error_message": "ユーザーが存在しません"})
-    return render(request, "login.html")
-
-@login_required  # ログイン必須にするデコレータ
-def login_complete_view(request):
-    return render(request, "login_complete.html")  # login_complete.htmlを表示
-
 class LoginFailView(TemplateView):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_failure.html')
@@ -42,11 +23,15 @@ class LoginFailView(TemplateView):
 #     def post(self, request):
 #         return redirect('logout_confirmation')
 
-class LogoutCompView(TemplateView):
-    template_name = 'logout_confirmation_complete.html'
-    def post(self, request, *args, **kwargs):
-        return render(request, 'logout_complete.html')
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
+    success_url = reverse_lazy('login_complete')  # ログイン成功時のリダイレクト先
 
+class LoginCompView(TemplateView):
+    template_name = 'login_complete.html'
+
+class LogoutCompView(TemplateView):
+    template_name = 'logout_complete.html'
 # class AccLoginView(LoginView):
 #     def login(request):
 #         if request.method == "POST":
@@ -63,10 +48,8 @@ class LogoutCompView(TemplateView):
 #         }
 #         return render(request, 'login.html', param)
 
-
-def logout(request):
-    auth_logout(request)
-    return render(request, 'logout_confirmation.html')
+class LogoutConfView(TemplateView):
+    template_name = 'logout_confirmation.html'
 
 # アカウント管理
 class ManagementAccountView(TemplateView):
