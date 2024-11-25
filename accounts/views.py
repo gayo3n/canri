@@ -9,9 +9,35 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
-from django.http import HttpResponse, HttpResponseRedirect
-from .models import UserManager, User
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import make_password
+from .models import User
+
+def login_view(request):
+    # リクエストメソッドがPOSTかどうかを確認
+    if request.method == "POST":
+        # リクエストからユーザー名とパスワードを取得
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        try:
+            # ユーザー名でユーザーを取得しようとする
+            user = User.objects.get(username=username)
+            # 提供されたパスワードが保存されたパスワードと一致するか確認
+            if auth_logout(request, username=user.username, password=password):  # ハッシュ化されたパスワードを比較
+                login(request, user)  # ユーザーをログインさせる
+                return redirect("accounts:login_complete")  # ログイン完了ページにリダイレクト
+            else:
+                # パスワードが間違っている場合、エラーメッセージを表示
+                return render(request, "login.html", {"error_message": "パスワードが正しくありません"})
+        except User.DoesNotExist:
+            # ユーザーが存在しない場合、エラーメッセージを表示
+            return render(request, "login.html", {"error_message": "ユーザーが存在しません"})
+
+    # リクエストメソッドがPOSTでない場合、ログインページを表示
+    return render(request, "login.html")
 
 
 @login_required  # ログイン必須にするデコレータ
@@ -117,27 +143,13 @@ class AccountChangeEmployeeCompleteView(TemplateView):
     template_name = "account_change_complete_employee.html"
 
 
-def create(request):
-    if request.method == 'GET':
-        form = AccountAddForm()
-    elif request.method == 'POST':
-        form = AccountAddForm(request.POST)
-        if form.is_valid():
-            user = User.objects.create_user(
-                name=form.cleaned_data['name'],
-                user_id=form.cleaned_data['user_id'],
-                password=form.cleaned_data['password']
-            )
-            return render(request, 'account_create_complete.html', {'user_id': user.user_id})
-    context = {'form': form}
-    return render(request, 'account_create.html', context)
+# class LoginFailView(LoginRequiredMixin, TemplateView):
+#     template_name = 'login_failure.html'
 
-
-def account_create_complete(request):
-    form = UserForm(request.POST)
-    if form.is_valid():
-        form.save()
-    return render(request, 'account_create_complete.html')
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['users'] = User.objects.exclude(username=self.request.user.username)
+#         return context
 
 # class AccountLogin(AuthLoginView):
 #     template_name = "login.html"
