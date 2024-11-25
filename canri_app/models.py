@@ -65,10 +65,10 @@ class ProjectAffiliationTeam(models.Model):
 class MBTI(models.Model):
     mbti_id = models.AutoField(primary_key=True)
     mbti_name = models.CharField(max_length=255)
-    planning_presentation_power = models.IntegerField
-    teamwork = models.IntegerField
-    time_management_ability = models.IntegerField
-    problem_solving_ability = models.IntegerField
+    planning_presentation_power = models.IntegerField(default=0)
+    teamwork = models.IntegerField(default=0)
+    time_management_ability = models.IntegerField(default=0)
+    problem_solving_ability = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'MBTI'

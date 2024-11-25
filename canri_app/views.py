@@ -1067,57 +1067,39 @@ def project_phase_add(request, project_id):
     templatename = f"project_detail.html"
 
     # 指定されたIDのプロジェクトを取得（削除されていないプロジェクトのみ）
-    project = get_object_or_404(Project, project_id=project_id, deletion_flag=False)
+    # project = get_object_or_404(Project, project_id=project_id, deletion_flag=False)
 
     if request.method == "POST":
         try:
             # POSTデータから各プロジェクト情報を取得
-            project_name = request.POST.get('project_name')
-            project_description = request.POST.get('project_description')
-            start_date = request.POST.get('start_date')
-            end_date = request.POST.get('end_date')
-
+            project_id=request.POST.get('project_id')
             phase_name = request.POST.get('phase_name')
             end_date2 = request.POST.get('end_date2')
 
-            # 必須項目の入力チェック
-            if not all([project_name, project_description, start_date, end_date,phase_name,end_date2]):
+            # # 必須項目の入力チェック
+            if not all([project_id,phase_name,end_date2]):
                 # 必須項目が未入力の場合、エラーメッセージを表示して再表示
                 messages.error(request, '全ての必須項目を入力してください。')
                 return render(request, templatename, {
-                    'project': project,
-                    'project_name': project_name,
-                    'project_description': project_description,
-                    'start_date': start_date,
-                    'end_date': end_date,
+                    'project_id': project_id,
+                    'phase_name':phase_name,
+                    'end_name2': end_date2,
                 })
 
-            # 開始日と終了日の論理チェック
-            if start_date > end_date:
-                # 開始日が終了日より後の場合、エラーメッセージを表示して再表示
-                messages.error(request, '開始日は終了日よりも前の日付である必要があります。')
-                return render(request, templatename, {
-                    'project': project,
-                    'project_name': project_name,
-                    'project_description': project_description,
-                    'start_date': start_date,
-                    'end_date': end_date,
-                })
 
-            # プロジェクト情報の更新
-            project.project_name = project_name
-            project.project_detail = project_description
-            project.project_start_date = start_date
-            project.project_end_date = end_date
 
             # 更新日時の設定
-            project.update_date = timezone.now()
+            # creation_date = timezone.now()
 
-            # プロジェクト情報の保存
-            project.save()
+            project_progress_status = ProjectProgressStatus.objects.create(
+                project_id=project_id,
+                phase_name=phase_name,  # メンバーの数をカウント
+                complete_date=end_date2,
+                creation_date=timezone.now()  # 現在の日時を設定
+            )
 
             # 成功メッセージの追加
-            messages.success(request, 'プロジェクトが正常に更新されました。')
+            messages.success(request, 'フェーズの追加がかんりょうしました')
             # プロジェクトを取得
             #project_idに当てはまるprojectテーブルのデータを取得
             project = get_object_or_404(Project, project_id=project_id)
@@ -1141,19 +1123,15 @@ def project_phase_add(request, project_id):
             # 情報を保持した状態でrender
             return render(request, 'project_detail.html', context)
 
-
-
-
-
         except Exception as e:
             # 予期しないエラーが発生した場合のエラーハンドリング
             messages.error(request, f'更新中にエラーが発生しました: {str(e)}')
             return render(request, templatename, {
                 'project': project,
-                'project_name': project_name,
-                'project_description': project_description,
-                'start_date': start_date,
-                'end_date': end_date,
+                # 'project_name': project_name,
+                # 'project_description': project_description,
+                # 'start_date': start_date,
+                # 'end_date': end_date,
             })
 
     # GETリクエストの場合、プロジェクト詳細ページを表示
@@ -1429,16 +1407,7 @@ class project_detail_SaveTeamView(TemplateView):
         # プロジェクト情報とチームリストをテンプレートに渡し、新しいプロジェクト編集画面をレンダリング
         return render(request, self.template_name, {
             'project_id' : project_id,
-            # 'project_name': project_name,  # プロジェクト名
-            # 'project_description': project_description,  # プロジェクトの説明
-            # 'start_date': start_date,  # 開始日
-            # 'end_date': end_date,  # 終了日
-            # # 'teams': teams,
-            # 'team_size': team_size,  # チームサイズ
-            # 'team_type': team_type,  # チームタイプ
-            # 'categories': categories,  # 利用可能なカテゴリリスト
-            # 'selected_members': selected_members,  # 選択されたメンバー
-            # 'team': team  # 作成されたチーム情報（または失敗した場合はNone）
+
         })
 
 
