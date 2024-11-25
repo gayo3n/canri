@@ -14,7 +14,7 @@
                 <div class="teams-grid">
                     {% for team in teams %}
                         <div class="team-card">
-                            <a href="チーム詳細リンク">{{ team.team_name }}</a>
+                            <a href="{% url 'canri_app:team_edit_past' team_id=team.team_id%}?project_id={{ project.project_id}}">{{ team.team_name }}</a>
                         </div>
                     {% endfor %}
                 </div>  
@@ -29,20 +29,23 @@
             <!--プロジェクト情報-->
             <div class="project-list">
                 <div class="project-card">
-                    <input type="hidden" name="project_id" value="{{ project.project_id }}">
-                    <h1>{{ project.project_name }}</h1>
-                    <div class="horizontal-line"></div>
-                    <p>開始日: {{ project.creation_date|date:"Y年m月d日" }}</p>
-                    <p>完了日: {{ project.complete_date|date:"Y年m月d日" }}</p>
-                    <label for="post_evaluation_memo">プロジェクト詳細：</label>
-                    <p>&emsp;&emsp;{{ project.project_detail }}</p>
-                    <label for="post_evaluation_memo">事後評価メモ</label>
-                    <textarea id="post_evaluation_memo" name="post_evaluation_memo" rows="15" style="width: 100%; margin-bottom: 20px;"></textarea>
-                    <div class="button-container">
-                        <button type="button" class="feedbackbutton" onclick="openAddFeedback()">フィードバック</button>
-                        <button type="button" class="delete-button">削除</button>
-                        <button type="button" class="action-button">保存</button>
-                    </div>
+                    <form method="post" action="{% url 'canri_app:past_project_view' project_id=project.project_id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="project_id" value="{{ project.project_id }}">
+                        <h1>{{ project.project_name }}</h1>
+                        <div class="horizontal-line"></div>
+                        <p>開始日: {{ project.creation_date|date:"Y年m月d日" }}</p>
+                        <p>完了日: {{ project.complete_date|date:"Y年m月d日" }}</p>
+                        <label for="post_evaluation_memo">プロジェクト詳細：</label>
+                        <p>&emsp;&emsp;{{ project.project_detail }}</p>
+                        <label for="post_evaluation_memo">事後評価メモ</label>
+                        <textarea id="post_evaluation_memo" name="post_evaluation_memo" rows="15" style="width: 100%; margin-bottom: 20px;">{{ project.post_evaluation_memo }}</textarea>
+                        <div class="button-container">
+                            <button type="button" class="feedbackbutton" onclick="openAddFeedback()">フィードバック</button>
+                            <button type="button" class="delete-button" onclick="openDeleteModal()">削除</button>
+                            <button type="submit" class="action-button">保存</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </section>
@@ -66,6 +69,20 @@
         <div id="save-complete-body">
             <!-- feedback_save_complete.htmlの内容がここに読み込まれる -->
         </div>
+    </div>
+</div>
+
+<!-- 削除確認モーダルのHTML -->
+<div class="modal" id="deleteModal" style="display: none;">
+    <div class="modal-content" style="width: 50%; max-width: 600px;">
+        <span class="close" onclick="closeDeleteModal()">&times;</span>
+        <h2>削除確認</h2>
+        <p>このプロジェクトを削除してもよろしいですか？</p>
+        <form method="post" action="{% url 'canri_app:past_project_view' project_id=project.project_id %}">
+            {% csrf_token %}
+            <input type="hidden" name="delete" value="1">
+            <button type="submit" class="action-button">削除</button>
+        </form>
     </div>
 </div>
 
@@ -95,6 +112,16 @@
     // フィードバック保存完了モーダルを閉じる
     function closeSaveCompleteModal() {
         document.getElementById('saveCompleteModal').style.display = 'none';
+    }
+
+    // 削除確認モーダルを開く
+    function openDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'block';
+    }
+
+    // 削除確認モーダルを閉じる
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
     }
 
     // フィードバックを保存する

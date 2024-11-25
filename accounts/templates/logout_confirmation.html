@@ -7,15 +7,14 @@
         <h2>ログアウトします<h2>
         <h2>よろしいですか？</h2>
 
-        <form action="#" method="post">
-            {% csrf_token %}
-            <button type="submit1">キャンセル</button>
+            <a href="{% url 'accounts:logout_complete' %}" class="a">OK</a>
+            {%csrf_token%}
+        </form>
+
+            <a href="{% url 'canri_app:index' %}" class="b">キャンセル</a>
+            {%csrf_token%}
         </form>
     
-        <form action="/logout_complete/" method="post">
-            {% csrf_token %}
-            <button type="submit2">OK</button>
-        </form>
     </div>
 </body>
 {% endblock %}

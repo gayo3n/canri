@@ -80,3 +80,13 @@ ul li {
 .memberList_cancel:hover {
     background-color: #c9302c;
 }
+
+
+form label {
+    display: none;
+}
+
+
+search-section{
+    margin-left: 10px;
+}

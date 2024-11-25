@@ -8,10 +8,12 @@ from .models import *
 from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Project,CareerInformation,MBTI,Credentials,Category
 from django.utils import timezone
 import json
-from .forms import SearchForm
+from .forms import CSVUploadForm
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect
 from .api import create_team_api, save_team_api, save_project_api, get_member_data, get_p_project_detail
 from django.urls import reverse
+import csv
+from django.contrib import messages
 
 
 
@@ -36,66 +38,186 @@ class IndexView(TemplateView):
 class MemberListView(TemplateView):
     template_name = "memberlist.html"
 
+    def get(self, request, *args, **kwargs): 
+        # カテゴリー一覧を取得
+        categories = Category.objects.all()
+
+        context = {
+            "categories": categories  # カテゴリー
+        }
+        return render(request, self.template_name, context)
+
+
 class NewProjectView(TemplateView):
     template_name = "create_new_project.html"
+
 
 
 
 # -----メンバーリスト作成-----
 class MemberListMakeView(TemplateView):
     template_name = "memberList_make.html"
-    
-    memberID_list = []
 
     def get(self, request, *args, **kwargs):
-        form = SearchForm(request.GET)
-        members = Member.objects.all()
+
+        # フォームget
+        form = CSVUploadForm()
+        # メンバー検索(未入力の場合はすべて)
+        members = self.get_queryset()
+
+        # セッションから memberID_list を取得
+        memberID_list = request.session.get('memberID_list', [])
+
+        # `memberID_list` の各 `member_id` に対応する `member_name` を取得
+        members_in_list = Member.objects.filter(member_id__in=memberID_list)
+
+        # member_dict を作成する
+        member_dict = {member.member_id: member.name for member in members_in_list}
+
+        messages.error(request , '')
 
         context = {
-            'form': form,
-            'members': members,
-            'memberID_list': self.memberID_list
+            'form': form, # フォーム
+            'members': members, # 検索メンバー
+            'memberID_list': memberID_list,  # 現在のリストを表示
+            'member_dict':member_dict,
         }
         return render(request, self.template_name, context)
+    
+    def post(self, request, *args, **kwargs):
+        # セッションから memberID_list を取得
+        memberID_list = request.session.get('memberID_list', [])
+
+        # 削除リクエストがあるか判定
+        delete_member_id = request.POST.get('delete_member_id')
+        if delete_member_id and delete_member_id.isdigit():
+            delete_member_id = int(delete_member_id)
+            if delete_member_id in memberID_list:
+                memberID_list.remove(delete_member_id)  # リストから削除
+        else:
+            # 追加リクエストの場合
+            member_id = request.POST.get('member_id')
+            if member_id and member_id.isdigit():
+                member_id = int(member_id)
+                if member_id not in memberID_list:
+                    try:
+                        Member.objects.get(member_id=member_id)  # メンバーIDの確認
+                        memberID_list.append(member_id)  # リストに追加
+                    except Member.DoesNotExist:
+                        print(f"Member with ID {member_id} not found")
+
+        # セッションに memberID_list を保存
+        request.session['memberID_list'] = memberID_list
+
+        # `memberID_list` の各 `member_id` に対応する `member_name` を取得
+        members_in_list = Member.objects.filter(member_id__in=memberID_list)
+
+        # member_dict を作成する
+        member_dict = {member.member_id: member.name for member in members_in_list}
+
+        members = self.get_queryset()
+        context = {
+            'members': members,
+            'memberID_list': memberID_list,
+            'member_dict': member_dict,  # member_dict を渡す
+        }
+        return render(request, self.template_name, context)
+
+
+    # メンバー検索
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            members = Member.objects.filter(name__icontains=query)
+        else:
+            # フォーム未入力の場合はすべて
+            members = Member.objects.all()
+        return members
+    
+    def upload_csv(request):
+        if request.method == 'POST':
+            form = CSVUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                csv_file = request.FILES['csv_file']
+                decoded_file = csv_file.read().decode('utf-8').splitlines()
+                reader = csv.reader(decoded_file)
+                
+                for row in reader:
+                    # 各行のデータを処理する
+                    print(row)
+                
+                # 成功した場合のレスポンス
+                return render(request, 'upload_success.html')
+        else:
+            form = CSVUploadForm()
+
+        return render(request, 'upload_csv.html', {'form': form})
+
+
+# -----メンバーリスト保存-----
+class MemberListMakeCompleteView(TemplateView):
+    template_name = "memberlist_make_complete.html"
 
     def post(self, request, *args, **kwargs):
-        members = Member.objects.all()
+        # カテゴリ名（リスト名）と詳細を取得
+        member_list_name = request.POST.get('member_list_name')
+        member_list_details = request.POST.get('member_list_details')
 
-        # 検索処理
-        search_query = request.POST.get('query', '')
-        if search_query:
-            members = members.filter(name__icontains=search_query)
-        
-        # 複数のmember_id をリクエストから取得
-        member_ids = request.POST.getlist('member_id')
+        # エラーリストを作成
+        errors = []
 
-        # member_idが複数選ばれている場合
-        if member_ids:
-            for member_id in member_ids:
-                if member_id.isdigit():  # 数値チェッ��
-                    try:
-                        # メンバーを取得
-                        member = Member.objects.get(member_id=int(member_id))
-                        if member_id not in self.memberID_list:
-                            self.memberID_list.append(member_id)
-                    except Member.DoesNotExist:
-                        pass  # メンバーが存在しない場合は無視
+        # 入力チェック
+        if not member_list_name:
+            errors.append("メンバーリスト名を入力してください。")
+        if not member_list_details:
+            errors.append("メンバーリストの詳細を入力してください。")
 
-        # member_id が追加されていれば、そのメンバー情報を取得
-        members_in_list = Member.objects.filter(member_id__in=self.memberID_list)
+        # カテゴリ名重複チェック
+        if member_list_name and Category.objects.filter(category_name=member_list_name).exists():
+            errors.append("このカテゴリ名はすでに存在します。別の名前を使用してください。")
 
-        context = {
-            'members': members,
-            'memberID_list': self.memberID_list,
-            'members_in_list': members_in_list  # 追加されたメンバーを表示するための変数
-        }
+        # エラーがあれば、エラーメッセージを表示して保存処理をスキップ
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return redirect(reverse('canri_app:memberlist_make'))  # 元のページにリダイレクト
 
-        return render(request, self.template_name, context)
+        # エラーがなければカテゴリを保存
+        if member_list_name and member_list_details:
+            # 新しいカテゴリを作成
+            category = Category(
+                category_name=member_list_name,
+                detail=member_list_details,
+                creation_date=timezone.now()
+            )
+            # カテゴリ保存
+            category.save()
 
-class MemberListMakeCompleteView(TemplateView):
-    template_name = "memberList_make_complete.html"
+            # POSTデータから memberID_list を取得
+            member_id_list = request.POST.getlist('memberID_list')
 
-# メンバー作成
+            # 各 member_id に対して MemberList を作成
+            for member_id in member_id_list:
+                try:
+                    # メンバーを取得
+                    member = Member.objects.get(member_id=member_id)
+                    # MemberList オブジェクトを作成して保存
+                    member_list = MemberList(
+                        member_id=member.member_id,
+                        category_id=category.category_id,
+                        creation_date=timezone.now()
+                    )
+                    # メンバーリスト保存
+                    member_list.save()
+                except Member.DoesNotExist:
+                    # メンバーが見つからなかった場合の処理（エラーメッセージ等を追加しても良い）
+                    print(f"Member with ID {member_id} not found")
+
+            # 成功したらメンバーリスト作成完了ページにリダイレクト
+            return redirect(reverse('canri_app:memberlist_make_complete'))
+
+
+# -----メンバー作成-----
 class MemberMakeView(TemplateView):
     template_name = "member_make.html"
     def get(self, request, *args, **kwargs):
@@ -111,8 +233,122 @@ class MemberMakeView(TemplateView):
     }
         return render(request, 'member_make.html', context)
 
+
+# -----CSVファイル処理-----
+class FileUploadView(TemplateView):
+    def upload_csv(request):
+        if request.method == 'POST':
+            form = CSVUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                csv_file = request.FILES['csv_file']
+                decoded_file = csv_file.read().decode('utf-8').splitlines()
+                reader = csv.reader(decoded_file)
+                
+                for row in reader:
+                    # 各行のデータを処理する
+                    print(row)
+                
+                # 成功した場合のレスポンス
+                return render(request, 'upload_success.html')
+        else:
+            form = CSVUploadForm()
+
+        return render(request, 'upload_csv.html', {'form': form})
+
+
+# -----メンバー保存-----
 class MemberMakeCompleteView(TemplateView):
     template_name = "member_make_complete.html"
+    
+    def post(self, request, *args, **kwargs):
+        # フォームからの入力を取得
+        name = request.POST.get('name')
+        birthdate = request.POST.get('birthday')  # 日付は適切なフォーマットで受け取る
+        job_title_id = request.POST.get('job_title')  # JobTitleInformation ID
+        memo = request.POST.get('memo', '')  # メモは任意なのでデフォルト値を設定
+        mbti_id = request.POST.get('MBTI')  # MBTI ID を取得
+
+        # 職歴と資格
+        career = request.POST.get('career')
+        qualification = request.POST.get('qualification')
+        qualification2 = request.POST.get('qualification2')
+        qualification3 = request.POST.get('qualification3')
+
+        # メンバーパラメータ変数 (デフォルト値を設定)
+        planning_presentation_power = 0
+        teamwork = 0
+        time_management_ability = 0
+        problem_solving_ability = 0
+        speciality_height = 0
+
+        # 入力検証
+        if not name:
+            messages.error(request, "名前を入力してください。")
+            return redirect('canri_app:member_make')
+        if not birthdate:
+            messages.error(request, "生年月日を設定してください。")
+            return redirect('canri_app:member_make')
+        if not job_title_id:
+            messages.error(request, "職業を選択してください。")
+            return redirect('canri_app:member_make')
+        if not mbti_id:
+            messages.error(request, "MBTIを選択してください。")
+            return redirect('canri_app:member_make')
+        
+        try:
+            # 外部キー関連のデータを取得
+            job_title = JobTitleInformation.objects.get(job_title_id=job_title_id)
+            mbti = MBTI.objects.get(mbti_id=mbti_id)
+            
+            # Member オブジェクトを作成して保存
+            member = Member(
+                name=name,
+                birthdate=birthdate,
+                job=job_title,  # 外部キーを関連付け
+                memo=memo,
+                mbti=mbti,  # 外部キーを関連付け
+                creation_date=timezone.now(),  # 作成日を現在時刻に設定
+                deletion_flag=False,  # 削除フラグは初期状態でFalse
+            )
+            member.save()
+
+            # -----役職の計算-----
+            planning_presentation_power += job_title.planning_presentation_power
+            teamwork += job_title.teamwork
+            time_management_ability += job_title.time_management_ability
+            
+
+            # -----MBTIの計算-----
+            planning_presentation_power += mbti.planning_presentation_power
+            teamwork += mbti.teamwork
+            time_management_ability += mbti.time_management_ability
+            problem_solving_ability += mbti.problem_solving_ability            
+
+            # MemberParameter オブジェクトを作成して保存
+            member_parameter = MemberParameter(
+                member=member,  # Member オブジェクトを直接渡す
+                planning_presentation_power=planning_presentation_power,
+                teamwork=teamwork,
+                time_management_ability=time_management_ability,
+                problem_solving_ability=problem_solving_ability,
+                speciality_height=speciality_height,
+            )
+            member_parameter.save()
+
+        except JobTitleInformation.DoesNotExist:
+            messages.error(request, "指定された職業が見つかりません。")
+            return redirect('canri_app:member_make')
+        except MBTI.DoesNotExist:
+            messages.error(request, "指定されたMBTIが見つかりません。")
+            return redirect('canri_app:member_make')
+        except Exception as e:
+            # 保存に失敗した場合の処理
+            messages.error(request, f"メンバーの保存中にエラーが発生しました: {e}")
+            return redirect('canri_app:member_make')
+        
+        # 保存が成功した場合にmember_make_completeへ遷移
+        return render(request, self.template_name, {"member": member})
+    
 
 class MemberMakeDeleteView(TemplateView):
     template_name = "member_make_delete.html"
@@ -370,7 +606,7 @@ class SaveTeamView(TemplateView):
             'team': team
         }
 
-        # save_team_api を呼���出してチームを保存
+        # save_team_api を呼�������������出してチームを保存
         request._body = json.dumps(data).encode('utf-8')
         response = save_team_api(request)
         response_data = json.loads(response.content)
@@ -696,7 +932,7 @@ def project_detail_view(request, project_id):
 
 
 
-# プロジェクト詳細変更モーダル保存時
+# プロジェク���詳細変更モーダル保存時
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
@@ -743,7 +979,7 @@ def project_detail_update(request, project_id):
 
             # 開始日と終了日の論理チェック
             if start_date > end_date:
-                # 開始日が終了日より後の場合、エラーメッセージを表示して再表示
+                # 開始日が終了日より後の場合、エラーメッセージを表示して��表示
                 messages.error(request, '開始日は終了日よりも前の日付である必要があります。')
                 return render(request, templatename, {
                     'project': project,
@@ -762,7 +998,7 @@ def project_detail_update(request, project_id):
             # 更新日時の設定
             project.update_date = timezone.now()
 
-            # プロジェクト情報の保存
+            # プロジ��ク��情報の保存
             project.save()
 
             # 成功メッセージの追加
@@ -879,7 +1115,7 @@ def project_phase_add(request, project_id):
             context = {
                 #プロジェクトテーブルの情報
                 'project': project,
-                #プロジェクト所属チームテーブルの情報
+                #プロジェクト��属チームテーブルの情報
                 'teams': teams,
                 #フェーズテーブルの情報
                 'phases': phases,
@@ -1015,7 +1251,7 @@ class project_detail_Create_Team2View(TemplateView):
                 'end_date': end_date,  # 終了日
                 'member' : member,
                 # 'teams': teams,  # チーム情報（リスト形式）
-                'team_type': team_type,  # チームの種類
+                'team_type': team_type,  # チーム��種類
                 'categories': categories,  # カテゴリ情報
             })
 
@@ -1255,6 +1491,26 @@ class Past_ProjectView(TemplateView):
 
         return render(request, self.template_name, context)
 
+    def post(self, request, *args, **kwargs):
+        project_id = kwargs.get('project_id')
+        if 'delete' in request.POST:
+            try:
+                project = Project.objects.get(project_id=project_id)
+                project.deletion_flag = True
+                project.save()
+                return HttpResponseRedirect(reverse('canri_app:delete_past_project'))
+            except Project.DoesNotExist:
+                return HttpResponseNotFound("Project not found")
+        else:
+            post_evaluation_memo = request.POST.get('post_evaluation_memo')
+            try:
+                project = Project.objects.get(project_id=project_id)
+                project.post_evaluation_memo = post_evaluation_memo
+                project.save()
+                return HttpResponseRedirect(reverse('canri_app:save_past_project'))
+            except Project.DoesNotExist:
+                return HttpResponseNotFound("Project not found")
+
 class Past_ProjectDeletingView(TemplateView):
     template_name = "past_project_deleting_confirmation.html"
 
@@ -1262,7 +1518,7 @@ class Project_DeletedView(TemplateView):
     template_name = "project_deleted.html"
 
 class Project_Save_CompleteView(TemplateView):
-    template_name = "project_save_complete.html"
+    template_name = "save_past_project.html"
 
 #フィードバックモーダル表示
 class FeedbackView(TemplateView):
@@ -1295,3 +1551,133 @@ class FeedbackSaveView(TemplateView):
     #         'feedback_content': feedback_content
     #     }
     #     return render(request, self.template_name, context)
+
+#過去プロジェクトチーム編集
+class TeamEditPastView(TemplateView):
+    template_name = "team_edit_past.html"
+
+    def get(self, request, *args, **kwargs):
+        team_id = kwargs.get('team_id')
+        team = Team.objects.get(team_id=team_id)
+        members = TeamMember.objects.filter(team=team)
+        categories = Category.objects.filter(deletion_flag=False)
+        project_id = request.GET.get('project_id')
+
+        context = {
+            'team': team,
+            'members': members,
+            'categories': categories,
+            'project_id': project_id
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        team_id = kwargs.get('team_id')
+        team = Team.objects.get(team_id=team_id)
+        team_name = request.POST.get('team_name')
+        team_memo = request.POST.get('team_memo')
+        team_members = request.POST.get('team')
+        if not team_members:
+            team_members = []
+        else:
+            team_members = json.loads(team_members)
+        print("team_memo:", team_memo)
+
+        team.team_name = team_name
+        team.memo = team_memo
+        team.save()
+
+        TeamMember.objects.filter(team=team).delete()
+        for member_id in team_members:
+            member = Member.objects.get(member_id=member_id)
+            TeamMember.objects.create(
+                team=team,
+                member=member,
+                creation_date=timezone.now(),
+                update_date=timezone.now()
+            )
+
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        teams = request.POST.get('teams')
+        project_id = request.POST.get('project_id')
+        return HttpResponseRedirect(f"{reverse('canri_app:team_edit_past_complete', kwargs={'project_id': project_id})}?project_name={project_name}&project_description={project_description}&start_date={start_date}&end_date={end_date}&teams={teams}&team_members={team_members}")
+
+#過去プロジェクトチーム編集完了
+class TeamEditPastCompleteView(TemplateView):
+    template_name = "past_project_view.html"
+
+    def get(self, request, *args, **kwargs):
+        project_id = kwargs.get('project_id')
+        response = get_p_project_detail(request, project_id)
+        project_data = json.loads(response.content).get('project_data')
+
+        if not project_data:
+            return HttpResponseNotFound("Project not found")
+
+        # project_idに当てはまるProjectAffiliationTeamテーブルのデータを取得
+        affiliation_teams = ProjectAffiliationTeam.objects.filter(project_id=project_id)
+        teams = Team.objects.filter(team_id__in=[team.team.team_id for team in affiliation_teams])
+
+        context = {
+            'project': project_data,
+            'teams': teams
+        }
+
+        return render(request, self.template_name, context)
+    
+#過去プロジェクトチームメンバー編集
+class TeamMemberEditPastView(TemplateView):
+    template_name = "team_edit_past.html"
+
+    def get(self, request, *args, **kwargs):
+        member_id = kwargs.get('member_id')
+        member = Member.objects.get(member_id=member_id)
+
+        team_id = request.GET.get('team_id')
+        team_name = request.GET.get('team_name')
+        team_memo = request.GET.get('team_memo')
+        team_members = request.GET.get('team_members')
+
+        # APIエンドポイントを呼び出してメンバー情報を取得
+        response = get_member_data(request, member_id)
+        member_info = json.loads(response.content).get('member_data')
+
+        context = {
+            'member': member_info,
+            'team_id': team_id,
+            'team_name': team_name,
+            'team_memo': team_memo,
+            'team_members': team_members,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        member_id = kwargs.get('member_id')
+        member = Member.objects.get(member_id=member_id)
+        member_name = request.POST.get('member_name')
+        member_memo = request.POST.get('member_memo')
+
+        member.name = member_name
+        member.memo = member_memo
+        member.save()
+
+        return JsonResponse({'status': 'success'})
+
+#過去プロジェクトチームメンバー編集保存
+class TeamMemberEditSavePastView(TemplateView):
+    template_name = "team_edit_past.html"
+
+    def post(self, request, *args, **kwargs):
+        member_id = request.POST.get('member_id')
+        member = Member.objects.get(member_id=member_id)
+        member_name = request.POST.get('member_name')
+        member_memo = request.POST.get('member_memo')
+
+        member.name = member_name
+        member.memo = member_memo
+        member.save()
+
+        return JsonResponse({'status': 'success'})

@@ -7,45 +7,45 @@
 {% endblock %}
 
 {% block content %}
-<form class="center" method="post">
+<form class="center" method="post" action="{% url 'canri_app:member_make_complete' %}">
+    {% csrf_token %}
 
     {% comment %} メンバーID {% endcomment %}
     <div class="form-area">
         <label for="member_id">メンバーID</label>
-        <!--自動生成されたIDの表示-->
-        <h3 id="member_id" name="member_id">{{ member_id }}</h3>
+        <!-- member_idを隠しフィールドで送信 -->
+        <input type="hidden" id="member_id" name="member_id" value="{{ member_id }}">
+        <h3>{{ member_id }}</h3>
     </div>
 
     {% comment %} 名前 {% endcomment %}
     <div class="form-area">
         <label for="name">名前</label>
-        <!--名前を入力されたらnameで飛ばす-->
         <input type="text" id="name" name="name">
     </div>
 
     {% comment %} 生年月日 {% endcomment %}
     <div class="form-area">
         <label for="birthday">生年月日</label>
-        <!--生年月日を入力されたらbirthdayで飛ばす-->
         <input type="date" id="birthday" name="birthday">
     </div>
-
+    
     {% comment %} 役職 {% endcomment %}
     <div class="form-area">
-        <label for = "job_title">役職</label>
-        <!--役職を入力されたらjob_titleで飛ばす-->
-        <select id="job_title", name="job_title">
+        <label for="job_title">役職</label>
+        <select id="job_title" name="job_title">
+            <option value="" disabled selected>選択してください</option>  <!-- 空のオプションを追加 -->
             {% for job in job_title %}
-            <option value="{{ forloop.counter }}">{{ job.job_title }}</option>
+                <option value="{{ forloop.counter }}">{{ job.job_title }}</option>
             {% endfor %}
         </select>
     </div>
 
-        {% comment %} 職歴 {% endcomment %}
+    {% comment %} 職歴 {% endcomment %}
     <div class="form-area">
         <label for="career">職歴</label>
-        <!--職歴を入力されたらcareerで飛ばす-->
         <select id="career" name="career">
+            <option value="" disabled selected>選択してください</option>  <!-- 空のオプションを追加 -->
             {% for career in careerinformation %}
                 <option value="{{ forloop.counter }}">{{ career.career }}</option>
             {% endfor %}
@@ -54,29 +54,31 @@
 
     {% comment %} 資格 {% endcomment %}
     <div class="form-area">
-        <label for = "qualification">資格</label>
-        <!--資格を選択されたらqualificationで飛ばす-->
-        <select id="qualification", name="qualification">
+        <label for="qualification">資格</label>
+        <select id="qualification" name="qualification">
+            <option value="" disabled selected>選択してください</option>  <!-- 空のオプションを追加 -->
             {% for crede in credentials %}
                 <option value="{{ forloop.counter }}">{{ crede.qualification_name }}</option>
             {% endfor %}
         </select>
     </div>
 
-    {% comment %} 資格 {% endcomment %}
+    {% comment %} 資格2 {% endcomment %}
     <div class="form-area2">
-        <label for = "qualification2">資格</label>
-        <select id="qualification2", name="qualification2">
+        <label for="qualification2">資格</label>
+        <select id="qualification2" name="qualification2">
+            <option value="" disabled selected>選択してください</option>  <!-- 空のオプションを追加 -->
             {% for crede in credentials %}
                 <option value="{{ forloop.counter }}">{{ crede.qualification_name }}</option>
             {% endfor %}
         </select>
     </div>
 
-    {% comment %} 資格 {% endcomment %}
+    {% comment %} 資格3 {% endcomment %}
     <div class="form-area3">
-        <label for = "qualification3">資格</label>
-        <select id="qualification3", name="qualification3">
+        <label for="qualification3">資格</label>
+        <select id="qualification3" name="qualification3">
+            <option value="" disabled selected>選択してください</option>  <!-- 空のオプションを追加 -->
             {% for crede in credentials %}
                 <option value="{{ forloop.counter }}">{{ crede.qualification_name }}</option>
             {% endfor %}
@@ -85,13 +87,23 @@
 
     {% comment %} MBTI {% endcomment %}
     <div class="form-area">
-        <label for = "MBTI">MBTI</label>
-        <select id="MBTI", name="MBTI" required>
+        <label for="MBTI">MBTI</label>
+        <select id="MBTI" name="MBTI" required>
+            <option value="" disabled selected>選択してください</option>  <!-- 空のオプションを追加 -->
             {% for MBTI in mbti %}
                 <option value="{{ forloop.counter }}">{{ MBTI.mbti_name }}</option>
             {% endfor %}
         </select>
     </div>
-    <a href="{% url 'canri_app:member_make_delete' %}" class="btn delete">削除</a>
-    <a href="{% url 'canri_app:member_make_complete' %}" class="btn save">保存</a>
+
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <a href="{% url 'canri_app:member_delete' %}" class="btn delete">削除</a>
+    <button type="submit" class="btn save">保存</button>
+</form>
 {% endblock %}

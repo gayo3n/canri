@@ -12,7 +12,8 @@ class AccountAddForm(forms.Form):
         max_length=6,
         widget=forms.TextInput(
             attrs={
-                'placeholder':''
+                'placeholder':'',
+                 'autocomplete': 'user_id'
             }
         )
     )
@@ -23,6 +24,7 @@ class AccountAddForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={
                 'placeholder':'******',
+                'autocomplete': 'current-password',
             }
         )
     )
@@ -32,34 +34,22 @@ class AccountAddForm(forms.Form):
         max_length=16,
         widget=forms.TextInput(
             attrs={
-                'placeholder':''
+                'placeholder':'',
+                'autocomplete': 'username',
             }
         )
     )
         def clean_user_id(self):
-             user_id = self.cleaned_data['user_id']
-             if User.objects.filter(user_id=user_id).exists():
-                  raise ValidationError('すでに使用されているIDです')
-             return user_id
+            user_id = self.cleaned_data['user_id']
+            if User.objects.filter(user_id=user_id).exists():
+                raise ValidationError('すでに使用されているIDです')
+            return user_id
         def clean_password(self):
-             password = self.cleaned_data['password']
-             return password
+            password = self.cleaned_data['password']
+            return password
         def clean_name(self):
              name = self.cleaned_data['name']
              return name
-        def clean_user_id(self):
-             user_id = self.cleaned_data['user_id']
-             if User.objects.filter(userid=user_id).exists():
-                  raise ValidationError('すでに使用されているIDです')
-             return user_id
-        def clean_password(self):
-             password = self.cleaned_data['password']
-             return password
-        def clean_username(self):
-             username = self.cleaned_data['name']
-             return username
-
-
 
 
 class UserForm(forms.ModelForm):
@@ -94,4 +84,18 @@ class UserCreationForm(UserCreationForm):
 
 
 class LoginForm(AuthenticationForm):
-    pass
+    user_id = forms.CharField(
+        required=True,
+        max_length=6,
+        widget=forms.TextInput(
+            attrs={'placeholder': 'ユーザーID'}
+        )
+    )
+    password = forms.CharField(
+        required=True,
+        max_length=255,
+        min_length=6,
+        widget=forms.PasswordInput(
+            attrs={'placeholder': '******'}
+        )
+    )
