@@ -316,13 +316,17 @@ class MemberMakeCompleteView(TemplateView):
             planning_presentation_power += job_title.planning_presentation_power
             teamwork += job_title.teamwork
             time_management_ability += job_title.time_management_ability
-            
+            problem_solving_ability += job_title.problem_solving_ability
 
             # -----MBTIの計算-----
             planning_presentation_power += mbti.planning_presentation_power
             teamwork += mbti.teamwork
             time_management_ability += mbti.time_management_ability
             problem_solving_ability += mbti.problem_solving_ability            
+
+            # -----職歴の計算-----
+            career = CareerInformation.objects.get(career)
+
 
             # MemberParameter オブジェクトを作成して保存
             member_parameter = MemberParameter(
