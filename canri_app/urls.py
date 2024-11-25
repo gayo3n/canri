@@ -51,11 +51,6 @@ urlpatterns = [
     path('project/', projectListView, name='project'),                                                      #進行中プロジェクト選択時利用
 
     #プロジェクト詳細
-<<<<<<< HEAD
-    path('project_detail/',views.Project_detailView.as_view(), name='project_detail'),
-    path('project/<int:project_id>/', project_detail_view, name='project_detail_view'),
-    path('project_detail_update/<int:project_id>/', project_detail_update, name='project_detail_update'),
-=======
     # path('project_detail/', views.Project_detailView.as_view(), name='project_detail'),
     path('project/<int:project_id>/', project_detail_view, name='project_detail'),                          #進行中プロジェクト一覧でプロジェクト選択時利用
     path('project_detail_update/<int:project_id>/', project_detail_update, name='project_detail_update'),   #プロジェクト詳細更新時利用
@@ -67,7 +62,6 @@ urlpatterns = [
 
 
 
->>>>>>> a33f65b2ecee68620156e2b4d6c5db1837bb199b
 
     # 過去プロジェクト
     path('past_project/', Post_projectListView, name='past_project'),
