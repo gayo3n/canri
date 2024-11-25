@@ -103,7 +103,7 @@ def logout(request):
     return render(request, 'logout_confirmation.html')
 
 # アカウント管理
-def manage_account(request):
+class Manage_Account(TemplateView):
     template_name = "management_account.html"
 
     def get(self, request, *args, **kwargs):
@@ -117,12 +117,6 @@ def manage_account(request):
 
         return render(request, 'management_account.html', context)
 
-
-class AccountChangeView(TemplateView):
-    template_name = "account_change.html"
-
-class AccountChangeCompleteView(TemplateView):
-    template_name = "account_change_complete.html"
 
 # アイコン
 class AccountChangeEmployeeView(TemplateView):
