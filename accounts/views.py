@@ -1,6 +1,6 @@
 from django.contrib.auth.views import LogoutView, LoginView 
 from django.shortcuts import render, redirect, get_object_or_404, redirect
-from django.contrib.auth import login, get_user_model, logout as auth_logout
+from django.contrib.auth import login, get_user_model, logout, authenticate as auth_logout
 from django.urls import reverse
 from django.views import View, generic
 from django.views.generic.base import TemplateView
@@ -9,34 +9,41 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import make_password
+from .models import User
+
+def login_view(request):
+    # リクエストメソッドがPOSTかどうかを確認
+    if request.method == "POST":
+        # リクエストからユーザー名とパスワードを取得
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        try:
+            # ユーザー名でユーザーを取得しようとする
+            user = User.objects.get(username=username)
+            # 提供されたパスワードが保存されたパスワードと一致するか確認
+            if auth_logout(request, username=user.username, password=password):  # ハッシュ化されたパスワードを比較
+                login(request, user)  # ユーザーをログインさせる
+                return redirect("accounts:login_complete")  # ログイン完了ページにリダイレクト
+            else:
+                # パスワードが間違っている場合、エラーメッセージを表示
+                return render(request, "login.html", {"error_message": "パスワードが正しくありません"})
+        except User.DoesNotExist:
+            # ユーザーが存在しない場合、エラーメッセージを表示
+            return render(request, "login.html", {"error_message": "ユーザーが存在しません"})
+
+    # リクエストメソッドがPOSTでない場合、ログインページを表示
+    return render(request, "login.html")
 
 
-User = get_user_model()
+@login_required  # ログイン必須にするデコレータ
+def login_complete_view(request):
+    return render(request, "login_complete.html")  # login_complete.htmlを表示
 
-class LoginView(TemplateView):
-    form_class = UserForm
-    template_name = 'login.html'
-    def post(self, request, *args, **kwargs):
-        return render(request, 'login_complete.html')
-
-def acclogin(request):
-    if request.method == 'POST':
-        form = LoginForm(request, request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            if user:
-                login(request, user)
-                return redirect('login_complete', user.user_id)
-    else:
-        form = LoginForm()
-    
-    context = {'form': form}
-    return render(request, 'login.html', context)
-
-def logincomp(request, user_id):
-    return render(request, 'login_complete.html', {'user_id': user_id})
-
-    
 class LoginFailView(TemplateView):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_failure.html')
@@ -70,11 +77,6 @@ class LogoutCompView(TemplateView):
 def logout(request):
     auth_logout(request)
     return render(request, 'logout_confirmation.html')
-
-
-# class Account_User(LoginRequiredMixin, TemplateView):
-#     template_name = ''
-
 
 # アカウント管理
 class ManagementAccountView(TemplateView):

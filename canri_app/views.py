@@ -530,14 +530,14 @@ class CreateTeam3View(TemplateView):
         if isinstance(teams, str):
             teams = json.loads(teams)
 
-        # チームを編��するためのデータを作成
+        # チームを編成するためのデータを作成
         data = {
             'team_type': team_type,
             'members': selected_members,
             'team_size': team_size
         }
 
-        # create_team_api を呼び出し���チームを編成
+        # create_team_api を呼び出してチームを編成
         request._body = json.dumps(data).encode('utf-8')
         response = create_team_api(request)
         response_data = json.loads(response.content)
@@ -594,7 +594,7 @@ class SaveTeamView(TemplateView):
             'team': team
         }
 
-        # save_team_api を呼び出してチームを保存
+        # save_team_api を呼���出してチームを保存
         request._body = json.dumps(data).encode('utf-8')
         response = save_team_api(request)
         response_data = json.loads(response.content)
@@ -618,7 +618,7 @@ class SaveTeamView(TemplateView):
             'end_date': end_date
         }
 
-        # ���力された情報を保持した状態でnew_project_edit.htmlに遷移
+        # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
         return render(request, self.template_name, {'project': project_data, 'teams': teams})
 
 #新規プロジェクト保存
@@ -648,7 +648,7 @@ class SaveNewProjectView(TemplateView):
 
         if response.status_code == 200:
             project_id = response_data['project_id']
-            print("プロジェクト��保存されました:", project_id)  # プロジェクトIDをターミナルに表示
+            print("プロジェクトが保存されました:", project_id)  # プロジェクトIDをターミナルに表示
         else:
             print(response_data)
             print("プロジェクトの保存に失敗しました")  # エラーメッセージをターミナルに表示
@@ -1151,31 +1151,269 @@ def project_phase_add(request, project_id):
 
 
 # 進行中プロジェクト用のチーム追加用のビュー
+# 元々のからteamを削除
+#プロジェクトIDを追加
+#
+
 class project_detail_Create_TeamView(TemplateView):
-    template_name = "create_team.html"
+    template_name = "project_detail_create_team.html"
 
     def post(self, request, *args, **kwargs):
         # POSTデータからプロジェクト情報を取得
-        project_name = request.POST.get('project_name')  # プロジェクト名
+        project_id = request.POST.get('project_id')     # プロジェクト名
+        project_name = request.POST.get('project_name') # プロジェクト名
         project_description = request.POST.get('project_description')  # プロジェクト説明
-        start_date = request.POST.get('start_date')  # 開始日
-        end_date = request.POST.get('end_date')  # 終了日
+        start_date = request.POST.get('start_date')     # 開始日
+        end_date = request.POST.get('end_date')         # 終了日
 
-        # teams = request.POST.get('teams')  # チーム情報（JSON文字列）
+        projectaffilitionteam_all= ProjectAffiliationTeam.objects.all()  #プロジェクト所属チームを全部取得
 
-        # チーム情報をリスト形式に変換
-        # POSTデータでは文字列として受け取るため、JSON形式でパースする
-        # if isinstance(teams, str):
-        #     teams = json.loads(teams)
+
+        teams=projectaffilitionteam_all.filter(project=project_id)      #プロジェクト所属チームからプロジェクト情報を利用して
+                                                                        #プロジェクトに所属するものを取得
+
+        # teamにプロジェクトに所属しているチームが入っている
+        # projectaffilitionteamテーブルの
+        # チームIDを取得
+        # それをもとにチームテーブルから情報を取得
+        #そこからメンバー情報を抽出
+
+
+        team_ids=teams.values_list('team_id',flat=True)                 #テーブルからteam_idだけ取得
+        #team_idsにはteeam_idだけが入っている
+
+        #エラー吐く
+        teammembers = TeamMember.objects.filter(team_id__in=team_ids)  # チームIDに基づいてメンバーをフィルタリング チームが同じ奴だけ取得
+        members = list(teammembers.values_list('member_id', flat=True))
+
+
 
         # 入力された情報を保持したまま create_team.html テンプレートをレンダリング
         return render(request, self.template_name, {
-            'project_name': project_name,  # プロジェクト名
-            'project_description': project_description,  # プロジェクト説明
-            'start_date': start_date,  # 開始日
-            'end_date': end_date,  # 終了日
+            'project_id':project_id,
+            'project_name': project_name,                   # プロジェクト名
+            'project_description': project_description,     # プロジェクト説明
+            'start_date': start_date,                       # 開始日
+            'end_date': end_date,                           # 終了日
+
+            'member':members,
             # 'teams': teams  # チーム情報（リスト形式）
         })
+
+
+
+
+
+
+# 進行中プロジェクト用のチーム追加のステップ2用ビュー
+import json
+from django.shortcuts import render
+from .models import TeamMember  # あなたのモデルに合わせてインポートしてください
+
+class project_detail_Create_Team2View(TemplateView):
+    template_name = "project_detail_create_team2.html"
+
+    def post(self, request, *args, **kwargs):
+        # プロジェクト情報の取得
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        member = request.POST.get('member')
+        # category=request.POST.get('category')
+
+        # チーム情報の取得
+        team_size = request.POST.get('team_size')
+        team_type = request.POST.get('team_type')
+        auto_generate = request.POST.get('auto_generate')
+
+        categories = Category.objects.filter(deletion_flag=False)
+
+        # メンバー情報をQuerySetからJSON形式に変換
+        # members = TeamMember.objects.filter(member_id__in=[1, 2, 5, 6, 9, 10])  # member_idを使ってフィルタリング
+        # member_ids = [member.member_id for member in member]  # member_idをリストに保存
+
+
+        if auto_generate:
+            # 自動生成が有効な場合、create_team2.html にレンダリング
+            # メンバー選択画面
+            return render(request, self.template_name, {
+                'project_name': project_name,  # プロジェクト名
+                'project_description': project_description,  # プロジェクト説明
+                'start_date': start_date,  # 開始日
+                'end_date': end_date,  # 終了日
+                'member': json.dumps(member),  # メンバーIDをJSON形式で渡す
+                # 'teams': teams,  # チーム情報（リスト形式）
+                'team_size': team_size,  # チームの規模
+                'team_type': team_type,  # チームの種類
+                'categories': categories,  # カテゴリ情報
+            })
+        else:
+            # 自動生成が無効な場合、create_team3.html にレンダリング
+            # チーム詳細画面
+            return render(request, 'create_team3.html', {
+                'project_name': project_name,  # プロジェクト名
+                'project_description': project_description,  # プロジェクト説明
+                'start_date': start_date,  # 開始日
+                'end_date': end_date,  # 終了日
+                'member' : member,
+                # 'teams': teams,  # チーム情報（リスト形式）
+                'team_type': team_type,  # チームの種類
+                'categories': categories,  # カテゴリ情報
+            })
+
+
+
+
+
+
+
+#プロジェクト進行チーム追加3
+# memberが必要かどうか
+# 多分メンバー追加時に必要になる気がする
+# わからん
+class project_detail_CreateTeam3View(TemplateView):
+    # 使用するテンプレートファイルを指定
+    template_name = "project_detail_create_team3.html"
+
+    def post(self, request, *args, **kwargs):
+        # フォームから送信されたデータを取得
+        project_id=request.POST.get('project_id')
+        project_name = request.POST.get('project_name')  # プロジェクト名
+        project_description = request.POST.get('project_description')  # プロジェクトの説明
+        start_date = request.POST.get('start_date')  # 開始日
+        end_date = request.POST.get('end_date')  # 終了日
+        # teams = request.POST.get('teams')
+        # チームの編成に関する情報を取得
+        team_size = request.POST.get('team_size')  # チームサイズ
+        team_type = request.POST.get('team_type')  # チームタイプ
+        categories = Category.objects.filter(deletion_flag=False)  # 削除されていないカテゴリを取得
+        selected_members = json.loads(request.POST.get('selected_members'))  # 選択されたメンバー情報をJSON形式からPythonオブジェクトに変換
+
+        # もし `teams` を使用する場合、文字列ならリストに変換
+        # if isinstance(teams, str):
+        #     teams = json.loads(teams)
+
+        # チーム編成APIに送信するデータを準備
+        data = {
+            'team_type': team_type,  # チームタイプ
+            'members': selected_members,  # 選択されたメンバー
+            'team_size': team_size  # チームサイズ
+        }
+
+        # `request` の `_body` 属性にAPIリクエスト用のデータを設定
+        request._body = json.dumps(data).encode('utf-8')
+        response = create_team_api(request)  # 外部API呼び出し
+
+        # APIのレスポンスを解析
+        response_data = json.loads(response.content)
+
+        if response.status_code == 200:
+            # チーム作成成功時の処理
+            team = response_data['team']
+            print("チームが作成されました:", team)  # ターミナルに作成されたチーム情報を表示
+        else:
+            # チーム作成失敗時の処理
+            team = None
+            print("チームの作成に失敗しました")  # エラーメッセージをターミナルに表示
+
+        # ユーザー入力の内容を保持しながらテンプレートをレンダリング
+        return render(request, self.template_name, {
+            'project_id' : project_id,
+            'project_name': project_name,  # プロジェクト名
+            'project_description': project_description,  # プロジェクトの説明
+            'start_date': start_date,  # 開始日
+            'end_date': end_date,  # 終了日
+            # 'teams': teams,
+            'team_size': team_size,  # チームサイズ
+            'team_type': team_type,  # チームタイプ
+            'categories': categories,  # 利用可能なカテゴリリスト
+            'selected_members': selected_members,  # 選択されたメンバー
+            'team': team  # 作成されたチーム情報（または失敗した場合はNone）
+        })
+
+
+
+
+#チーム保存
+class project_detail_SaveTeamView(TemplateView):
+    # 保存後の画面に使用するテンプレート
+    template_name = "project_detail_create_team_complete.html"
+
+    def post(self, request, *args, **kwargs):
+        # POSTリクエストからプロジェクト情報を取得
+        # projectの情報
+        project_id = request.POST.get('project_id')  # プロジェクトID
+        project_name = request.POST.get('project_name')  # プロジェクト名
+        project_description = request.POST.get('project_description')  # プロジェクトの説明
+        start_date = request.POST.get('start_date')  # プロジェクト開始日
+        end_date = request.POST.get('end_date')  # プロジェクト終了日
+
+        #
+        team_name = request.POST.get('team_name')  # チーム名
+        team_type = request.POST.get('team_type')  # チームの種類
+        team = request.POST.get('team')  # チーム情報（JSON形式）
+
+        # デバッグ用: リクエストボディをターミナルに表示
+        print("リクエストボディ:", request.body)
+
+        try:
+            # JSON形式のデータをPythonオブジェクトに変換
+            teams = json.loads(teams)  # チームリスト
+            team = json.loads(team)  # チームメンバー情報
+        except json.JSONDecodeError as e:
+            # JSONの解析エラー時の処理
+            print("JSONDecodeError:", e)
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+        # チームを保存するためのデータを作成
+        data = {
+            'team_name': team_name,  # チーム名
+            'team_type': team_type,  # チームの種類
+            'team': team             # チームメンバー情報
+        }
+
+        # チーム保存APIを呼び出し
+        request._body = json.dumps(data).encode('utf-8')  # データをJSON形式に変換しリクエストボディとして設定
+        response = save_team_api(request)  # API呼び出し
+        response_data = json.loads(response.content)  # APIのレスポンスをJSON形式で取得
+
+        if response.status_code == 200:
+            # チーム保存成功時の処理
+            team_id = response_data['team_id']  # 保存されたチームIDを取得
+            if isinstance(teams, list):
+                # 既存のチームリストに新しいチームIDを追加
+                teams.append(team_id)
+            else:
+                # チームリストが存在しない場合、新規リストを作成
+                teams = [team_id]
+            print("チームが保存されました:", team_id)  # チームIDをターミナルに表示
+        else:
+            # チーム保存失敗時の処理
+            print(response_data)  # レスポンスのエラー内容を表示
+            print("チームの保存に失敗しました")  # エラーメッセージをターミナルに表示
+
+        # プロジェクト情報を辞書形式にまとめる
+        project_data = {
+            'project_name': project_name,            # プロジェクト名
+            'project_description': project_description,  # プロジェクトの説明
+            'start_date': start_date,               # プロジェクト開始日
+            'end_date': end_date                    # プロジェクト終了日
+        }
+
+        # プロジェクト情報とチームリストをテンプレートに渡し、新しいプロジェクト編集画面をレンダリング
+        return render(request, self.template_name, {'project': project_data, 'teams': teams})
+
+
+
+
+
+
+
+
+
+
+
 
 class team_detailView(TemplateView):
     template_name="team_detail.html"
@@ -1236,9 +1474,15 @@ class Past_ProjectView(TemplateView):
         if not project_data:
             return HttpResponseNotFound("Project not found")
 
+        # project_idに当てはまるProjectAffiliationTeamテーブルのデータを取得
+        affiliation_teams = ProjectAffiliationTeam.objects.filter(project_id=project_id)
+        teams = Team.objects.filter(team_id__in=[team.team.team_id for team in affiliation_teams])
+
         context = {
-            'project': project_data
+            'project': project_data,
+            'teams': teams
         }
+
         return render(request, self.template_name, context)
 
 class Past_ProjectDeletingView(TemplateView):

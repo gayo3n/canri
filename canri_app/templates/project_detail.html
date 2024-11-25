@@ -243,18 +243,19 @@ function updateEndDateMin(startDate) {
         {% endfor %}
     </div>
 
-
+<!-- チーム新規作成 -->
     <div class="team-add">
-        <form method="post" action="{% url 'canri_app:create_team' %}" >
+        <form method="post" action="{% url 'canri_app:project_detail_create_team' %}" >
             {% csrf_token %}
             <!-- プロジェクト情報をhiddenで送信 -->
+            <input type="hidden" name="project_id" value="{{ project.project_id }}">
             <input type="hidden" name="project_name" value="{{ project.project_name }}">
             <input type="hidden" name="project_description" value="{{ project.project_description }}">
             <input type="hidden" name="start_date" value="{{ project.start_date }}">
             <input type="hidden" name="end_date" value="{{ project.end_date }}">
-            <input type="hidden" name="teams" value="{{ teams|safe }}">
+
             <!-- チーム作成ボタン -->
-            <button type="submit" class="action-button back-button">チームを新規で作成</button>
+            <button type="submit" >チームを新規で作成</button>
         </form>
     </div>
 

@@ -13,14 +13,16 @@
     <form id="categoryForm" class="form-inline">
         {% csrf_token %}
         
+        <!-- メンバーリスト(カテゴリー選択) -->
         <label for="category">メンバーリストを選択</label>
+
         <select name="category_id" id="category" required>
             <option value="null" selected>選択してください</option>
             {% for category in categories %}
                 <option value="{{ category.category_id }}">{{ category.category_name }}</option>
             {% endfor %}
         </select>
-        
+
         <button type="button" class="action-button float-right" onclick="fetchMembers()">メンバーを表示</button>
     </form>
 
@@ -70,37 +72,62 @@
     </div>
 </div>
 
+
+
+
 <script>
-    // カテゴリが選択されているかチェックし、メンバーを取得する
+/**
+ * カテゴリーに基づいてメンバー情報を取得し、テーブルに表示する関数
+ * 選択されたカテゴリーIDに応じてAPIを呼び出し、結果をテーブルに反映する
+ */
     function fetchMembers() {
+        // カテゴリー選択要素の取得
         var categorySelect = document.getElementById('category');
+
+        // カテゴリーが選択されているかチェック
         if (categorySelect.value === "null") {
             alert("カテゴリーを選択してください。");
             return;
         }
 
+        // 選択されたカテゴリーIDを取得
         var categoryId = categorySelect.value;
-        // API呼び出しでメンバー情報を取得
+
+        // Django URLパターンを使用してAPIエンドポイントを構築
+        // カテゴリーIDをURLに動的に組み込む
         fetch(`{% url 'canri_app:get_members_by_member_list' category_id=0 %}`.replace("0", categoryId))
-            .then(response => response.json())
+            .then(response => response.json())  // JSONレスポンスをパース
             .then(data => {
-                // メンバーリストの表示をクリア
+                // メンバーリストを表示するテーブルのbody要素を取得
                 const memberTableBody = document.getElementById('memberTableBody');
+                // 既存のテーブル内容をクリア
                 memberTableBody.innerHTML = '';
 
-                // メンバー情報をテーブルに追加
+                // 取得したメンバーデータを1件ずつ処理
                 data.members.forEach(member => {
-                    const birthdate = member.birthdate.split('T')[0]; // T以降を削除
+                    // 生年月日からtime部分を除去（YYYY-MM-DD形式に整形）
+                    const birthdate = member.birthdate.split('T')[0];
+
+                    // 新しい行要素を作成
                     const row = document.createElement('tr');
+
+                    // 行の内容をHTMLとして設定
+                    // - チェックボックス（メンバー選択用）
+                    // - メンバー名
+                    // - 生年月日
+                    // - 役職
                     row.innerHTML = `
                         <td style="width: 10%;"><input type="checkbox" name="member" value="${member.member_id}"></td>
                         <td style="width: 30%;">${member.name}</td>
                         <td style="width: 30%;">${birthdate}</td>
                         <td style="width: 30%;">${member.job_title}</td>
                     `;
+
+                    // 作成した行をテーブルに追加
                     memberTableBody.appendChild(row);
                 });
             })
+            // エラーハンドリング
             .catch(error => console.error('データ取得エラー:', error));
     }
 
@@ -111,36 +138,68 @@
         });
     }
 
-    // 次へボタンをクリックしたときにフォームを送信
+
+
+
+
+    /**
+     * 選択されたメンバーの検証とフォーム送信を行う関数
+     * - チーム人数の要件を確認
+     * - 既存チームとのメンバー重複をチェック
+     * - 有効なメンバーリストでフォームを送信
+     */
+
+
     function submitNextForm() {
+        // チェックされたメンバーのIDを配列に収集
         const selectedMembers = [];
         document.querySelectorAll('input[name="member"]:checked').forEach(checkbox => {
             selectedMembers.push(checkbox.value);
         });
 
+        // 設定されたチームサイズを取得
         const teamSize = parseInt(document.querySelector('input[name="team_size"]').value);
+
+
+        // 選択メンバー数がチームサイズの要件を満たしているか確認
         if (selectedMembers.length < teamSize) {
             alert(`選択されたメンバーがチームサイズ(${teamSize})以上である必要があります。`);
             return;
         }
 
+        // Django templateから既存チームの情報を取得
         const teams = {{ teams|safe }};
+
+
+
+
+        // 既存チームが存在しない場合の処理
         if (teams.length === 0) {
+            // 選択されたメンバーリストをJSON文字列に変換してフォームに設定
             document.getElementById('selected_members').value = JSON.stringify(selectedMembers);
             document.getElementById('nextForm').submit();
-        } else {
+        }
+        // 既存チームが存在する場合の処理
+        else {
+            // 既存チームに所属しているメンバーIDを格納するSet
             const existingMemberIds = new Set();
+            // 重複メンバーに関する警告メッセージの表示フラグ
             let messageShown = false;
+
+            // 各既存チームのメンバー情報を取得
             {% for team_id in teams %}
                 fetch(`{% url 'canri_app:get_team_members' team_id=0 %}`.replace("0", {{ team_id }}))
                     .then(response => response.json())
                     .then(data => {
+                        // 既存チームのメンバーIDをSetに追加
                         data.members.forEach(member => {
                             existingMemberIds.add(member.member_id);
                         });
 
+                        // 選択されたメンバーから既存チームのメンバーを除外
                         const filteredMembers = selectedMembers.filter(memberId => {
                             if (existingMemberIds.has(parseInt(memberId))) {
+                                // 重複メンバーが見つかった場合の警告表示（初回のみ）
                                 if (!messageShown) {
                                     alert('既存のチームに所属しているメンバーはチーム作成に使用しません。');
                                     messageShown = true;
@@ -150,9 +209,11 @@
                             return true;
                         });
 
+                        // フィルタリング済みのメンバーリストをフォームに設定して送信
                         document.getElementById('selected_members').value = JSON.stringify(filteredMembers);
                         document.getElementById('nextForm').submit();
                     })
+                    // エラーハンドリング
                     .catch(error => console.error('データ取得エラー:', error));
             {% endfor %}
         }

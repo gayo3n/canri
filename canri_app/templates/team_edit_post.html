@@ -1,0 +1,292 @@
+{% extends 'base2.html' %}
+
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/create_team3.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <h1>チーム編集</h1>
+    <div class="container" style="justify-content: space-around;">
+        <div class="left-spacer" style="flex: 0.5;"></div>
+        <div class="left-panel" style="flex: 3;">
+            <h2>チームメンバー</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 100%">メンバー名</th>
+                    </tr>
+                </thead>
+                <tbody id="memberTableBody">
+                    {% for member in members %}
+                    <tr data-member-id="{{ member.member.member_id }}">
+                        <td><a href="#" class="member-link" onclick="openMemberEditWindow(event, {{ member.member.member_id }})">{{ member.member.name }}</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="middle-spacer" style="flex: 0.5;"></div>
+        <div class="middle-panel" style="flex: 3;">
+            <h2>メモ欄</h2>
+            <textarea id="team_memo" name="team_memo" rows="10" style="width: 100%;">{{ team.memo }}</textarea>
+        </div>
+        <div class="right-spacer" style="flex: 0.5;"></div>
+        <div class="right-panel" style="flex: 3;">
+            <form method="post" action="{% url 'canri_app:team_edit' team_id=team.team_id %}">
+                {% csrf_token %}
+                <input type="hidden" name="team" id="team">
+                <input type="hidden" name="project_name" value="{{ project_name }}">
+                <input type="hidden" name="project_description" value="{{ project_description }}">
+                <input type="hidden" name="start_date" value="{{ start_date }}">
+                <input type="hidden" name="end_date" value="{{ end_date }}">
+                <input type="hidden" name="teams" value="{{ teams|safe }}">
+                <label for="team_name">チーム名</label>
+                <input type="text" name="team_name" id="team_name" value="{{ team.team_name }}" required>
+                
+                <div class="chart-container">
+                    <div class="chart-wrapper">
+                        <canvas id="teamRadarChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="button-container">
+                    <button type="button" class="action-button back-button" onclick="goBack()">戻る</button>
+                    <button type="submit" class="action-button next-button" onclick="setTeamMembers(); setTeamMemo()">保存</button>
+                </div>
+            </form>
+        </div>
+        <div class="right-spacer" style="flex: 0.5;"></div>
+    </div>
+</div>
+
+<!-- メンバー編集ウィンドウ -->
+<div id="memberEditWindow" class="modal">
+    <div class="modal-content" style="width: 70%; max-width: 1000px;">
+        <span class="close" onclick="closeMemberEditWindow()">&times;</span>
+        <div id="memberEditContent">
+            <h1>メンバー詳細</h1>
+            <div class="container" style="justify-content: space-around;">
+                <div class="left-spacer" style="flex: 0.5;"></div>
+                <div class="left-panel" style="flex: 3;">
+                    <form id="memberEditForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="member_id" value="">
+                        <input type="hidden" name="team_id" value="{{ team_id }}">
+                        <input type="hidden" name="project_name" value="{{ project_name }}">
+                        <input type="hidden" name="project_description" value="{{ project_description }}">
+                        <input type="hidden" name="start_date" value="{{ start_date }}">
+                        <input type="hidden" name="end_date" value="{{ end_date }}">
+                        <input type="hidden" name="teams" value="{{ teams|safe }}">
+                        <input type="hidden" name="team_name" value="{{ team_name }}">
+                        <input type="hidden" name="team_memo" value="{{ team_memo }}">
+                        <input type="hidden" name="team_members" value="{{ team_members }}">
+                        <label for="member_name">メンバー名</label>
+                        <input type="text" name="member_name" id="member_name" value="" required readonly>
+                        <label for="member_job">役職</label>
+                        <input type="text" name="member_job" id="member_job" value="" required readonly>
+                        <label for="member_career">職歴</label>
+                        <input type="text" name="member_career" id="member_career" value="" required readonly>
+                        <label for="qualification1">資格1</label>
+                        <input type="text" name="qualification1" id="qualification1" value="" required readonly>
+                        <label for="qualification2">資格2</label>
+                        <input type="text" name="qualification2" id="qualification2" value="" required readonly>
+                        <label for="qualification3">資格3</label>
+                        <input type="text" name="qualification3" id="qualification3" value="" required readonly>
+                        <label for="mbti">MBTI</label>
+                        <input type="text" name="mbti" id="mbti" value="" required readonly>
+                    </form>
+                </div>
+                <div class="middle-spacer" style="flex: 0.5;"></div>
+                <div class="middle-panel" style="flex: 3;">
+                    <h2>メモ欄</h2>
+                    <textarea id="member_memo" name="member_memo" rows="10" style="width: 100%;"></textarea>
+                </div>
+                <div class="right-spacer" style="flex: 0.5;"></div>
+                <div class="right-panel" style="flex: 1;">
+                    <div class="button-container" style="flex-direction: column; justify-content: flex-end; height: 100%;">
+                        <button type="button" class="action-button" onclick="saveMemberMemo()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // メンバー編集ウィンドウを開く処理
+    function openMemberEditWindow(event, memberId) {
+        event.preventDefault(); // リンクのデフォルトの動作を防ぐ
+
+        fetch(`{% url 'canri_app:get_member_data' member_id=0 %}`.replace("0", memberId))
+            .then(response => response.json())
+            .then(data => {
+                const member = data.member_data;
+                document.querySelector('input[name="member_id"]').value = member.member_id;
+                document.getElementById('member_name').value = member.name;
+                document.getElementById('member_job').value = member.job_title || 'なし';
+                document.getElementById('member_career').value = member.career_name || 'なし';
+                document.getElementById('qualification1').value = member.qualification_name1 || 'なし';
+                document.getElementById('qualification2').value = member.qualification_name2 || 'なし';
+                document.getElementById('qualification3').value = member.qualification_name3 || 'なし';
+                document.getElementById('mbti').value = member.mbti_name || 'なし';
+                document.getElementById('member_memo').value = member.memo || '';
+
+                document.getElementById('memberEditWindow').style.display = 'block';
+            })
+            .catch(error => console.error('メンバー編集ウィンドウの読み込みエラー:', error));
+    }
+
+    // メンバー編集ウィンドウを閉じる処理
+    function closeMemberEditWindow() {
+        document.getElementById('memberEditWindow').style.display = 'none';
+    }
+
+    // メモの保存処理
+    function saveMemberMemo() {
+        const memberId = document.querySelector('input[name="member_id"]').value;
+        const memberMemo = document.getElementById('member_memo').value;
+
+        fetch(`/api/save_member_memo/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                member_id: memberId,
+                member_memo: memberMemo
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('メモが保存されました。');
+                closeMemberEditWindow();
+            } else {
+                alert('メモの保存に失敗しました。');
+            }
+        })
+        .catch(error => console.error('メモの保存エラー:', error));
+    }
+
+    // チームメモをフォームに追加
+    function setTeamMemo() {
+        const teamMemo = document.getElementById('team_memo').value;
+        const hiddenTeamMemo = document.createElement('input');
+        hiddenTeamMemo.type = 'hidden';
+        hiddenTeamMemo.name = 'team_memo';
+        hiddenTeamMemo.value = teamMemo;
+        document.querySelector('form').appendChild(hiddenTeamMemo);
+    }
+
+    // レーダーチャートを更新する処理
+    function updateRadarChart() {
+        const memberRows = document.querySelectorAll('#memberTableBody tr[data-member-id]');
+        const memberIds = Array.from(memberRows).map(row => row.dataset.memberId);
+
+        if (memberIds.length === 0) {
+            radarChart.data.datasets[0].data = [0, 0, 0, 0, 0];
+            radarChart.update();
+            return;
+        }
+
+        const promises = memberIds.map(memberId => 
+            fetch(`{% url 'canri_app:get_member_data' member_id=0 %}`.replace("0", memberId))
+                .then(response => response.json())
+        );
+
+        Promise.all(promises)
+            .then(results => {
+                let totalSpecialityHeight = 0;
+                let totalTimeManagementAbility = 0;
+                let totalProblemSolvingAbility = 0;
+                let totalPlanningPresentationPower = 0;
+                let totalTeamwork = 0;
+
+                results.forEach(data => {
+                    const memberData = data.member_data;
+                    totalSpecialityHeight += memberData.speciality_height;
+                    totalTimeManagementAbility += memberData.time_management_ability;
+                    totalProblemSolvingAbility += memberData.problem_solving_ability;
+                    totalPlanningPresentationPower += memberData.planning_presentation_power;
+                    totalTeamwork += memberData.teamwork;
+                });
+
+                const memberCount = results.length;
+                radarChart.data.datasets[0].data = [
+                    totalSpecialityHeight / memberCount,
+                    totalTimeManagementAbility / memberCount,
+                    totalProblemSolvingAbility / memberCount,
+                    totalPlanningPresentationPower / memberCount,
+                    totalTeamwork / memberCount
+                ];
+                radarChart.update();
+            })
+            .catch(error => console.error('データ取得エラー:', error));
+    }
+
+    //　レーダーチャートの初期化
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('teamRadarChart').getContext('2d');
+        window.radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['専門性の高さ', '時間管理能力', '問題解決能力', '企画・プレゼン力', 'チームワーク'],
+                datasets: [{
+                    label: 'チームの能力評価',
+                    data: [0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scale: {
+                    r: {
+                        beginAtZero: true,
+                        min: 0,
+                        max: 10,
+                        stepSize: 1
+                    }
+                }
+            }
+        });
+
+        updateRadarChart();
+
+        const teamSelect = document.getElementById('teamSelect');
+        const teamIds = {{ teams|safe }};
+        teamIds.forEach(teamId => {
+            if (teamId !== {{ team.team_id }}) {
+                fetch(`{% url 'canri_app:get_team_data' team_id=0 %}`.replace("0", teamId))
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.team) {
+                            const option = document.querySelector(`#teamSelect option[value="${teamId}"]`);
+                            option.textContent = data.team.team_name;
+                        }
+                    })
+                    .catch(error => console.error('チーム情報の取得エラー:', error));
+            }
+        });
+    });
+
+    // 戻るボタンの処理
+    function goBack() {
+        const form = document.createElement('form');
+        form.method = 'post';
+        // 要修正
+        // form.action = "{% url 'canri_app:past_project_view' project.project_id %}";
+
+        const post_evaluation_memo = document.createElement('input');
+        post_evaluation_memo.type = 'hidden';
+        post_evaluation_memo.name = 'post_evaluation_memo';
+        post_evaluation_memo.value = '{{ post_evaluation_memo }}';
+        form.appendChild(post_evaluation_memo);
+    }
+</script>
+{% endblock %}

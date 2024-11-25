@@ -12,14 +12,17 @@
             <div class="container">
                 <h3>関連チーム</h3>
                 <div class="teams-grid">
-                    {% for affiliation in teams %}
+                    {% for team in teams %}
                         <div class="team-card">
-                            <a href="チーム詳細リンク">{{ affiliation.team.team_name }}</a>
+                            <a href="チーム詳細リンク">{{ team.team_name }}</a>
                         </div>
                     {% endfor %}
                 </div>  
             </div>
         </section>
+
+        <!-- 境界線 -->
+        <div class="vertical-line"></div>
 
         <!-- プロジェクト詳細セクション -->
         <section class="project-section">
@@ -28,13 +31,18 @@
                 <div class="project-card">
                     <input type="hidden" name="project_id" value="{{ project.project_id }}">
                     <h1>{{ project.project_name }}</h1>
+                    <div class="horizontal-line"></div>
                     <p>開始日: {{ project.creation_date|date:"Y年m月d日" }}</p>
                     <p>完了日: {{ project.complete_date|date:"Y年m月d日" }}</p>
-                    <p>プロジェクト詳細: {{ project.project_detail }}</p>
-                    <p>事後評価メモ: {{ project.post_evaluation_memo }}</p>
-                    <button class="feedbackbutton" onclick="openAddFeedback()">フィードバック</button>
-                    <button class="delete-button">削除</button>
-                    <button class="action-button">保存</button>
+                    <label for="post_evaluation_memo">プロジェクト詳細：</label>
+                    <p>&emsp;&emsp;{{ project.project_detail }}</p>
+                    <label for="post_evaluation_memo">事後評価メモ</label>
+                    <textarea id="post_evaluation_memo" name="post_evaluation_memo" rows="15" style="width: 100%; margin-bottom: 20px;"></textarea>
+                    <div class="button-container">
+                        <button type="button" class="feedbackbutton" onclick="openAddFeedback()">フィードバック</button>
+                        <button type="button" class="delete-button">削除</button>
+                        <button type="button" class="action-button">保存</button>
+                    </div>
                 </div>
             </div>
         </section>
@@ -53,7 +61,7 @@
 
 <!-- フィードバック保存完了モーダルのHTML -->
 <div class="modal" id="saveCompleteModal" style="display: none;">
-    <div class="modal-content" style="width: 70%; max-width: 1000px;">
+    <div class="modal-content" style="width: 70%; height: 30vh; max-width: 1000px;">
         <span class="close" onclick="closeSaveCompleteModal()">&times;</span>
         <div id="save-complete-body">
             <!-- feedback_save_complete.htmlの内容がここに読み込まれる -->

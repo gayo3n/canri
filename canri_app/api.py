@@ -19,7 +19,7 @@ def get_member_data(request, member_id):
         carrer = MemberCareer.objects.get(member=member_id)
         memberparameter = MemberParameter.objects.get(member=member_id)
         try:
-            memberjob = JobTitleInformation.objects.get(job_title=member.job_title)
+            memberjob = JobTitleInformation.objects.get(job_title_id=member.job_id)
         except JobTitleInformation.DoesNotExist:
             memberjob = None
         # 同じメンバーIDを持つ資格を3件まで取得
@@ -31,8 +31,8 @@ def get_member_data(request, member_id):
             'birthdate': member.birthdate,#生年月日
             'career_id': carrer.career.career_id,#職歴ID
             'career_name': carrer.career.career,#職歴名
-            'job_id_title_id': memberjob.job_title_id if memberjob else None,#役職ID
-            'job_title': member.job_title,#役職名
+            'job_id': member.job_id,#役職ID
+            'job_title': memberjob.job_title,#役職名
             'mbti_id': member.mbti.mbti_id,#MBTIタイプID
             'mbti_name': member.mbti.mbti_name,#MBTIタイプ名
             'planning_presentation_power': memberparameter.planning_presentation_power,#企画・プレゼン力
@@ -54,9 +54,6 @@ def get_member_data(request, member_id):
         # メンバー情報に資格情報を追加
         member_data['qualifications'] = qualifications_data
 
-        # デバッグ用ログ
-        print("Member data:", member_data)
-
         return JsonResponse({'member_data': member_data})
     
     except Member.DoesNotExist:
@@ -73,7 +70,31 @@ def get_members_by_member_list(request, category_id):
         members = Member.objects.filter(memberlist__in=member_lists, deletion_flag=False).distinct()
 
         # メンバー情報を辞書形式で返す
-        return JsonResponse({'members': list(members.values())})
+        members_data = []
+        for member in members:
+            try:
+                job_title_info = JobTitleInformation.objects.get(job_title_id=member.job_id)
+                member_data = {
+                    'member_id': member.member_id,
+                    'name': member.name,
+                    'birthdate': member.birthdate,
+                    'job_title': job_title_info.job_title,
+                    'speciality_height': job_title_info.speciality_height,
+                    'planning_presentation_power': job_title_info.planning_presentation_power,
+                    'teamwork': job_title_info.teamwork,
+                    'time_management_ability': job_title_info.time_management_ability,
+                    'problem_solving_ability': job_title_info.problem_solving_ability,
+                }
+                members_data.append(member_data)
+            except JobTitleInformation.DoesNotExist:
+                members_data.append({
+                    'member_id': member.member_id,
+                    'name': member.name,
+                    'birthdate': member.birthdate,
+                    'job_title': None,
+                })
+
+        return JsonResponse({'members': members_data})
     
     except MemberList.DoesNotExist:
         return JsonResponse({'error': 'MemberList not found'}, status=404)
@@ -157,7 +178,7 @@ def create_team(team_type, members, team_size):
                 member = sorted_members[right]
                 right -= 1
             # フィードバック優先度を考慮
-            if all(feedback_dict.get((member['member_id'], teammate['member_id']), False) for teammate in team):
+            if all(feedback_dict.get((member['member_id'], teammate['member_id']), True) for teammate in team):
                 team.append(member)
 
     elif team_type == 'training':
@@ -165,7 +186,7 @@ def create_team(team_type, members, team_size):
         team = []
         for member in sorted_members:
             if len(team) < int(team_size):
-                if all(feedback_dict.get((member['member_id'], teammate['member_id']), False) for teammate in team):
+                if all(feedback_dict.get((member['member_id'], teammate['member_id']), True) for teammate in team):
                     team.append(member)
 
     elif team_type == 'project':
@@ -179,7 +200,7 @@ def create_team(team_type, members, team_size):
         team = []
         for member in sorted_members:
             if len(team) < int(team_size):
-                if all(feedback_dict.get((member['member_id'], teammate['member_id']), False) for teammate in team):
+                if all(feedback_dict.get((member['member_id'], teammate['member_id']), True) for teammate in team):
                     team.append(member)
 
     elif team_type == 'idea_generation':
@@ -187,7 +208,7 @@ def create_team(team_type, members, team_size):
         team = []
         for member in sorted_members:
             if len(team) < int(team_size):
-                if all(feedback_dict.get((member['member_id'], teammate['member_id']), False) for teammate in team):
+                if all(feedback_dict.get((member['member_id'], teammate['member_id']), True) for teammate in team):
                     team.append(member)
     else:
         return {"error": "無効なチームタイプです"}
@@ -239,7 +260,7 @@ def get_team_members(request, team_id):
             memberparameter = MemberParameter.objects.get(member=member)
             carrer = MemberCareer.objects.get(member=member)
             try:
-                memberjob = JobTitleInformation.objects.get(job_title=member.job_title)
+                memberjob = JobTitleInformation.objects.get(job_title_id=member.job_id)
             except JobTitleInformation.DoesNotExist:
                 memberjob = None
             member_data.append({
@@ -248,8 +269,8 @@ def get_team_members(request, team_id):
             'birthdate': member.birthdate,#生年月日
             'career_id': carrer.career.career_id,#職歴ID
             'career_name': carrer.career.career,#職歴名
-            'job_id_title_id': memberjob.job_title_id if memberjob else None,#役職ID
-            'job_title': member.job_title,#役職名
+            'job_id': member.job_id,#役職ID
+            'job_title': memberjob.job_title,#役職名
             'mbti_id': member.mbti.mbti_id,#MBTIタイプID
             'mbti_name': member.mbti.mbti_name,#MBTIタイプ名
             'planning_presentation_power': memberparameter.planning_presentation_power,#企画・プレゼン力
@@ -354,7 +375,7 @@ def save_project_api(request):
         if not project_name or not project_description or not start_date or not end_date or not isinstance(teams, list):
             return JsonResponse({"error": "無効なデータです"}, status=400)
 
-        # プロジェク���を作成
+        # プロジェクトを作成
         project = Project.objects.create(
             project_name=project_name,
             project_detail=project_description,
