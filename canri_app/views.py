@@ -836,7 +836,7 @@ def project_phase_add(request, project_id):
     if request.method == "POST":
         try:
             # POSTデータから各プロジェクト情報を取得
-            project_id=request.POST.get('project_id')
+            # project_id=request.POST.get('project_id')
             phase_name = request.POST.get('phase_name')
             end_date2 = request.POST.get('end_date2')
 
@@ -858,7 +858,7 @@ def project_phase_add(request, project_id):
             project_progress_status = ProjectProgressStatus.objects.create(
                 project_id=project_id,
                 phase_name=phase_name,  # メンバーの数をカウント
-                complete_date=end_date2,
+                expiration_date=end_date2,
                 creation_date=timezone.now()  # 現在の日時を設定
             )
 
