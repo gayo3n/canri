@@ -4,7 +4,7 @@
 {% block head %}<link rel="stylesheet" href="{% static 'css/account_creating.css' %}">{% endblock %}
 {% block content %}
 <h2>アカウント作成</h2>
-    <form action="account_create_complete/" method="post">
+    <form action="{% url 'accounts:account_create_complete' %}" method="post">
         {% csrf_token %}
         <div>
            <dt>アカウント名</dt>
@@ -18,8 +18,19 @@
             <dt>パスワード</dt>
             <dt>{{ form.password }}{{ form.password.errors }}</dt>
         </div>
+        {% if form.errors %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
         <div>
-            <td><a href="{% url 'accounts:account_create_complete' %}" class="btn btn-danger">作成</a></td>
+            <button type="submit">作成</button>
         </div>
-
+    </form>
 {% endblock %}

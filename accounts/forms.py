@@ -12,7 +12,8 @@ class AccountAddForm(forms.Form):
         max_length=6,
         widget=forms.TextInput(
             attrs={
-                'placeholder':''
+                'placeholder':'',
+                 'autocomplete': 'user_id'
             }
         )
     )
@@ -23,6 +24,7 @@ class AccountAddForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={
                 'placeholder':'******',
+                'autocomplete': 'current-password',
             }
         )
     )
@@ -32,7 +34,8 @@ class AccountAddForm(forms.Form):
         max_length=16,
         widget=forms.TextInput(
             attrs={
-                'placeholder':''
+                'placeholder':'',
+                'autocomplete': 'username',
             }
         )
     )

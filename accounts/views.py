@@ -110,30 +110,9 @@ def create(request):
                 user_id=form.cleaned_data['user_id'],
                 password=form.cleaned_data['password']
             )
-            return render(request, 'account_create_complete.html')
+            return render(request, 'account_create_complete.html', {'user_id': user.user_id})
     context = {'form': form}
     return render(request, 'account_create.html', context)
-
-
-    # if request.method == 'GET':
-    #     form = AccountAddForm
-    #     context = {
-    #         'form':form
-    #     }
-    #     return render(request, 'account_create.html', context)
-    # elif request.method == 'POST':
-    #     form = AccountAddForm(request.POST)
-    #     if form.is_valid():
-    #         get_user_model().objects.create_user(
-    #             user_id=form.cleaned_data['ユーザー名'],
-    #             password=form.cleaned_data['password'],
-    #             name=form.cleaned_data['name']
-    #         )
-    #         return redirect('management_account/account_creating/account_create_complete/')
-    #     context = {
-    #         'form': form
-    #     }
-    #     return render(request, 'account_create.html', context)
 
 
 def account_create_complete(request):
@@ -165,9 +144,6 @@ def account_create_complete(request):
 
 # account_login = AccountLogin.as_view()
 
-
-
-
 def account_chaenge(request):
     user_change = get_object_or_404(User, user=user_id)
     form = UserForm(instance=user_change)
@@ -181,9 +157,14 @@ def account_change_complete(request):
             form.save()
     return render(request, 'account_change_employee_complete.html')
 
-def account_delete(request, user):
-    template_name = "account_delete.html"
-    obj = get_object_or_404(User, user=user)
-    context = {'object': obj}
-    return render(request, template_name, context)
+def account_delete(request, name):
+    template_name = 'account_delete.html'
+    obj = get_object_or_404(User, name=name)
+    if request.method == 'POST':
+        obj.delete()
+        return redirect('account_delete_complete')
+    return render(request, 'account_delete.html', {'object':obj})
 
+def account_delete_complete(request):
+    template_name="account_delete_complete.html"
+    return render(request, template_name)

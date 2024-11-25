@@ -16,7 +16,7 @@ class UserManager(BaseUserManager):
         return self.create_user(name, password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
-    user_id = models.AutoField(primary_key=True)
+    user_id = models.CharField(max_length=100, primary_key=True)
     name = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=255)
 

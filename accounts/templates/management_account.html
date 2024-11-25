@@ -11,41 +11,13 @@
         <th>ユーザーID</th>
         <th>削除</th> 
     </tr>
-    <tr>
-        <td name="name"><a href="{% url 'accounts:account_change_employee' %}" class="btn save">大原太郎</a></td>
-        <td id="OHARA0001">OHARA0001</td>
-        <td>
-            <a href="{% url 'accounts:account_delete' %}" class="btn btn-danger" data-user-id="OHARA0001">🗑️</a>
-        </td>
-    </tr>
-    <tr>
-        <td name="user_name">大原次郎</td>
-        <td id="OHARA0002">OHARA0002</td>
-        <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0002">🗑️</button>
-        </td>
-    </tr>
-    <tr>
-        <td name="user_name">大原三郎</td>
-        <td id="OHARA0003">OHARA0003</td>
-        <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0003">🗑️</button>
-        </td>
-    </tr>
-    <tr>
-        <td name="user_name">大原四郎</td>
-        <td id="OHARA0004">OHARA0004</td>
-        <td>
-            <button type="button" class="btn btn-danger" data-user-id="OHARA0004">🗑️</button>
-        </td>
-    </tr> 
     <tbody>
         {% for user in object_list %}
         <tr>
             <td><a href="{% url 'accounts:account_change_employee' %}">{{ user.name }}</a></td>
             <td>{{ user.user_id }}</td>
             <td>
-                <button type="button" class="btn btn-danger" data-user-id="#">🗑️</button>
+                <button type="submit" class="btn btn-danger"><a href="{% url 'accounts:account_delete' user.name %}">🗑️</a></button>
             </td>
         </tr>
         {% endfor %}

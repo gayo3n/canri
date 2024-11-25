@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.contrib.auth.views import LoginView, LogoutView
 from . import views
 
-from.views import acclogin, logincomp, logout, create, account_create_complete,manage_account, account_delete
+from.views import acclogin, logincomp, logout, create, account_create_complete,manage_account, account_delete, account_delete_complete
 
 app_name = 'accounts'
 
@@ -17,7 +17,8 @@ urlpatterns = [
     path('management_account/', views.manage_account, name='manage_account'), #アカウント一覧
     path('management_account/account_creating/', views.create, name='account_creating'), #アカウント作成
     path('management_account/create/account_create_complete/', views.account_create_complete, name='account_create_complete'),  #アカウント作成完了
-    path('account_delete/', views.account_delete, name='account_delete'), #アカウント削除
+    path('account_delete/<str:name>/', views.account_delete, name='account_delete'), #アカウント削除
+    path('account_delete_complete', views.account_delete_complete, name="account_delete_complete"),
     path('account_change_employee/', views.account_chaenge, name='account_change_employee'),
     
     # アイコン
