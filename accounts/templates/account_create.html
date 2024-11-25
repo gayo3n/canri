@@ -8,13 +8,13 @@
         {% csrf_token %}
         {{ form.as_p }}
         <div>
-            <input type="text" value="ユーザ名" id="username" name="name" required>
+            <input type="text" placeholder="ユーザ名" id="username" name="name" required>
         </div>
         <div> 
-            <input type="text" value="ユーザID" id="userid" name="id" required>
+            <input type="text" placeholder="ユーザID" id="userid" name="id" required>
         </div>
         <div>
-            <input type="text" value="パスワード" id="password" name="password" required>
+            <input type="text" placeholder="パスワード" id="password" name="password" required>
         </div>
         <div>
             <td><a href="{% url 'accounts:account_create_complete' %}" class="btn btn-danger">作成</a></td>

@@ -154,11 +154,9 @@ class MemberListMakeView(TemplateView):
         return render(request, 'upload_csv.html', {'form': form})
 
 
-
 # -----メンバーリスト保存-----
 class MemberListMakeCompleteView(TemplateView):
     template_name = "memberlist_make_complete.html"
-
 
     def post(self, request, *args, **kwargs):
         # カテゴリ名（リスト名）と詳細を取得
@@ -178,8 +176,14 @@ class MemberListMakeCompleteView(TemplateView):
         if member_list_name and Category.objects.filter(category_name=member_list_name).exists():
             errors.append("このカテゴリ名はすでに存在します。別の名前を使用してください。")
 
-        if member_list_name and member_list_details:
+        # エラーがあれば、エラーメッセージを表示して保存処理をスキップ
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return redirect(reverse('canri_app:memberlist_make'))  # 元のページにリダイレクト
 
+        # エラーがなければカテゴリを保存
+        if member_list_name and member_list_details:
             # 新しいカテゴリを作成
             category = Category(
                 category_name=member_list_name,
@@ -205,23 +209,12 @@ class MemberListMakeCompleteView(TemplateView):
                     )
                     # メンバーリスト保存
                     member_list.save()
-                    
-                    # memberID_listを初期化
-                    memberID_list = []
-                    # セッションに保存
-                    request.session['memberID_list'] = memberID_list
                 except Member.DoesNotExist:
+                    # メンバーが見つからなかった場合の処理（エラーメッセージ等を追加しても良い）
                     print(f"Member with ID {member_id} not found")
 
-            # 成功したらメンバーリストページにリダイレクト
-            return redirect(request, 'canri_app:memberlist_make_complete')
-
-        else:
-            # エラーメッセージを1回にまとめて表示
-            if errors:
-                for error in errors:
-                    messages.error(request, error)
-                return redirect(reverse('canri_app:memberList_make'))
+            # 成功したらメンバーリスト作成完了ページにリダイレクト
+            return redirect(reverse('canri_app:memberlist_make_complete'))
 
 
 # -----メンバー作成-----
@@ -239,7 +232,8 @@ class MemberMakeView(TemplateView):
         'careerinformation': careerinformation,
     }
         return render(request, 'member_make.html', context)
-    
+
+
 # -----CSVファイル処理-----
 class FileUploadView(TemplateView):
     def upload_csv(request):
@@ -270,9 +264,22 @@ class MemberMakeCompleteView(TemplateView):
         # フォームからの入力を取得
         name = request.POST.get('name')
         birthdate = request.POST.get('birthday')  # 日付は適切なフォーマットで受け取る
-        job_title = request.POST.get('job_title')
+        job_title_id = request.POST.get('job_title')  # JobTitleInformation ID
         memo = request.POST.get('memo', '')  # メモは任意なのでデフォルト値を設定
         mbti_id = request.POST.get('MBTI')  # MBTI ID を取得
+
+        # 職歴と資格
+        career = request.POST.get('career')
+        qualification = request.POST.get('qualification')
+        qualification2 = request.POST.get('qualification2')
+        qualification3 = request.POST.get('qualification3')
+
+        # メンバーパラメータ変数 (デフォルト値を設定)
+        planning_presentation_power = 0
+        teamwork = 0
+        time_management_ability = 0
+        problem_solving_ability = 0
+        speciality_height = 0
 
         # 入力検証
         if not name:
@@ -281,27 +288,55 @@ class MemberMakeCompleteView(TemplateView):
         if not birthdate:
             messages.error(request, "生年月日を設定してください。")
             return redirect('canri_app:member_make')
+        if not job_title_id:
+            messages.error(request, "職業を選択してください。")
+            return redirect('canri_app:member_make')
+        if not mbti_id:
+            messages.error(request, "MBTIを選択してください。")
+            return redirect('canri_app:member_make')
         
         try:
+            # 外部キー関連のデータを取得
+            job_title = JobTitleInformation.objects.get(job_title_id=job_title_id)
+            mbti = MBTI.objects.get(mbti_id=mbti_id)
+            
             # Member オブジェクトを作成して保存
             member = Member(
                 name=name,
                 birthdate=birthdate,
-                job_id=job_title.job_id,
+                job=job_title,  # 外部キーを関連付け
                 memo=memo,
-                mbti=mbti_id,  # 外部キーとして関連付け
+                mbti=mbti,  # 外部キーを関連付け
                 creation_date=timezone.now(),  # 作成日を現在時刻に設定
                 deletion_flag=False,  # 削除フラグは初期状態でFalse
             )
             member.save()
+
+            # MemberParameter オブジェクトを作成して保存
+            member_parameter = MemberParameter(
+                member=member,  # Member オブジェクトを直接渡す
+                planning_presentation_power=planning_presentation_power,
+                teamwork=teamwork,
+                time_management_ability=time_management_ability,
+                problem_solving_ability=problem_solving_ability,
+                speciality_height=speciality_height,
+            )
+            member_parameter.save()
+
+        except JobTitleInformation.DoesNotExist:
+            messages.error(request, "指定された職業が見つかりません。")
+            return redirect('canri_app:member_make')
+        except MBTI.DoesNotExist:
+            messages.error(request, "指定されたMBTIが見つかりません。")
+            return redirect('canri_app:member_make')
         except Exception as e:
             # 保存に失敗した場合の処理
-            messages.error(request, f"An error occurred while saving the member: {e}")
+            messages.error(request, f"メンバーの保存中にエラーが発生しました: {e}")
             return redirect('canri_app:member_make')
         
         # 保存が成功した場合にmember_make_completeへ遷移
         return render(request, self.template_name, {"member": member})
-
+    
 
 class MemberMakeDeleteView(TemplateView):
     template_name = "member_make_delete.html"
