@@ -1,17 +1,21 @@
+{% load static %}
 
-<script>
-    function showError(message) {
-        alert(message);  // ポップアップでエラーメッセージを表示
-    }
-</script>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+
+    <title>ログイン</title>
+</head>
 <body>
 
     <div class="login-container">
         <h2>ログイン</h2>
         {% if form.errors %}
-            <p>ユーザー名かパスワードが一致しません</p>
+            <p class="error-message">ユーザー名かパスワードが一致しません</p>
         {% endif %}
-        <!-- <form action="/login_complete/" method="post"> -->
 
         <form method="post" action="accounts:login_complete/user_id=user.id" >
             {% csrf_token %}
@@ -24,11 +28,12 @@
                 <input type="password" placeholder="20文字以内の半角英数字でご入力ください" for="password" id="input_pass" name="password" required>
                 {{ form.password }}
             </div>
-            <div>
-                <input type="checkbox" id="show-password"> パスワードを表示
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="show-password"> <label for="show-password">パスワードを表示</label>
             </div>
 
-            <button type="submit">ログイン</button>
+            <button type="submit" class="login-btn">ログイン</button>
         </form>
     </div>
 
@@ -43,5 +48,6 @@
             document.getElementById("input_pass").type = this.checked ? "text" : "password";
         });
     </script>
+
 </body>
 </html>

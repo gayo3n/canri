@@ -3,21 +3,12 @@
 {% load static %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/save_new_project.css' %}">
+<link rel="stylesheet" href="{% static 'css/save_project.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="main-content">
-    <h1>プロジェクト保存完了</h1>
-    <p>プロジェクト名: {{ project_name }}</p>
-    <p>プロジェクトの詳細: {{ project_description }}</p>
-    <p>開始日: {{ start_date }}</p>
-    <p>完了予定日: {{ end_date }}</p>
-
-    <div class="button-container">
-        <form method="get" action="{% url 'canri_app:project' %}">
-            <button type="submit" class="action-button complete-button">完了</button>
-        </form>
-    </div>
+    <h1>新規プロジェクト保存完了</h1>
+    <a href="{% url 'canri_app:project' %}" name="next-link"class="action-button complete-button">進行中プロジェクト一覧へ</a>
 </div>
 {% endblock %}

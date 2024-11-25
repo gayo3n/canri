@@ -65,19 +65,31 @@ class ProjectAffiliationTeam(models.Model):
 class MBTI(models.Model):
     mbti_id = models.AutoField(primary_key=True)
     mbti_name = models.CharField(max_length=255)
-    planning_presentation_power = models.IntegerField(max_length=255)
-    teamwork = models.IntegerField(max_length=255)
-    time_management_ability = models.IntegerField(max_length=255)
-    problem_solving_ability = models.IntegerField(max_length=255)
+    planning_presentation_power = models.IntegerField(default=0)
+    teamwork = models.IntegerField(default=0)
+    time_management_ability = models.IntegerField(default=0)
+    problem_solving_ability = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'MBTI'
+
+class JobTitleInformation(models.Model):
+    job_title_id = models.AutoField(primary_key=True)
+    job_title = models.CharField(max_length=255)
+    speciality_height = models.IntegerField()
+    planning_presentation_power = models.IntegerField()
+    teamwork = models.IntegerField()
+    time_management_ability = models.IntegerField()
+    problem_solving_ability = models.IntegerField()
+
+    class Meta:
+        db_table = 'job_title_information'
 
 class Member(models.Model):
     member_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     birthdate = models.DateTimeField()
-    job_title = models.CharField(max_length=255)
+    job = models.ForeignKey(JobTitleInformation, on_delete=models.CASCADE)
     memo = models.TextField()
     mbti = models.ForeignKey(MBTI, on_delete=models.CASCADE)
     creation_date = models.DateTimeField()
@@ -161,8 +173,8 @@ class ProjectProgressStatus(models.Model):
     progress_status_id = models.AutoField(primary_key=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     phase_name = models.CharField(max_length=255)
-    complete_flag = models.BooleanField()
-    deletion_flag = models.BooleanField()
+    complete_flag = models.BooleanField(default=False)
+    deletion_flag = models.BooleanField(default=False)
     expiration_date = models.DateTimeField()
     creation_date = models.DateTimeField()
     complete_date = models.DateTimeField(null=True, blank=True)
@@ -199,14 +211,14 @@ class MemberParameter(models.Model):
         db_table = 'member_parameter'
 
 
-class JobTitleInformation(models.Model):
-    job_title_id = models.AutoField(primary_key=True)
-    job_title = models.CharField(max_length=255)
-    speciality_height = models.IntegerField()
-    planning_presentation_power = models.IntegerField()
-    teamwork = models.IntegerField()
-    time_management_ability = models.IntegerField()
-    problem_solving_ability = models.IntegerField()
+# class JobTitleInformation(models.Model):
+#     job_title_id = models.AutoField(primary_key=True)
+#     job_title = models.CharField(max_length=255)
+#     speciality_height = models.IntegerField()
+#     planning_presentation_power = models.IntegerField()
+#     teamwork = models.IntegerField()
+#     time_management_ability = models.IntegerField()
+#     problem_solving_ability = models.IntegerField()
 
-    class Meta:
-        db_table = 'job_title_information'
+#     class Meta:
+#         db_table = 'job_title_information'

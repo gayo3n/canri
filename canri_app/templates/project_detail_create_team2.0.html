@@ -1,0 +1,256 @@
+{% extends 'base2.html' %}
+
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/create_team2.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <h1>新規チーム作成</h1>
+
+    <!-- カテゴリー選択フォーム -->
+    <form id="categoryForm" class="form-inline">
+        {% csrf_token %}
+
+        <!-- メンバーリスト(カテゴリー選択) -->
+        <label for="category">メンバーリストを選択</label>
+
+        <select name="category_id" id="category" required>
+            <option value="null" selected>選択してください</option>
+            {% for category in categories %}
+                <option value="{{ category.category_id }}">{{ category.category_name }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="button" class="action-button float-right" onclick="fetchMembers()">メンバーを表示</button>
+    </form>
+
+    <div id="memberList">
+        <div class="member-list-header" style="margin-top: 52px;">
+            <h2>メンバー一覧</h2>
+            <button type="button" class="action-button" onclick="selectAllMembers()">全選択</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 10%;">選択</th>
+                    <th style="width: 30%;">名前</th>
+                    <th style="width: 30%;">生年月日</th>
+                    <th style="width: 30%;">役職</th>
+                </tr>
+            </thead>
+            <tbody id="memberTableBody">
+                <!-- メンバー情報がここに表示される -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="button-container">
+        <form method="post" action="{% url 'canri_app:project_detail_create_team' %}">
+            {% csrf_token %}
+            <input type="hidden" name="project_id" value="{{ project_id }}">
+            <input type="hidden" name="project_name" value="{{ project_name }}">
+            <input type="hidden" name="project_description" value="{{ project_description }}">
+            <input type="hidden" name="start_date" value="{{ start_date }}">
+            <input type="hidden" name="end_date" value="{{ end_date }}">
+            <input type="hidden" name="member" value="{{ member }}">
+
+            <button type="submit" class="action-button">戻る</button>
+        </form>
+
+        <form id="nextForm" method="post" action="{% url 'canri_app:create_team3' %}">
+            {% csrf_token %}
+            <input type="hidden" name="project_id" value="{{ project_id }}">
+            <input type="hidden" name="project_name" value="{{ project_name }}">
+            <input type="hidden" name="project_description" value="{{ project_description }}">
+            <input type="hidden" name="start_date" value="{{ start_date }}">
+            <input type="hidden" name="end_date" value="{{ end_date }}">
+            <input type="hidden" name="member" value="{{ member }}">
+
+            <input type="hidden" name="team_size" value="{{ team_size }}">
+            <input type="hidden" name="team_type" value="{{ team_type }}">
+            <input type="hidden" name="selected_members" id="selected_members">
+            <button type="button" class="next-button action-button" onclick="submitNextForm()">次へ</button>
+        </form>
+    </div>
+</div>
+
+
+
+
+<script>
+/**
+ * カテゴリーに基づいてメンバー情報を取得し、テーブルに表示する関数
+ * 選択されたカテゴリーIDに応じてAPIを呼び出し、結果をテーブルに反映する
+ */
+function fetchMembers() {
+    // カテゴリー選択要素の取得
+    var categorySelect = document.getElementById('category');
+
+    // カテゴリーが選択されているかチェック
+    if (categorySelect.value === "null") {
+        // カテゴリーが選択されていない場合、アラートを表示
+        alert("カテゴリーを選択してください。");
+        return; // 処理を中止
+    }
+
+    // 選択されたカテゴリーIDを取得
+    var categoryId = categorySelect.value;
+
+    // DjangoのURLパターンを使用してAPIエンドポイントを構築
+    // カテゴリーIDをURLに動的に組み込む
+    fetch(`{% url 'canri_app:get_members_by_member_list' category_id=0 %}`.replace("0", categoryId))
+        .then(response => {
+            // レスポンスが正常か確認
+            if (!response.ok) {
+                throw new Error('ネットワークエラーが発生しました。');
+            }
+            return response.json(); // JSONレスポンスをパース
+        })
+        .then(data => {
+            // メンバーリストを表示するテーブルのbody要素を取得
+            const memberTableBody = document.getElementById('memberTableBody');
+            // 既存のテーブル内容をクリア
+            memberTableBody.innerHTML = '';
+
+            // 取得したメンバーデータを1件ずつ処理
+            data.members.forEach(member => {
+                // 生年月日からtime部分を除去（YYYY-MM-DD形式に整形）
+                const birthdate = member.birthdate.split('T')[0];
+
+                // 新しい行要素を作成
+                const row = document.createElement('tr');
+
+                // 行の内容をHTMLとして設定
+                row.innerHTML = `
+                    <td style="width: 10%;"><input type="checkbox" name="member" value="${member.member_id}"></td>
+                    <td>${member.name}</td>            <!-- メンバー名 -->
+                    <td>${birthdate}</td>              <!-- 生年月日 -->
+                    <td>${member.job_title}</td>          <!-- 役職 -->
+                `;
+
+                // 作成した行をテーブルに追加
+                memberTableBody.appendChild(row);
+            });
+        })
+        // エラーハンドリング
+        .catch(error => {
+            // エラーが発生した場合、コンソールにエラーメッセージを表示
+            console.error('データ取得エラー:', error);
+            alert('メンバー情報の取得に失敗しました。'); // ユーザーにエラーメッセージを表示
+        });
+}
+// -------------------------------------------------------------------------------
+
+
+
+
+    // 全選択ボタンをクリックしたときに全てのメンバーを選択状態にする
+    function selectAllMembers() {
+        document.querySelectorAll('input[name="member"]').forEach(checkbox => {
+            checkbox.checked = true;
+        });
+    }
+
+
+
+
+
+// 要編集
+// 編集なしだとエラーでボタンが機能しなくなる
+// 原因不明
+// ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+/**
+ * 選択されたメンバーの検証とフォーム送信を行う関数
+ * - チーム人数の要件を確認
+ * - 既存チームとのメンバー重複をチェック
+ * - 有効なメンバーリストでフォームを送信
+ *
+ * 処理フロー：
+ * 1. チェックボックスで選択されたメンバーを収集
+ * 2. 設定されたチームサイズとの比較検証
+ * 3. 既存チームの有無による分岐処理
+ * 4. 重複メンバーのフィルタリングと結果の送信
+ */
+    function submitNextForm() {
+        // チェックされたメンバーのIDを配列に収集
+        // input[name="member"]の中からチェックされている要素のvalueを取得
+        const selectedMembers = [];
+        document.querySelectorAll('input[name="member"]:checked').forEach(checkbox => {
+            selectedMembers.push(checkbox.value);
+        });
+
+
+
+//     // 設定されたチームサイズを取得
+//     // input要素から文字列として取得した値を数値に変換
+        const teamSize = parseInt(document.querySelector('input[name="team_size"]').value);
+
+
+    // ここから要変更
+    // teamではなくDBからプロジェクトＩＤで所属しているチームを検索
+    // 検索したチームからメンバーＩＤを抽出
+    //
+
+
+        // 選択メンバー数がチームサイズの要件を満たしているか確認
+        // 選択メンバー数が設定されたチームサイズより少ない場合はエラー
+        if (selectedMembers.length < teamSize) {
+            alert(`選択されたメンバーがチームサイズ(${teamSize})以上である必要があります。`);
+            return;
+        }
+
+
+
+        // 既存チームに所属しているメンバーIDを格納するSet
+        // 重複を自動的に排除するためSetを使用
+        member=document.getElementById('member')
+        const existingMemberIds = new Set();
+        // 重複メンバーに関する警告メッセージの表示フラグ
+        // メッセージの重複表示を防ぐためのフラグ
+        let messageShown = false;
+
+        // 各既存チームのメンバー情報を取得
+        // Django URLconf経由でチームメンバー情報を非同期取得
+
+
+
+        //取得したデータからmembersプロパティーを参照   forEachを利用して配列内の各メンバーに対して処理を実行
+
+        existingMemberIds.add(member.member_id);//参照したmemberからexisitiongmemberidsにデータを追加
+                    //この段階でexistingmemberidsにmember_idが入っている
+
+                    // 選択されたメンバーから既存チームのメンバーを除外
+                    // filter関数で重複メンバーを除外した新しい配列を生成
+                    const filteredMembers = selectedMembers.filter(memberId => {    //filterメソッドを使用してselectedmember配列(チェックボックスを選択したメンバー)から条件に合うメンバーを抽出
+                                                                                    //filtermembersを新しく生成
+                        if (existingMemberIds.has(parseInt(memberId))) {            //選択されているmemberidがexistingmemberids(既存のチームのメンバーID)に含まれているかどうか確認
+                            // 重複メンバーが見つかった場合の警告表示（初回のみ）
+                            // メッセージの重複表示を防ぐためフラグをチェック
+                            if (!messageShown) {                    //メッセージが一度表示されているかどうかの確認  初回はメッセージを表示
+                                alert('既存のチームに所属しているメンバーはチーム作成に使用しません。');    //
+                                messageShown = true;
+                            }
+                            return false;       //falseでfilteerdmembersに入れない
+                        }
+                        return true;        //重複がない場合treuを返してメンバーIDをfilterdmembersに入れる
+                    });
+
+                    // フィルタリング済みのメンバーリストをフォームに設定して送信
+                    // フィルタリング結果をJSON形式でhidden inputに設定し、フォームを送信
+                    document.getElementById('selected_members').value = JSON.stringify(filteredMembers);    //filterdmembersをjson形式に変換
+                                                                                                            //変換後にselected_membersにデータを設定
+                    document.getElementById('nextForm').submit();                                           //ここでフォームが送信される
+                // エラーハンドリング
+                // APIリクエスト失敗時のエラーをコンソールに出力
+                .catch(error => console.error('データ取得エラー:', error));
+        {% endfor %}
+    }
+
+
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,116 @@
+/* ボディのスタイル */
+.main-content {
+    max-width: 1200px; /* 横幅を広げる */
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+}
+
+h1 {
+    font-size: 40px;
+    text-align: center;
+    color: #333;
+}
+
+/* チームテーブルのスタイル */
+.teams-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    flex: 3;
+    padding-right: 20px;
+}
+
+.team-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    min-height: 150px;
+}
+
+/* ボタンのスタイル */
+button[type="button"], .action-button {
+    width: auto;
+    margin-right: 10px;
+    padding: 15px 20px; /* 横幅を調整 */
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.button-container {
+    float: right;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* モーダルウィンドウのスタイル */
+.modal {
+    display: none; /* デフォルトでは非表示 */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.split-container {
+    display: flex;
+}
+
+.teams-section {
+    flex: 7;
+    padding-right: 20px;
+}
+
+.vertical-line {
+    width: 1px;
+    background-color: #ccc;
+    margin: 0 20px;
+}
+
+.project-section {
+    flex: 3;
+}
+
+.horizontal-line {
+    width: 100%;
+    height: 1px;
+    background-color: #ccc;
+    margin: none;
+}

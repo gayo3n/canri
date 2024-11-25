@@ -4,14 +4,14 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f4f4f4;
+    background-color: #fff;
 }
 
 /* ヘッダーのスタイル */
 header nav {
     width: 100%;
     background-color: #333;
-    color: white;
+    color: rgb(0, 0, 0);
     padding: 10px;
     display: flex;
     justify-content: space-around;
@@ -19,9 +19,27 @@ header nav {
 }
 
 header nav a {
-    color: white;
+    color: rgb(0, 0, 0);
     text-decoration: none;
     padding: 5px 10px;
+    white-space: nowrap;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar-left img {
+    width: 30%;
+    height: auto;
+}
+
+.navbar-left a {
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
 }
 
 /* メインコンテンツのスタイル */
@@ -41,13 +59,14 @@ header nav a {
     justify-content: center;
     align-items: center;
     font-size: 1.5rem;
-    color: white;
+    color: rgb(0, 0, 0);
     font-weight: bold;
     border-radius: 8px;
+    text-decoration: none;
 }
 
 .box1 { background-color: #d3d3d3; } /* ライトグレー - 進行中プロジェクト */
 .box2 { background-color: #87ceeb; } /* ライトブルー - 過去プロジェクト */
 .box3 { background-color: #8bc34a; } /* グリーン - アカウント管理 */
-.box4 { background-color: #800080; } /* パープル - メンバーリスト */
-.box5 { background-color: #ff69b4; } /* ピンク - 進行中プロジェクト */
+.box4 { background-color: #d74ed7; } /* パープル - メンバーリスト */
+.box5 { background-color: #ff6db6; } /* ピンク - 進行中プロジェクト */

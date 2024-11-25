@@ -14,7 +14,9 @@ from .models import UserManager, User
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-USer = get_user_model()
+@login_required  # ログイン必須にするデコレータ
+def login_complete_view(request):
+    return render(request, "login_complete.html")  # login_complete.htmlを表示
 
 # class LoginView(TemplateView):
 #     form_class = UserForm
@@ -74,29 +76,45 @@ def logout(request):
     auth_logout(request)
     return render(request, 'logout_confirmation.html')
 
+# アカウント管理
+class ManagementAccountView(TemplateView):
+    template_name = "management_account.html"
 
-class Account_User(LoginRequiredMixin, TemplateView):
-    template_name = ''
+    def get(self, request, *args, **kwargs):
+        # データベースから全ユーザーを取得
+        users = User.objects.all()
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
-        return context
+        # コンテキストにユーザー情報を渡す
+        context = {
+            'users': users,  # 全ユーザーをテンプレートに渡す
+        }
 
-class LoginFailView(LoginRequiredMixin, TemplateView):
-    template_name = 'login_failure.html'
+        return render(request, 'management_account.html', context)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['users'] = User.objects.exclude(username=self.request.user.username)
-        return context
- 
+class AccountCreateView(TemplateView):
+    template_name = "account_create.html"
 
-def manage_account(request):
-    acc = {}
-    user = User.objects.all()
-    acc['object_list'] = user
-    return render(request, 'management_account.html', acc)
+class CreateCompleteView(TemplateView):
+    template_name = "account_create_complete.html"
+
+class AccountChangeView(TemplateView):
+    template_name = "account_change.html"
+
+class AccountChangeCompleteView(TemplateView):
+    template_name = "account_change_complete.html"
+
+class AccountDeleteView(TemplateView):
+    template_name = "account_delete.html"
+
+class DeleteCompleteView(TemplateView):
+    template_name = "account_delete_complete.html"
+
+# アイコン
+class AccountChangeEmployeeView(TemplateView):
+    template_name = "account_change_employee.html"
+
+class AccountChangeEmployeeCompleteView(TemplateView):
+    template_name = "account_change_complete_employee.html"
 
 
 def create(request):

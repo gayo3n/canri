@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/past_project_deleting_confirmation.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- モーダル (確認ダイアログ) -->
+<div class="modal">
+    <div class="modal-content">
+        <p>プロジェクトを削除しますか？</p>
+        <!-- 任意のプロジェクト名 -->
+        <h2>{{ project.project_name }}</h2>
+        <div class="modal-buttons">
+            <!-- 確認ボタン -->
+            <a href="{% url 'canri_app:project_deleted' %}" class="btn btn-confirm">削除</a>
+        </div>
+    <!-- 削除取りやめボタン -->
+    <a href="{% url 'canri_app:past_project' %}" class="btn btn-cancel">キャンセル</a>
+    </div>
+</div>
+
+<!-- スクリプトでモーダルを閉じる動作 -->
+<script>
+function closeModal() {
+    document.querySelector('.modal').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
+{% endblock %}

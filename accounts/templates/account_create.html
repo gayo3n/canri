@@ -1,7 +1,7 @@
 {% extends 'base2.html' %}
 {% load static %}
 
-{% block head %}<link rel="stylesheet" href="{% static 'css/account_creating.css' %}">{% endblock %}
+{% block head %}<link rel="stylesheet" href="{% static 'css/account_create.css' %}">{% endblock %}
 {% block content %}
 <h2>アカウント作成</h2>
     <form action="{% url 'accounts:account_create_complete' %}" method="post">
@@ -32,5 +32,6 @@
         <div>
             <button type="submit">作成</button>
         </div>
-    </form>
+    </div>
+
 {% endblock %}

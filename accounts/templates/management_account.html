@@ -1,31 +1,43 @@
 {% extends 'base2.html' %}
 {% load static %}
-{% block head %}<link rel="stylesheet" href="{% static 'css/management_account.css' %}">{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/management_account.css' %}">
+{% endblock %}
 {% block content %}
-<h2>ユーザーのアカウント一覧</h2>
+<h2>ユーザーアカウント一覧</h2>
 
 <!-- ユーザー情報のテーブル -->
 <table border="1">
-    <tr>
-        <th>名前</th>
-        <th>ユーザーID</th>
-        <th>削除</th> 
-    </tr>
-    <tbody>
-        {% for user in object_list %}
+    <thead>
         <tr>
-            <td><a href="{% url 'accounts:account_change_employee' %}">{{ user.name }}</a></td>
-            <td>{{ user.user_id }}</td>
+            <th>名前</th>
+            <th>ユーザーID</th>
+            <th>削除</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <!-- ユーザー名を表示し、編集リンクを作成 -->
+            <td class="management_app">
+                <a href="{% url 'accounts:account_change' %}" class="btn save">
+                    {{ user.name }}
+                </a>
+            </td>
+            <!-- ユーザーIDを表示 -->
+            <td id="{{ forloop.counter }}">{{ user.user_id }}</td>
+            <!-- 削除リンクを作成 -->
             <td>
-                <button type="submit" class="btn btn-danger"><a href="{% url 'accounts:account_delete' user.name %}">🗑️</a></button>
+                <a href="{% url 'accounts:account_delete' %}" class="btn btn-danger" data-user-id="{{ user.user_id }}">
+                    🗑️
+                </a>
             </td>
         </tr>
         {% endfor %}
+        <h2><a href="{% url 'accounts:account_create' %}" class="btn btn-create">新規作成</a></h2>
     </tbody>
+
 </table>
 
-<div class="add-account-container">
-    <a href="{% url "accounts:account_creating" %}"  class="delete-btn">＋ </a>
-</div>
 
 {% endblock %}

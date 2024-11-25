@@ -22,8 +22,8 @@ urlpatterns = [
     path('account_change_employee/', views.account_chaenge, name='account_change_employee'),
     
     # アイコン
-    # path('change_employee/', views.AccountChangeEmployeeView.as_view(), name='account_change_employee'),
-    # path('change_employee/complete/', views.AccountChangeEmployeeCompleteView.as_view(), name='account_change_complete_employee'),
+    path('change_employee/', views.AccountChangeEmployeeView.as_view(), name='account_change_employee'),
+    path('change_employee/complete/', views.AccountChangeEmployeeCompleteView.as_view(), name='account_change_complete_employee'),
 
     #path('#/<int:pk>/', views.ManageAcc.as_view(), name='#'),   #アカウントページ用url
 ]
