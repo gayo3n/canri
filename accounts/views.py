@@ -144,13 +144,13 @@ def account_create_complete(request):
 
 # account_login = AccountLogin.as_view()
 
-def account_chaenge(request):
-    user_change = get_object_or_404(User, user=user_id)
+def account_chaenge(request, name):
+    user_change = get_object_or_404(User, name=name)
     form = UserForm(instance=user_change)
     return render(request, 'account_change_employee.html', {'form': form})
 
-def account_change_complete(request):
-    user_change = get_object_or_404(User, user=user_id)
+def account_change_complete(request, name):
+    user_change = get_object_or_404(User, name=name)
     if request.method == "POST":
         form = UserForm(request.POST, instance=user_change)
         if form.is_valid():
@@ -158,13 +158,11 @@ def account_change_complete(request):
     return render(request, 'account_change_employee_complete.html')
 
 def account_delete(request, name):
-    template_name = 'account_delete.html'
     obj = get_object_or_404(User, name=name)
     if request.method == 'POST':
         obj.delete()
-        return redirect('account_delete_complete')
+        return redirect('account_delete_complete', name=name)
     return render(request, 'account_delete.html', {'object':obj})
 
-def account_delete_complete(request):
-    template_name="account_delete_complete.html"
-    return render(request, template_name)
+def account_delete_complete(request, name):
+    return render(request, 'account_delete_complete.html', name=name)
