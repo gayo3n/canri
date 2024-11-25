@@ -1,7 +1,7 @@
 /* ナビゲーションバー全体 */
 .navbar {
     display: flex;
-    justify-content: flex-start; /* 左寄せに設定 */
+    justify-content: space-between;
     align-items: center;
     background-color: #fffff9;
     padding: 10px 20px;
@@ -10,13 +10,12 @@
 
 /* ハンバーガーメニュー */
 .hamburger-menu {
-    display: flex; /* 常に表示 */
+    display: none;  /* デフォルトは非表示 */
     cursor: pointer;
     flex-direction: column;
     justify-content: space-between;
     height: 20px;
     width: 25px;
-    margin-left: 0;  /* 左端に固定 */
 }
 
 .hamburger-menu .bar {
@@ -30,7 +29,6 @@
 .navbar-left {
     display: flex;
     align-items: center;
-    margin: 0;  /* 左余白を削除 */
 }
 
 .navbar-left a {
@@ -56,51 +54,36 @@
     color: #ff0000;
 }
 
-/* ロゴアイコン */
-.logo-icon {
-    width: 20px;
-    vertical-align: middle;
-    margin-right: 5px;
-}
-
-/* ユーザーアイコン */
-.user-icon img {
-    width: 20px;
-    vertical-align: middle;
-    margin-right: 5px;
-}
-
-/* メディアクエリ: 画面幅が1200px以下 */
+/* ハンバーガーメニューが表示される画面サイズ */
 @media (max-width: 1200px) {
+    .hamburger-menu {
+        display: flex;  /* 小画面でハンバーガーメニューを表示 */
+    }
+
     .navbar-left {
-        display: none; /* 初期状態は非表示 */
+        display: none;  /* 初期状態では非表示 */
         flex-direction: column;
-        width: calc(100% - 40px); /* 幅調整 */
-        margin: 0 20px; /* 左右余白 */
+        width: 100%;
         background-color: #fffff9;
         position: absolute;
         top: 60px;
         left: 0;
         padding: 10px 0;
-        border-radius: 8px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        z-index: 10;
     }
 
     .navbar-left.active {
-        display: flex; /* メニュー表示時 */
+        display: flex;  /* ハンバーガーメニューがクリックされたら表示 */
     }
 
     .navbar-left a {
         margin: 10px 0;
         text-align: center;
         padding: 10px 0;
-        font-size: 18px;
         border-bottom: 1px solid #ccc;
     }
 
     .navbar-right {
-        display: none; /* 画面が狭いとき非表示 */
+        display: none;  /* 小画面で非表示 */
     }
 }
