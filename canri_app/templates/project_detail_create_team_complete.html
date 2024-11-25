@@ -75,7 +75,8 @@
         <p>データの保存が正常に完了しました。</p>
         <div class="button-container">
             <!-- 戻るボタン -->
-            <a href="/team/create" class="action-button secondary">新しいチームを作成</a>
+            <a href="{% url 'canri_app:project_detail' project_id %}" class="action-button secondary">進行中プロジェクトに戻る</a>
+            <input type="hidden" name="project_id" value="{{ project_id }}">
             <!-- ホームに戻るボタン -->
             <a href="/" class="action-button">ホームに戻る</a>
         </div>

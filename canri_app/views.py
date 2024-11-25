@@ -991,6 +991,7 @@ class project_detail_Create_Team2View(TemplateView):
 
     def post(self, request, *args, **kwargs):
         # プロジェクト情報の取得
+        project_id=request.POST.get('project_id')
         project_name = request.POST.get('project_name')
         project_description = request.POST.get('project_description')
         start_date = request.POST.get('start_date')
@@ -1014,6 +1015,7 @@ class project_detail_Create_Team2View(TemplateView):
             # 自動生成が有効な場合、create_team2.html にレンダリング
             # メンバー選択画面
             return render(request, self.template_name, {
+                'project_id':project_id,
                 'project_name': project_name,  # プロジェクト名
                 'project_description': project_description,  # プロジェクト説明
                 'start_date': start_date,  # 開始日
@@ -1028,6 +1030,7 @@ class project_detail_Create_Team2View(TemplateView):
             # 自動生成が無効な場合、create_team3.html にレンダリング
             # チーム詳細画面
             return render(request, 'create_team3.html', {
+                'project_id':project_id,
                 'project_name': project_name,  # プロジェクト名
                 'project_description': project_description,  # プロジェクト説明
                 'start_date': start_date,  # 開始日
@@ -1128,14 +1131,16 @@ class project_detail_SaveTeamView(TemplateView):
         #
         team_name = request.POST.get('team_name')  # チーム名
         team_type = request.POST.get('team_type')  # チームの種類
-        team = request.POST.get('team')  # チーム情報（JSON形式）
+        team = request.POST.get('team')  # チーム情報（JSON形式）   member_idのみ
+
+        print(team)
 
         # デバッグ用: リクエストボディをターミナルに表示
         print("リクエストボディ:", request.body)
 
         try:
             # JSON形式のデータをPythonオブジェクトに変換
-            teams = json.loads(teams)  # チームリスト
+            # teams = json.loads(teams)  # チームリスト
             team = json.loads(team)  # チームメンバー情報
         except json.JSONDecodeError as e:
             # JSONの解析エラー時の処理
@@ -1157,13 +1162,21 @@ class project_detail_SaveTeamView(TemplateView):
         if response.status_code == 200:
             # チーム保存成功時の処理
             team_id = response_data['team_id']  # 保存されたチームIDを取得
-            if isinstance(teams, list):
-                # 既存のチームリストに新しいチームIDを追加
-                teams.append(team_id)
-            else:
-                # チームリストが存在しない場合、新規リストを作成
-                teams = [team_id]
+            # if isinstance(teams, list):
+            #     # 既存のチームリストに新しいチームIDを追加
+            #     teams.append(team_id)
+            # else:
+            #     # チームリストが存在しない場合、新規リストを作成
+            #     teams = [team_id]
+            ProjectAffiliation_Team = ProjectAffiliationTeam.objects.create(
+            team_id=team_id,
+            project_id=project_id,
+            creation_date=timezone.now()  # 現在の日時を設定
+        )
+
+
             print("チームが保存されました:", team_id)  # チームIDをターミナルに表示
+            print("プロジェクトへの保存も完了;",ProjectAffiliation_Team)
         else:
             # チーム保存失敗時の処理
             print(response_data)  # レスポンスのエラー内容を表示
@@ -1178,7 +1191,19 @@ class project_detail_SaveTeamView(TemplateView):
         }
 
         # プロジェクト情報とチームリストをテンプレートに渡し、新しいプロジェクト編集画面をレンダリング
-        return render(request, self.template_name, {'project': project_data, 'teams': teams})
+        return render(request, self.template_name, {
+            'project_id' : project_id,
+            # 'project_name': project_name,  # プロジェクト名
+            # 'project_description': project_description,  # プロジェクトの説明
+            # 'start_date': start_date,  # 開始日
+            # 'end_date': end_date,  # 終了日
+            # # 'teams': teams,
+            # 'team_size': team_size,  # チームサイズ
+            # 'team_type': team_type,  # チームタイプ
+            # 'categories': categories,  # 利用可能なカテゴリリスト
+            # 'selected_members': selected_members,  # 選択されたメンバー
+            # 'team': team  # 作成されたチーム情報（または失敗した場合はNone）
+        })
 
 
 
