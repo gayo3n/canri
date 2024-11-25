@@ -1541,15 +1541,23 @@ class Past_ProjectView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         project_id = kwargs.get('project_id')
-        post_evaluation_memo = request.POST.get('post_evaluation_memo')
-
-        try:
-            project = Project.objects.get(project_id=project_id)
-            project.post_evaluation_memo = post_evaluation_memo
-            project.save()
-            return HttpResponseRedirect(reverse('canri_app:save_past_project'))
-        except Project.DoesNotExist:
-            return HttpResponseNotFound("Project not found")
+        if 'delete' in request.POST:
+            try:
+                project = Project.objects.get(project_id=project_id)
+                project.deletion_flag = True
+                project.save()
+                return HttpResponseRedirect(reverse('canri_app:delete_past_project'))
+            except Project.DoesNotExist:
+                return HttpResponseNotFound("Project not found")
+        else:
+            post_evaluation_memo = request.POST.get('post_evaluation_memo')
+            try:
+                project = Project.objects.get(project_id=project_id)
+                project.post_evaluation_memo = post_evaluation_memo
+                project.save()
+                return HttpResponseRedirect(reverse('canri_app:save_past_project'))
+            except Project.DoesNotExist:
+                return HttpResponseNotFound("Project not found")
 
 class Past_ProjectDeletingView(TemplateView):
     template_name = "past_project_deleting_confirmation.html"
