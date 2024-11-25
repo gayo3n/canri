@@ -335,29 +335,29 @@ def save_team_api(request):
         # チームを作成
         team = Team.objects.create(
             team_name=team_name,
-            count=len(team_members),
+            count=len(team_members),  # メンバーの数をカウント
             objective=team_type,
-            creation_date=timezone.now()
+            creation_date=timezone.now()  # 現在の日時を設定
         )
 
         # チームメンバーを追加
         for member_id in team_members:
-            member = Member.objects.get(member_id=member_id)
+            member = Member.objects.get(member_id=member_id)  # メンバーを取得
             TeamMember.objects.create(
                 team=team,
                 member=member,
-                creation_date=timezone.now(),
-                update_date=timezone.now()
+                creation_date=timezone.now(),  # 作成日時を設定
+                update_date=timezone.now()  # 更新日時を設定
             )
 
-        return JsonResponse({'team_id': team.team_id})
+        return JsonResponse({'team_id': team.team_id})  # 作成したチームのIDを返す
 
     except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)  # JSONデコードエラー
     except Member.DoesNotExist:
-        return JsonResponse({'error': 'Member not found'}, status=404)
+        return JsonResponse({'error': 'Member not found'}, status=404)  # メンバーが見つからないエラー
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        return JsonResponse({'error': str(e)}, status=500)  # その他のエラー
 
 # プロジェクトを保存するAPI
 @require_http_methods(["POST"])
