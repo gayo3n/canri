@@ -317,15 +317,59 @@ class MemberMakeCompleteView(TemplateView):
             teamwork += job_title.teamwork
             time_management_ability += job_title.time_management_ability
             problem_solving_ability += job_title.problem_solving_ability
+           
+            # -----職歴の計算-----
+            if career:
+                career = CareerInformation.objects.get(career_id=career)
+                speciality_height += career.speciality_height
+
+                # member_careerとmember_holding_Qualificationに保存
+                member_career = MemberCareer(
+                    creation_date=timezone.now(),
+                    career_id=career.career_id,
+                    member_id=member.member_id,
+                )
+
+                member_career.save()
+
+            # -----資格の計算-----
+            # 1つめ
+            if qualification:
+                quali = Credentials.objects.get(qualification_id=qualification)
+                speciality_height += float(quali.speciality_height)
+                member_holding_qualification = MemberHoldingQualification(
+                    creation_date=timezone.now(),
+                    member_id=member.member_id,
+                    qualification_id=quali.qualification_id,
+                )
+                member_holding_qualification.save()
+                # 2つめ
+                if qualification2:
+                    quali2 = Credentials.objects.get(qualification_id=qualification2)
+                    speciality_height += float(quali2.speciality_height)
+                    member_holding_qualification = MemberHoldingQualification(
+                        creation_date=timezone.now(),
+                        member_id=member.member_id,
+                        qualification_id=quali2.qualification_id,
+                    )
+                    member_holding_qualification.save()
+                    # 3つめ
+                    if qualification3:
+                        quali3 = Credentials.objects.get(qualification_id=qualification3)
+                        speciality_height += float(quali3.speciality_height)
+                        member_holding_qualification = MemberHoldingQualification(
+                            creation_date=timezone.now(),
+                            member_id=member.member_id,
+                            qualification_id=quali3.qualification_id,
+                        )
+                        member_holding_qualification.save()
 
             # -----MBTIの計算-----
             planning_presentation_power += mbti.planning_presentation_power
             teamwork += mbti.teamwork
             time_management_ability += mbti.time_management_ability
-            problem_solving_ability += mbti.problem_solving_ability            
+            problem_solving_ability += mbti.problem_solving_ability 
 
-            # -----職歴の計算-----
-            career = CareerInformation.objects.get(career)
 
 
             # MemberParameter オブジェクトを作成して保存
@@ -610,7 +654,7 @@ class SaveTeamView(TemplateView):
             'team': team
         }
 
-        # save_team_api を呼���出してチームを保存
+        # save_team_api を呼�������������出してチームを保存
         request._body = json.dumps(data).encode('utf-8')
         response = save_team_api(request)
         response_data = json.loads(response.content)
@@ -936,7 +980,7 @@ def project_detail_view(request, project_id):
 
 
 
-# プロジェクト詳細変更モーダル保存時
+# プロジェク���詳細変更モーダル保存時
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
@@ -983,7 +1027,7 @@ def project_detail_update(request, project_id):
 
             # 開始日と終了日の論理チェック
             if start_date > end_date:
-                # 開始日が終了日より後の場合、エラーメッセージを表示して再表示
+                # 開始日が終了日より後の場合、エラーメッセージを表示して��表示
                 messages.error(request, '開始日は終了日よりも前の日付である必要があります。')
                 return render(request, templatename, {
                     'project': project,
@@ -1002,7 +1046,7 @@ def project_detail_update(request, project_id):
             # 更新日時の設定
             project.update_date = timezone.now()
 
-            # プロジェクト情報の保存
+            # プロジ��ク��情報の保存
             project.save()
 
             # 成功メッセージの追加
@@ -1119,7 +1163,7 @@ def project_phase_add(request, project_id):
             context = {
                 #プロジェクトテーブルの情報
                 'project': project,
-                #プロジェクト所属チームテーブルの情報
+                #プロジェクト��属チームテーブルの情報
                 'teams': teams,
                 #フェーズテーブルの情報
                 'phases': phases,
@@ -1255,7 +1299,7 @@ class project_detail_Create_Team2View(TemplateView):
                 'end_date': end_date,  # 終了日
                 'member' : member,
                 # 'teams': teams,  # チーム情報（リスト形式）
-                'team_type': team_type,  # チームの種類
+                'team_type': team_type,  # チーム��種類
                 'categories': categories,  # カテゴリ情報
             })
 
@@ -1495,6 +1539,18 @@ class Past_ProjectView(TemplateView):
 
         return render(request, self.template_name, context)
 
+    def post(self, request, *args, **kwargs):
+        project_id = kwargs.get('project_id')
+        post_evaluation_memo = request.POST.get('post_evaluation_memo')
+
+        try:
+            project = Project.objects.get(project_id=project_id)
+            project.post_evaluation_memo = post_evaluation_memo
+            project.save()
+            return HttpResponseRedirect(reverse('canri_app:save_past_project'))
+        except Project.DoesNotExist:
+            return HttpResponseNotFound("Project not found")
+
 class Past_ProjectDeletingView(TemplateView):
     template_name = "past_project_deleting_confirmation.html"
 
@@ -1502,7 +1558,7 @@ class Project_DeletedView(TemplateView):
     template_name = "project_deleted.html"
 
 class Project_Save_CompleteView(TemplateView):
-    template_name = "project_save_complete.html"
+    template_name = "save_past_project.html"
 
 #フィードバックモーダル表示
 class FeedbackView(TemplateView):
@@ -1535,3 +1591,133 @@ class FeedbackSaveView(TemplateView):
     #         'feedback_content': feedback_content
     #     }
     #     return render(request, self.template_name, context)
+
+#過去プロジェクトチーム編集
+class TeamEditPastView(TemplateView):
+    template_name = "team_edit_past.html"
+
+    def get(self, request, *args, **kwargs):
+        team_id = kwargs.get('team_id')
+        team = Team.objects.get(team_id=team_id)
+        members = TeamMember.objects.filter(team=team)
+        categories = Category.objects.filter(deletion_flag=False)
+        project_id = request.GET.get('project_id')
+
+        context = {
+            'team': team,
+            'members': members,
+            'categories': categories,
+            'project_id': project_id
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        team_id = kwargs.get('team_id')
+        team = Team.objects.get(team_id=team_id)
+        team_name = request.POST.get('team_name')
+        team_memo = request.POST.get('team_memo')
+        team_members = request.POST.get('team')
+        if not team_members:
+            team_members = []
+        else:
+            team_members = json.loads(team_members)
+        print("team_memo:", team_memo)
+
+        team.team_name = team_name
+        team.memo = team_memo
+        team.save()
+
+        TeamMember.objects.filter(team=team).delete()
+        for member_id in team_members:
+            member = Member.objects.get(member_id=member_id)
+            TeamMember.objects.create(
+                team=team,
+                member=member,
+                creation_date=timezone.now(),
+                update_date=timezone.now()
+            )
+
+        project_name = request.POST.get('project_name')
+        project_description = request.POST.get('project_description')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        teams = request.POST.get('teams')
+        project_id = request.POST.get('project_id')
+        return HttpResponseRedirect(f"{reverse('canri_app:team_edit_past_complete', kwargs={'project_id': project_id})}?project_name={project_name}&project_description={project_description}&start_date={start_date}&end_date={end_date}&teams={teams}&team_members={team_members}")
+
+#過去プロジェクトチーム編集完了
+class TeamEditPastCompleteView(TemplateView):
+    template_name = "past_project_view.html"
+
+    def get(self, request, *args, **kwargs):
+        project_id = kwargs.get('project_id')
+        response = get_p_project_detail(request, project_id)
+        project_data = json.loads(response.content).get('project_data')
+
+        if not project_data:
+            return HttpResponseNotFound("Project not found")
+
+        # project_idに当てはまるProjectAffiliationTeamテーブルのデータを取得
+        affiliation_teams = ProjectAffiliationTeam.objects.filter(project_id=project_id)
+        teams = Team.objects.filter(team_id__in=[team.team.team_id for team in affiliation_teams])
+
+        context = {
+            'project': project_data,
+            'teams': teams
+        }
+
+        return render(request, self.template_name, context)
+    
+#過去プロジェクトチームメンバー編集
+class TeamMemberEditPastView(TemplateView):
+    template_name = "team_edit_past.html"
+
+    def get(self, request, *args, **kwargs):
+        member_id = kwargs.get('member_id')
+        member = Member.objects.get(member_id=member_id)
+
+        team_id = request.GET.get('team_id')
+        team_name = request.GET.get('team_name')
+        team_memo = request.GET.get('team_memo')
+        team_members = request.GET.get('team_members')
+
+        # APIエンドポイントを呼び出してメンバー情報を取得
+        response = get_member_data(request, member_id)
+        member_info = json.loads(response.content).get('member_data')
+
+        context = {
+            'member': member_info,
+            'team_id': team_id,
+            'team_name': team_name,
+            'team_memo': team_memo,
+            'team_members': team_members,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        member_id = kwargs.get('member_id')
+        member = Member.objects.get(member_id=member_id)
+        member_name = request.POST.get('member_name')
+        member_memo = request.POST.get('member_memo')
+
+        member.name = member_name
+        member.memo = member_memo
+        member.save()
+
+        return JsonResponse({'status': 'success'})
+
+#過去プロジェクトチームメンバー編集保存
+class TeamMemberEditSavePastView(TemplateView):
+    template_name = "team_edit_past.html"
+
+    def post(self, request, *args, **kwargs):
+        member_id = request.POST.get('member_id')
+        member = Member.objects.get(member_id=member_id)
+        member_name = request.POST.get('member_name')
+        member_memo = request.POST.get('member_memo')
+
+        member.name = member_name
+        member.memo = member_memo
+        member.save()
+
+        return JsonResponse({'status': 'success'})
