@@ -3,13 +3,13 @@ from django.urls import path, include
 from django.contrib.auth.views import LoginView, LogoutView
 from . import views
 
-from.views import acclogin, logincomp, logout, create, account_create_complete, account_delete, account_delete_complete
+from.views import logincomp, logout, create, account_create_complete, account_delete, account_delete_complete
 
 app_name = 'accounts'
 
 urlpatterns = [
     # アカウント管理
-    path('login/', views.acclogin, name="login"), #ログイン
+    path('login/', views.login_view, name="login"), #ログイン
     path('login_complete/<int:user_id>/', views.logincomp, name='login_complete'), #ログイン完了
     path('login_failure/', views.LoginFailView.as_view(), name='login_failure'), #ログイン失敗
     path('logout_confirmation/', views.logout, name='logout_confirmation'), #ログアウト
