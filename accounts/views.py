@@ -174,18 +174,21 @@ def account_create_complete(request):
 
 # account_login = AccountLogin.as_view()
 
-def account_chaenge(request, name):
-    user_change = get_object_or_404(User, name=name)
-    form = UserForm(instance=user_change)
-    return render(request, 'account_change_employee.html', {'form': form})
-
-def account_change_complete(request, name):
+def account_change(request, name):
     user_change = get_object_or_404(User, name=name)
     if request.method == "POST":
         form = UserForm(request.POST, instance=user_change)
         if form.is_valid():
             form.save()
+            return redirect('accounts:account_change_employee_complete', name=name)
+        else:
+            form = UserForm(instance=user_change)
+        return render(request, 'account_change_employee.html', {'form': form})
+   
+
+def account_change_complete(request):
     return render(request, 'account_change_employee_complete.html')
+    
 
 def account_delete(request, name):
     obj = get_object_or_404(User, name=name)
