@@ -2,26 +2,29 @@
 {% block content %}
 
 <h2>アカウント編集</h2>
-    <div>
-        <form action="ユーザアカウント変更" method="post">
-            <div>
-                <input type="text" id="user_name" name="name" required>
-            </div>
+<div class="form-container">
+    <form action="{% url 'accounts:account_change_complete_employee' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="user_name">ユーザー名</label>
+            <input type="text" id="user_name" name="name" required>
+        </div>
 
-            <div>
-                <input type="text" id="user_id" name="id" required>
-            </div>
+        <div class="form-group">
+            <label for="user_id">ユーザーID</label>
+            <input type="text" id="user_id" name="id" required>
+        </div>
 
-            <div>
-                <input type="text" id="user_password" name="password" required>
-            </div>
+        <div class="form-group">
+            <label for="user_password">パスワード</label>
+            <input type="password" id="user_password" name="password" required>
+        </div>
 
-            <div>
-                <td><a href="{% url 'accounts:account_change_complete_employee' %}" class="btn btn-danger">保存</a></td>
-            </div>
-            <div>
-                <td><a href="{% url 'canri_app:index' %}" class="btn btn-danger">キャンセル</a></td>
-            </div>
-    </div>
+        <div class="button-group">
+            <button type="submit" class="btn btn-save">保存</button>
+            <a href="{% url 'canri_app:index' %}" class="btn btn-cancel">キャンセル</a>
+        </div>
+    </form>
+</div>
 
 {% endblock %}
