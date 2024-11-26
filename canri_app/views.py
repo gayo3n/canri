@@ -209,6 +209,7 @@ class MemberListMakeCompleteView(TemplateView):
                     )
                     # メンバーリスト保存
                     member_list.save()
+                    request.session.clear()
                 except Member.DoesNotExist:
                     # メンバーが見つからなかった場合の処理（エラーメッセージ等を追加しても良い）
                     print(f"Member with ID {member_id} not found")
@@ -217,25 +218,87 @@ class MemberListMakeCompleteView(TemplateView):
             return redirect(reverse('canri_app:memberlist_make_complete'))
 
 
-# -----メンバー作成-----
-class MemberMakeView(TemplateView):
-    template_name = "member_make.html"
+# -----メンバーリスト編集-----
+class MemberListEditView(TemplateView):
+    template_name = "memberList_edit.html"
+
     def get(self, request, *args, **kwargs):
-        mbti = MBTI.objects.all()  # 複数のフィールドを取得
-        job_title = JobTitleInformation.objects.all()
-        credentials = Credentials.objects.all()
-        careerinformation = CareerInformation.objects.all()
+
+        list_id = request.GET.get('category_id')
+
+        memberID_list = MemberList.objects.filter(category_id=list_id)
+
+        # フォームget
+        form = CSVUploadForm()
+        # メンバー検索(未入力の場合はすべて)
+        members = self.get_queryset()
+
+        # `memberID_list` の各 `member_id` に対応する `member_name` を取得
+        members_in_list = Member.objects.filter(member_id__in=memberID_list)
+
+        # member_dict を作成する
+        member_dict = {member.member_id: member.name for member in members_in_list}
+
+        messages.error(request , '')
+
         context = {
-        'mbti': mbti,
-        'job_title': job_title,
-        'credentials': credentials,
-        'careerinformation': careerinformation,
-    }
-        return render(request, 'member_make.html', context)
+            'form': form, # フォーム
+            'members': members, # 検索メンバー
+            'memberID_list': memberID_list,  # 現在のリストを表示
+            'member_dict':member_dict,
+        }
+        return render(request, self.template_name, context)
+    
+    def post(self, request, *args, **kwargs):
+        # セッションから memberID_list を取得
+        memberID_list = request.session.get('memberID_list', [])
+
+        # 削除リクエストがあるか判定
+        delete_member_id = request.POST.get('delete_member_id')
+        if delete_member_id and delete_member_id.isdigit():
+            delete_member_id = int(delete_member_id)
+            if delete_member_id in memberID_list:
+                memberID_list.remove(delete_member_id)  # リストから削除
+        else:
+            # 追加リクエストの場合
+            member_id = request.POST.get('member_id')
+            if member_id and member_id.isdigit():
+                member_id = int(member_id)
+                if member_id not in memberID_list:
+                    try:
+                        Member.objects.get(member_id=member_id)  # メンバーIDの確認
+                        memberID_list.append(member_id)  # リストに追加
+                    except Member.DoesNotExist:
+                        print(f"Member with ID {member_id} not found")
+
+        # セッションに memberID_list を保存
+        request.session['memberID_list'] = memberID_list
+
+        # `memberID_list` の各 `member_id` に対応する `member_name` を取得
+        members_in_list = Member.objects.filter(member_id__in=memberID_list)
+
+        # member_dict を作成する
+        member_dict = {member.member_id: member.name for member in members_in_list}
+
+        members = self.get_queryset()
+        context = {
+            'members': members,
+            'memberID_list': memberID_list,
+            'member_dict': member_dict,  # member_dict を渡す
+        }
+        return render(request, self.template_name, context)
 
 
-# -----CSVファイル処理-----
-class FileUploadView(TemplateView):
+    # メンバー検索
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            members = Member.objects.filter(name__icontains=query)
+        else:
+            # フォーム未入力の場合はすべて
+            members = Member.objects.all()
+        return members
+    
     def upload_csv(request):
         if request.method == 'POST':
             form = CSVUploadForm(request.POST, request.FILES)
@@ -397,6 +460,50 @@ class MemberMakeCompleteView(TemplateView):
         # 保存が成功した場合にmember_make_completeへ遷移
         return render(request, self.template_name, {"member": member})
     
+
+
+# -----メンバー作成-----
+class MemberMakeView(TemplateView):
+    template_name = "member_make.html"
+    def get(self, request, *args, **kwargs):
+        mbti = MBTI.objects.all()  # 複数のフィールドを取得
+        job_title = JobTitleInformation.objects.all()
+        credentials = Credentials.objects.all()
+        careerinformation = CareerInformation.objects.all()
+        context = {
+        'mbti': mbti,
+        'job_title': job_title,
+        'credentials': credentials,
+        'careerinformation': careerinformation,
+    }
+        return render(request, 'member_make.html', context)
+
+
+
+# -----CSVファイル処理-----
+class FileUploadView(TemplateView):
+    def upload_csv(request):
+        if request.method == 'POST':
+            form = CSVUploadForm(request.POST, request.FILES)
+            if form.is_valid():
+                csv_file = request.FILES['csv_file']
+                decoded_file = csv_file.read().decode('utf-8').splitlines()
+                reader = csv.reader(decoded_file)
+                
+                for row in reader:
+                    # 各行のデータを処理する
+                    print(row)
+                
+                # 成功した場合のレスポンス
+                return render(request, 'upload_success.html')
+        else:
+            form = CSVUploadForm()
+
+        return render(request, 'upload_csv.html', {'form': form})
+
+
+
+
 
 class MemberMakeDeleteView(TemplateView):
     template_name = "member_make_delete.html"
