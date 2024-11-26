@@ -146,7 +146,10 @@ def account_create_complete(request):
     form = UserForm(request.POST)
     if form.is_valid():
         form.save()
-    return render(request, 'account_create_complete.html')
+        return render(request, 'account_create_complete.html')
+    else:
+        form = UserForm()
+    return render(request, 'account_create_complete.html', {'form':form})
 
 # class AccountLogin(AuthLoginView):
 #     template_name = "login.html"
