@@ -188,8 +188,8 @@ def account_delete(request, name):
     obj = get_object_or_404(User, name=name)
     if request.method == 'POST':
         obj.delete()
-        return redirect('account_delete_complete', name=name)
+        return redirect('accounts:account_delete_complete')
     return render(request, 'account_delete.html', {'object':obj})
 
-def account_delete_complete(request, name):
-    return render(request, 'account_delete_complete.html', name=name)
+def account_delete_complete(request):
+    return render(request, 'account_delete_complete.html')
