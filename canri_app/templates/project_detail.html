@@ -234,16 +234,24 @@ function updateEndDateMin(startDate) {
 
 <!-- ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー -->
 
+
+<!-- チーム一覧 -->
 <div class="container">
     <h2>{{ project.project_name }}</h2>
     <h3>関連チーム</h3>
     <div class="teams-grid">
         {% for affiliation in teams %}
             <div class="team-card">
-                <a href="チーム詳細リンク">{{ affiliation.team.team_name }}</a>
+                <!-- チーム詳細ページのリンクにproject_idを追加 -->
+                <a href="{% url 'canri_app:project_team_edit' team_id=affiliation.team.team_id %}?project_id={{ project.project_id }}">
+                    {{ affiliation.team.team_name }}
+                </a>
             </div>
         {% endfor %}
     </div>
+</div>
+
+
 
 <!-- チーム新規作成 -->
     <div class="team-add">

@@ -1,7 +1,7 @@
 # urls.py
 from django.urls import path
 from . import views
-from .views import projectListView,Post_projectListView,project_detail_view,team_detail_view,project_detail_update,project_phase_add
+from .views import projectListView,Post_projectListView,project_detail_view,project_detail_update,project_phase_add
 from . import api
 
 app_name = 'canri_app'
@@ -59,6 +59,7 @@ urlpatterns = [
     path('project_detail_create_team2/', views.project_detail_Create_Team2View.as_view(), name='project_detail_create_team2'),
     path('project_detail_create_team3/', views.project_detail_CreateTeam3View.as_view(), name='project_detail_create_team3'),
     path('project_detail_save_team/', views.project_detail_SaveTeamView.as_view(), name='project_detail_save_team'),
+    path('project_team_edit/<int:team_id>/', views.projectTeamEditView.as_view(), name='project_team_edit'),
     # path('project_detail_update/<int:project_id>/project/', project_detail_view, name='project_detail_a'),
 
 

@@ -1418,26 +1418,77 @@ class project_detail_SaveTeamView(TemplateView):
 
 
 
+class projectTeamEditView(TemplateView):
+    template_name = "team_detail.html"  # 使用するテンプレートを定義
 
+    # GETリクエストを処理して、データを取得・表示する
+    def get(self, request, *args, **kwargs):
+        team_id = kwargs.get('team_id')  # URLパラメータからチームIDを取得
+        team = Team.objects.get(team_id=team_id)  # チームIDを使ってTeamオブジェクトを取得
+        members = TeamMember.objects.filter(team=team)  # チームのメンバーを取得
+        categories = Category.objects.filter(deletion_flag=False)  # 削除されていないカテゴリーを取得
 
+        # プロジェクト関連のパラメータをGETリクエストから取得
+        project_id = request.GET.get('project_id')
 
-class team_detailView(TemplateView):
-    template_name="team_detail.html"
-    
+        # 取得したデータをコンテキストとしてテンプレートに渡す
+        context = {
+            'team': team,
+            'members': members,
+            'categories': categories,
+            'project_id': project_id,
 
-def team_detail_view(request, team_id):
-    template_name = "post_projectlist.html"
-    ctx = {}
-    team = get_object_or_404(Project, team_id=team_id)
-    qs = Project.objects.all()
-    qs=qs.filter(complete_flag=1,deletion_flag=0)
-    if team:
-        qs = qs.filter(project_id=team)
+        }
+        return render(request, self.template_name, context)
 
-    ctx["team_detail"] = qs
-    return render(request, template_name, ctx)
+    # POSTリクエストを処理して、チームとプロジェクト情報を更新
+    def post(self, request, *args, **kwargs):
+        team_id = kwargs.get('team_id')  # URLパラメータからチームIDを取得
+        team = Team.objects.get(team_id=team_id)  # チームIDを使ってTeamオブジェクトを取得
+        team_name = request.POST.get('team_name')  # フォームから新しいチーム名を取得
+        team_memo = request.POST.get('team_memo')  # フォームから新しいチームメモを取得
+        team_members = request.POST.get('team')  # フォームから選択されたメンバーのIDリストを取得
 
-    # ctx["project_list"] = qsequest, self.template_name, {'members': members}
+        # メンバーが空の場合は空リストを設定
+        if not team_members:
+            team_members = []
+        else:
+            # 'team_members' が文字列（JSON形式）で渡されている場合、リストに変換
+            team_members = json.loads(team_members)
+
+        print("team_memo:", team_memo)  # デバッグ用にチームメモを表示
+
+        # チームの名前とメモを更新
+        team.team_name = team_name
+        team.memo = team_memo
+        team.save()  # チーム情報を保存
+
+        # 既存のチームメンバーを削除
+        TeamMember.objects.filter(team=team).delete()
+
+        # 新しいメンバーをチームに追加
+        for member_id in team_members:
+            member = Member.objects.get(member_id=member_id)  # メンバーIDを使ってMemberオブジェクトを取得
+            TeamMember.objects.create(
+                team=team,
+                member=member,
+                creation_date=timezone.now(),  # メンバーが追加された日時
+                update_date=timezone.now()  # メンバーが追加された日時
+            )
+
+        # プロジェクト関連のパラメータをPOSTリクエストから取得
+        # project_name = request.POST.get('project_name')
+        # project_description = request.POST.get('project_description')
+        # start_date = request.POST.get('start_date')
+        # end_date = request.POST.get('end_date')
+        project_id=request.POST.get('project_id')
+        teams = request.POST.get('teams')
+
+        # 更新後、完了ページへリダイレクト。更新されたプロジェクト情報やチームメンバーをURLパラメータとして渡す
+        return render(request, "project_detail_create_team_complete.html", {
+            'project_id' : project_id,
+        })
+
 
 # 過去プロジェクトリスト
 class Past_ProjectListView(TemplateView):
