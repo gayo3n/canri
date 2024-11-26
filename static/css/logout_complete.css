@@ -61,3 +61,15 @@ body {
         width: 80%;  /* ボタンを幅広に */
     }
 }
+
+a {
+    display: block; /* リンクを縦方向に並べる */
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline; /* ホバー時に下線を追加 */
+}

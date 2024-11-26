@@ -1,30 +1,4 @@
-<<<<<<< HEAD
 {% extends 'base2.html' %}
-{% block content %}
-
-<h2>アカウント編集</h2>
-
-<div class="form-container">
-    <form action="{% url 'accounts:account_change_complete_employee' %}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="user_name">ユーザー名</label>
-            <input type="text" id="user_name" name="name" required>
-        </div>
-
-        <div class="form-group">
-            <label for="user_id">ユーザーID</label>
-            <input type="text" id="user_id" name="id" required>
-        </div>
-
-        <div class="form-group">
-            <label for="user_password">パスワード</label>
-            <input type="password" id="user_password" name="password" required>
-        </div>
-
-    <div>
-=======
-{% extends 'base.html' %}
 {% load static %}
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/account_change.css' %}">
@@ -34,7 +8,6 @@
 
     <div class="account_change">
         <h2>アカウント編集</h2>
->>>>>>> e8b45926d30296b6886e1eee549b6611dc0a8fb5
         <form action="ユーザアカウント変更" method="post">
             <div>
                 <input type="text" id="user_name" name="name" placeholder="名前を入力してください" required>
@@ -43,10 +16,6 @@
             <div>
                 <input type="text" id="user_password" name="password" placeholder="パスワードを入力してください" required>
             </div>
-<<<<<<< HEAD
-
-=======
->>>>>>> e8b45926d30296b6886e1eee549b6611dc0a8fb5
 
         <div class="button-group">
             <button type="submit" class="btn btn-save">保存</button>
