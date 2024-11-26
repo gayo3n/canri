@@ -23,15 +23,11 @@ class LoginFailView(TemplateView):
 #     def post(self, request):
 #         return redirect('logout_confirmation')
 
-class CustomLoginView(LoginView):
-    template_name = 'login.html'
-    success_url = reverse_lazy('login_complete')  # ログイン成功時のリダイレクト先
-
-class LoginCompView(TemplateView):
-    template_name = 'login_complete.html'
-
 class LogoutCompView(TemplateView):
-    template_name = 'logout_complete.html'
+    template_name = 'logout_confirmation_complete.html'
+    def post(self, request, *args, **kwargs):
+        return render(request, 'logout_complete.html')
+
 # class AccLoginView(LoginView):
 #     def login(request):
 #         if request.method == "POST":
@@ -48,11 +44,13 @@ class LogoutCompView(TemplateView):
 #         }
 #         return render(request, 'login.html', param)
 
-class LogoutConfView(TemplateView):
-    template_name = 'logout_confirmation.html'
+
+def logout(request):
+    auth_logout(request)
+    return render(request, 'logout_confirmation.html')
 
 # アカウント管理
-class ManagementAccountView(TemplateView):
+class Manage_Account(TemplateView):
     template_name = "management_account.html"
 
     def get(self, request, *args, **kwargs):
@@ -66,23 +64,6 @@ class ManagementAccountView(TemplateView):
 
         return render(request, 'management_account.html', context)
 
-class AccountCreateView(TemplateView):
-    template_name = "account_create.html"
-
-class CreateCompleteView(TemplateView):
-    template_name = "account_create_complete.html"
-
-class AccountChangeView(TemplateView):
-    template_name = "account_change.html"
-
-class AccountChangeCompleteView(TemplateView):
-    template_name = "account_change_complete.html"
-
-class AccountDeleteView(TemplateView):
-    template_name = "account_delete.html"
-
-class DeleteCompleteView(TemplateView):
-    template_name = "account_delete_complete.html"
 
 # アイコン
 class AccountChangeEmployeeView(TemplateView):
@@ -92,13 +73,27 @@ class AccountChangeEmployeeCompleteView(TemplateView):
     template_name = "account_change_complete_employee.html"
 
 
-# class LoginFailView(LoginRequiredMixin, TemplateView):
-#     template_name = 'login_failure.html'
+def create(request):
+    if request.method == 'GET':
+        form = AccountAddForm()
+    elif request.method == 'POST':
+        form = AccountAddForm(request.POST)
+        if form.is_valid():
+            user = User.objects.create_user(
+                name=form.cleaned_data['name'],
+                user_id=form.cleaned_data['user_id'],
+                password=form.cleaned_data['password']
+            )
+            return render(request, 'account_create_complete.html', {'user_id': user.user_id})
+    context = {'form': form}
+    return render(request, 'account_create.html', context)
 
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['users'] = User.objects.exclude(username=self.request.user.username)
-#         return context
+
+def account_create_complete(request):
+    form = UserForm(request.POST)
+    if form.is_valid():
+        form.save()
+    return render(request, 'account_create_complete.html')
 
 # class AccountLogin(AuthLoginView):
 #     template_name = "login.html"

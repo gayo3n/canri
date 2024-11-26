@@ -34,7 +34,7 @@
     <div class="form-area">
         <label for="job_title">役職</label>
         <select id="job_title" name="job_title">
-            <option value="" disabled selected>選択してください</option>  <!-- 空のオプションを追加 -->
+            <option value="" disabled selected>選択してください</option>
             {% for job in job_title %}
                 <option value="{{ forloop.counter }}">{{ job.job_title }}</option>
             {% endfor %}
@@ -45,7 +45,7 @@
     <div class="form-area">
         <label for="career">職歴</label>
         <select id="career" name="career">
-            <option value="" disabled selected>選択してください</option>  <!-- 空のオプションを追加 -->
+            <option value="" disabled selected>選択してください</option>
             {% for career in careerinformation %}
                 <option value="{{ forloop.counter }}">{{ career.career }}</option>
             {% endfor %}
@@ -56,7 +56,7 @@
     <div class="form-area">
         <label for="qualification">資格</label>
         <select id="qualification" name="qualification">
-            <option value="" disabled selected>選択してください</option>  <!-- 空のオプションを追加 -->
+            <option value="" disabled selected>選択してください</option>
             {% for crede in credentials %}
                 <option value="{{ forloop.counter }}">{{ crede.qualification_name }}</option>
             {% endfor %}
@@ -67,7 +67,7 @@
     <div class="form-area2">
         <label for="qualification2">資格</label>
         <select id="qualification2" name="qualification2">
-            <option value="" disabled selected>選択してください</option>  <!-- 空のオプションを追加 -->
+            <option value="" disabled selected>選択してください</option>
             {% for crede in credentials %}
                 <option value="{{ forloop.counter }}">{{ crede.qualification_name }}</option>
             {% endfor %}
@@ -78,7 +78,7 @@
     <div class="form-area3">
         <label for="qualification3">資格</label>
         <select id="qualification3" name="qualification3">
-            <option value="" disabled selected>選択してください</option>  <!-- 空のオプションを追加 -->
+            <option value="" disabled selected>選択してください</option>
             {% for crede in credentials %}
                 <option value="{{ forloop.counter }}">{{ crede.qualification_name }}</option>
             {% endfor %}
@@ -89,7 +89,7 @@
     <div class="form-area">
         <label for="MBTI">MBTI</label>
         <select id="MBTI" name="MBTI" required>
-            <option value="" disabled selected>選択してください</option>  <!-- 空のオプションを追加 -->
+            <option value="" disabled selected>選択してください</option>
             {% for MBTI in mbti %}
                 <option value="{{ forloop.counter }}">{{ MBTI.mbti_name }}</option>
             {% endfor %}

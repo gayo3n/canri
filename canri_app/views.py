@@ -316,13 +316,61 @@ class MemberMakeCompleteView(TemplateView):
             planning_presentation_power += job_title.planning_presentation_power
             teamwork += job_title.teamwork
             time_management_ability += job_title.time_management_ability
-            
+            problem_solving_ability += job_title.problem_solving_ability
+           
+            # -----職歴の計算-----
+            if career:
+                career = CareerInformation.objects.get(career_id=career)
+                speciality_height += career.speciality_height
+
+                # member_careerとmember_holding_Qualificationに保存
+                member_career = MemberCareer(
+                    creation_date=timezone.now(),
+                    career_id=career.career_id,
+                    member_id=member.member_id,
+                )
+
+                member_career.save()
+
+            # -----資格の計算-----
+            # 1つめ
+            if qualification:
+                quali = Credentials.objects.get(qualification_id=qualification)
+                speciality_height += float(quali.speciality_height)
+                member_holding_qualification = MemberHoldingQualification(
+                    creation_date=timezone.now(),
+                    member_id=member.member_id,
+                    qualification_id=quali.qualification_id,
+                )
+                member_holding_qualification.save()
+                # 2つめ
+                if qualification2:
+                    quali2 = Credentials.objects.get(qualification_id=qualification2)
+                    speciality_height += float(quali2.speciality_height)
+                    member_holding_qualification = MemberHoldingQualification(
+                        creation_date=timezone.now(),
+                        member_id=member.member_id,
+                        qualification_id=quali2.qualification_id,
+                    )
+                    member_holding_qualification.save()
+                    # 3つめ
+                    if qualification3:
+                        quali3 = Credentials.objects.get(qualification_id=qualification3)
+                        speciality_height += float(quali3.speciality_height)
+                        member_holding_qualification = MemberHoldingQualification(
+                            creation_date=timezone.now(),
+                            member_id=member.member_id,
+                            qualification_id=quali3.qualification_id,
+                        )
+                        member_holding_qualification.save()
 
             # -----MBTIの計算-----
             planning_presentation_power += mbti.planning_presentation_power
             teamwork += mbti.teamwork
             time_management_ability += mbti.time_management_ability
-            problem_solving_ability += mbti.problem_solving_ability            
+            problem_solving_ability += mbti.problem_solving_ability 
+
+
 
             # MemberParameter オブジェクトを作成して保存
             member_parameter = MemberParameter(
