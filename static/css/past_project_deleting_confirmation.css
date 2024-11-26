@@ -1,0 +1,86 @@
+
+/* モーダルコンテンツ */
+.modal-content {
+    background-color: #ffffff;
+    width: 400px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    position: relative;
+}
+
+/* モーダル内のテキスト */
+.modal-content p {
+    font-size: 18px;
+    color: #333333;
+    margin-bottom: 20px;
+}
+
+.modal-content h2 {
+    font-size: 22px;
+    color: #444444;
+    margin-bottom: 30px;
+}
+
+/* モーダル内ボタンのコンテナ */
+.modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+/* 削除ボタンスタイル */
+.btn {
+    display: inline-block;
+    padding: 10px 30px;
+    font-size: 16px;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* 削除ボタン (確認ボタン) */
+.btn-confirm {
+    background-color: #dc3545;  /* 赤色 */
+    color: white;
+    margin-right: 10px;
+}
+
+.btn-confirm:hover {
+    background-color: #c82333;
+}
+
+/* キャンセルボタン */
+.btn-cancel {
+    background-color: #6c757d;  /* グレー */
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #5a6268;
+}
+
+/* 閉じるボタン (右上の×ボタン) */
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    color: #555555;
+    cursor: pointer;
+}
+
+.close-button:hover {
+    color: #000000;
+}
+
+/* モバイル対応 */
+@media (max-width: 480px) {
+    .modal-content {
+        width: 90%;
+        padding: 20px;
+    }
+}
