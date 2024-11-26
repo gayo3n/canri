@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>Can理</title>
     {% load static %}
+    <link rel="stylesheet" href="{% static 'css/menu.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <!--追加のcss記入-->
+    <!-- 追加のcss記入 -->
     {% block head %}{% endblock %}
 </head>
 <body>
-    <body>
         <header>
             <nav class="navbar">
                 <div class="navbar-left">
@@ -24,7 +24,7 @@
                 </div>
                 <div class="navbar-right">
                     <a href="{% url 'accounts:account_change_employee' %}" class="user-icon">
-                        <img src="{% static 'images/user-icon.png' %}" alt="管理者アイコン">
+                        <img src="{% static 'images/user-icon.png' %}" alt="社員アイコン">
                         社員名
                     </a>
                     <a href="{% url 'accounts:logout_confirmation' %}">ログアウト</a>
