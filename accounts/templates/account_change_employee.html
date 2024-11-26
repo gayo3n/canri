@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block head %}
-
+<link rel="stylesheet" href="{% static 'css/account_change.css' %}">
 {% endblock %}
 {% block content %}
 
-<h2>アカウント編集</h2>
-    <div>
+
+    <div class="account_change">
+        <h2>アカウント編集</h2>
         <form action="ユーザアカウント変更" method="post">
             <div>
                 <input type="text" id="user_name" name="name" placeholder="名前を入力してください" required>
