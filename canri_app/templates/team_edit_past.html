@@ -9,7 +9,7 @@
 
 {% block content %}
 <div class="main-content">
-    <h1>チーム編集</h1>
+    <h1>チーム詳細</h1>
     <div class="container" style="justify-content: space-around;">
         <div class="left-spacer" style="flex: 0.5;"></div>
         <div class="left-panel" style="flex: 3;">
@@ -36,16 +36,12 @@
         </div>
         <div class="right-spacer" style="flex: 0.5;"></div>
         <div class="right-panel" style="flex: 3;">
-            <form method="post" action="{% url 'canri_app:team_edit' team_id=team.team_id %}">
+            <form method="post" action="{% url 'canri_app:team_edit_past' team_id=team.team_id %}">
                 {% csrf_token %}
                 <input type="hidden" name="team" id="team">
-                <input type="hidden" name="project_name" value="{{ project_name }}">
-                <input type="hidden" name="project_description" value="{{ project_description }}">
-                <input type="hidden" name="start_date" value="{{ start_date }}">
-                <input type="hidden" name="end_date" value="{{ end_date }}">
-                <input type="hidden" name="teams" value="{{ teams|safe }}">
+                <input type="hidden" name="project_id" value="{{ project_id }}">
                 <label for="team_name">チーム名</label>
-                <input type="text" name="team_name" id="team_name" value="{{ team.team_name }}" required>
+                <input type="text" name="team_name" id="team_name" value="{{ team.team_name }}" required readonly>
                 
                 <div class="chart-container">
                     <div class="chart-wrapper">
@@ -76,10 +72,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="member_id" value="">
                         <input type="hidden" name="team_id" value="{{ team_id }}">
-                        <input type="hidden" name="project_name" value="{{ project_name }}">
-                        <input type="hidden" name="project_description" value="{{ project_description }}">
-                        <input type="hidden" name="start_date" value="{{ start_date }}">
-                        <input type="hidden" name="end_date" value="{{ end_date }}">
+                        <input type="hidden" name="project_id" value="{{ project_id }}">
                         <input type="hidden" name="teams" value="{{ teams|safe }}">
                         <input type="hidden" name="team_name" value="{{ team_name }}">
                         <input type="hidden" name="team_memo" value="{{ team_memo }}">
@@ -173,6 +166,14 @@
         .catch(error => console.error('メモの保存エラー:', error));
     }
 
+    // チームメンバーをフォームに追加
+    function setTeamMembers() {
+        const memberIds = Array.from(document.querySelectorAll('#memberTableBody tr'))
+            .map(row => row.dataset.memberId)
+            .filter(id => id !== undefined);
+        document.getElementById('team').value = JSON.stringify(memberIds);
+    }
+
     // チームメモをフォームに追加
     function setTeamMemo() {
         const teamMemo = document.getElementById('team_memo').value;
@@ -257,36 +258,24 @@
         });
 
         updateRadarChart();
-
-        const teamSelect = document.getElementById('teamSelect');
-        const teamIds = {{ teams|safe }};
-        teamIds.forEach(teamId => {
-            if (teamId !== {{ team.team_id }}) {
-                fetch(`{% url 'canri_app:get_team_data' team_id=0 %}`.replace("0", teamId))
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.team) {
-                            const option = document.querySelector(`#teamSelect option[value="${teamId}"]`);
-                            option.textContent = data.team.team_name;
-                        }
-                    })
-                    .catch(error => console.error('チーム情報の取得エラー:', error));
-            }
-        });
     });
 
     // 戻るボタンの処理
     function goBack() {
+        const projectId = document.querySelector('input[name="project_id"]').value;
         const form = document.createElement('form');
-        form.method = 'post';
-        // 要修正
-        // form.action = "{% url 'canri_app:past_project_view' project.project_id %}";
+        form.method = 'get';
+        form.action = "{% url 'canri_app:past_project_view' project_id=0 %}".replace('0', projectId);
 
-        const post_evaluation_memo = document.createElement('input');
-        post_evaluation_memo.type = 'hidden';
-        post_evaluation_memo.name = 'post_evaluation_memo';
-        post_evaluation_memo.value = '{{ post_evaluation_memo }}';
-        form.appendChild(post_evaluation_memo);
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = 'csrfmiddlewaretoken';
+        csrfToken.value = '{{ csrf_token }}';
+        form.appendChild(csrfToken);
+
+        document.body.appendChild(form);
+        form.submit();
     }
 </script>
-{% endblock %}
+{% endblock %} 
+

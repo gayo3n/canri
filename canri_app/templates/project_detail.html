@@ -194,7 +194,7 @@ function updateEndDateMin(startDate) {
 </script> -->
 
 <!-- フェーズ追加モーダル -->
- <!-- ーーーーーーーーーーーーーーーーーーーーーーーーーーー -->
+<!-- ーーーーーーーーーーーーーーーーーーーーーーーーーーー -->
 <div id="phase_additionModal" class="modal">
     <!-- モーダルの内容を包む要素 -->
     <div class="modal-content">
@@ -205,9 +205,10 @@ function updateEndDateMin(startDate) {
         <h3>フェーズ追加</h3>
 
         <!-- プロジェクト詳細を保存するフォーム -->
-        <form method="POST" action="{% url 'canri_app:project_detail_update' project.project_id %}">
+        <form method="POST" action="{% url 'canri_app:project_phase_add' project.project_id %}">
             {% csrf_token %}
             <!-- プロジェクト名の入力欄 -->
+            <input type="hidden" name="project_id" value="{{ project_id }}">
             <label for="phase_Name">フェーズ名:</label>
             <input
                 type="text"
@@ -230,6 +231,7 @@ function updateEndDateMin(startDate) {
         </form>
     </div>
 </div>
+
 <!-- ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー -->
 
 <div class="container">
@@ -245,7 +247,7 @@ function updateEndDateMin(startDate) {
 
 <!-- チーム新規作成 -->
     <div class="team-add">
-        <form method="post" action="{% url 'canri_app:create_team' %}" >
+        <form method="post" action="{% url 'canri_app:project_detail_create_team' %}" >
             {% csrf_token %}
             <!-- プロジェクト情報をhiddenで送信 -->
             <input type="hidden" name="project_id" value="{{ project.project_id }}">
@@ -255,7 +257,7 @@ function updateEndDateMin(startDate) {
             <input type="hidden" name="end_date" value="{{ project.end_date }}">
 
             <!-- チーム作成ボタン -->
-            <button type="submit" class="action-button back-button">チームを新規で作成</button>
+            <button type="submit" >チームを新規で作成</button>
         </form>
     </div>
 

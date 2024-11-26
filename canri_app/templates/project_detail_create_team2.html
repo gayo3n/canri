@@ -10,6 +10,7 @@
 <div class="main-content">
     <h1>新規チーム作成</h1>
 
+    <!-- カテゴリー選択フォーム -->
     <form id="categoryForm" class="form-inline">
         {% csrf_token %}
 
@@ -47,23 +48,27 @@
     </div>
 
     <div class="button-container">
-        <form method="post" action="{% url 'canri_app:create_team' %}">
+        <form method="post" action="{% url 'canri_app:project_detail_create_team' %}">
             {% csrf_token %}
+            <input type="hidden" name="project_id" value="{{ project_id }}">
             <input type="hidden" name="project_name" value="{{ project_name }}">
             <input type="hidden" name="project_description" value="{{ project_description }}">
             <input type="hidden" name="start_date" value="{{ start_date }}">
             <input type="hidden" name="end_date" value="{{ end_date }}">
-            <!-- <input type="hidden" name="teams" value="{{ teams|safe }}"> -->
+            <input type="hidden" name="member" value="{{ member }}">
+
             <button type="submit" class="action-button">戻る</button>
         </form>
 
-        <form id="nextForm" method="post" action="{% url 'canri_app:create_team3' %}">
+        <form id="nextForm" method="post" action="{% url 'canri_app:project_detail_create_team3' %}">
             {% csrf_token %}
+            <input type="hidden" name="project_id" value="{{ project_id }}">
             <input type="hidden" name="project_name" value="{{ project_name }}">
             <input type="hidden" name="project_description" value="{{ project_description }}">
             <input type="hidden" name="start_date" value="{{ start_date }}">
             <input type="hidden" name="end_date" value="{{ end_date }}">
-            <!-- <input type="hidden" name="teams" value="{{ teams|safe }}"> -->
+            <input type="text" name="member" value="{{ member }}">
+
             <input type="hidden" name="team_size" value="{{ team_size }}">
             <input type="hidden" name="team_type" value="{{ team_type }}">
             <input type="hidden" name="selected_members" id="selected_members">
@@ -76,64 +81,73 @@
 
 
 <script>
-/**
- * カテゴリーに基づいてメンバー情報を取得し、テーブルに表示する関数
- * 選択されたカテゴリーIDに応じてAPIを呼び出し、結果をテーブルに反映する
- */
-    function fetchMembers() {
-        // カテゴリー選択要素の取得
-        var categorySelect = document.getElementById('category');
+    /**
+     * カテゴリーに基づいてメンバー情報を取得し、テーブルに表示する関数
+     * 選択されたカテゴリーIDに応じてAPIを呼び出し、結果をテーブルに反映する
+     */
+     function fetchMembers() {
+    // カテゴリー選択要素の取得
+    var categorySelect = document.getElementById('category');
 
-        // カテゴリーが選択されているかチェック
-        if (categorySelect.value === "null") {
-            alert("カテゴリーを選択してください。");
-            return;
-        }
-
-        // 選択されたカテゴリーIDを取得
-        var categoryId = categorySelect.value;
-
-        // Django URLパターンを使用してAPIエンドポイントを構築
-        // カテゴリーIDをURLに動的に組み込む
-        fetch(`{% url 'canri_app:get_members_by_member_list' category_id=0 %}`.replace("0", categoryId))
-            .then(response => response.json())  // JSONレスポンスをパース
-            .then(data => {
-                // メンバーリストを表示するテーブルのbody要素を取得
-                const memberTableBody = document.getElementById('memberTableBody');
-                // 既存のテーブル内容をクリア
-                memberTableBody.innerHTML = '';
-
-                // 取得したメンバーデータを1件ずつ処理
-                data.members.forEach(member => {
-                    // 生年月日からtime部分を除去（YYYY-MM-DD形式に整形）
-                    const birthdate = member.birthdate.split('T')[0];
-
-                    // 新しい行要素を作成
-                    const row = document.createElement('tr');
-
-                    // 行の内容をHTMLとして設定
-                    // - チェックボックス（メンバー選択用）
-                    // - メンバー名
-                    // - 生年月日
-                    // - 役職
-                    row.innerHTML = `
-                        <td style="width: 10%;"><input type="checkbox" name="member" value="${member.member_id}"></td>
-                        <td style="width: 30%;">${member.name}</td>
-                        <td style="width: 30%;">${birthdate}</td>
-                        <td style="width: 30%;">${member.job_id}</td>
-                    `;
-
-                    // 作成した行をテーブルに追加
-                    memberTableBody.appendChild(row);
-                });
-            })
-            // エラーハンドリング
-            .catch(error => console.error('データ取得エラー:', error));
+    // カテゴリーが選択されているかチェック
+    if (categorySelect.value === "null") {
+        // カテゴリーが選択されていない場合、アラートを表示
+        alert("カテゴリーを選択してください。");
+        return; // 処理を中止
     }
 
-    // 全選択ボタンをクリックしたときに全てのメンバーを選択状態にする
-    function selectAllMembers() {
-        document.querySelectorAll('input[name="member"]').forEach(checkbox => {
+    // 選択されたカテゴリーIDを取得
+    var categoryId = categorySelect.value;
+
+    // DjangoのURLパターンを使用してAPIエンドポイントを構築
+    // カテゴリーIDをURLに動的に組み込む
+    fetch(`{% url 'canri_app:get_members_by_member_list' category_id=0 %}`.replace("0", categoryId))
+        .then(response => {
+            // レスポンスが正常か確認
+            if (!response.ok) {
+                throw new Error('ネットワークエラーが発生しました。');
+            }
+            return response.json(); // JSONレスポンスをパース
+        })
+        .then(data => {
+            // メンバーリストを表示するテーブルのbody要素を取得
+            const memberTableBody = document.getElementById('memberTableBody');
+            // 既存のテーブル内容をクリア
+            memberTableBody.innerHTML = '';
+
+            // 取得したメンバーデータを1件ずつ処理
+            data.members.forEach(member => {
+                // 生年月日からtime部分を除去（YYYY-MM-DD形式に整形）
+                const birthdate = member.birthdate.split('T')[0];
+
+                // 新しい行要素を作成
+                const row = document.createElement('tr');
+
+                // 行の内容をHTMLとして設定
+                row.innerHTML = `
+                    <td style="width: 10%;"><input type="checkbox" name="members" value="${member.member_id}"></td>
+                    <td>${member.name}</td>            <!-- メンバー名 -->
+                    <td>${birthdate}</td>              <!-- 生年月日 -->
+                    <td>${member.job_title}</td>          <!-- 役職 -->
+                `;
+
+                // 作成した行をテーブルに追加
+                memberTableBody.appendChild(row);
+            });
+        })
+        // エラーハンドリング
+        .catch(error => {
+            // エラーが発生した場合、コンソールにエラーメッセージを表示
+            console.error('データ取得エラー:', error);
+            alert('メンバー情報の取得に失敗しました。'); // ユーザーにエラーメッセージを表示
+        });
+}
+
+    /**
+     * 全選択・全解除の切り替え関数
+     */
+     function selectAllMembers() {
+        document.querySelectorAll('input[name="members"]').forEach(checkbox => {
             checkbox.checked = true;
         });
     }
@@ -141,106 +155,136 @@
 
 
 
-/**
- * 選択されたメンバーの検証とフォーム送信を行う関数
- * - チーム人数の要件を確認
- * - 既存チームとのメンバー重複をチェック
- * - 有効なメンバーリストでフォームを送信
- *
- * 処理フロー：
- * 1. チェックボックスで選択されたメンバーを収集
- * 2. 設定されたチームサイズとの比較検証
- * 3. 既存チームの有無による分岐処理
- * 4. 重複メンバーのフィルタリングと結果の送信
- */
- function submitNextForm() {
-    // チェックされたメンバーのIDを配列に収集
-    // input[name="member"]の中からチェックされている要素のvalueを取得
+
+
+
+
+    /**
+     * 選択されたメンバーの検証とフォーム送信を行う関数
+     */
+     function submitNextForm() {
+    // 選択されたメンバーを取得
     const selectedMembers = [];
-    document.querySelectorAll('input[name="member"]:checked').forEach(checkbox => {
-        selectedMembers.push(checkbox.value);
+    document.querySelectorAll('input[name="members"]:checked').forEach(checkbox => {
+        selectedMembers.push(checkbox.value);  // string型で保存される
     });
 
-    // 設定されたチームサイズを取得
-    // input要素から文字列として取得した値を数値に変換
-    const teamSize = parseInt(document.querySelector('input[name="team_size"]').value);
+    // チームサイズを取得
+    const teamSizeInput = document.querySelector('input[name="team_size"]');
+    const teamSize = parseInt(teamSizeInput.value, 10);
 
-    // 選択メンバー数がチームサイズの要件を満たしているか確認
-    // 選択メンバー数が設定されたチームサイズより少ない場合はエラー
+    // チームサイズの検証
+    if (isNaN(teamSize) || teamSize <= 0) {
+        alert('有効なチームサイズを入力してください。');
+        return;
+    }
     if (selectedMembers.length < teamSize) {
         alert(`選択されたメンバーがチームサイズ(${teamSize})以上である必要があります。`);
         return;
     }
 
+    // 既存チームのメンバー情報を取得
+    const existingMemberIds = new Set();
+    let messageShown = false;
 
 
 
-    // Django templateから既存チームの情報を取得
-    // テンプレート変数teamsをJavaScriptで使用可能な形で展開
-    const teams = {{ teams|safe }};
 
-    // 既存チームが存在しない場合の処理
-    // 新規チーム作成の場合は直接フォームを送信
-    if (teams.length === 0) {
-        // 選択されたメンバーリストをJSON文字列に変換してフォームに設定
-        // hidden inputにJSON形式で選択メンバーを格納
-        document.getElementById('selected_members').value = JSON.stringify(selectedMembers);
-        document.getElementById('nextForm').submit();
+
+
+
+    // hidden input から member の値を取得
+    // ここでデータを取得
+    // membreが2つあったせいでおかしかった
+    // 入力フィールドを取得
+    const memberInput = document.querySelector('input[name="member"]');
+
+// デバッグ用の情報を出力
+console.log('デバッグ情報:', {
+    memberInput, // DOM要素
+    type: typeof memberInput, // typeof結果
+    isArray: Array.isArray(memberInput), // 配列判定（常にfalse）
+    constructor: memberInput.constructor.name, // コンストラクタ名
+});
+
+try {
+    // 入力値を取得
+    const rawValue = memberInput.value;
+
+    // エンティティ文字列 (&quot;) を置換
+    const decodedValue = rawValue.replace(/&quot;/g, '"');
+    console.log('デコード済み文字列:', decodedValue);
+
+    // JSON文字列の中の不必要な二重引用符を除去
+    const cleanedValue = decodedValue.replace(/^"|"$/g, '');
+    console.log('整形済み文字列:', cleanedValue);
+
+    // JSON文字列を配列に変換
+    const memberArray = JSON.parse(cleanedValue);
+
+    console.log('デバッグ情報:', {
+        cleanedValue, // 整形済み文字列
+        type: typeof cleanedValue, // typeof結果
+        isArray: Array.isArray(cleanedValue), // 配列判定（常にfalse）
+        constructor: cleanedValue.constructor.name, // コンストラクタ名
+    });
+    console.log('デバッグ情報:', {
+        memberArray, // 配列に変換されたデータ
+        type: typeof memberArray, // typeof結果
+        isArray: Array.isArray(memberArray), // 配列判定（常にtrue）
+        constructor: memberArray.constructor.name, // コンストラクタ名
+    });
+
+    // 配列かどうかを判定
+    if (Array.isArray(memberArray)) {
+        console.log('配列変換成功:', memberArray);
+        // 配列データを必要な変数に格納
+        memberData = memberArray;
+    } else {
+        console.error('デコード後のデータは配列ではありません:', memberArray);
+        alert('メンバーデータの形式が不正です。');
     }
-
-
-
-    // 既存チームが存在する場合の処理
-    // 既存チームのメンバーとの重複チェックを行う
-    else {
-        // 既存チームに所属しているメンバーIDを格納するSet
-        // 重複を自動的に排除するためSetを使用
-        const existingMemberIds = new Set();
-        // 重複メンバーに関する警告メッセージの表示フラグ
-        // メッセージの重複表示を防ぐためのフラグ
-        let messageShown = false;
-
-        // 各既存チームのメンバー情報を取得
-        // Django URLconf経由でチームメンバー情報を非同期取得
-        {% for team_id in teams %}
-            fetch(`{% url 'canri_app:get_team_members' team_id=0 %}`.replace("0", {{ team_id }}))
-                .then(response => response.json())
-                .then(data => {
-                    // 既存チームのメンバーIDをSetに追加
-                    // 取得したメンバー情報からIDのみを抽出してSetに追加
-                    data.members.forEach(member => {
-                        existingMemberIds.add(member.member_id);
-                    });
-
-                    // 選択されたメンバーから既存チームのメンバーを除外
-                    // filter関数で重複メンバーを除外した新しい配列を生成
-                    const filteredMembers = selectedMembers.filter(memberId => {
-                        if (existingMemberIds.has(parseInt(memberId))) {
-                            // 重複メンバーが見つかった場合の警告表示（初回のみ）
-                            // メッセージの重複表示を防ぐためフラグをチェック
-                            if (!messageShown) {
-                                alert('既存のチームに所属しているメンバーはチーム作成に使用しません。');
-                                messageShown = true;
-                            }
-                            return false;
-                        }
-                        return true;
-                    });
-
-                    // フィルタリング済みのメンバーリストをフォームに設定して送信
-                    // フィルタリング結果をJSON形式でhidden inputに設定し、フォームを送信
-                    document.getElementById('selected_members').value = JSON.stringify(filteredMembers);
-                    document.getElementById('nextForm').submit();
-                })
-                // エラーハンドリング
-                // APIリクエスト失敗時のエラーをコンソールに出力
-                .catch(error => console.error('データ取得エラー:', error));
-        {% endfor %}
-    }
+} catch (error) {
+    // JSON解析エラー時の処理
+    console.error('JSON変換エラー:', error);
+    alert('メンバーデータの形式が不正です。');
 }
 
 
 
 
-</script>
+
+
+
+
+
+
+    // メンバーIDをセットに追加（整数として保存）
+    memberData.forEach(member => {
+        existingMemberIds.add(Number(member)); // member自体がIDの配列である場合
+    });
+
+    // 重複チェック
+    const filteredMembers = selectedMembers.filter(memberId => {
+        if (existingMemberIds.has(Number(memberId))) {
+            if (!messageShown) {
+                alert('既存のチームに所属しているメンバーはチーム作成に使用しません。');
+                messageShown = true;
+            }
+            return false;
+        }
+        return true;
+    });
+
+    // フィルタリング済みメンバーを設定してフォーム送信
+    document.getElementById('selected_members').value = JSON.stringify(filteredMembers);
+    document.getElementById('nextForm').submit();
+}
+
+
+
+
+
+    </script>
+
 {% endblock %}
