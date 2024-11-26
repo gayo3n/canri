@@ -103,7 +103,7 @@ def logout(request):
     return render(request, 'logout_confirmation.html')
 
 # アカウント管理
-def manage_account(request):
+class Manage_Account(TemplateView):
     template_name = "management_account.html"
 
     def get(self, request, *args, **kwargs):
@@ -117,12 +117,6 @@ def manage_account(request):
 
         return render(request, 'management_account.html', context)
 
-
-class AccountChangeView(TemplateView):
-    template_name = "account_change.html"
-
-class AccountChangeCompleteView(TemplateView):
-    template_name = "account_change_complete.html"
 
 # アイコン
 class AccountChangeEmployeeView(TemplateView):
@@ -152,7 +146,10 @@ def account_create_complete(request):
     form = UserForm(request.POST)
     if form.is_valid():
         form.save()
-    return render(request, 'account_create_complete.html')
+        return render(request, 'account_create_complete.html')
+    else:
+        form = UserForm()
+    return render(request, 'account_create_complete.html', {'form':form})
 
 # class AccountLogin(AuthLoginView):
 #     template_name = "login.html"
@@ -194,8 +191,8 @@ def account_delete(request, name):
     obj = get_object_or_404(User, name=name)
     if request.method == 'POST':
         obj.delete()
-        return redirect('account_delete_complete', name=name)
+        return redirect('accounts:account_delete_complete')
     return render(request, 'account_delete.html', {'object':obj})
 
-def account_delete_complete(request, name):
-    return render(request, 'account_delete_complete.html', name=name)
+def account_delete_complete(request):
+    return render(request, 'account_delete_complete.html')

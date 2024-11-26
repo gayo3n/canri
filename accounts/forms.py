@@ -9,7 +9,8 @@ User = get_user_model()
 class AccountAddForm(forms.Form):
         user_id = forms.CharField(
         required=True,
-        max_length=6,
+        max_length=24,
+        min_length=8,
         widget=forms.TextInput(
             attrs={
                 'placeholder':'',
@@ -19,8 +20,8 @@ class AccountAddForm(forms.Form):
     )
         password = forms.CharField(
         required=True,
-        max_length=255,
-        min_length=6,
+        max_length=20,
+        min_length=8,
         widget=forms.PasswordInput(
             attrs={
                 'placeholder':'******',
