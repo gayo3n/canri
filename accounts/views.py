@@ -101,7 +101,10 @@ def account_create_complete(request):
     form = UserForm(request.POST)
     if form.is_valid():
         form.save()
-    return render(request, 'account_create_complete.html')
+        return render(request, 'account_create_complete.html')
+    else:
+        form = UserForm()
+    return render(request, 'account_create_complete.html', {'form':form})
 
 # class AccountLogin(AuthLoginView):
 #     template_name = "login.html"
@@ -125,3 +128,26 @@ def account_create_complete(request):
 #         return render(request, 'login.html', {'form': form, 'error_message': error_message})
 
 # account_login = AccountLogin.as_view()
+
+def account_chaenge(request, name):
+    user_change = get_object_or_404(User, name=name)
+    form = UserForm(instance=user_change)
+    return render(request, 'account_change_employee.html', {'form': form})
+
+def account_change_complete(request, name):
+    user_change = get_object_or_404(User, name=name)
+    if request.method == "POST":
+        form = UserForm(request.POST, instance=user_change)
+        if form.is_valid():
+            form.save()
+    return render(request, 'account_change_employee_complete.html')
+
+def account_delete(request, name):
+    obj = get_object_or_404(User, name=name)
+    if request.method == 'POST':
+        obj.delete()
+        return redirect('accounts:account_delete_complete')
+    return render(request, 'account_delete.html', {'object':obj})
+
+def account_delete_complete(request):
+    return render(request, 'account_delete_complete.html')
