@@ -76,6 +76,7 @@ urlpatterns = [
     path('team_member_edit_past/', views.TeamMemberEditPastView.as_view(), name='team_member_edit_past'),
     path('team_member_edit_past/<int:member_id>/', views.TeamMemberEditPastView.as_view(), name='team_member_edit_past'),
     path('team_member_edit_save_past/', views.TeamMemberEditSavePastView.as_view(), name='team_member_edit_save_past'),
+    path('delete_past_project/', views.DeletePastProjectView.as_view(), name='delete_past_project'),
 
     #チーム詳細
     # path('team_detail/',views.team_detailView.as_view(), name='team_detail'),

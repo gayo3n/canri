@@ -645,7 +645,7 @@ class CreateTeam2View(TemplateView):
                 'end_date': end_date,  # 終了日
                 'teams': teams,  # チーム情報（リスト形式）
                 'team_type': team_type,  # チームの種類
-                'categories': categories,  # カテゴリ情報
+                'categories': categories,  # カテゴ��情報
             })
 
 #チーム追加2に戻る
@@ -761,7 +761,7 @@ class SaveTeamView(TemplateView):
             'team': team
         }
 
-        # save_team_api を呼�������������出してチームを保存
+        # save_team_api を呼�����������������出してチームを保存
         request._body = json.dumps(data).encode('utf-8')
         response = save_team_api(request)
         response_data = json.loads(response.content)
@@ -1075,7 +1075,7 @@ def project_detail_view(request, project_id):
     phases = ProjectProgressStatus.objects.filter(project=project)
 
     context = {
-        #プロジェクトテーブルの情報
+        #プロジェクトテーブルの情���
         'project': project,
         #プロジェクト所属チームテーブルの情報
         'teams': teams,
@@ -1425,7 +1425,7 @@ class project_detail_CreateTeam3View(TemplateView):
     template_name = "project_detail_create_team3.html"
 
     def post(self, request, *args, **kwargs):
-        # フォームから送信されたデータを取得
+        # フォームから送信されたデータを取��
         project_id=request.POST.get('project_id')
         project_name = request.POST.get('project_name')  # プロジェクト名
         project_description = request.POST.get('project_description')  # プロジェクトの説明
@@ -1459,7 +1459,7 @@ class project_detail_CreateTeam3View(TemplateView):
         if response.status_code == 200:
             # チーム作成成功時の処理
             team = response_data['team']
-            print("チームが作成されました:", team)  # ターミナルに作成されたチーム情報を表示
+            print("チームが作成されました:", team)  # ターミナルに作成されたチーム情報���表示
         else:
             # チーム作成失敗時の処理
             team = None
@@ -1545,7 +1545,7 @@ class project_detail_SaveTeamView(TemplateView):
 
 
             print("チームが保存されました:", team_id)  # チームIDをターミナルに表示
-            print("プロジェクトへの保存も完了;",ProjectAffiliation_Team)
+            print("プロ���ェクトへの保存も完了;",ProjectAffiliation_Team)
         else:
             # チーム保存失敗時の処理
             print(response_data)  # レスポンスのエラー内容を表示
@@ -1618,7 +1618,7 @@ def Post_projectListView(request):
     qs = Project.objects.all()
     qs=qs.filter(complete_flag=1,deletion_flag=0)
     if query:
-        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+        qs = qs.filter(project_name__icontains=query)  # プロジェ���ト名でフィルタリング
 
     ctx["project_list"] = qs
     return render(request, template_name, ctx)
@@ -1651,7 +1651,14 @@ class Past_ProjectView(TemplateView):
         if 'delete' in request.POST:
             try:
                 project = Project.objects.get(project_id=project_id)
-                project.deletion_flag = True
+                print(project.project_id)
+                print(project.project_name)
+                print(project.creation_date)
+                print(project.project_start_date)
+                print(project.project_end_date)
+                print(project.deletion_flag)
+                print(project.complete_flag)
+                project.deletion_flag = 1
                 project.save()
                 return HttpResponseRedirect(reverse('canri_app:delete_past_project'))
             except Project.DoesNotExist:
@@ -1661,6 +1668,8 @@ class Past_ProjectView(TemplateView):
             try:
                 project = Project.objects.get(project_id=project_id)
                 project.post_evaluation_memo = post_evaluation_memo
+                if not project.project_end_date:
+                    project.project_end_date = timezone.now()
                 project.save()
                 return HttpResponseRedirect(reverse('canri_app:save_past_project'))
             except Project.DoesNotExist:
@@ -1836,3 +1845,10 @@ class TeamMemberEditSavePastView(TemplateView):
         member.save()
 
         return JsonResponse({'status': 'success'})
+
+from django.shortcuts import render, redirect
+from .models import Project
+
+# 過去プロジェクト削除
+class DeletePastProjectView(TemplateView):
+    template_name = "delete_past_project.html"
