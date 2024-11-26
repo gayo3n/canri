@@ -27,6 +27,13 @@ h2 {
     color: #333;
 }
 
+/* ラベルの位置 */
+.input_format {
+    text-align: left; /* テキストを左寄せ */
+    display: block;   /* ラベルをブロック要素にする */
+    margin-bottom: 5px; /* 入力フィールドとの間隔を調整 */
+}
+
 /* 入力フィールドのスタイル */
 input[type="text"],
 input[type="password"] {

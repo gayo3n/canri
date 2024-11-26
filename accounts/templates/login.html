@@ -20,10 +20,12 @@
         <form action="{% url 'accounts:login' %}" method="post">
             {% csrf_token %}
             <div>
+                <label class="input_format">名前</label>
                 <input type="text" placeholder="半角でご入力ください" id="user_id" name="username" required>
             </div>
         
             <div>
+                <label class="input_format">パスワード</label>
                 <input type="password" placeholder="20文字以内の半角英数字でご入力ください" id="input_pass" name="password" required>
             </div>
         
