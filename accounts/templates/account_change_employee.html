@@ -8,7 +8,7 @@
 
     <div class="account_change">
         <h2>アカウント編集</h2>
-        <form action="ユーザアカウント変更" method="post">
+        <form action="{% url 'accounts:account_employee_complete' %}" method="post">
             <div>
                 <input type="text" id="user_name" name="name" placeholder="名前を入力してください" required>
             </div>
