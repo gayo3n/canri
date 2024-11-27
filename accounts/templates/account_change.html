@@ -1,17 +1,19 @@
 {% extends 'base2.html' %}
 {% block content %}
 <h2>ユーザアカウント変更</h2>
-    <form>
+    <form method="POST">
+        {% csrf_token %}
+    
         <label for="username">ユーザ名🔒</label>
-        <input type="text" id="username" name="username" value="#" readonly>
+        <input type="text" id="username" name="name" value="{{ item.name }}" readonly>
         
         <label for="userid">ユーザID🔒</label>
-        <input type="text" id="userid" name="userid" value="#" readonly>
+        <input type="text" id="userid" name="user_id" value="{{ item.user_id }}" readonly>
         
         <label for="password">パスワード</label>
         <input type="password" id="password" name="password" required>
         
-        <a href="{% url 'accounts:account_change_complete' %}">保存</a>
+        <button type="submit" a href="{% url 'accounts:account_change_complete' pk=user.pk %}">保存</button>
         <a href="{% url 'accounts:manage_account' %}">キャンセル</a>
     </form>
 

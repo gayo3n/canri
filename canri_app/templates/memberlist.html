@@ -1,4 +1,4 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
 
 {% load static %}
 
@@ -20,9 +20,12 @@
     {% for category in categories %}
     <div class="member-list">
         <div class="member-item">
-            <!--メンバーリストの中のリスト名-->
+            <!--メンバーリスト詳細-->
             <span>{{ category.category_name }}</span>
-            <a href="" class="detail-btn">詳細</a>
+            <form method="GET" action="{% url 'canri_app:memberlist_edit' %}">
+                <input type="hidden" name="category_id" value="{{ category.category_id }}">
+                <button type="submit" class="btn">詳細</button>
+            </form>
             <a href="{% url "canri_app:memberlist_delete" %}" class="delete-btn">&#128465;</a>
         </div>
     </div>

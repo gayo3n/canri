@@ -1,9 +1,8 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/past_project_list.css' %}">
 {% endblock %}
-
 
 {% block content %}
 <!-- 検索バー -->
@@ -18,10 +17,13 @@
 <div class="project-table">
     {% for project in project_list %}
     <div class="project-row">
-        <div class="project-name"><a href="{% url 'canri_app:past_project_view' project.project_id %}">{{ project.project_name }}</a></div>
+        <div class="project-name">
+            <a href="{% url 'canri_app:past_project_view' project.project_id %}">{{ project.project_name }}</a>
+        </div>
         <div class="project-period">プロジェクト開始日：<br>{{ project.project_start_date|date:"Y年m月d日" }}</div>
         <div class="project-complete">プロジェクト完了日：<br>{{ project.project_complete_date|date:"Y年m月d日" }}</div>
         <div class="project-details">プロジェクト詳細：<br>{{ project.project_detail }}</div>
+        <!-- 削除確認モーダルを開くリンク -->
         <a href="{% url 'canri_app:past_project_deleting_confirmation' %}" class="action-button">削除</a>
     </div>
     {% empty %}

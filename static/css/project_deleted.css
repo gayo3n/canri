@@ -1,0 +1,47 @@
+/* 全体のスタイル */
+.project_deleted {
+    text-align: center;  /* 中央揃え */
+    margin-top: 100px;   /* 上部に余白を追加 */
+    padding: 30px;
+    background-color: #ffffff;  /* 背景色を薄いグレーに */
+    border-radius: 10px;  /* 角丸 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* 軽いシャドウ効果 */
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 見出しのスタイル */
+.project_deleted h2 {
+    font-size: 24px;       /* フォントサイズ */
+    color: #333;           /* 文字色 */
+    margin-bottom: 30px;   /* 下部の余白 */
+}
+
+/* ボタンのコンテナ */
+.project_deleted a {
+    display: inline-block;
+    padding: 12px 30px;      /* パディング */
+    margin: 10px 15px;       /* ボタン間の余白 */
+    font-size: 18px;         /* フォントサイズ */
+    color: rgb(40, 140, 255);            /* 文字色 */
+    text-decoration: none;   /* 下線を削除 */
+    border-radius: 5px;      /* 角丸 */
+    transition: background-color 0.3s ease; /* 色の変化を滑らかに */
+}
+
+/* モバイル対応 */
+@media (max-width: 480px) {
+    .project_deleted {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    .project_deleted a {
+        display: block;          /* ボタンを縦に並べる */
+        margin: 10px 0;          /* 縦方向の余白 */
+        width: 80%;              /* 幅を調整 */
+        margin-left: auto;
+        margin-right: auto;
+    }
+}

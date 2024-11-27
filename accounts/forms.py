@@ -9,22 +9,21 @@ User = get_user_model()
 class AccountAddForm(forms.Form):
         user_id = forms.CharField(
         required=True,
-        max_length=6,
+        max_length=24,
+        min_length=8,
         widget=forms.TextInput(
             attrs={
-                'placeholder':'',
-                 'autocomplete': 'user_id'
+                'placeholder':''
             }
         )
     )
         password = forms.CharField(
         required=True,
-        max_length=255,
-        min_length=6,
+        max_length=20,
+        min_length=8,
         widget=forms.PasswordInput(
             attrs={
                 'placeholder':'******',
-                'autocomplete': 'current-password',
             }
         )
     )
@@ -34,8 +33,7 @@ class AccountAddForm(forms.Form):
         max_length=16,
         widget=forms.TextInput(
             attrs={
-                'placeholder':'',
-                'autocomplete': 'username',
+                'placeholder':''
             }
         )
     )
@@ -48,8 +46,21 @@ class AccountAddForm(forms.Form):
             password = self.cleaned_data['password']
             return password
         def clean_name(self):
-             name = self.cleaned_data['name']
-             return name
+            name = self.cleaned_data['name']
+            return name
+        def clean_user_id(self):
+            user_id = self.cleaned_data['user_id']
+            if User.objects.filter(userid=user_id).exists():
+                raise ValidationError('すでに使用されているIDです')
+            return user_id
+        def clean_password(self):
+            password = self.cleaned_data['password']
+            return password
+        def clean_username(self):
+            username = self.cleaned_data['name']
+            return username
+
+
 
 
 class UserForm(forms.ModelForm):
@@ -84,18 +95,4 @@ class UserCreationForm(UserCreationForm):
 
 
 class LoginForm(AuthenticationForm):
-    user_id = forms.CharField(
-        required=True,
-        max_length=6,
-        widget=forms.TextInput(
-            attrs={'placeholder': 'ユーザーID'}
-        )
-    )
-    password = forms.CharField(
-        required=True,
-        max_length=255,
-        min_length=6,
-        widget=forms.PasswordInput(
-            attrs={'placeholder': '******'}
-        )
-    )
+    pass

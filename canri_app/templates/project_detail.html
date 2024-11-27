@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends 'base2.html' %}
 {% load static %}
 {% block head %}
 
@@ -236,7 +236,7 @@ function updateEndDateMin(startDate) {
 
 <div class="container">
     <h2>{{ project.project_name }}</h2>
-    <h3>関連チーム</h3>
+    <h3>フィードバック</h3>
     <div class="teams-grid">
         {% for affiliation in teams %}
             <div class="team-card">

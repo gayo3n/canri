@@ -1,78 +1,95 @@
-{% extends 'base.html' %}
+{% extends 'base2.html' %}
 {% load static %}
+
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/past_project_view.css' %}">
 {% endblock %}
-{% block content %}
 
+{% block content %}
 <main class="main-content">
     <div class="split-container">
-        <!-- チームセクション -->
-        <section class="teams-section">
+        <!-- 左側の個人情報セクション -->
+        <section class="personal-info-section">
             <div class="container">
-                <h3>関連チーム</h3>
-                <div class="teams-grid">
-                    {% for team in teams %}
-                        <div class="team-card">
-                            <a href="{% url 'canri_app:team_edit_past' team_id=team.team_id%}?project_id={{ project.project_id}}">{{ team.team_name }}</a>
-                        </div>
-                    {% endfor %}
-                </div>  
+                <div class="personal-info-card">
+                    <h3>チームA</h3>
+                    <p><strong>名前:</strong> {{ user.name }}</p>
+                    <p><strong>役職:</strong> {{ user.position }}</p>
+                    <p><strong>所属チーム:</strong> {{ user.team }}</p>
+                    <p><strong>メールアドレス:</strong> {{ user.email }}</p>
+                </div>
+                <div class="personal-info-card">
+                    <h3>チームB</h3>
+                    <p><strong>名前:</strong> {{ user.name }}</p>
+                    <p><strong>役職:</strong> {{ user.position }}</p>
+                    <p><strong>所属チーム:</strong> {{ user.team }}</p>
+                    <p><strong>メールアドレス:</strong> {{ user.email }}</p>
+                </div>
+                <div class="personal-info-card">
+                    <h3>チームC</h3>
+                    <p><strong>名前:</strong> {{ user.name }}</p>
+                    <p><strong>役職:</strong> {{ user.position }}</p>
+                    <p><strong>所属チーム:</strong> {{ user.team }}</p>
+                    <p><strong>メールアドレス:</strong> {{ user.email }}</p>
+                </div>
+                <div class="personal-info-card">
+                    <h3>チームD</h3>
+                    <p><strong>名前:</strong> {{ user.name }}</p>
+                    <p><strong>役職:</strong> {{ user.position }}</p>
+                    <p><strong>所属チーム:</strong> {{ user.team }}</p>
+                    <p><strong>メールアドレス:</strong> {{ user.email }}</p>
+                </div>
             </div>
         </section>
 
-        <!-- 境界線 -->
+        <!-- 垂直線 -->
         <div class="vertical-line"></div>
 
-        <!-- プロジェクト詳細セクション -->
+        <!-- 右側のプロジェクト詳細セクション -->
         <section class="project-section">
-            <!--プロジェクト情報-->
-            <div class="project-list">
-                <div class="project-card">
-                    <form method="post" action="{% url 'canri_app:past_project_view' project_id=project.project_id %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="project_id" value="{{ project.project_id }}">
-                        <h1>{{ project.project_name }}</h1>
-                        <div class="horizontal-line"></div>
-                        <p>開始日: {{ project.creation_date|date:"Y年m月d日" }}</p>
-                        <p>完了日: {{ project.complete_date|date:"Y年m月d日" }}</p>
-                        <label for="post_evaluation_memo">プロジェクト詳細：</label>
-                        <p>&emsp;&emsp;{{ project.project_detail }}</p>
-                        <label for="post_evaluation_memo">事後評価メモ</label>
-                        <textarea id="post_evaluation_memo" name="post_evaluation_memo" rows="15" style="width: 100%; margin-bottom: 20px;">{{ project.post_evaluation_memo }}</textarea>
-                        <div class="button-container">
-                            <button type="button" class="feedbackbutton" onclick="openAddFeedback()">フィードバック</button>
-                            <button type="button" class="delete-button" onclick="openDeleteModal()">削除</button>
-                            <button type="submit" class="action-button">保存</button>
-                        </div>
-                    </form>
-                </div>
+            <div class="project-card">
+                <form method="post" action="{% url 'canri_app:past_project_view' project_id=project.project_id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="project_id" value="{{ project.project_id }}">
+                    <h1>{{ project.project_name }}</h1>
+                    <div class="horizontal-line"></div>
+                    <p><strong>開始日:</strong> {{ project.creation_date|date:"Y年m月d日" }}</p>
+                    <p><strong>完了日:</strong> {{ project.complete_date|date:"Y年m月d日" }}</p>
+                    <label for="post_evaluation_memo">プロジェクト詳細：</label>
+                    <p>{{ project.project_detail }}</p>
+                    <label for="post_evaluation_memo">事後評価メモ</label>
+                    <textarea id="post_evaluation_memo" name="post_evaluation_memo" rows="15" style="width: 100%; margin-bottom: 20px;">{{ project.post_evaluation_memo }}</textarea>
+                    <div class="button-container">
+                        <button type="button" class="feedbackbutton" onclick="openAddFeedback()">フィードバック</button>
+                        <button type="button" class="delete-button" onclick="openDeleteModal()">削除</button>
+                        <button type="submit" class="action-button">保存</button>
+                    </div>
+                </form>
             </div>
         </section>
     </div>
 </main>
 
-<!-- フィードバックモーダルのHTML -->
+<!-- モーダル -->
 <div class="modal" style="display: none;">
     <div class="modal-content" style="width: 70%; max-width: 1000px;">
         <span class="close" onclick="closeFeedbackModal()">&times;</span>
         <div id="modal-body">
-            <!-- feedback_application.htmlの内容がここに読み込まれる -->        
+            <!-- feedback_application.htmlの内容 -->
         </div>
     </div>
 </div>
 
-<!-- フィードバック保存完了モーダルのHTML -->
 <div class="modal" id="saveCompleteModal" style="display: none;">
     <div class="modal-content" style="width: 70%; height: 30vh; max-width: 1000px;">
         <span class="close" onclick="closeSaveCompleteModal()">&times;</span>
         <div id="save-complete-body">
-            <!-- feedback_save_complete.htmlの内容がここに読み込まれる -->
+            <!-- feedback_save_complete.htmlの内容 -->
         </div>
     </div>
 </div>
 
-<!-- 削除確認モーダルのHTML -->
+<!-- 削除確認モーダル -->
 <div class="modal" id="deleteModal" style="display: none;">
     <div class="modal-content" style="width: 50%; max-width: 600px;">
         <span class="close" onclick="closeDeleteModal()">&times;</span>
@@ -87,14 +104,13 @@
 </div>
 
 <script>
-    // フィードバックモーダルを開く
+    // モーダル操作関数
     function openAddFeedback() {
         const projectId = document.querySelector('input[name="project_id"]').value;
         if (!projectId) {
             console.error('Project ID is missing');
             return;
         }
-
         fetch("{% url 'canri_app:feedback' project_id=0 %}".replace('0', projectId))
             .then(response => response.text())
             .then(html => {
@@ -103,37 +119,18 @@
             })
             .catch(error => console.error('Error loading feedback application:', error));
     }
-
-    // フィードバックモーダルを閉じる
     function closeFeedbackModal() {
         document.querySelector('.modal').style.display = 'none';
     }
-
-    // フィードバック保存完了モーダルを閉じる
     function closeSaveCompleteModal() {
         document.getElementById('saveCompleteModal').style.display = 'none';
     }
-
-    // 削除確認モーダルを開く
     function openDeleteModal() {
         document.getElementById('deleteModal').style.display = 'block';
     }
-
-    // 削除確認モーダルを閉じる
     function closeDeleteModal() {
         document.getElementById('deleteModal').style.display = 'none';
     }
-
-    // フィードバックを保存する
-    function saveFeedback() {
-        fetch("{% url 'canri_app:feedback_save' %}")
-        .then(response => response.text())
-        .then(html => {
-            document.querySelector('.modal').style.display = 'none';
-            document.getElementById('save-complete-body').innerHTML = html;
-            document.getElementById('saveCompleteModal').style.display = 'block';
-        })
-        .catch(error => console.error('Error saving feedback:', error));
-    }
 </script>
+
 {% endblock %}

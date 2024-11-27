@@ -1,7 +1,7 @@
 from django.contrib.auth.views import LogoutView, LoginView 
 from django.shortcuts import render, redirect, get_object_or_404, redirect
-from django.contrib.auth import login, get_user_model, logout as auth_logout, authenticate
-from django.urls import reverse
+from django.contrib.auth import login, get_user_model, logout, authenticate as auth_logout
+from django.urls import reverse_lazy
 from django.views import View, generic
 from django.views.generic.base import TemplateView
 from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm
@@ -15,59 +15,6 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
 from .models import User
 
-def login_view(request):
-    # リクエストメソッドがPOSTかどうかを確認
-    if request.method == "POST":
-        # リクエストからユーザー名とパスワードを取得
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-
-        try:
-            # ユーザー名でユーザーを取得しようとする
-            user = User.objects.get(username=username)
-            # 提供されたパスワードが保存されたパスワードと一致するか確認
-            if auth_logout(request, username=user.username, password=password):  # ハッシュ化されたパスワードを比較
-                login(request, user)  # ユーザーをログインさせる
-                return redirect("accounts:login_complete")  # ログイン完了ページにリダイレクト
-            else:
-                # パスワードが間違っている場合、エラーメッセージを表示
-                return render(request, "login.html", {"error_message": "パスワードが正しくありません"})
-        except User.DoesNotExist:
-            # ユーザーが存在しない場合、エラーメッセージを表示
-            return render(request, "login.html", {"error_message": "ユーザーが存在しません"})
-
-    # リクエストメソッドがPOSTでない場合、ログインページを表示
-    return render(request, "login.html")
-
-
-@login_required  # ログイン必須にするデコレータ
-def login_complete_view(request):
-    return render(request, "login_complete.html")  # login_complete.htmlを表示
-
-# class LoginView(TemplateView):
-#     form_class = UserForm
-#     template_name = 'login.html'
-#     def post(self, request, *args, **kwargs):
-#         return render(request, 'login_complete.html')
-
-def acclogin(request):
-    if request.method == 'POST':
-        form = LoginForm(request, data=request.POST)
-        if form.is_valid():
-            user_id = form.cleaned_data.get('user_id')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, user_id=user_id, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('login_complete', user_id=user.id)  
-    else:
-        form = LoginForm()
-    return render(request, 'login.html', {'form': form})
-
-def logincomp(request, user_id):
-    return render(request, 'login_complete.html', {'user_id': user_id})
-
-    
 class LoginFailView(TemplateView):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_failure.html')
@@ -76,10 +23,18 @@ class LoginFailView(TemplateView):
 #     def post(self, request):
 #         return redirect('logout_confirmation')
 
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
+    success_url = reverse_lazy('login_complete')  # ログイン成功時のリダイレクト先
+
+class LoginCompView(TemplateView):
+    template_name = 'login_complete.html'
+
+class LogoutConfView(TemplateView):
+    template_name = 'logout_confirmation.html'
+
 class LogoutCompView(TemplateView):
-    template_name = 'logout_confirmation_complete.html'
-    def post(self, request, *args, **kwargs):
-        return render(request, 'logout_complete.html')
+    template_name = 'logout_complete.html'
 
 # class AccLoginView(LoginView):
 #     def login(request):
@@ -103,7 +58,7 @@ def logout(request):
     return render(request, 'logout_confirmation.html')
 
 # アカウント管理
-def manage_account(request):
+class Manage_Account(TemplateView):
     template_name = "management_account.html"
 
     def get(self, request, *args, **kwargs):
@@ -117,12 +72,6 @@ def manage_account(request):
 
         return render(request, 'management_account.html', context)
 
-
-class AccountChangeView(TemplateView):
-    template_name = "account_change.html"
-
-class AccountChangeCompleteView(TemplateView):
-    template_name = "account_change_complete.html"
 
 # アイコン
 class AccountChangeEmployeeView(TemplateView):
@@ -139,8 +88,8 @@ def create(request):
         form = AccountAddForm(request.POST)
         if form.is_valid():
             user = User.objects.create_user(
-                name=form.cleaned_data['name'],
                 user_id=form.cleaned_data['user_id'],
+                name=form.cleaned_data['name'],
                 password=form.cleaned_data['password']
             )
             return render(request, 'account_create_complete.html', {'user_id': user.user_id})
@@ -152,7 +101,10 @@ def account_create_complete(request):
     form = UserForm(request.POST)
     if form.is_valid():
         form.save()
-    return render(request, 'account_create_complete.html')
+        return render(request, 'account_create_complete.html')
+    else:
+        form = UserForm()
+    return render(request, 'account_create_complete.html', {'form':form})
 
 # class AccountLogin(AuthLoginView):
 #     template_name = "login.html"
@@ -177,25 +129,31 @@ def account_create_complete(request):
 
 # account_login = AccountLogin.as_view()
 
-def account_chaenge(request, name):
-    user_change = get_object_or_404(User, name=name)
-    form = UserForm(instance=user_change)
-    return render(request, 'account_change_employee.html', {'form': form})
-
-def account_change_complete(request, name):
-    user_change = get_object_or_404(User, name=name)
+def manage_account_change(request, pk):
+    item = User.objects.get(user_id=pk)
+    form = UserForm(instance=item)
     if request.method == "POST":
-        form = UserForm(request.POST, instance=user_change)
+        form = UserForm(request.POST, instance=item)
         if form.is_valid():
             form.save()
-    return render(request, 'account_change_employee_complete.html')
+            return redirect("accounts:account_change_complete", pk=pk)
+        
+    context = {
+        "form": form,
+        "item": item
+    }
+    return render(request, 'account_change.html', context)
+
+def account_change_complete(request, pk):
+    return render(request, 'account_change_complete.html', {'pk':pk})
+    
 
 def account_delete(request, name):
     obj = get_object_or_404(User, name=name)
     if request.method == 'POST':
         obj.delete()
-        return redirect('account_delete_complete', name=name)
+        return redirect('accounts:account_delete_complete')
     return render(request, 'account_delete.html', {'object':obj})
 
-def account_delete_complete(request, name):
-    return render(request, 'account_delete_complete.html', name=name)
+def account_delete_complete(request):
+    return render(request, 'account_delete_complete.html')
