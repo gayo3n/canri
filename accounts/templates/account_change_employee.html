@@ -5,33 +5,6 @@
 {% endblock %}
 {% block content %}
 
-<<<<<<< HEAD
-<h2>アカウント編集</h2>
-    <div>
-        <form action="{% url 'accounts:account_change_complete' pk=item.id %}" method="post">
-            {% csrf_token %}
-
-            <div>
-                <input type="text" id="name" name="name" value="{{ item.name }} required>
-            </div>
-
-            <div>
-                <input type="text" id="user_id" name="id" value="{{ item.user_id }}" required>
-            </div>
-
-            <div>
-                <input type="text" id="password" name="password" required>
-            </div>
-            <div>
-                <td><button type="submit" class="btn btn-danger">保存</button></td>
-            </div>
-            <div>
-                <td><a href="{% url 'canri_app:index' %}" class="btn btn-danger">キャンセル</a></td>
-            </div>
-    </div>
-
-{% endblock %}
-=======
 
     <div class="account_change">
         <h2>アカウント編集</h2>
@@ -52,4 +25,3 @@
 </div>
 
 {% endblock %}
->>>>>>> 84bbdff162f5902360b74ff3ce868244501e8998
