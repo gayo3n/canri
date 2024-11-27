@@ -13,7 +13,7 @@
     <section class="search-section">
         <form method="GET">
             {% csrf_token %}
-            <input type="search" name="query" value="{{ request.POST.query }}" placeholder="メンバー名で検索"/>
+            <input type="search" name="query" value="{{ request.GET.query }}" placeholder="メンバー名で検索"/>
             <button type="submit" class="btn">検索</button>
         </form>
 
@@ -33,7 +33,7 @@
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p }}
+            <a>{{ form.as_p }}</a>
             <button type="submit">アップロード</button>
         </form>
         <form method="GET" action="{% url 'canri_app:member_make' %}">
