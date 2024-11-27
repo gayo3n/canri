@@ -70,7 +70,7 @@
     </div>
 </main>
 
-<!-- モーダル -->
+<!-- フィードバックモーダル -->
 <div class="modal" style="display: none;">
     <div class="modal-content" style="width: 70%; max-width: 1000px;">
         <span class="close" onclick="closeFeedbackModal()">&times;</span>
@@ -143,7 +143,7 @@
 </div>
 
 <script>
-    // モーダル操作関数
+    // フィードバックモーダルを開く
     function openAddFeedback() {
         const projectId = document.querySelector('input[name="project_id"]').value;
         if (!projectId) {
