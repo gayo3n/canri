@@ -18,10 +18,6 @@ from .models import User
 class LoginFailView(TemplateView):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_failure.html')
-    
-# class LogoutConfView(TemplateView):
-#     def post(self, request):
-#         return redirect('logout_confirmation')
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
@@ -35,23 +31,6 @@ class LogoutConfView(TemplateView):
 
 class LogoutCompView(TemplateView):
     template_name = 'logout_complete.html'
-
-# class AccLoginView(LoginView):
-#     def login(request):
-#         if request.method == "POST":
-#             form = LoginForm(request, data=request.POST)
-#             if form.is_valid():
-#                 user = form.get_user()
-#                 if user:
-#                     login(request, user)
-#         else:
-#             form = LoginForm()
-        
-#         param = {
-#             'form': form,
-#         }
-#         return render(request, 'login.html', param)
-
 
 def logout(request):
     auth_logout(request)
@@ -123,7 +102,6 @@ def manage_account_change(request, pk):
 
 def account_change_complete(request, pk):
     return render(request, 'account_change_complete.html', {'pk':pk})
-    
 
 def account_delete(request, name):
     obj = get_object_or_404(User, name=name)
