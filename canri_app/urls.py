@@ -47,7 +47,7 @@ urlpatterns = [
     #プロジェクト一覧
     path('progress_within_projectlist/', views.progress_within_ProjectlistView.as_view(), name='projectlist'),
     path('post_projectlist/', views.progress_within_ProjectlistView.as_view(), name='post_projectlist'),
-    path('project/', projectListView, name='project'),                                                      #進行中プロジェクト選択時利用
+    path('project/', projectListView, name='project'),                                                      #進行中プロジェクト選択時利���
 
     #プロジェクト詳細
     # path('project_detail/', views.Project_detailView.as_view(), name='project_detail'),
@@ -71,6 +71,7 @@ urlpatterns = [
     path('save_past_project/', views.Project_Save_CompleteView.as_view(), name='save_past_project'),
     path('feedback/save/', views.FeedbackSaveView.as_view(), name='feedback_save'),
     path('feedback/<int:project_id>/', views.FeedbackView.as_view(), name='feedback'),
+    path('feedback/delete/', views.delete_feedback, name='delete_feedback'),
     path('team_edit_past/<int:team_id>/', views.TeamEditPastView.as_view(), name='team_edit_past'),
     path('team_edit_past/complete/<int:project_id>/', views.TeamEditPastCompleteView.as_view(), name='team_edit_past_complete'),
     path('team_member_edit_past/', views.TeamMemberEditPastView.as_view(), name='team_member_edit_past'),
@@ -95,5 +96,6 @@ urlpatterns = [
     path('api/save_member_memo/', api.save_member_memo, name='save_member_memo'),
     path('api/move_member_to_team/', api.move_member_to_team, name='move_member_to_team'),
     path('api/get_p_project_detail/<int:project_id>/', api.get_p_project_detail, name='get_p_project_detail'),
+    path('api/get_members_by_project/<int:project_id>/', api.get_members_by_project, name='get_members_by_project'),
 
 ]

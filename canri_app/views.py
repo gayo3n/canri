@@ -761,7 +761,7 @@ class SaveTeamView(TemplateView):
             'team': team
         }
 
-        # save_team_api を呼�����������������出してチームを保存
+        # save_team_api を呼び出してチームを保存
         request._body = json.dumps(data).encode('utf-8')
         response = save_team_api(request)
         response_data = json.loads(response.content)
@@ -1639,9 +1639,16 @@ class Past_ProjectView(TemplateView):
         affiliation_teams = ProjectAffiliationTeam.objects.filter(project_id=project_id)
         teams = Team.objects.filter(team_id__in=[team.team.team_id for team in affiliation_teams])
 
+        # フィードバックデータを取得
+        feedbacks = Feedback.objects.filter(project_id=project_id, deletion_flag=0)
+        team_members = TeamMember.objects.filter(team_id__in=teams, deletion_flag=0)
+        members = Member.objects.filter(member_id__in=team_members, deletion_flag=0)
+
         context = {
             'project': project_data,
-            'teams': teams
+            'teams': teams,
+            'members': members,
+            'feedbacks': feedbacks
         }
 
         return render(request, self.template_name, context)
@@ -1683,31 +1690,48 @@ class FeedbackView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         project_id = kwargs.get('project_id')
+        teams = Team.objects.filter(team_id__in=ProjectAffiliationTeam.objects.filter(project_id=project_id,deletion_flag=0).values_list('team_id', flat=True))
+        team_members = TeamMember.objects.filter(team_id__in=teams, deletion_flag=0)
+        members = Member.objects.filter(member_id__in=team_members, deletion_flag=0)
+        feedbacks = Feedback.objects.filter(project_id=project_id, deletion_flag=0)
         context = {
-            'project_id': project_id
+            'project_id': project_id,
+            'members': members,
+            'feedbacks': feedbacks
         }
         return render(request, self.template_name, context)
 
 #フィードバック保存
 class FeedbackSaveView(TemplateView):
     template_name = "feedback_save_complete.html"
-
+    
     def post(self, request, *args, **kwargs):
+        project_id = request.POST.get('project_id')
+        member1_id = request.POST.get('member1')
+        member2_id = request.POST.get('member2')
+        priority = request.POST.get('priority')
+
+        Feedback.objects.create(
+            member1_id=member1_id,
+            member2_id=member2_id,
+            project_id=project_id,
+            priority_flag=(priority == '1'),
+            creation_date=timezone.now(),
+            expiration_date=timezone.now(),
+            deletion_flag=False
+        )
+
         context = {}
         return render(request, self.template_name, context)
-    # def post(self, request, *args, **kwargs):
-    #     project_id = request.POST.get('project_id')
-    #     feedback_content = request.POST.get('feedback')
 
-    #     # デバッグ用に受け取った値を表示
-    #     print("Received project_id:", project_id)
-    #     print("Received feedback_content:", feedback_content)
-
-    #     context = {
-    #         'project_id': project_id,
-    #         'feedback_content': feedback_content
-    #     }
-    #     return render(request, self.template_name, context)
+# フィードバック削除
+@require_http_methods(["POST"])
+def delete_feedback(request):
+    feedback_id = request.POST.get('feedback_id')
+    feedback = get_object_or_404(Feedback, feedback_id=feedback_id)
+    feedback.deletion_flag = True
+    feedback.save()
+    return JsonResponse({'status': 'success'})
 
 #過去プロジェクトチーム編集
 class TeamEditPastView(TemplateView):
@@ -1838,14 +1862,6 @@ class TeamMemberEditSavePastView(TemplateView):
         member.save()
 
         return JsonResponse({'status': 'success'})
-<<<<<<< HEAD
     
-=======
-
-from django.shortcuts import render, redirect
-from .models import Project
-
-# 過去プロジェクト削除
->>>>>>> 3e9a81f0c5d11732ea6787e6e49556ba635a0bb7
 class DeletePastProjectView(TemplateView):
     template_name = "delete_past_project.html"

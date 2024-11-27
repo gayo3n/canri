@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <title>Can理</title>
     {% load static %}
-<<<<<<< HEAD
-    <link rel="icon" href="{% static 'img/favicon.ico' %}">
-=======
->>>>>>> 3e9a81f0c5d11732ea6787e6e49556ba635a0bb7
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     {% block head %}{% endblock %}
 </head>
@@ -21,15 +17,8 @@
                 <div class="bar"></div>
             </div>
             <div class="navbar-left">
-<<<<<<< HEAD
-                <img src="{% static 'img/logo.png' %}" alt="ロゴ" class="img">
-                <a href="{% url 'canri_app:index' %}" class="logo">
-                    ホーム
-                </a>
-=======
                 <img src="{% static 'img/logo.png' %}" alt="ロゴ">
                 <a href="{% url 'canri_app:index' %}" class="logo">ホーム</a>
->>>>>>> 3e9a81f0c5d11732ea6787e6e49556ba635a0bb7
                 <a href="{% url 'canri_app:new_project' %}">新規プロジェクト</a>
                 <a href="{% url 'canri_app:project' %}">進行中プロジェクト</a>
                 <a href="{% url 'canri_app:past_project'%}">過去プロジェクト</a>
@@ -37,12 +26,7 @@
             </div>
             <div class="navbar-right">
                 <a href="{% url 'accounts:account_change_employee' %}" class="user-icon">
-<<<<<<< HEAD
-                    <img src="{% static 'images/user-icon.png' %}" alt="管理者アイコン">
-                    管理者名
-=======
                     <img src="{% static 'img/user_icon.png' %}" alt="管理者アイコン">{{ name}}
->>>>>>> 3e9a81f0c5d11732ea6787e6e49556ba635a0bb7
                 </a>
                 <a href="{% url 'accounts:logout_confirmation' %}">ログアウト</a>
             </div>
