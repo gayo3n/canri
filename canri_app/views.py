@@ -224,7 +224,7 @@ class MemberListMakeCompleteView(TemplateView):
 class MemberListEditView(TemplateView):
     template_name = "memberList_edit.html"
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, category_id, *args, **kwargs):
         # セッションデータの初期化
         if 'memberID_list' in request.session:
             del request.session['memberID_list']
@@ -235,26 +235,30 @@ class MemberListEditView(TemplateView):
         category = None
 
         # URL パラメータからリストIDを取得
-        category_id = request.GET.get('category_id')
+        category_id_from_query = request.GET.get('category_id')
 
-        if category_id:
-            # category_id に基づいて MemberList をフィルタリング
-            member_ids = MemberList.objects.filter(category_id=category_id)
+        # category_id を URL から取得した場合は優先して使用
+        if category_id_from_query:
+            category_id = category_id_from_query
 
-            # QuerySetからリストを作成
-            memberID_list = [member.member_id for member in member_ids]
+        # category_id に基づいて MemberList をフィルタリング
+        member_ids = MemberList.objects.filter(category_id=category_id)
 
-            # member_id に基づいて Member モデルから情報を取得
-            members_in_list = Member.objects.filter(member_id__in=memberID_list)
+        # QuerySetからリストを作成
+        memberID_list = [member.member_id for member in member_ids]
 
-            # ID と名前の辞書を作成
-            member_dict = {member.member_id: member.name for member in members_in_list}
+        # member_id に基づいて Member モデルから情報を取得
+        members_in_list = Member.objects.filter(member_id__in=memberID_list)
 
-            # カテゴリ名と詳細を取得
-            category = get_object_or_404(Category, category_id=category_id)
-        else:
-            memberID_list = []
-            member_dict = {}
+        # ID と名前の辞書を作成
+        member_dict = {member.member_id: member.name for member in members_in_list}
+
+        # カテゴリ名と詳細を取得
+        category = get_object_or_404(Category, category_id=category_id)
+        
+        # カテゴリ情報をセッションに保存
+        request.session['category_name'] = category.category_name
+        request.session['category_detail'] = category.detail
 
         # セッションにリストを保存
         request.session['memberID_list'] = memberID_list
@@ -270,11 +274,13 @@ class MemberListEditView(TemplateView):
             'memberID_list': memberID_list,
             'member_dict': member_dict,  # 追加: 名前情報を渡す
             'category': category,
+            'category_name': request.session.get('category_name', ''),  # セッションから取得したカテゴリ名
+            'category_detail': request.session.get('category_detail', ''),  # セッションから取得したカテゴリ詳細
             'category_id': category_id,
         }
         return render(request, self.template_name, context)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, category_id, *args, **kwargs):
         # セッションから memberID_list を取得
         memberID_list = request.session.get('memberID_list', [])
 
@@ -299,9 +305,6 @@ class MemberListEditView(TemplateView):
         # セッションに memberID_list を保存
         request.session['memberID_list'] = memberID_list
 
-        # URL パラメータからリストIDを取得
-        category_id = request.GET.get('category_id')
-
         # カテゴリ名と詳細を取得
         category = get_object_or_404(Category, category_id=category_id)
 
@@ -313,6 +316,10 @@ class MemberListEditView(TemplateView):
 
         members = self.get_queryset()
 
+        # セッションにカテゴリ情報を保存
+        request.session['category_name'] = category.category_name
+        request.session['category_detail'] = category.detail
+
         # コンテキストにリストと名前情報を渡す
         context = {
             'members': members,
@@ -323,8 +330,6 @@ class MemberListEditView(TemplateView):
         }
         return render(request, self.template_name, context)
 
-
-
     # メンバー検索
     def get_queryset(self):
         query = self.request.GET.get('query')
@@ -334,7 +339,7 @@ class MemberListEditView(TemplateView):
             # フォーム未入力の場合はすべて
             members = Member.objects.all()
         return members
-    
+
     def upload_csv(request):
         if request.method == 'POST':
             form = CSVUploadForm(request.POST, request.FILES)
@@ -353,7 +358,7 @@ class MemberListEditView(TemplateView):
             form = CSVUploadForm()
 
         return render(request, 'upload_csv.html', {'form': form})
-
+    
 
 # -----メンバーリスト編集保存-----
 class MemberListEditCompleteView(TemplateView):
@@ -379,7 +384,7 @@ class MemberListEditCompleteView(TemplateView):
         if errors:
             for error in errors:
                 messages.error(request, error)
-            return redirect(reverse('canri_app:memberlist_make'))  # 元のページにリダイレクト
+            return redirect(reverse('canri_app:memberlist_edit'))  # 元のページにリダイレクト
 
         # エラーがなければカテゴリを保存
         if member_list_name and member_list_details:
@@ -393,7 +398,7 @@ class MemberListEditCompleteView(TemplateView):
 
             except Category.DoesNotExist:
                 messages.error(request, "保存に失敗しました。")
-                return redirect(reverse('canri_app:memberlist_make'))
+                return redirect(reverse('canri_app:memberlist_edit'))
 
             # POSTデータから memberID_list を取得
             member_id_list = request.POST.getlist('memberID_list')
@@ -870,7 +875,7 @@ class SaveTeamView(TemplateView):
             'team': team
         }
 
-        # save_team_api を呼�����������������出してチームを保存
+        # save_team_api を呼び出してチームを保存
         request._body = json.dumps(data).encode('utf-8')
         response = save_team_api(request)
         response_data = json.loads(response.content)
@@ -1748,9 +1753,16 @@ class Past_ProjectView(TemplateView):
         affiliation_teams = ProjectAffiliationTeam.objects.filter(project_id=project_id)
         teams = Team.objects.filter(team_id__in=[team.team.team_id for team in affiliation_teams])
 
+        # フィードバックデータを取得
+        feedbacks = Feedback.objects.filter(project_id=project_id, deletion_flag=0)
+        team_members = TeamMember.objects.filter(team_id__in=teams, deletion_flag=0)
+        members = Member.objects.filter(member_id__in=team_members, deletion_flag=0)
+
         context = {
             'project': project_data,
-            'teams': teams
+            'teams': teams,
+            'members': members,
+            'feedbacks': feedbacks
         }
 
         return render(request, self.template_name, context)
@@ -1792,31 +1804,48 @@ class FeedbackView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         project_id = kwargs.get('project_id')
+        teams = Team.objects.filter(team_id__in=ProjectAffiliationTeam.objects.filter(project_id=project_id,deletion_flag=0).values_list('team_id', flat=True))
+        team_members = TeamMember.objects.filter(team_id__in=teams, deletion_flag=0)
+        members = Member.objects.filter(member_id__in=team_members, deletion_flag=0)
+        feedbacks = Feedback.objects.filter(project_id=project_id, deletion_flag=0)
         context = {
-            'project_id': project_id
+            'project_id': project_id,
+            'members': members,
+            'feedbacks': feedbacks
         }
         return render(request, self.template_name, context)
 
 #フィードバック保存
 class FeedbackSaveView(TemplateView):
     template_name = "feedback_save_complete.html"
-
+    
     def post(self, request, *args, **kwargs):
+        project_id = request.POST.get('project_id')
+        member1_id = request.POST.get('member1')
+        member2_id = request.POST.get('member2')
+        priority = request.POST.get('priority')
+
+        Feedback.objects.create(
+            member1_id=member1_id,
+            member2_id=member2_id,
+            project_id=project_id,
+            priority_flag=(priority == '1'),
+            creation_date=timezone.now(),
+            expiration_date=timezone.now(),
+            deletion_flag=False
+        )
+
         context = {}
         return render(request, self.template_name, context)
-    # def post(self, request, *args, **kwargs):
-    #     project_id = request.POST.get('project_id')
-    #     feedback_content = request.POST.get('feedback')
 
-    #     # デバッグ用に受け取った値を表示
-    #     print("Received project_id:", project_id)
-    #     print("Received feedback_content:", feedback_content)
-
-    #     context = {
-    #         'project_id': project_id,
-    #         'feedback_content': feedback_content
-    #     }
-    #     return render(request, self.template_name, context)
+# フィードバック削除
+@require_http_methods(["POST"])
+def delete_feedback(request):
+    feedback_id = request.POST.get('feedback_id')
+    feedback = get_object_or_404(Feedback, feedback_id=feedback_id)
+    feedback.deletion_flag = True
+    feedback.save()
+    return JsonResponse({'status': 'success'})
 
 #過去プロジェクトチーム編集
 class TeamEditPastView(TemplateView):
@@ -1947,10 +1976,6 @@ class TeamMemberEditSavePastView(TemplateView):
         member.save()
 
         return JsonResponse({'status': 'success'})
-
-from django.shortcuts import render, redirect
-from .models import Project
-
-# 過去プロジェクト削除
+    
 class DeletePastProjectView(TemplateView):
     template_name = "delete_past_project.html"
