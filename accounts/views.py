@@ -129,8 +129,8 @@ def account_create_complete(request):
 
 # account_login = AccountLogin.as_view()
 
-def account_change(request, pk):
-    item = User.objects.get(id=pk)
+def manage_account_change(request, pk):
+    item = User.objects.get(user_id=pk)
     form = UserForm(instance=item)
     if request.method == "POST":
         form = UserForm(request.POST, instance=item)
@@ -139,13 +139,13 @@ def account_change(request, pk):
             return redirect("accounts:account_change_complete", pk=pk)
         
     context = {
-        "form":form,
-        "item": item 
+        "form": form,
+        "item": item
     }
-    return render(request, 'accounts/account_change_employee.html', context)
+    return render(request, 'account_change.html', context)
 
 def account_change_complete(request, pk):
-    return render(request, 'account_change_employee_complete.html', {'pk':pk})
+    return render(request, 'account_change_complete.html', {'pk':pk})
     
 
 def account_delete(request, name):

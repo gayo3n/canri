@@ -10,29 +10,6 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-<<<<<<< HEAD
-    <header>
-        <nav class="navbar">
-            <div class="navbar-left">
-                <img src="{% static 'img/logo.png' %}" alt="ロゴ" class="img">
-                <a href="{% url 'canri_app:index' %}" class="logo">
-                    ホーム
-                </a>
-                <a href="{% url 'canri_app:new_project' %}">新規プロジェクト</a>
-                <a href="{% url 'canri_app:project' %}">進行中プロジェクト</a>
-                <a href="{% url 'canri_app:past_project'%}">過去プロジェクト</a>
-                <a href="{% url 'canri_app:memberlist' %}">メンバーリスト</a>
-            </div>
-            <div class="navbar-right">
-                <a href="{% url 'accounts:account_change_employee' %}" class="user-icon">
-                    <img src="{% static 'images/user-icon.png' %}" alt="社員アイコン">
-                    社員名
-                </a>
-                <a href="{% url 'accounts:logout_confirmation' %}">ログアウト</a>
-            </div>
-        </nav>
-    </header>
-=======
         <header>
             <nav class="navbar">
                 <div class="navbar-left">
@@ -54,7 +31,6 @@
                 </div>
             </nav>
         </header>
->>>>>>> 3e9a81f0c5d11732ea6787e6e49556ba635a0bb7
     <main>
         {% block content %}{% endblock %}
     </main>
