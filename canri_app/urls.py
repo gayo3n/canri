@@ -25,7 +25,7 @@ urlpatterns = [
     path('member/upload_csv/', views.FileUploadView.as_view(), name='member_csv_upload'),
     path('member/make/complete/', views.MemberMakeCompleteView.as_view(), name='member_make_complete'),
     path('member/delete/', views.MemberMakeDeleteView.as_view(), name='member_delete'),
-    path('member/delete/complete/', views.MemberListDeleteOkView.as_view(), name='member_delete_complete'),
+    path('member/delete/complete/', views.MemberMakeDeleteOkView.as_view(), name='member_delete_complete'),
 
 
 

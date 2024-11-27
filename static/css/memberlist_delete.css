@@ -72,7 +72,8 @@
     background-color: #fff;
     margin: 15% auto;
     padding: 20px;
-    width: 300px;
+    width: 80%;
+    max-width: 600px;
     position: relative;
     text-align: center;
 }

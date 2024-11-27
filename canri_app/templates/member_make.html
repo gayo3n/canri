@@ -10,14 +10,6 @@
 <form class="center" method="post" action="{% url 'canri_app:member_make_complete' %}">
     {% csrf_token %}
 
-    {% comment %} メンバーID {% endcomment %}
-    <div class="form-area">
-        <label for="member_id">メンバーID</label>
-        <!-- member_idを隠しフィールドで送信 -->
-        <input type="hidden" id="member_id" name="member_id" value="{{ member_id }}">
-        <h3>{{ member_id }}</h3>
-    </div>
-
     {% comment %} 名前 {% endcomment %}
     <div class="form-area">
         <label for="name">名前</label>
