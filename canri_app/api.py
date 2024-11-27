@@ -406,32 +406,35 @@ def save_project_api(request):
 @require_http_methods(["POST"])
 def delete_team_api(request):
     try:
+        # リクエストのボディをJSON形式で解析
         data = json.loads(request.body)
-        team_id = data.get('team_id')
-        teams = data.get('teams')
-        project_name = data.get('project_name')
-        project_description = data.get('project_description')
-        start_date = data.get('start_date')
-        end_date = data.get('end_date')
+        team_id = data.get('team_id')  # 削除対象のチームID
+        teams = data.get('teams')  # 更新後のチームリスト
+        project_name = data.get('project_name')  # プロジェクト名
+        project_description = data.get('project_description')  # プロジェクト説明
+        start_date = data.get('start_date')  # プロジェクト開始日
+        end_date = data.get('end_date')  # プロジェクト終了日
 
-        # teams をリストとして扱う
+        # teamsが文字列として渡された場合はJSON形式として解析
         if isinstance(teams, str):
             teams = json.loads(teams)
 
         try:
-            # チームとチームメンバーの削除フラグを1に設定
+            # Teamモデルからteam_idでチームを取得し、削除フラグを1に設定
             team = Team.objects.get(team_id=team_id)
             team.deletion_flag = 1
-            team.save()
+            team.save()  # データベースに変更を保存
 
+            # 関連するTeamMemberの削除フラグも1に設定
             TeamMember.objects.filter(team=team).update(deletion_flag=1)
 
-            # teamsからチームIDを削除
+            # 更新後のteamsリストから削除対象のチームIDを除外
             teams = [t for t in teams if t != int(team_id)]
         except Team.DoesNotExist:
+            # team_idに該当するチームが見つからない場合のエラーレスポンス
             return JsonResponse({'error': 'Team not found'}, status=404)
 
-        # 入力された情報をリスト化
+        # プロジェクト情報をリスト化してレスポンスデータに含める
         project_data = {
             'project_name': project_name,
             'project_description': project_description,
@@ -439,11 +442,14 @@ def delete_team_api(request):
             'end_date': end_date
         }
 
+        # 正常終了時のレスポンス
         return JsonResponse({'project': project_data, 'teams': teams})
 
     except json.JSONDecodeError:
+        # リクエストボディがJSON形式でない場合のエラーレスポンス
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
     except Exception as e:
+        # その他の例外が発生した場合のエラーレスポンス
         return JsonResponse({'error': str(e)}, status=500)
 
 #メモ保存API

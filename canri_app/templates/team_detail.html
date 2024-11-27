@@ -640,7 +640,7 @@ function openMemberEditWindow(event, memberId) {
     function goBack() {
         const form = document.createElement('form');
         form.method = 'post';
-        form.action = "{% url 'canri_app:new_project_edit2' %}";
+        form.action = "{% url 'canri_app:project_detail' project_id %}";
 
         const csrfToken = document.createElement('input');
         csrfToken.type = 'hidden';
@@ -650,33 +650,33 @@ function openMemberEditWindow(event, memberId) {
 
         const projectName = document.createElement('input');
         projectName.type = 'hidden';
-        projectName.name = 'project_name';
-        projectName.value = '{{ project_name }}';
+        projectName.name = 'project_id';
+        projectName.value = '{{ project_id }}';
         form.appendChild(projectName);
 
-        const projectDescription = document.createElement('input');
-        projectDescription.type = 'hidden';
-        projectDescription.name = 'project_description';
-        projectDescription.value = '{{ project_description }}';
-        form.appendChild(projectDescription);
+        // const projectDescription = document.createElement('input');
+        // projectDescription.type = 'hidden';
+        // projectDescription.name = 'project_description';
+        // projectDescription.value = '{{ project_description }}';
+        // form.appendChild(projectDescription);
 
-        const startDate = document.createElement('input');
-        startDate.type = 'hidden';
-        startDate.name = 'start_date';
-        startDate.value = '{{ start_date }}';
-        form.appendChild(startDate);
+        // const startDate = document.createElement('input');
+        // startDate.type = 'hidden';
+        // startDate.name = 'start_date';
+        // startDate.value = '{{ start_date }}';
+        // form.appendChild(startDate);
 
-        const endDate = document.createElement('input');
-        endDate.type = 'hidden';
-        endDate.name = 'end_date';
-        endDate.value = '{{ end_date }}';
-        form.appendChild(endDate);
+        // const endDate = document.createElement('input');
+        // endDate.type = 'hidden';
+        // endDate.name = 'end_date';
+        // endDate.value = '{{ end_date }}';
+        // form.appendChild(endDate);
 
-        const teams = document.createElement('input');
-        teams.type = 'hidden';
-        teams.name = 'teams';
-        teams.value = '{{ teams|safe }}';
-        form.appendChild(teams);
+        // const teams = document.createElement('input');
+        // teams.type = 'hidden';
+        // teams.name = 'teams';
+        // teams.value = '{{ teams|safe }}';
+        // form.appendChild(teams);
 
         document.body.appendChild(form);
         form.submit();
