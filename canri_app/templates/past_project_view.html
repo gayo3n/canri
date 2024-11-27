@@ -8,55 +8,35 @@
 {% block content %}
 <main class="main-content">
     <div class="split-container">
-        <!-- 左側の個人情報セクション -->
-        <section class="personal-info-section">
+        <!-- チームセクション -->
+        <section class="teams-section">
             <div class="container">
-                <div class="personal-info-card">
-                    <h3>チームA</h3>
-                    <p><strong>名前:</strong> {{ user.name }}</p>
-                    <p><strong>役職:</strong> {{ user.position }}</p>
-                    <p><strong>所属チーム:</strong> {{ user.team }}</p>
-                    <p><strong>メールアドレス:</strong> {{ user.email }}</p>
-                </div>
-                <div class="personal-info-card">
-                    <h3>チームB</h3>
-                    <p><strong>名前:</strong> {{ user.name }}</p>
-                    <p><strong>役職:</strong> {{ user.position }}</p>
-                    <p><strong>所属チーム:</strong> {{ user.team }}</p>
-                    <p><strong>メールアドレス:</strong> {{ user.email }}</p>
-                </div>
-                <div class="personal-info-card">
-                    <h3>チームC</h3>
-                    <p><strong>名前:</strong> {{ user.name }}</p>
-                    <p><strong>役職:</strong> {{ user.position }}</p>
-                    <p><strong>所属チーム:</strong> {{ user.team }}</p>
-                    <p><strong>メールアドレス:</strong> {{ user.email }}</p>
-                </div>
-                <div class="personal-info-card">
-                    <h3>チームD</h3>
-                    <p><strong>名前:</strong> {{ user.name }}</p>
-                    <p><strong>役職:</strong> {{ user.position }}</p>
-                    <p><strong>所属チーム:</strong> {{ user.team }}</p>
-                    <p><strong>メールアドレス:</strong> {{ user.email }}</p>
+                <h3>関連チーム</h3>
+                <div class="teams-grid">
+                    {% for team in teams %}
+                        <div class="team-card">
+                            <a href="{% url 'canri_app:team_edit_past' team_id=team.team_id%}?project_id={{ project.project_id}}">{{ team.team_name }}</a>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </section>
 
-        <!-- 垂直線 -->
+        <!-- 境界線 -->
         <div class="vertical-line"></div>
 
         <!-- 右側のプロジェクト詳細セクション -->
         <section class="project-section">
-            <div class="project-card">
+            <div class="project-list">
                 <form method="post" action="{% url 'canri_app:past_project_view' project_id=project.project_id %}">
                     {% csrf_token %}
                     <input type="hidden" name="project_id" value="{{ project.project_id }}">
                     <h1>{{ project.project_name }}</h1>
                     <div class="horizontal-line"></div>
-                    <p><strong>開始日:</strong> {{ project.creation_date|date:"Y年m月d日" }}</p>
-                    <p><strong>完了日:</strong> {{ project.complete_date|date:"Y年m月d日" }}</p>
+                    <p>開始日: {{ project.creation_date|date:"Y年m月d日" }}</p>
+                    <p>完了日: {{ project.complete_date|date:"Y年m月d日" }}</p>
                     <label for="post_evaluation_memo">プロジェクト詳細：</label>
-                    <p>{{ project.project_detail }}</p>
+                    <p>&emsp;&emsp;{{ project.project_detail }}</p>
                     <label for="post_evaluation_memo">事後評価メモ</label>
                     <textarea id="post_evaluation_memo" name="post_evaluation_memo" rows="15" style="width: 100%; margin-bottom: 20px;">{{ project.post_evaluation_memo }}</textarea>
                     <div class="button-container">
@@ -75,46 +55,7 @@
     <div class="modal-content" style="width: 70%; max-width: 1000px;">
         <span class="close" onclick="closeFeedbackModal()">&times;</span>
         <div id="modal-body">
-            <div class="feedback-form">
-                <h2>フィードバックの反映</h2>
-                <table border="1">
-                    <!-- フィードバックコンテナ -->
-                    <div id="feedback-container">
-                        {% if feedbacks %}
-                        {% for feedback in feedbacks %}
-                        <!-- 初期フィードバック行 -->
-                        <div class="feedback-row">
-                            <form method="post" class="feedback-form">
-                                {% csrf_token %}
-                                <select name="member1" title="member1" onchange="validateMembers(this)">
-                                    {% for member in members %}
-                                    <option value="{{ member.member_id }}" {% if member.member_id == feedback.member1_id %}selected{% endif %}>{{ member.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                と
-                                <select name="member2" title="member2" onchange="validateMembers(this)">
-                                    {% for member in members %}
-                                    <option value="{{ member.member_id }}" {% if member.member_id == feedback.member2_id %}selected{% endif %}>{{ member.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                を
-                                <select name="priority" title="condition:">
-                                    <option value="1" {% if feedback.priority_flag %}selected{% endif %}>優先的に同じチームに編成する</option>
-                                    <option value="2" {% if not feedback.priority_flag %}selected{% endif %}>同じチームに編成しない</option>
-                                </select>
-                                <button type="button" class="btn btn-danger" onclick="deleteFeedback({{ feedback.feedback_id }})">🗑️</button>
-                            </form>
-                        </div>
-                        {% endfor %}
-                        {% endif %}
-                    </div>
-                </table>
-            
-                <!-- フィードバック追加ボタン -->
-                <button class="add-feedback" type="button" onclick="addFeedbackRow()">＋ フィードバックを追加</button>
-                <!-- 保存ボタン -->
-                <button class="btn-save" type="button" onclick="saveFeedback()">保存</button>
-            </div>              
+            <!-- feedback_application.htmlの内容 -->         
         </div>
     </div>
 </div>
@@ -189,8 +130,8 @@
                 </select>
                 を
                 <select name="priority" title="condition:">
-                    <option value="1">優先的に同じチームに編成する</option>
-                    <option value="2">同じチームに編成しない</option>
+                    <option value="True">優先的に同じチームに編成する</option>
+                    <option value="False">同じチームに編成しない</option>
                 </select>
                 <button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">🗑️</button>
             </form>
@@ -226,22 +167,30 @@
 
     // フィードバックを保存する
     function saveFeedback() {
-        const forms = document.querySelectorAll('.feedback-form');
-        const formData = new FormData();
-        forms.forEach((form, index) => {
-            formData.append(`feedbacks[${index}][member1]`, form.querySelector('select[name="member1"]').value);
-            formData.append(`feedbacks[${index}][member2]`, form.querySelector('select[name="member2"]').value);
-            formData.append(`feedbacks[${index}][priority]`, form.querySelector('select[name="priority"]').value);
+        const feedbackContainer = document.getElementById('feedback-container');
+        const forms = feedbackContainer.querySelectorAll('.feedback-form');
+        const feedbacks = [];
+        forms.forEach((form) => {
+            const feedbackId = form.querySelector('input[name="feedback_id"]') ? form.querySelector('input[name="feedback_id"]').value : null;
+            const member1 = form.querySelector('select[name="member1"]').value;
+            const member2 = form.querySelector('select[name="member2"]').value;
+            const priority = form.querySelector('select[name="priority"]').value;
+            feedbacks.push({ feedback_id: feedbackId, member1, member2, priority });
         });
 
-        console.log('Saving feedback with data:', formData); // デバッグ用ログ
+        const projectId = document.querySelector('input[name="project_id"]').value;
+        const data = {
+            project_id: projectId,
+            feedbacks: feedbacks
+        };
 
         fetch("{% url 'canri_app:feedback_save' %}", {
             method: 'POST',
             headers: {
-            'X-CSRFToken': getCookie('csrftoken')  // CSRFトークンをヘッダーに追加
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
-            body: formData
+            body: JSON.stringify(data)
         })
         .then(response => response.text())
         .then(html => {
@@ -258,7 +207,7 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({ feedback_id: feedbackId })
         })
@@ -278,7 +227,6 @@
             const cookies = document.cookie.split(';');
             for (let i = 0; i < cookies.length; i++) {
                 const cookie = cookies[i].trim();
-                // このcookie文字列が指定された名前で始まるかどうかを確認します
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                     break;
