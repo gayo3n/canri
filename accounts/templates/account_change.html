@@ -1,7 +1,7 @@
 {% extends 'base2.html' %}
 {% block content %}
 <h2>ユーザアカウント変更</h2>
-    <form method="POST">
+    <form method="POST" action="{% url 'accounts:account_change_complete' pk=user.pk %}">
         {% csrf_token %}
     
         <label for="username">ユーザ名🔒</label>
@@ -13,7 +13,7 @@
         <label for="password">パスワード</label>
         <input type="password" id="password" name="password" required>
         
-        <button type="submit" a href="{% url 'accounts:account_change_complete' pk=user.pk %}">保存</button>
+        <button type="submit">保存</button>
         <a href="{% url 'accounts:manage_account' %}">キャンセル</a>
     </form>
 
