@@ -1227,7 +1227,7 @@ def project_phase_add(request, project_id):
     if request.method == "POST":
         try:
             # POSTデータから各プロジェクト情報を取得
-            project_id=request.POST.get('project_id')
+            # project_id=request.POST.get('project_id')
             phase_name = request.POST.get('phase_name')
             end_date2 = request.POST.get('end_date2')
 
@@ -1249,7 +1249,7 @@ def project_phase_add(request, project_id):
             project_progress_status = ProjectProgressStatus.objects.create(
                 project_id=project_id,
                 phase_name=phase_name,  # メンバーの数をカウント
-                complete_date=end_date2,
+                expiration_date=end_date2,
                 creation_date=timezone.now()  # 現在の日時を設定
             )
 
@@ -1651,13 +1651,6 @@ class Past_ProjectView(TemplateView):
         if 'delete' in request.POST:
             try:
                 project = Project.objects.get(project_id=project_id)
-                print(project.project_id)
-                print(project.project_name)
-                print(project.creation_date)
-                print(project.project_start_date)
-                print(project.project_end_date)
-                print(project.deletion_flag)
-                print(project.complete_flag)
                 project.deletion_flag = 1
                 project.save()
                 return HttpResponseRedirect(reverse('canri_app:delete_past_project'))
@@ -1845,10 +1838,14 @@ class TeamMemberEditSavePastView(TemplateView):
         member.save()
 
         return JsonResponse({'status': 'success'})
+<<<<<<< HEAD
+    
+=======
 
 from django.shortcuts import render, redirect
 from .models import Project
 
 # 過去プロジェクト削除
+>>>>>>> 3e9a81f0c5d11732ea6787e6e49556ba635a0bb7
 class DeletePastProjectView(TemplateView):
     template_name = "delete_past_project.html"

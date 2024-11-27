@@ -1,6 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'base2.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/account_change.css' %}">
+{% endblock %}
 {% block content %}
 
+<<<<<<< HEAD
 <h2>アカウント編集</h2>
     <div>
         <form action="{% url 'accounts:account_change_complete' pk=item.id %}" method="post">
@@ -26,3 +31,25 @@
     </div>
 
 {% endblock %}
+=======
+
+    <div class="account_change">
+        <h2>アカウント編集</h2>
+        <form action="ユーザアカウント変更" method="post">
+            <div>
+                <input type="text" id="user_name" name="name" placeholder="名前を入力してください" required>
+            </div>
+
+            <div>
+                <input type="text" id="user_password" name="password" placeholder="パスワードを入力してください" required>
+            </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-save">保存</button>
+            <a href="{% url 'canri_app:index' %}" class="btn btn-cancel">キャンセル</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+>>>>>>> 84bbdff162f5902360b74ff3ce868244501e8998
