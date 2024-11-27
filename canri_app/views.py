@@ -380,7 +380,7 @@ class MemberMakeCompleteView(TemplateView):
             teamwork += job_title.teamwork
             time_management_ability += job_title.time_management_ability
             problem_solving_ability += job_title.problem_solving_ability
-           
+        
             # -----職歴の計算-----
             if career:
                 career = CareerInformation.objects.get(career_id=career)
@@ -503,13 +503,16 @@ class FileUploadView(TemplateView):
 
 
 
-
-
 class MemberMakeDeleteView(TemplateView):
     template_name = "member_make_delete.html"
+    def get(self, request, *args, **kwargs):
+        category = Category.objects.all()
+        return render(request, 'member_make_delete.html', category)
+
+
 
 class MemberListDeleteView(TemplateView):
-    template_name = "memberlist_delete.html"
+    template_name = "memberList_delete.html"
 
 class MemberListDeleteOkView(TemplateView):
     template_name = "memberlist_delete_complete.html"
