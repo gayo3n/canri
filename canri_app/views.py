@@ -1496,7 +1496,7 @@ class Past_ProjectView(TemplateView):
         if 'delete' in request.POST:
             try:
                 project = Project.objects.get(project_id=project_id)
-                project.deletion_flag = True
+                project.deletion_flag = 1
                 project.save()
                 return HttpResponseRedirect(reverse('canri_app:delete_past_project'))
             except Project.DoesNotExist:
@@ -1681,3 +1681,6 @@ class TeamMemberEditSavePastView(TemplateView):
         member.save()
 
         return JsonResponse({'status': 'success'})
+    
+class DeletePastProjectView(TemplateView):
+    template_name = "delete_past_project.html"
