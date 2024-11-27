@@ -1838,14 +1838,10 @@ class TeamMemberEditSavePastView(TemplateView):
         member.save()
 
         return JsonResponse({'status': 'success'})
-<<<<<<< HEAD
-    
-=======
 
 from django.shortcuts import render, redirect
 from .models import Project
 
 # 過去プロジェクト削除
->>>>>>> 3e9a81f0c5d11732ea6787e6e49556ba635a0bb7
 class DeletePastProjectView(TemplateView):
     template_name = "delete_past_project.html"

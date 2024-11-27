@@ -4,7 +4,7 @@
 {% block head %}<link rel="stylesheet" href="{% static 'css/account_create.css' %}">{% endblock %}
 {% block content %}
 <h2>アカウント作成</h2>
-    <form action="account_create_complete/" method="post">
+    <form action="{% url 'accounts:account_create_complete' %}" method="post">
         {% csrf_token %}
     <div class="account_create">
         <div>
