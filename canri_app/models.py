@@ -190,7 +190,7 @@ class Feedback(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     priority_flag = models.BooleanField()
     deletion_flag = models.BooleanField()
-    expiration_date = models.DateTimeField()
+    # expiration_date = models.DateTimeField(null=True, blank=True)
     creation_date = models.DateTimeField()
     deletion_date = models.DateTimeField(null=True, blank=True)
 
