@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth.views import LoginView, LogoutView
 from . import views
 
 from.views import logincomp, logout, create, account_create_complete, account_delete, account_delete_complete
@@ -19,8 +18,8 @@ urlpatterns = [
     path('management_account/create/account_create_complete/', views.account_create_complete, name='account_create_complete'),  #アカウント作成完了
     path('account_delete/<str:name>/', views.account_delete, name='account_delete'), #アカウント削除
     path('account_delete_complete/', views.account_delete_complete, name="account_delete_complete"),
-    path('account_change_employee/', views.account_change, name='account_change_employee'),
-    path('account_change_employee_complete/', views.account_change_complete, name='account_change_employee_complete'),
+    path('account_change_employee', views.account_change, name='account_change_employee'),
+    path('account_change_complete/<int:pk>/', views.account_change_complete, name='account_change_complete'),
     
     # アイコン
     path('change_employee/', views.AccountChangeEmployeeView.as_view(), name='account_change_employee'),

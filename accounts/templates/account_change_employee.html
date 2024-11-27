@@ -3,21 +3,22 @@
 
 <h2>アカウント編集</h2>
     <div>
-        <form action="ユーザアカウント変更" method="post">
+        <form action="{% url 'accounts:account_change_complete' pk=item.id %}" method="post">
+            {% csrf_token %}
+
             <div>
-                <input type="text" id="user_name" name="name" required>
+                <input type="text" id="name" name="name" value="{{ item.name }} required>
             </div>
 
             <div>
-                <input type="text" id="user_id" name="id" required>
+                <input type="text" id="user_id" name="id" value="{{ item.user_id }}" required>
             </div>
 
             <div>
-                <input type="text" id="user_password" name="password" required>
+                <input type="text" id="password" name="password" required>
             </div>
-
             <div>
-                <td><a href="{% url 'accounts:account_change_complete_employee' %}" class="btn btn-danger">保存</a></td>
+                <td><button type="submit" class="btn btn-danger">保存</button></td>
             </div>
             <div>
                 <td><a href="{% url 'canri_app:index' %}" class="btn btn-danger">キャンセル</a></td>

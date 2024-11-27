@@ -1,5 +1,5 @@
 from django.contrib.auth.views import LogoutView, LoginView 
-from django.shortcuts import render, redirect, get_object_or_404, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, get_user_model, logout as auth_logout, authenticate
 from django.urls import reverse
 from django.views import View, generic
@@ -174,20 +174,23 @@ def account_create_complete(request):
 
 # account_login = AccountLogin.as_view()
 
-def account_change(request, name):
-    user_change = get_object_or_404(User, name=name)
+def account_change(request, pk):
+    item = User.objects.get(id=pk)
+    form = UserForm(instance=item)
     if request.method == "POST":
-        form = UserForm(request.POST, instance=user_change)
+        form = UserForm(request.POST, instance=item)
         if form.is_valid():
             form.save()
-            return redirect('accounts:account_change_employee_complete', name=name)
-        else:
-            form = UserForm(instance=user_change)
-        return render(request, 'account_change_employee.html', {'form': form})
-   
+            return redirect("accounts:account_change_complete", pk=pk)
+        
+    context = {
+        "form":form,
+        "item": item 
+    }
+    return render(request, 'accounts/account_change_employee.html', context)
 
-def account_change_complete(request):
-    return render(request, 'account_change_employee_complete.html')
+def account_change_complete(request, pk):
+    return render(request, 'account_change_employee_complete.html', {'pk':pk})
     
 
 def account_delete(request, name):
