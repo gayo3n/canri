@@ -59,14 +59,39 @@ header nav a {
     justify-content: center;
     align-items: center;
     font-size: 1.5rem;
-    color: rgb(0, 0, 0);
     font-weight: bold;
     border-radius: 8px;
-    text-decoration: none;
 }
 
-.box1 { background-color: #d3d3d3; } /* ライトグレー - 進行中プロジェクト */
-.box2 { background-color: #87ceeb; } /* ライトブルー - 過去プロジェクト */
-.box3 { background-color: #8bc34a; } /* グリーン - アカウント管理 */
-.box4 { background-color: #d74ed7; } /* パープル - メンバーリスト */
-.box5 { background-color: #ff6db6; } /* ピンク - 進行中プロジェクト */
+.box a{
+    text-decoration: none;
+    color: #7c2020;
+}
+
+.box a:hover {
+    color: #5255ba; /* ホバー時の色 */
+    transition: color 0.5s ease; /* 色の変化を滑らかに */
+    text-decoration: underline; /* ホバー時に下線を追加 */
+}
+
+.box1 {
+    background-color: #bebebe; 
+    text-decoration: none;
+} /* ライトグレー - 進行中プロジェクト */
+.box2 { 
+    background-color: #b7ecff; 
+    text-decoration: none;
+} /* ライトブルー - 過去プロジェクト */
+.box3 { 
+    background-color: #71f35a; 
+    text-decoration: none;
+} /* グリーン - アカウント管理 */
+.box4 { 
+    background-color: #b754ec; 
+    text-decoration: none;
+} /* パープル - メンバーリスト */
+.box5 { 
+    background-color: #f875b7; 
+    text-decoration: none;
+} /* ピンク - 進行中プロジェクト */
+

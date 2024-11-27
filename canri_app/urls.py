@@ -12,7 +12,7 @@ urlpatterns = [
     path('memberlist/', views.MemberListView.as_view(), name='memberlist'),
     path('memberlist/make/', views.MemberListMakeView.as_view(), name='memberlist_make'),
     path('memberlist/make/complete/', views.MemberListMakeCompleteView.as_view(), name='memberlist_make_complete'),
-
+    path('memberlist/edit/', views.MemberListEditView.as_view(), name='memberlist_edit'),
     path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
     path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
 
@@ -26,7 +26,6 @@ urlpatterns = [
     path('member/delete/complete/', views.MemberListDeleteOkView.as_view(), name='member_delete_complete'),
 
 
-    # path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
 
     #新規プロジェクト作成
     path('new_project/', views.NewProjectView.as_view(), name='new_project'),
@@ -77,8 +76,8 @@ urlpatterns = [
     path('team_member_edit_past/', views.TeamMemberEditPastView.as_view(), name='team_member_edit_past'),
     path('team_member_edit_past/<int:member_id>/', views.TeamMemberEditPastView.as_view(), name='team_member_edit_past'),
     path('team_member_edit_save_past/', views.TeamMemberEditSavePastView.as_view(), name='team_member_edit_save_past'),
-    path('delete_past_project/', views.DeletePastProjectView.as_view, name='delete_past_project'),
-    
+    path('delete_past_project/', views.DeletePastProjectView.as_view(), name='delete_past_project'),
+
     #チーム詳細
     # path('team_detail/',views.team_detailView.as_view(), name='team_detail'),
     # path('team/<int:team_id>/', team_detail_view, name='project_detail'),
