@@ -106,29 +106,6 @@ def account_create_complete(request):
         form = UserForm()
     return render(request, 'account_create_complete.html', {'form':form})
 
-# class AccountLogin(AuthLoginView):
-#     template_name = "login.html"
-#     def post(self, request, *args, **kwargs):
-#         form = UserForm(data=request.POST)
-#         if form.is_valid():
-#             name = form.cleaned_data.get('username')
-#             password = form.cleaned_data.get('password')
-#             try:
-#                 user = User.objects.get(name=name)
-#                 if user.check_password(password):
-#                     login(request, user)
-#                     return redirect('login_complete')  # URL名を使用
-#                 else:
-#                     error_message = "ユーザー名またはパスワードが正しくありません。"
-#             except User.DoesNotExist:
-#                 error_message = "ユーザー名またはパスワードが正しくありません。"
-#         else:
-#             error_message = "フォームにエラーがあります。"
-
-#         return render(request, 'login.html', {'form': form, 'error_message': error_message})
-
-# account_login = AccountLogin.as_view()
-
 def manage_account_change(request, pk):
     item = User.objects.get(user_id=pk)
     form = UserForm(instance=item)

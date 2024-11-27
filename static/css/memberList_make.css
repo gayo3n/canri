@@ -1,44 +1,101 @@
-/* 検索結果リスト全体 */
-ul {
-    list-style-type: none;
-    padding: 0;
+/* memberList_make.css */
+body {
+    font-family: Arial, sans-serif;
     margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
 }
 
-/* 各メンバーリスト項目の余白設定 */
-ul li {
-    margin-bottom: 15px; /* 各メンバー間の余白 */
+h2 {
+    text-align: center;
+    color: #2b2b2b;
+    margin: 20px 0;
 }
 
-/* メンバー項目のブロック設定 */
-.member-item {
-    text-align: center; /* 名前とボタンを中央揃え */
-    display: inline-block; /* 各項目を独立したブロックに */
+.search-section, .selected-members-section, .save-section {
+    margin: 20px auto;
+    padding: 20px;
+    width: 90%;
+    max-width: 800px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* メンバー名 */
-.member-item span {
-    display: block; /* 名前を改行 */
-    margin-bottom: 5px; /* 名前とボタンの間隔 */
+.input-field {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
     font-size: 14px;
 }
 
-/* ボタンのスタイル */
-.member-item button {
-    display: block; /* ボタンを改行 */
-    background-color: #5cb85c;
+textarea.input-field {
+    height: 100px;
+    resize: none;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #00b894;
     color: white;
     border: none;
-    padding: 5px 15px;
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
 }
 
-.member-item button:hover {
-    background-color: #4cae4c; /* ホバースタイル */
+.btn:hover {
+    background-color: #019374;
 }
 
+.delete-btn {
+    background-color: #d63031;
+    color: white;
+    border-radius: 4px;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin: 5px 0;
+    border-radius: 4px;
+    background-color: #f7f7f7;
+}
+
+.memberlist_save {
+    background-color: #00cec9;
+    border-radius: 4px;
+}
+
+.memberlist_save:hover {
+    background-color: #00a8a6;
+}
+
+.memberlist_cancel {
+    background-color: #b2bec3;
+    border-radius: 4px;
+}
+
+.memberlist_cancel:hover {
+    background-color: #95a5a6;
+}
 /* その他のセクションやボタンのスタイル（変更なし） */
 .csv_ref {
     display: block;
@@ -53,40 +110,4 @@ ul li {
 
 .csv_ref:hover {
     background-color: #286090;
-}
-
-.memberList_save {
-    background-color: #5cb85c;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.memberList_save:hover {
-    background-color: #4cae4c;
-}
-
-.memberList_cancel {
-    background-color: #d9534f;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.memberList_cancel:hover {
-    background-color: #c9302c;
-}
-
-
-form label {
-    display: none;
-}
-
-
-search-section{
-    margin-left: 10px;
 }
