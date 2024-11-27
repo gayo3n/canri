@@ -4,33 +4,21 @@
 {% block head %}<link rel="stylesheet" href="{% static 'css/account_create.css' %}">{% endblock %}
 {% block content %}
 <h2>アカウント作成</h2>
-    <form action="{% url 'accounts:account_create_complete' %}" method="post">
+    <form action="account_create_complete/" method="post">
         {% csrf_token %}
+        {{ form.as_p }}
+    <div class="account_create">
         <div>
-           <dt>アカウント名</dt>
-           <dt>{{ form.name }}{{ form.name.errors }}</dt>
-        </div>
-        <div> 
-            <dt>アカウントID</dt>
-            <dt>{{ form.user_id }}{{ form.user_id.errors }}</dt>
+            <input type="text" placeholder="ユーザ名" id="username" name="name" required>
         </div>
         <div>
-            <dt>パスワード</dt>
-            <dt>{{ form.password }}{{ form.password.errors }}</dt>
+            <input type="text" placeholder="ユーザID" id="userid" name="id" required>
         </div>
-        {% if form.errors %}
-    <div class="alert alert-danger">
-        <ul>
-            {% for field, errors in form.errors.items %}
-                {% for error in errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
         <div>
-            <button type="submit">作成</button>
+            <input type="text" placeholder="パスワード" id="password" name="password" required>
+        </div>
+        <div>
+            <td><a href="{% url 'accounts:account_create_complete' %}" class="btn btn-danger">作成</a></td>
         </div>
     </div>
 
