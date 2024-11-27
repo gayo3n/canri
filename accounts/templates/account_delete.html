@@ -6,20 +6,18 @@
 {% block head %}<link rel="stylesheet" href="{% static 'css/account_delete.css' %}">{% endblock %}
 {% block content %}
 
-<!-- モーダル (確認ダイアログ) -->
-<div class="modal">
-    <div class="modal-content">
-        <p>アカウントを削除しますか？</p>
-        <p></p>
-        <div class="modal-buttons">
-            <a href="{% url 'accounts:account_delete_complete' %}" class="btn btn-confirm">削除</a>
-            <a href="{% url 'accounts:management_account' %}" class="btn btn-cancel">キャンセル</a>
+<form method="POST" action="{% url 'accounts:account_delete' name=object.name %}">
+    {% csrf_token %}
+    <div class="modal">
+        <div class="modal-content">
+            <p>アカウントを削除しますか？</p>
+            <div class="modal-buttons">
+                <button type="submit" class="btn btn-confirm">削除</button>
+                <a href="{% url 'accounts:manage_account' %}" class="btn btn-cancel">キャンセル</a>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-
-</body>
-</html>
+    </form>
 {% endblock %}
 
 
