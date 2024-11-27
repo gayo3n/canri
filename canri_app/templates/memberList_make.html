@@ -63,6 +63,7 @@
         <form method="post" action="{% url 'canri_app:memberlist_make_complete' %}">
             {% csrf_token %}
             <input type="text" name="member_list_name" placeholder="メンバーリスト名を入力してください">
+            <br>
             <input type="text" name="member_list_details" placeholder="メンバーリストの詳細を入力してください">
             {% if messages %}
                 <ul>
@@ -74,6 +75,7 @@
             {% for member_id in memberID_list %}
             <input type="hidden" name="memberID_list" value="{{ member_id }}">
             {% endfor %}
+            <br>
             <button class="memberlist_save" type="submit">保存</button>
             <button class="memberlist_cancel" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
 
