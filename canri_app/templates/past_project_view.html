@@ -3,6 +3,7 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/past_project_view.css' %}">
+<link rel="stylesheet" href="{% static 'css/feedback_application.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -55,7 +56,19 @@
     <div class="modal-content" style="width: 70%; max-width: 1000px;">
         <span class="close" onclick="closeFeedbackModal()">&times;</span>
         <div id="modal-body">
-            <!-- feedback_application.htmlの内容 -->         
+            <div class="feedback-form">
+                <h2>フィードバックの反映</h2>
+                <table border="1">
+                    <!-- フィードバックコンテナ -->
+                    <div id="feedback-container">
+                        <!-- フィードバック行はJavaScriptで動的に追加されます -->
+                    </div>
+                </table>
+                <!-- フィードバック追加ボタン -->
+                <button class="add-feedback" type="button" onclick="addFeedbackRow()">＋ フィードバックを追加</button>
+                <!-- 保存ボタン -->
+                <button class="btn-save" type="button" onclick="saveFeedback()">保存</button>
+            </div>
         </div>
     </div>
 </div>
@@ -64,7 +77,9 @@
     <div class="modal-content" style="width: 70%; height: 30vh; max-width: 1000px;">
         <span class="close" onclick="closeSaveCompleteModal()">&times;</span>
         <div id="save-complete-body">
-            <!-- feedback_save_complete.htmlの内容 -->
+            <div class="save-complete">
+                <h1 style="display: flex; justify-content: center; align-items: center; height: 25vh; text-align: center;">フィードバックの保存が完了しました</h1>
+            </div>
         </div>
     </div>
 </div>
@@ -86,23 +101,14 @@
 <script>
     // フィードバックモーダルを開く
     function openAddFeedback() {
-        const projectId = document.querySelector('input[name="project_id"]').value;
-        if (!projectId) {
-            console.error('Project ID is missing');
-            return;
-        }
-        fetch("{% url 'canri_app:feedback' project_id=0 %}".replace('0', projectId))
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('modal-body').innerHTML = html;
-                document.querySelector('.modal').style.display = 'block';
-                fetchMembers(projectId);
-            })
-            .catch(error => console.error('Error loading feedback application:', error));
+        document.querySelector('.modal').style.display = 'block';
+        fetchMembers();
+        fetchFeedbacks();
     }
 
     // メンバー情報を取得する
-    function fetchMembers(projectId) {
+    function fetchMembers() {
+        const projectId = document.querySelector('input[name="project_id"]').value;
         fetch("{% url 'canri_app:get_members_by_project' project_id=0 %}".replace('0', projectId))
             .then(response => response.json())
             .then(data => {
@@ -111,11 +117,47 @@
             .catch(error => console.error('Error fetching members:', error));
     }
 
+    // フィードバック情報を取得する
+    function fetchFeedbacks() {
+        const projectId = document.querySelector('input[name="project_id"]').value;
+        fetch("{% url 'canri_app:get_feedbacks_by_project' project_id=0 %}".replace('0', projectId))
+            .then(response => response.json())
+            .then(data => {
+                const feedbackContainer = document.getElementById('feedback-container');
+                feedbackContainer.innerHTML = ''; // 既存のフィードバック行をクリア
+                data.feedbacks.forEach(feedback => {
+                    const feedbackRow = document.createElement('div');
+                    feedbackRow.classList.add('feedback-row', 'existing-feedback');
+                    feedbackRow.innerHTML = `
+                        <form method="post" class="feedback-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="feedback_id" value="${feedback.feedback_id}">
+                            <select name="member1" title="member1" onchange="validateMembers(this)">
+                                ${window.members.map(member => `<option value="${member.member_id}" ${member.member_id == feedback.member1_id ? 'selected' : ''}>${member.name}</option>`).join('')}
+                            </select>
+                            と
+                            <select name="member2" title="member2" onchange="validateMembers(this)">
+                                ${window.members.map(member => `<option value="${member.member_id}" ${member.member_id == feedback.member2_id ? 'selected' : ''}>${member.name}</option>`).join('')}
+                            </select>
+                            を
+                            <select name="priority" title="condition:">
+                                <option value="True" ${feedback.priority_flag ? 'selected' : ''}>優先的に同じチームに編成する</option>
+                                <option value="False" ${!feedback.priority_flag ? 'selected' : ''}>同じチームに編成しない</option>
+                            </select>
+                            <button type="button" class="btn btn-danger" onclick="deleteFeedback(${feedback.feedback_id})">🗑️</button>
+                        </form>
+                    `;
+                    feedbackContainer.appendChild(feedbackRow);
+                });
+            })
+            .catch(error => console.error('Error fetching feedbacks:', error));
+    }
+
     // フィードバック行を追加する
     function addFeedbackRow() {
         const feedbackContainer = document.getElementById('feedback-container');
         const newRow = document.createElement('div');
-        newRow.classList.add('feedback-row');
+        newRow.classList.add('feedback-row', 'new-feedback');
         newRow.innerHTML = `
             <form method="post" class="feedback-form">
                 {% csrf_token %}
@@ -168,20 +210,51 @@
     // フィードバックを保存する
     function saveFeedback() {
         const feedbackContainer = document.getElementById('feedback-container');
-        const forms = feedbackContainer.querySelectorAll('.feedback-form');
-        const feedbacks = [];
-        forms.forEach((form) => {
-            const feedbackId = form.querySelector('input[name="feedback_id"]') ? form.querySelector('input[name="feedback_id"]').value : null;
+        const existingForms = feedbackContainer.querySelectorAll('.existing-feedback .feedback-form');
+        const newForms = feedbackContainer.querySelectorAll('.new-feedback .feedback-form');
+        const existingFeedbacks = [];
+        const newFeedbacks = [];
+
+        let isValid = true;
+
+        existingForms.forEach((form) => {
+            const feedbackId = form.querySelector('input[name="feedback_id"]').value;
             const member1 = form.querySelector('select[name="member1"]').value;
             const member2 = form.querySelector('select[name="member2"]').value;
             const priority = form.querySelector('select[name="priority"]').value;
-            feedbacks.push({ feedback_id: feedbackId, member1, member2, priority });
+
+            if (!member1 || !member2) {
+                isValid = false;
+                alert('メンバー1とメンバー2を選択してください。');
+                return;
+            }
+
+            existingFeedbacks.push({ feedback_id: feedbackId, member1, member2, priority });
         });
+
+        newForms.forEach((form) => {
+            const member1 = form.querySelector('select[name="member1"]').value;
+            const member2 = form.querySelector('select[name="member2"]').value;
+            const priority = form.querySelector('select[name="priority"]').value;
+
+            if (!member1 || !member2) {
+                isValid = false;
+                alert('メンバー1とメンバー2を選択してください。');
+                return;
+            }
+
+            newFeedbacks.push({ member1, member2, priority });
+        });
+
+        if (!isValid) {
+            return;
+        }
 
         const projectId = document.querySelector('input[name="project_id"]').value;
         const data = {
             project_id: projectId,
-            feedbacks: feedbacks
+            existing_feedbacks: existingFeedbacks,
+            new_feedbacks: newFeedbacks
         };
 
         fetch("{% url 'canri_app:feedback_save' %}", {
@@ -214,7 +287,8 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                location.reload();
+                const form = document.querySelector(`input[value="${feedbackId}"]`).closest('form');
+                form.style.display = 'none';
             }
         })
         .catch(error => console.error('Error deleting feedback:', error));

@@ -111,3 +111,7 @@ ul li {
 .csv_ref:hover {
     background-color: #286090;
 }
+
+input[type="text"] {
+    width: 300px; /* 幅を300ピクセルに設定 */
+}
