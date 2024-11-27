@@ -88,8 +88,8 @@ def create(request):
         form = AccountAddForm(request.POST)
         if form.is_valid():
             user = User.objects.create_user(
-                name=form.cleaned_data['name'],
                 user_id=form.cleaned_data['user_id'],
+                name=form.cleaned_data['name'],
                 password=form.cleaned_data['password']
             )
             return render(request, 'account_create_complete.html', {'user_id': user.user_id})
