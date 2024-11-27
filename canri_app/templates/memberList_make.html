@@ -33,7 +33,7 @@
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p }}
+            <a>{{ form.as_p }}</a>
             <button type="submit">アップロード</button>
         </form>
         <form method="GET" action="{% url 'canri_app:member_make' %}">
