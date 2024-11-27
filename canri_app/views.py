@@ -14,6 +14,7 @@ from .api import create_team_api, save_team_api, save_project_api, get_member_da
 from django.urls import reverse
 import csv
 from django.contrib import messages
+from django.core import serializers
 
 
 
@@ -209,7 +210,8 @@ class MemberListMakeCompleteView(TemplateView):
                     )
                     # メンバーリスト保存
                     member_list.save()
-                    request.session.clear()
+                    # セッションクリアｚ
+                    request.session['memberID_list'] = []
                 except Member.DoesNotExist:
                     # メンバーが見つからなかった場合の処理（エラーメッセージ等を追加しても良い）
                     print(f"Member with ID {member_id} not found")
@@ -223,32 +225,55 @@ class MemberListEditView(TemplateView):
     template_name = "memberList_edit.html"
 
     def get(self, request, *args, **kwargs):
+        # セッションデータの初期化
+        if 'memberID_list' in request.session:
+            del request.session['memberID_list']
 
-        list_id = request.GET.get('category_id')
+        # 初期化
+        memberID_list = []
+        member_dict = {}
+        category = None
 
-        memberID_list = MemberList.objects.filter(category_id=list_id)
+        # URL パラメータからリストIDを取得
+        category_id = request.GET.get('category_id')
 
-        # フォームget
+        if category_id:
+            # category_id に基づいて MemberList をフィルタリング
+            member_ids = MemberList.objects.filter(category_id=category_id)
+
+            # QuerySetからリストを作成
+            memberID_list = [member.member_id for member in member_ids]
+
+            # member_id に基づいて Member モデルから情報を取得
+            members_in_list = Member.objects.filter(member_id__in=memberID_list)
+
+            # ID と名前の辞書を作成
+            member_dict = {member.member_id: member.name for member in members_in_list}
+
+            # カテゴリ名と詳細を取得
+            category = get_object_or_404(Category, category_id=category_id)
+        else:
+            memberID_list = []
+            member_dict = {}
+
+        # セッションにリストを保存
+        request.session['memberID_list'] = memberID_list
+
+        # フォームとデータを取得
         form = CSVUploadForm()
-        # メンバー検索(未入力の場合はすべて)
         members = self.get_queryset()
 
-        # `memberID_list` の各 `member_id` に対応する `member_name` を取得
-        members_in_list = Member.objects.filter(member_id__in=memberID_list)
-
-        # member_dict を作成する
-        member_dict = {member.member_id: member.name for member in members_in_list}
-
-        messages.error(request , '')
-
+        # コンテキストにリストと名前情報を渡す
         context = {
-            'form': form, # フォーム
-            'members': members, # 検索メンバー
-            'memberID_list': memberID_list,  # 現在のリストを表示
-            'member_dict':member_dict,
+            'form': form,
+            'members': members,
+            'memberID_list': memberID_list,
+            'member_dict': member_dict,  # 追加: 名前情報を渡す
+            'category': category,
+            'category_id': category_id,
         }
         return render(request, self.template_name, context)
-    
+
     def post(self, request, *args, **kwargs):
         # セッションから memberID_list を取得
         memberID_list = request.session.get('memberID_list', [])
@@ -274,6 +299,12 @@ class MemberListEditView(TemplateView):
         # セッションに memberID_list を保存
         request.session['memberID_list'] = memberID_list
 
+        # URL パラメータからリストIDを取得
+        category_id = request.GET.get('category_id')
+
+        # カテゴリ名と詳細を取得
+        category = get_object_or_404(Category, category_id=category_id)
+
         # `memberID_list` の各 `member_id` に対応する `member_name` を取得
         members_in_list = Member.objects.filter(member_id__in=memberID_list)
 
@@ -281,12 +312,17 @@ class MemberListEditView(TemplateView):
         member_dict = {member.member_id: member.name for member in members_in_list}
 
         members = self.get_queryset()
+
+        # コンテキストにリストと名前情報を渡す
         context = {
             'members': members,
             'memberID_list': memberID_list,
             'member_dict': member_dict,  # member_dict を渡す
+            'category': category,
+            'category_id': category_id,
         }
         return render(request, self.template_name, context)
+
 
 
     # メンバー検索
@@ -317,6 +353,76 @@ class MemberListEditView(TemplateView):
             form = CSVUploadForm()
 
         return render(request, 'upload_csv.html', {'form': form})
+
+
+# -----メンバーリスト編集保存-----
+class MemberListEditCompleteView(TemplateView):
+    template_name = "memberlist_make_complete.html"
+
+    def post(self, request, *args, **kwargs):
+        # カテゴリ名（リスト名）と詳細を取得
+        category_id = request.POST.get('category_id')
+        member_list_name = request.POST.get('member_list_name')
+        member_list_details = request.POST.get('member_list_details')
+
+        # エラーリストを作成
+        errors = []
+
+        # 入力チェック
+        if not member_list_name:
+            errors.append("メンバーリスト名を入力してください。")
+        if not member_list_details:
+            errors.append("メンバーリストの詳細を入力してください。")
+
+
+        # エラーがあれば、エラーメッセージを表示して保存処理をスキップ
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return redirect(reverse('canri_app:memberlist_make'))  # 元のページにリダイレクト
+
+        # エラーがなければカテゴリを保存
+        if member_list_name and member_list_details:
+            # カテゴリ情報を更新
+            try:
+                category = Category.objects.get(category_id=category_id)  # カテゴリを取得
+                category.category_name = member_list_name  # カテゴリ名を更新
+                category.detail = member_list_details  # カテゴリ詳細を更新
+                category.update_date = timezone.now()  # 更新日時をセット
+                category.save()  # 保存
+
+            except Category.DoesNotExist:
+                messages.error(request, "保存に失敗しました。")
+                return redirect(reverse('canri_app:memberlist_make'))
+
+            # POSTデータから memberID_list を取得
+            member_id_list = request.POST.getlist('memberID_list')
+
+           
+            # 既存のメンバーリストを削除する
+            MemberList.objects.filter(category_id=category_id).delete()  # 同じカテゴリのメンバーリストを削除
+
+            # 新しくメンバーリストを作成
+            for member_id in member_id_list:
+                try:
+                    # メンバーを取得
+                    member = Member.objects.get(member_id=member_id)
+                    # MemberList オブジェクトを作成して保存
+                    member_list = MemberList(
+                        member_id=member.member_id,
+                        category_id=category.category_id,  # 更新されたカテゴリIDを使用
+                        creation_date=timezone.now()  # creation_date を設定
+                    )
+                    # メンバーリスト保存
+                    member_list.save()
+                    # セッションクリア
+                    request.session['memberID_list'] = []
+                except Member.DoesNotExist:
+                    # メンバーが見つからなかった場合の処理（エラーメッセージ等を追加しても良い）
+                    print(f"Member with ID {member_id} not found")
+
+            # 成功したらメンバーリスト作成完了ページにリダイレクト
+            return redirect(reverse('canri_app:memberlist_make_complete'))
 
 
 # -----メンバー保存-----
