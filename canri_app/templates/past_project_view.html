@@ -80,6 +80,7 @@
                 <table border="1">
                     <!-- フィードバックコンテナ -->
                     <div id="feedback-container">
+                        {% if feedbacks %}
                         {% for feedback in feedbacks %}
                         <!-- 初期フィードバック行 -->
                         <div class="feedback-row">
@@ -105,6 +106,7 @@
                             </form>
                         </div>
                         {% endfor %}
+                        {% endif %}
                     </div>
                 </table>
             
