@@ -566,7 +566,7 @@ def move_member_to_team(request):
 @require_http_methods(["GET"])
 def get_p_project_detail(request, project_id):
     try:
-        # 指定された project_id に一致���るプロジェクト情報を取得
+        # 指定された project_id に一致するプロジェクト情報を取得
         project = Project.objects.get(project_id=project_id)
         teams = ProjectAffiliationTeam.objects.filter(project=project, deletion_flag=False).select_related('team')
         
@@ -608,5 +608,23 @@ def get_members_by_project(request, project_id):
 
         return JsonResponse({'members': members_data})
 
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+# プロジェクトに関連するフィードバック情報を取得するAPI
+@require_http_methods(["GET"])
+def get_feedbacks_by_project(request, project_id):
+    try:
+        feedbacks = Feedback.objects.filter(project_id=project_id, deletion_flag=False)
+        feedbacks_data = [
+            {
+                'feedback_id': feedback.feedback_id,
+                'member1_id': feedback.member1_id,
+                'member2_id': feedback.member2_id,
+                'priority_flag': feedback.priority_flag,
+            }
+            for feedback in feedbacks
+        ]
+        return JsonResponse({'feedbacks': feedbacks_data})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

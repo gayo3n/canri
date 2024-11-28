@@ -1798,23 +1798,6 @@ class Project_DeletedView(TemplateView):
 class Project_Save_CompleteView(TemplateView):
     template_name = "save_past_project.html"
 
-#フィードバックモーダル表示
-class FeedbackView(TemplateView):
-    template_name = "feedback_application.html"
-
-    def get(self, request, *args, **kwargs):
-        project_id = kwargs.get('project_id')
-        teams = Team.objects.filter(team_id__in=ProjectAffiliationTeam.objects.filter(project_id=project_id,deletion_flag=0).values_list('team_id', flat=True))
-        team_members = TeamMember.objects.filter(team_id__in=teams, deletion_flag=0)
-        members = Member.objects.filter(member_id__in=team_members, deletion_flag=0)
-        feedbacks = Feedback.objects.filter(project_id=project_id, deletion_flag=0)
-        context = {
-            'project_id': project_id,
-            'members': members,
-            'feedbacks': feedbacks
-        }
-        return render(request, self.template_name, context)
-
 #フィードバック保存
 class FeedbackSaveView(TemplateView):
     template_name = "feedback_save_complete.html"
@@ -1822,31 +1805,38 @@ class FeedbackSaveView(TemplateView):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
         project_id = data.get('project_id')
-        feedbacks = data.get('feedbacks')
+        existing_feedbacks = data.get('existing_feedbacks')
+        new_feedbacks = data.get('new_feedbacks')
 
-        for feedback in feedbacks:
+        # 既存のフィードバックを更新
+        for feedback in existing_feedbacks:
+            print('ddd',feedback.get('feedback_id'))
             feedback_id = feedback.get('feedback_id')
             member1_id = feedback.get('member1')
             member2_id = feedback.get('member2')
             priority = feedback.get('priority')
 
-            if feedback_id:
-                # 既存のフィードバックを更新
-                feedback_instance = Feedback.objects.get(feedback_id=feedback_id)
-                feedback_instance.member1_id = member1_id
-                feedback_instance.member2_id = member2_id
-                feedback_instance.priority_flag = (priority == 'True')
-                feedback_instance.save()
-            else:
-                # 新しいフィードバックを作成
-                Feedback.objects.create(
-                    member1_id=member1_id,
-                    member2_id=member2_id,
-                    project_id=project_id,
-                    priority_flag=(priority == 'True'),
-                    creation_date=timezone.now(),
-                    deletion_flag=False
-                )
+            feedback_instance = Feedback.objects.get(feedback_id=feedback_id)
+            feedback_instance.member1_id = member1_id
+            feedback_instance.member2_id = member2_id
+            feedback_instance.priority_flag = (priority == 'True')
+            feedback_instance.save()
+
+        # 新しいフィードバックを作成
+        for feedback in new_feedbacks:
+            print('wwww',feedback.get('feedback_id'))
+            member1_id = feedback.get('member1')
+            member2_id = feedback.get('member2')
+            priority = feedback.get('priority')
+
+            Feedback.objects.create(
+                member1_id=member1_id,
+                member2_id=member2_id,
+                project_id=project_id,
+                priority_flag=(priority == 'True'),
+                creation_date=timezone.now(),
+                deletion_flag=False
+            )
 
         context = {}
         return render(request, self.template_name, context)
@@ -1854,7 +1844,8 @@ class FeedbackSaveView(TemplateView):
 # フィードバック削除
 @require_http_methods(["POST"])
 def delete_feedback(request):
-    feedback_id = request.POST.get('feedback_id')
+    data = json.loads(request.body)
+    feedback_id = data.get('feedback_id')
     feedback = get_object_or_404(Feedback, feedback_id=feedback_id)
     feedback.deletion_flag = True
     feedback.save()
