@@ -25,7 +25,7 @@
                 <a href="{% url 'canri_app:memberlist' %}">メンバーリスト</a>
             </div>
             <div class="navbar-right">
-                <a href="{% url 'accounts:account_change_employee' pk=user.pk %}" class="user-icon">
+                {% comment %} <a href="{% url 'accounts:account_change_employee' pk=user.pk %}" class="user-icon"> {% endcomment %}
                     <img src="{% static 'img/user_icon.png' %}" alt="管理者アイコン">{{ name}}
                 </a>
                 <a href="{% url 'accounts:logout_confirmation' %}">ログアウト</a>

@@ -8,7 +8,7 @@
 
     <div class="account_change">
         <h2>アカウント編集</h2>
-        <form action="{% url 'accounts:account_change_employee' pk=user.pk %}" method="post">
+        {% comment %} <form action="{% url 'accounts:account_change_employee' pk=user.pk %}" method="post"> {% endcomment %}
             {% csrf_token %}
             <div>
                 <input type="text" id="user_name" name="name" placeholder="名前を入力してください" required>
