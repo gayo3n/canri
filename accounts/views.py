@@ -30,6 +30,9 @@ class CustomLoginView(LoginView):
 class LoginCompView(TemplateView):
     template_name = 'login_complete.html'
 
+class LogoutCompView(TemplateView):
+    template_name = 'logout_complete.html'
+
 class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
