@@ -37,8 +37,11 @@ class AccountAddForm(forms.Form):
             }
         )
     )
+            
         def clean_user_id(self):
             user_id = self.cleaned_data['user_id']
+            if not user_id.isdigit():
+                raise ValidationError('ユーザーIDは数字のみでなければなりません。')
             if User.objects.filter(user_id=user_id).exists():
                 raise ValidationError('すでに使用されているIDです')
             return user_id
