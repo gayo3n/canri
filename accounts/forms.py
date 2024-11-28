@@ -52,6 +52,11 @@ class AccountAddForm(forms.Form):
 
 
 class UserForm(forms.ModelForm):
+    # 最大入力数10文字指定
+    name = forms.CharField(max_length=10) # 名前の文字数10文字
+    user_id = forms.CharField(max_length=10) # アカウントIDの文字数10文字
+    password = forms.CharField(max_length=10) # パスワードの文字数10文字
+
     class Meta:
         model = User
         fields = ['user_id', 'password', 'name']
