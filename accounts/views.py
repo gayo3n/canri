@@ -53,11 +53,24 @@ class Manage_Account(TemplateView):
 
 
 # アイコン
-class AccountChangeEmployeeView(TemplateView):
-    template_name = "account_change_employee.html"
 
-class AccountChangeEmployeeCompleteView(TemplateView):
-    template_name = "account_change_complete_employee.html"
+def account_change_employee(request, pk):
+    item = User.objects.get(user_id=pk)
+    form = UserForm(instance=item)
+    if request.method == "POST":
+        form = UserForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            return redirect("accounts:account_change_complete_employee", pk=pk)
+    context = {
+         "form": form,
+        "item": item
+        }
+    return render(request, 'account_change_employee.html', context)
+
+def account_change_complete_employee(request, pk):
+    return render(request, 'account_change_complete_employee.html', {'pk':pk})
+  
 
 
 def create(request):
