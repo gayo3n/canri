@@ -21,52 +21,58 @@ input[type="password"] {
     box-sizing: border-box;
 }
 
-/* ログインフォームのコンテナ */
+/* フォームコンテナのスタイル */
 .account_change {
-    margin: 20px auto; /* 上下中央揃えではなく、適度な余白を作成 */
+    margin: 20px auto; /* 上下に適度な余白 */
     padding: 30px;
-    background-color: #ffffff; /* 背景色を白 */
+    background-color: #ffffff;
     border-radius: 10px;
     max-width: 400px;
-    width: 90%; /* 小さい画面でもデザインが崩れないよう設定 */
+    width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 影を追加 */
 }
 
 /* ボタンとリンクの共通スタイル */
 .button-group {
-    display: flex; /* フレックスボックスで配置 */
-    flex-direction: column; /* 縦に並べる */
-    align-items: center; /* 中央揃え */
-    gap: 10px; /* ボタンとリンクの間隔 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; /* ボタン間の間隔 */
 }
 
-/* リンクのスタイル */
-.btn-cancel {
-    display: inline-block; /* インラインブロックに変更 */
-    font-size: 1rem;
-    color: #ff1515;
-    text-decoration: none;
-}
-
-.btn-cancel:hover {
-    color: #fc7b7b; /* ホバー時の色 */
-    transition: color 0.3s ease; /* 色の変化を滑らかに */
-    text-decoration: underline; /* ホバー時に下線を追加 */
-}
-
-/* ボタンのスタイル */
+/* 保存ボタンのスタイル */
 .btn-save {
-    display: inline-block; /* インラインブロックに変更 */
+    display: inline-block;
     font-size: 1rem;
-    color: #007bff; /* テキストカラー */
-    background: none; /* 背景をなくす */
-    border: none; /* ボーダーをなくす */
-    padding: 0; /* パディングをなくす */
-    cursor: pointer; /* カーソルをポインタに */
-    text-decoration: none; /* 下線をなくす */
+    color: #ffffff; /* テキストを白に */
+    background-color: #007bff; /* 背景色を青に */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
 }
 
 .btn-save:hover {
-    color: #83adfc; /* ホバー時の色 */
-    transition: color 0.3s ease; /* 色の変化を滑らかに */
-    text-decoration: underline; /* ホバー時に下線を追加 */
+    background-color: #0056b3; /* ホバー時の色を濃い青に */
+}
+
+/* キャンセルボタンのスタイル */
+.btn-cancel {
+    display: inline-block;
+    font-size: 1rem;
+    color: #000000; /* テキストカラーを黒に */
+    background-color: #ffffff; /* 背景色を白に */
+    border: 2px solid #000000; /* ボーダーを黒に */
+    padding: 8px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #f0f0f0; /* ホバー時の背景色を薄いグレーに */
+    color: #ff0000; /* ホバー時の文字色を赤に */
 }
