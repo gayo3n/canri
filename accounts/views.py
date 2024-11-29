@@ -124,12 +124,15 @@ def create(request):
     elif request.method == 'POST':
         form = AccountAddForm(request.POST)
         if form.is_valid():
-            user = User.objects.create_user(
-                user_id=form.cleaned_data['user_id'],
-                name=form.cleaned_data['name'],
-                password=form.cleaned_data['password']
-            )
-            return render(request, 'account_create_complete.html', {'user_id': user.user_id})
+            user_id=form.cleaned_data['user_id']
+            if User.objects.filter(user_id=user_id).exists():
+                form.add_error('user_id', 'このアカウントIDは既に使用されています。')
+            else:
+                user = User.objects.create_user(
+                    name=form.cleaned_data['name'],
+                    password=form.cleaned_data['password']
+                )
+                return redirect('accounts:account_create_complete', user_id=user.user.id)
     context = {'form': form}
     return render(request, 'account_create.html', context)
 
