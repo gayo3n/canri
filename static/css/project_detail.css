@@ -1,22 +1,33 @@
 .container {
     padding: 20px;
     display: flex;
+    gap: 20px; /* セクション間の間隔を追加 */
 }
 
 .teams-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 20px;
     flex: 3;
     padding-right: 20px;
+    height: 150px; /* 親要素の高さを設定 */
+    line-height: 150px; /* 親要素の高さと同じに設定 */
+    text-align: center; /* 横軸の中央に配置 */
 }
 
 .team-card {
-    background: white;
+    background: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 15px;
     min-height: 150px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* カードに影を追加 */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* ホバー時に強調 */
 }
 
 .new-team-button {
@@ -26,14 +37,21 @@
     align-items: center;
     gap: 5px;
     text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease;
+}
+
+.new-team-button:hover {
+    color: #0056b3; /* ホバー時の色変更 */
 }
 
 .tasks-panel {
     flex: 2;
     background: white;
     border-radius: 8px;
-    padding: 15px;
+    padding: 20px;
     border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* タスクパネルにも影を追加 */
 }
 
 .task-list {
@@ -45,6 +63,11 @@
     align-items: center;
     padding: 10px;
     border-bottom: 1px solid #eee;
+    transition: background-color 0.3s ease;
+}
+
+.task-item:hover {
+    background-color: #f8f8f8; /* ホバー時の背景色変更 */
 }
 
 .task-item:last-child {
@@ -69,6 +92,12 @@
     border: none;
     cursor: pointer;
     color: #666;
+    font-size: 16px;
+    transition: color 0.2s ease;
+}
+
+.delete-button:hover {
+    color: #d9534f; /* ゴミ箱アイコンのホバー時色変更 */
 }
 
 .action-boxes {
@@ -85,6 +114,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border-width: 0.5px; /* 外枠の太さを指定 */
+    border-radius: 4px; /* 角の丸みを指定 */
+}
+
+.box:hover {
+    background-color: #bbb;
+    color: #fff;
 }
 
 .box a {
@@ -119,6 +156,7 @@
     border-radius: 8px;
     width: 50%;
     position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* モーダルに影を追加 */
 }
 
 .close-button {
@@ -129,6 +167,11 @@
     font-weight: bold;
     color: #333;
     cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close-button:hover {
+    color: #d9534f; /* 閉じるボタンのホバー時色変更 */
 }
 
 .submit-button {
@@ -138,6 +181,7 @@
     padding: 10px 20px;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .submit-button:hover {
