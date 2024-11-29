@@ -8,24 +8,23 @@ app_name = 'canri_app'
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
+
     # メンバーリスト
     path('memberlist/', views.MemberListView.as_view(), name='memberlist'),
     path('memberlist/make/', views.MemberListMakeView.as_view(), name='memberlist_make'),
     path('memberlist/make/complete/', views.MemberListMakeCompleteView.as_view(), name='memberlist_make_complete'),
-    # path('memberlist/edit/', views.MemberListEditView.as_view(), name='memberlist_edit'),
     path('memberlist/edit/<int:category_id>/', views.MemberListEditView.as_view(), name='memberlist_edit'),
     path('memberlist/edit/complete/', views.MemberListEditCompleteView.as_view(), name='memberlist_edit_complete'),
-    path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
-    path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
-
-    path('memberlist/delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
-    path('memberlist/delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
+    path('memberlist/delete/<int:category_id>/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
+    path('memberlist/delete/complete/<int:category_id>/', views.MemberListDeleteCompleteView.as_view(), name='memberlist_delete_complete'),
     # メンバー
     path('member/make/', views.MemberMakeView.as_view(), name='member_make'),
+    path('member/edit/<int:member_id>/', views.MemberEditView.as_view(), name='member_edit'),
     path('member/upload_csv/', views.FileUploadView.as_view(), name='member_csv_upload'),
     path('member/make/complete/', views.MemberMakeCompleteView.as_view(), name='member_make_complete'),
-    path('member/delete/', views.MemberMakeDeleteView.as_view(), name='member_delete'),
-    path('member/delete/complete/', views.MemberMakeDeleteOkView.as_view(), name='member_delete_complete'),
+    path('member/edit/complete/', views.MemberEditCompleteView.as_view(), name='member_edit_complete'),
+    path('member/delete/', views.MemberDeleteView.as_view(), name='member_delete'),
+    path('member/delete/complete/', views.MemberDeleteCompleteView.as_view(), name='member_delete_complete'),
 
 
 
