@@ -170,7 +170,7 @@ def account_delete(request, name):
     if request.method == 'POST':
         obj.delete()
         return redirect('accounts:account_delete_complete')
-    return render(request, 'account_delete.html', {'object':obj})
+    return render(request, 'account_delete.html', {'object':obj, 'name': name})
 
 def account_delete_complete(request):
     return render(request, 'account_delete_complete.html')
