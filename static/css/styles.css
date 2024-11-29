@@ -9,6 +9,23 @@
     margin-bottom: 3px;
 }
 
+.user-info-container {
+    display: flex;
+    align-items: center;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-right: 20px; /* ログアウトリンクとの間にスペースを追加 */
+}
+
+.logout-link {
+    margin-left: 20px; /* 必要に応じて調整 */
+}
+
 /* ハンバーガーメニュー */
 .hamburger-menu {
     display: none;  /* デフォルトは非表示 */

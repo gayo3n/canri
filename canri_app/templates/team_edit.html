@@ -217,6 +217,7 @@
         event.preventDefault(); // リンクのデフォルトの動作を防ぐ
 
         fetch(`{% url 'canri_app:get_member_data' member_id=0 %}`.replace("0", memberId))
+            console.log(memberId)
             .then(response => response.json())
             .then(data => {
                 const member = data.member_data;
