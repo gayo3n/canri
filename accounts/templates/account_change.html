@@ -9,13 +9,13 @@
         {% csrf_token %}
     
         <label for="username">ユーザ名🔒</label>
-        <input type="text" id="username" name="name" value="{{ item.name }}" readonly>
+        <input type="text" id="username" name="name" value="{{ item.name }}" maxlength="10" readonly>
         
         <label for="userid">ユーザID🔒</label>
-        <input type="text" id="userid" name="user_id" value="{{ item.user_id }}" readonly>
+        <input type="text" id="userid" name="user_id" value="{{ item.user_id }}" maxlength="10" readonly>
         
         <label for="password">パスワード</label>
-        <input type="password" id="password" name="password" required>
+        <input type="password" id="password" name="password" maxlength="10" required>
         
         <button type="submit">保存</button>
         <a href="{% url 'accounts:manage_account' %}">キャンセル</a>

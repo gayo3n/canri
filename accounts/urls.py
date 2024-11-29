@@ -6,7 +6,7 @@ from . import views
 app_name = 'accounts'
 
 urlpatterns = [
-    # アカウント管理
+    # アカウント管理    
     path('login/', views.LoginView.as_view(template_name='login.html'), name='login'),
     path('login_complete/', views.LoginCompView.as_view(), name='login_complete'), #ログイン完了
     path('logout_complete/', views.LogoutCompView.as_view(), name='logout_complete'), #ログアウト完了

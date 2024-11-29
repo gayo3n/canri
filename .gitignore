@@ -1,0 +1,34 @@
+# Python関連
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# Django関連
+media/
+
+# 環境ファイル
+.env
+
+# 仮想環境
+venv/
+myvenv/
+
+# IDEとエディタ関連
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# ログファイル
+*.log
+
+# macOS関連
+.DS_Store
+
+# その他
+*.swp
+*.pem
+
+#DB
+.sqlite3
