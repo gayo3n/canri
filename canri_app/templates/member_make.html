@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-
+<div class="body">
 <h2>メンバー編集</h2>
 <form class="center" method="post" action="{% url 'canri_app:member_make_complete' %}">
     {% csrf_token %}
@@ -108,4 +108,5 @@
     <a href="{% url 'canri_app:member_delete' %}" class="btn delete">削除</a>
     <button type="submit" class="btn save">保存</button>
 </form>
+</div>
 {% endblock %}

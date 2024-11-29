@@ -6,6 +6,19 @@
     align-items: center;
 }
 
+.project_a{
+    display: block; /* リンクを縦方向に並べる */
+    margin-top: 10px;
+    font-size: 1rem;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.project_a:hover {
+    color: #0152a8;
+    text-decoration: underline; /* ホバー時に下線を追加 */
+}
+
 /* 検索入力フィールドのスタイル */
 .search-input {
     padding: 8px;

@@ -23,15 +23,17 @@
 
 .create-member-btn {
     padding: 8px 16px;
-    background-color: #87ceeb;
+    background-color: #4accff;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .create-member-btn:hover {
-    background-color: #00bfff;
+    background-color: #128db6;
+    text-decoration: underline;
 }
 
 /* メンバーリスト */
