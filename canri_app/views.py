@@ -623,13 +623,13 @@ class MemberEditView(TemplateView):
         # 役職
         mem_job=JobTitleInformation.objects.get(job_title_id=member.job_id)
         # 職歴
-        career = MemberCareer.objects.get(member_id=member.member_id)
-        if career:
-            mem_career=CareerInformation.objects.get(career_id=career.career_id)
-        else:
-            mem_career=[]
+        try:
+            career = MemberCareer.objects.get(member_id=member.member_id)
+            mem_career = CareerInformation.objects.get(career_id=career.career_id)
+        except MemberCareer.DoesNotExist:
+            mem_career = None
         # 資格情報を取得
-        qualifications = MemberHoldingQualification.objects.filter(member_id=member.member_id)
+        qualifications = MemberHoldingQualification.objects.filter(member_id=member.member_id, deletion_flag=False)
         if qualifications.exists():
             qualification_ids = qualifications.values_list('qualification_id', flat=True)
             mem_credentials = Credentials.objects.filter(qualification_id__in=qualification_ids)
@@ -658,6 +658,7 @@ class MemberEditCompleteView(TemplateView):
     template_name = "member_make_complete.html"
     
     def post(self, request, *args, **kwargs):
+        member_id = self.kwargs.get('member_id')
         # フォームからの入力を取得
         name = request.POST.get('name')
         birthdate = request.POST.get('birthday')  # 日付は適切なフォーマットで受け取る
@@ -681,16 +682,16 @@ class MemberEditCompleteView(TemplateView):
         # 入力検証
         if not name:
             messages.error(request, "名前を入力してください。")
-            return redirect('canri_app:member_edit')
+            return redirect('canri_app:member_edit', member_id=member_id)
         if not birthdate:
             messages.error(request, "生年月日を設定してください。")
-            return redirect('canri_app:member_edit')
+            return redirect('canri_app:member_edit', member_id=member_id)
         if not job_title_id:
             messages.error(request, "役職を選択してください。")
-            return redirect('canri_app:member_edit')
+            return redirect('canri_app:member_edit', member_id=member_id)
         if not mbti_id:
             messages.error(request, "MBTIを選択してください。")
-            return redirect('canri_app:member_edit')
+            return redirect('canri_app:member_edit', member_id=member_id)
         
         try:
             # 外部キー関連のデータを取得
@@ -698,7 +699,7 @@ class MemberEditCompleteView(TemplateView):
             mbti = MBTI.objects.get(mbti_id=mbti_id)
             
             # メンバーオブジェクトの取得と更新
-            member = Member.objects.get(member_id=kwargs.get('member_id'))  # member_idをkwargsから取得
+            member = Member.objects.get(member_id=self.kwargs.get('member_id'))  # member_idをkwargsから取得
             member.name = name
             member.birthdate = birthdate
             member.job = job_title  # 外部キーを関連付け
