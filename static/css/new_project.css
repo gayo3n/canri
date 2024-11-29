@@ -45,7 +45,7 @@ textarea {
 /* 送信ボタン */
 .create_button {
     margin-top: 20px;
-    background-color: #007bff;
+    background-color: #2370ff;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -57,7 +57,7 @@ textarea {
 }
 
 .create_button:hover {
-    background-color: #0056b3;
+    background-color: #0d62ff;
 }
 
 /* フォームの配置 */
