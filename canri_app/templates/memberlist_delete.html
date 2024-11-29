@@ -10,8 +10,8 @@
 <!-- ポップアップダイアログ -->
 <div id="deletePopup" class="popup">
     <div class="popup-content">
-        <p>{{ Category.category_name }}を削除しますか？</p>
-        <a href="{% url 'canri_app:memberlist_delete_complete' %}" class="confirm-delete-btn">削除</a>
+        <p>{{ category.category_name }}を削除しますか？</p>
+        <a href="{% url 'canri_app:memberlist_delete_complete' category_id=category.category_id %}" class="confirm-delete-btn">削除</a>
         <a href="{% url 'canri_app:memberlist' %}" class="cancel">キャンセル</a>
     </div>
 </div>

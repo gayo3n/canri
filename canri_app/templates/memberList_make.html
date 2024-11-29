@@ -21,7 +21,7 @@
         <ul>
             {% for member in members %}
                 <li>
-                    {{ member.name }}
+                    <a href="{% url 'canri_app:member_edit' member_id=member.member_id %}">{{ member.name }}</a>
                     <form method="POST" action="{% url 'canri_app:memberlist_make' %}">
                         {% csrf_token %}
                         <input type="hidden" name="member_id" value="{{ member.member_id }}">
