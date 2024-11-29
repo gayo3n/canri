@@ -1,47 +1,47 @@
 {% load static %}
-
+ 
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
-
+ 
     <title>ログイン</title>
 </head>
 <body>
-
+ 
     <div class="login-container">
         <h2>ログイン</h2>
         {% if form.errors %}
             <p class="error-message">ユーザー名かパスワードが一致しません</p>
         {% endif %}
-
+ 
         <form action="{% url 'accounts:login' %}" method="post">
             {% csrf_token %}
             <div>
                 <label class="input_format">名前</label>
-                <input type="text" placeholder="半角でご入力ください" id="user_id" name="name" required>
+                <input type="text" placeholder="半角でご入力ください" id="user_id" name="username" required>
             </div>
-        
+       
             <div>
                 <label class="input_format">パスワード</label>
                 <input type="password" placeholder="10文字以内の半角英数字でご入力ください" id="input_pass" name="password" required>
             </div>
-        
+       
             <div class="checkbox-container">
                 <input type="checkbox" id="show-password"> <label for="show-password">パスワードを表示</label>
             </div>
-        
+       
             <button type="submit" class="login-btn">ログイン</button>
         </form>
     </div>
-
+ 
     <script>
         document.getElementById("show-password").addEventListener("change", function() {
             document.getElementById("input_pass").type = this.checked ? "text" : "password";
         });
     </script>
-
+ 
 </body>
 </html>

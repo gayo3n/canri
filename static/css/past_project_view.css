@@ -114,3 +114,10 @@ button:hover {
     background-color: #ccc;
     margin: none;
 }
+
+/* ホバー時のスタイル */
+.btn-danger:hover {
+    background-color: #e60000;  /* ホバー時の背景色（濃い赤色） */
+    color: white;               /* ホバー時の文字色（白） */
+    transition: background-color 0.3s ease; /* 色の変化にアニメーションを追加 */
+}
