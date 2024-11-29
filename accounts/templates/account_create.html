@@ -15,6 +15,9 @@
         </div>
         <div>
             <input type="text" placeholder="パスワード" id="password" name="password" maxlength="10" required>
+            {% if form.password.errors %}
+                <div class="error">{{ form.password.errors }}</div>
+            {% endif %}
         </div>
         <div>
             <td><button type="submit" class="btn btn-danger">作成</button></td>
