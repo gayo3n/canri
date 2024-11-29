@@ -29,7 +29,6 @@ input[type="password"] {
     border-radius: 10px;
     max-width: 400px;
     width: 90%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 影を追加 */
 }
 
 /* ボタンとリンクの共通スタイル */
@@ -62,9 +61,8 @@ input[type="password"] {
 .btn-cancel {
     display: inline-block;
     font-size: 1rem;
-    color: #000000; /* テキストカラーを黒に */
-    background-color: #ffffff; /* 背景色を白に */
-    border: 2px solid #000000; /* ボーダーを黒に */
+    color: #fff; /* テキストカラーを黒に */
+    background-color: #ff0000; /* 背景色を白に */
     padding: 8px 18px;
     border-radius: 5px;
     cursor: pointer;
@@ -73,6 +71,6 @@ input[type="password"] {
 }
 
 .btn-cancel:hover {
-    background-color: #f0f0f0; /* ホバー時の背景色を薄いグレーに */
-    color: #ff0000; /* ホバー時の文字色を赤に */
+    background-color: #fd7979; /* ホバー時の背景色を薄いグレーに */
+    color: #fff; /* ホバー時の文字色を赤に */
 }
