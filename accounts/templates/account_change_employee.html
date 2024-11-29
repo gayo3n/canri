@@ -5,18 +5,17 @@
 {% endblock %}
 {% block content %}
 
+<div class="account_change">
+    <h2>アカウント編集</h2>
+    <form action="{% url 'accounts:account_change_employee' pk=user.pk %}" method="post">
+        {% csrf_token %}
+        <div>
+            <input type="text" id="user_name" name="name" placeholder="名前を入力してください" required>
+        </div>
 
-    <div class="account_change">
-        <h2>アカウント編集</h2>
-        <form action="{% url 'accounts:account_change_employee' pk=user.pk %}" method="post">
-            {% csrf_token %}
-            <div>
-                <input type="text" id="user_name" name="name" placeholder="名前を入力してください" required>
-            </div>
-
-            <div>
-                <input type="text" id="user_password" name="password" placeholder="パスワードを入力してください" required>
-            </div>
+        <div>
+            <input type="text" id="user_password" name="password" placeholder="パスワードを入力してください" required>
+        </div>
 
         <div class="button-group">
             <button type="submit" class="btn btn-save">保存</button>
