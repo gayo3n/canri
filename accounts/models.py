@@ -16,9 +16,9 @@ class UserManager(BaseUserManager):
         return self.create_user(name, password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
-    user_id = models.CharField(max_length=100, primary_key=True)
-    name = models.CharField(max_length=100, unique=True)
-    password = models.CharField(max_length=255)
+    user_id = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=10, unique=True)
+    password = models.CharField(max_length=10)
 
     is_active = models.BooleanField(default=True) #ログインしているかどうか
     is_staff = models.BooleanField(default=False)  # 管理者権限

@@ -847,7 +847,7 @@ class NewProjectEditView(TemplateView):
         # 空のチームリストを追加
         teams = []
 
-        # 入力された情��を保持した状態でnew_project_edit.htmlに遷移
+        # 入力された情報を保持した状態でnew_project_edit.htmlに遷移
         return render(request, self.template_name, {'project': project_data, 'teams': teams})
 
 #新規プロジェクト編集に戻る
@@ -950,7 +950,7 @@ class CreateTeam2View(TemplateView):
                 'end_date': end_date,  # 終了日
                 'teams': teams,  # チーム情報（リスト形式）
                 'team_type': team_type,  # チームの種類
-                'categories': categories,  # カテゴ��情報
+                'categories': categories,  # カテゴリ情報
             })
 
 #チーム追加2に戻る
@@ -1016,7 +1016,7 @@ class CreateTeam3View(TemplateView):
 
         if response.status_code == 200:
             team = response_data['team']
-            print("チームが作成されました:", team)  # メンバー情報をターミナルに表示
+            print("チームが作成されまし��:", team)  # メンバー情報をターミナルに表示
         else:
             team = None
             print("チームの作成に失敗しました")  # エラーメッセージをターミナルに表示
@@ -1594,7 +1594,7 @@ def project_phase_add(request, project_id):
                 # 'end_date': end_date,
             })
 
-    # GETリクエストの場合、プロジェクト詳細ページを表示
+    # GETリクエストの場合、プロジェクト詳細ペ��ジを表示
     return render(request, templatename, {'project': project})
 
 
@@ -1850,7 +1850,7 @@ class project_detail_SaveTeamView(TemplateView):
 
 
             print("チームが保存されました:", team_id)  # チームIDをターミナルに表示
-            print("プロ���ェクトへの保存も完了;",ProjectAffiliation_Team)
+            print("プロジェクトへの保存も完了;",ProjectAffiliation_Team)
         else:
             # チーム保存失敗時の処理
             print(response_data)  # レスポンスのエラー内容を表示
@@ -1989,42 +1989,45 @@ class Project_DeletedView(TemplateView):
 class Project_Save_CompleteView(TemplateView):
     template_name = "save_past_project.html"
 
-#フィードバックモーダル表示
-class FeedbackView(TemplateView):
-    template_name = "feedback_application.html"
-
-    def get(self, request, *args, **kwargs):
-        project_id = kwargs.get('project_id')
-        teams = Team.objects.filter(team_id__in=ProjectAffiliationTeam.objects.filter(project_id=project_id,deletion_flag=0).values_list('team_id', flat=True))
-        team_members = TeamMember.objects.filter(team_id__in=teams, deletion_flag=0)
-        members = Member.objects.filter(member_id__in=team_members, deletion_flag=0)
-        feedbacks = Feedback.objects.filter(project_id=project_id, deletion_flag=0)
-        context = {
-            'project_id': project_id,
-            'members': members,
-            'feedbacks': feedbacks
-        }
-        return render(request, self.template_name, context)
-
 #フィードバック保存
 class FeedbackSaveView(TemplateView):
     template_name = "feedback_save_complete.html"
     
     def post(self, request, *args, **kwargs):
-        project_id = request.POST.get('project_id')
-        member1_id = request.POST.get('member1')
-        member2_id = request.POST.get('member2')
-        priority = request.POST.get('priority')
+        data = json.loads(request.body)
+        project_id = data.get('project_id')
+        existing_feedbacks = data.get('existing_feedbacks')
+        new_feedbacks = data.get('new_feedbacks')
 
-        Feedback.objects.create(
-            member1_id=member1_id,
-            member2_id=member2_id,
-            project_id=project_id,
-            priority_flag=(priority == '1'),
-            creation_date=timezone.now(),
-            expiration_date=timezone.now(),
-            deletion_flag=False
-        )
+        # 既存のフィードバックを更新
+        for feedback in existing_feedbacks:
+            print('ddd',feedback.get('feedback_id'))
+            feedback_id = feedback.get('feedback_id')
+            member1_id = feedback.get('member1')
+            member2_id = feedback.get('member2')
+            priority = feedback.get('priority')
+
+            feedback_instance = Feedback.objects.get(feedback_id=feedback_id)
+            feedback_instance.member1_id = member1_id
+            feedback_instance.member2_id = member2_id
+            feedback_instance.priority_flag = (priority == 'True')
+            feedback_instance.save()
+
+        # 新しいフィードバックを作成
+        for feedback in new_feedbacks:
+            print('wwww',feedback.get('feedback_id'))
+            member1_id = feedback.get('member1')
+            member2_id = feedback.get('member2')
+            priority = feedback.get('priority')
+
+            Feedback.objects.create(
+                member1_id=member1_id,
+                member2_id=member2_id,
+                project_id=project_id,
+                priority_flag=(priority == 'True'),
+                creation_date=timezone.now(),
+                deletion_flag=False
+            )
 
         context = {}
         return render(request, self.template_name, context)
@@ -2032,7 +2035,8 @@ class FeedbackSaveView(TemplateView):
 # フィードバック削除
 @require_http_methods(["POST"])
 def delete_feedback(request):
-    feedback_id = request.POST.get('feedback_id')
+    data = json.loads(request.body)
+    feedback_id = data.get('feedback_id')
     feedback = get_object_or_404(Feedback, feedback_id=feedback_id)
     feedback.deletion_flag = True
     feedback.save()
