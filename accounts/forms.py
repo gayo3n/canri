@@ -4,53 +4,74 @@ from .models import User
 from django import forms
 from django.core.exceptions import ValidationError
 
+# 現在のユーザーモデルを取得
 User = get_user_model()
 
 class AccountAddForm(forms.Form):
-        user_id = forms.CharField(
-        required=True,
-        max_length=10,
-        min_length=8,
+    user_id = forms.CharField(
+        required=True,  # このフィールドは必須
+        max_length=10,  # 最大文字数は10
+        min_length=8,   # 最小文字数は8
         widget=forms.TextInput(
             attrs={
-                'placeholder':''
+                'placeholder': ''  # プレースホルダーを空に設定
             }
         )
     )
-        password = forms.CharField(
-        required=True,
-        max_length=10,
-        min_length=6,
+    password = forms.CharField(
+        required=True,  # このフィールドは必須
+        max_length=10,  # 最大文字数は10
+        min_length=6,   # 最小文字数は6
         widget=forms.PasswordInput(
             attrs={
-                'placeholder':'******',
+                'placeholder': '******',  # プレースホルダーを設定
             }
         )
     )
-        name = forms.CharField(
-        required=True,
-        min_length=3,
-        max_length=10,
+    name = forms.CharField(
+        required=True,  # このフィールドは必須
+        min_length=3,   # 最小文字数は3
+        max_length=10,  # 最大文字数は10
         widget=forms.TextInput(
             attrs={
-                'placeholder':''
+                'placeholder': ''  # プレースホルダーを空に設定
             }
         )
     )
-            
-        def clean_user_id(self):
-            user_id = self.cleaned_data['user_id']
-            if not user_id.isdigit():
-                raise ValidationError('ユーザーIDは数字のみでなければなりません。')
-            if User.objects.filter(user_id=user_id).exists():
-                raise ValidationError('すでに使用されているIDです')
-            return user_id
-        def clean_password(self):
-            password = self.cleaned_data['password']
-            return password
-        def clean_name(self):
-            name = self.cleaned_data['name']
-            return name
+
+
+    def clean_user_id(self):
+        user_id = self.cleaned_data['user_id']
+        # ユーザーIDが数字のみで構成されているかチェック
+        if not user_id.isdigit():
+            raise ValidationError('ユーザーIDは数字のみでなければなりません。')
+        # ユーザーIDが既に存在するかチェック
+        if User.objects.filter(user_id=user_id).exists():
+            raise ValidationError('すでに使用されているIDです')
+        return user_id
+
+    def clean_password(self):
+        password = self.cleaned_data['password']
+        # パスワードに対する追加のバリデーションをここに追加可能
+        return password
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        # 名前に対する追加のバリデーションをここに追加可能
+        return name
+    def clean_user_id(self):
+        user_id = self.cleaned_data['user_id']
+        if not user_id.isdigit():
+            raise ValidationError('ユーザーIDは数字のみでなければなりません。')
+        if User.objects.filter(user_id=user_id).exists():
+            raise ValidationError('すでに使用されているIDです')
+        return user_id
+    def clean_password(self):
+        password = self.cleaned_data['password']
+        return password
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        return name
 
 
 

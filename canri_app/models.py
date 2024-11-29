@@ -205,7 +205,7 @@ class MemberParameter(models.Model):
     teamwork = models.IntegerField()
     time_management_ability = models.IntegerField()
     problem_solving_ability = models.IntegerField()
-    speciality_height = models.IntegerField()
+    speciality_height = models.FloatField()
 
     class Meta:
         db_table = 'member_parameter'

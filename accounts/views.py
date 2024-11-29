@@ -115,24 +115,29 @@ def account_change_employee(request, pk):
 
 def account_change_complete_employee(request, pk):
     return render(request, 'account_change_complete_employee.html', {'pk':pk})
-  
+
 
 
 def create(request):
     if request.method == 'GET':
+        # リクエストメソッドがGETの場合、空のフォームをインスタンス化
         form = AccountAddForm()
     elif request.method == 'POST':
-        form = AccountAddForm(request.POST)
+        # リクエストメソッドがPOSTの場合、POSTデータでフォームをインスタンス化
+        form =UserForm(request.POST)
         if form.is_valid():
             user_id=form.cleaned_data['user_id']
             if User.objects.filter(user_id=user_id).exists():
                 form.add_error('user_id', 'このアカウントIDは既に使用されています。')
             else:
+                # フォームが有効な場合、クリーンデータを使用して新しいユーザーを作成
                 user = User.objects.create_user(
                     name=form.cleaned_data['name'],
                     password=form.cleaned_data['password']
                 )
-                return redirect('accounts:account_create_complete', user_id=user.user.id)
+                # アカウント作成完了を示すテンプレートをレンダリング
+            return render(request, 'account_create_complete.html', {'user_id': user.user_id})
+    # アカウント作成フォームのテンプレートをレンダリング
     context = {'form': form}
     return render(request, 'account_create.html', context)
 
@@ -140,11 +145,15 @@ def create(request):
 def account_create_complete(request):
     form = UserForm(request.POST)
     if form.is_valid():
+        # フォームが有効な場合、データを保存
         form.save()
+        # アカウント作成完了のテンプレートをレンダリング
         return render(request, 'account_create_complete.html')
     else:
+        # フォームが無効な場合、新しいフォームをインスタンス化
         form = UserForm()
-    return render(request, 'account_create_complete.html', {'form':form})
+    # アカウント作成完了のテンプレートをフォームと共にレンダリング
+    return render(request, 'account_create_complete.html', {'form': form})
 
 def manage_account_change(request, pk):
     item = User.objects.get(user_id=pk)
