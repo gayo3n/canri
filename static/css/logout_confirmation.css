@@ -45,15 +45,15 @@ h1 {
     margin-bottom: 15px;
     border: 1px solid #ffffff;
     border-radius: 4px;
-    background-color: #3079ff;
+    background-color: #337bff;
     font-size: 14px;
     box-sizing: border-box;
     text-decoration: none;
-    color: #000;
+    color: #ffffff;
 }
 
 .a:hover {
-    background-color: #006eff; /* ホバー時の色 */
+    background-color: #1f66ff; /* ホバー時の色 */
     transition: background-color 0.3s ease; /* 色の変化を滑らかに */
     text-decoration: underline; /* ホバー時に下線を追加 */
 }
