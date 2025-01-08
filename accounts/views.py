@@ -36,11 +36,6 @@ class LogoutCompView(TemplateView):
 class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
-<<<<<<< HEAD
-class LogoutCompView(TemplateView):
-    template_name = 'logout_complete.html'
-
-=======
 class AccLoginView(LoginView):
     def post(self, request, *arg, **kwargs):
         form = LoginForm(data=request.POST)
@@ -77,7 +72,6 @@ class AccLoginView(LoginView):
     #         'form': form,
     #     }
     #     return render(request, 'login.html', param)
->>>>>>> 3547ad0db95613f81de3bfeb27c9bf03e428e8ae
 
 
 def logout(request):
