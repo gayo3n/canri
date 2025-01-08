@@ -1,10 +1,10 @@
 /* ボディのスタイル */
 body {
     font-family: Arial, sans-serif;
-    display: flex;
     flex-direction: column;
     align-items: center;
     background-color: #ffffff;
+    overflow-x: hidden; /* 横スクロールを防ぐ */
 }
 
 /* ヘッダーのスタイル */
@@ -26,6 +26,7 @@ header nav a {
 }
 
 .navbar-left {
+    max-width: 100%;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -40,6 +41,13 @@ header nav a {
     text-decoration: none;
     color: #333;
     font-size: 16px;
+}
+
+.sub-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 中央に移動 */
 }
 
 /* メインコンテンツのスタイル */

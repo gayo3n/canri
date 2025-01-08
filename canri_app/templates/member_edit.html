@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-
+<div class="body">
 <h2>メンバー編集</h2>
 <form class="center" method="post" action="{% url 'canri_app:member_edit_complete' member_id=member.member_id %}">
     {% csrf_token %}
@@ -126,4 +126,5 @@
     <input type="hidden" value="{{ member.member_id }}"/>
     <button type="submit" class="btn save">保存</button>
 </form>
+</div>
 {% endblock %}
