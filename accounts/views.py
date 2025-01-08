@@ -138,12 +138,7 @@ def manage_account_change(request, pk):
 
 def account_change_complete(request, pk):
     return render(request, 'account_change_complete.html', {'pk':pk})
-<<<<<<< HEAD
-    
-# アカウント削除
-=======
 
->>>>>>> d97fd28fa2be33be1edac71739e44ce1302d9029
 def account_delete(request, name):
     obj = get_object_or_404(User, name=name)
     if request.method == 'POST':
