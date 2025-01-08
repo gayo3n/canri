@@ -4,6 +4,7 @@ from .models import User
 from django import forms
 from django.core.exceptions import ValidationError
 
+# 現在のユーザーモデルを取得
 User = get_user_model()
 
 class AccountAddForm(forms.Form):
@@ -13,7 +14,7 @@ class AccountAddForm(forms.Form):
         min_length=8,
         widget=forms.TextInput(
             attrs={
-                'placeholder':''
+                'placeholder': ''  # プレースホルダーを空に設定
             }
         )
     )
@@ -23,7 +24,7 @@ class AccountAddForm(forms.Form):
         min_length=8,
         widget=forms.PasswordInput(
             attrs={
-                'placeholder':'******',
+                'placeholder': '******',  # プレースホルダーを設定
             }
         )
     )
@@ -33,7 +34,7 @@ class AccountAddForm(forms.Form):
         max_length=16,
         widget=forms.TextInput(
             attrs={
-                'placeholder':''
+                'placeholder': ''  # プレースホルダーを空に設定
             }
         )
     )
