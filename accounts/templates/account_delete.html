@@ -11,6 +11,7 @@
     <div class="modal">
         <div class="modal-content">
             <p>アカウントを削除しますか？</p>
+            <p>{{ name }}</p>
             <div class="modal-buttons">
                 <button type="submit" class="btn btn-confirm">削除</button>
                 <a href="{% url 'accounts:manage_account' %}" class="btn btn-cancel">キャンセル</a>

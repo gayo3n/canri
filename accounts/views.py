@@ -126,13 +126,16 @@ def create(request):
         # リクエストメソッドがPOSTの場合、POSTデータでフォームをインスタンス化
         form =UserForm(request.POST)
         if form.is_valid():
-            # フォームが有効な場合、クリーンデータを使用して新しいユーザーを作成
-            user = User.objects.create_user(
-                user_id=form.cleaned_data['user_id'],
-                name=form.cleaned_data['name'],
-                password=form.cleaned_data['password']
-            )
-            # アカウント作成完了を示すテンプレートをレンダリング
+            user_id=form.cleaned_data['user_id']
+            if User.objects.filter(user_id=user_id).exists():
+                form.add_error('user_id', 'このアカウントIDは既に使用されています。')
+            else:
+                # フォームが有効な場合、クリーンデータを使用して新しいユーザーを作成
+                user = User.objects.create_user(
+                    name=form.cleaned_data['name'],
+                    password=form.cleaned_data['password']
+                )
+                # アカウント作成完了を示すテンプレートをレンダリング
             return render(request, 'account_create_complete.html', {'user_id': user.user_id})
     # アカウント作成フォームのテンプレートをレンダリング
     context = {'form': form}
@@ -176,7 +179,7 @@ def account_delete(request, name):
     if request.method == 'POST':
         obj.delete()
         return redirect('accounts:account_delete_complete')
-    return render(request, 'account_delete.html', {'object':obj})
+    return render(request, 'account_delete.html', {'object':obj, 'name': name})
 
 def account_delete_complete(request):
     return render(request, 'account_delete_complete.html')
