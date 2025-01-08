@@ -18,7 +18,7 @@
     {% for project in project_list %}
     <div class="project-row">
         <div class="project-name">
-            <a href="{% url 'canri_app:past_project_view' project.project_id %}">{{ project.project_name }}</a>
+            <a href="{% url 'canri_app:past_project_view' project.project_id %}" class="project_a">{{ project.project_name }}</a>
         </div>
         <div class="project-period">プロジェクト開始日：<br>{{ project.project_start_date|date:"Y年m月d日" }}</div>
         <div class="project-complete">プロジェクト完了日：<br>{{ project.project_complete_date|date:"Y年m月d日" }}</div>
