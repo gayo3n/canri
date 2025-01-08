@@ -11,7 +11,7 @@ class AccountAddForm(forms.Form):
         user_id = forms.CharField(
         required=True,
         max_length=24,
-        min_length=8,
+        min_length=6,
         widget=forms.TextInput(
             attrs={
                 'placeholder': ''  # プレースホルダーを空に設定
@@ -51,7 +51,7 @@ class AccountAddForm(forms.Form):
             return name
         def clean_user_id(self):
             user_id = self.cleaned_data['user_id']
-            if User.objects.filter(userid=user_id).exists():
+            if User.objects.filter(user_id=user_id).exists():
                 raise ValidationError('すでに使用されているIDです')
             return user_id
         def clean_password(self):

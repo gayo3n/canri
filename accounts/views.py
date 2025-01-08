@@ -26,9 +26,6 @@ class CustomLoginView(LoginView):
 class LoginCompView(TemplateView):
     template_name = 'login_complete.html'
 
-class LogoutCompView(TemplateView):
-    template_name = 'logout_complete.html'
-
 class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
@@ -85,40 +82,39 @@ def account_change_complete_employee(request, pk):
 
 def create(request):
     if request.method == 'GET':
-        # リクエストメソッドがGETの場合、空のフォームをインスタンス化
         form = AccountAddForm()
     elif request.method == 'POST':
-        # リクエストメソッドがPOSTの場合、POSTデータでフォームをインスタンス化
-        form =AccountAddForm(request.POST)
+        form = AccountAddForm(request.POST)
         if form.is_valid():
-            user_id=form.cleaned_data['user_id']
+            user_id = form.cleaned_data['user_id']
             if User.objects.filter(user_id=user_id).exists():
                 form.add_error('user_id', 'このアカウントIDは既に使用されています。')
             else:
-                # フォームが有効な場合、クリーンデータを使用して新しいユーザーを作成
-                user = User.objects.create_user(
-                    user_id=form.cleaned_data['user_id'],
-                    name=form.cleaned_data['name'],
-                    password=form.cleaned_data['password']
-                )
-                # アカウント作成完了を示すテンプレートをレンダリング
-                return redirect('accounts:account_create_complete')
-    # アカウント作成フォームのテンプレートをレンダリング
+                try:
+                    user = User.objects.create_user(
+                        user_id=form.cleaned_data['user_id'],
+                        name=form.cleaned_data['name'],
+                        password=form.cleaned_data['password']
+                    )
+                    print(f'アカウント作成成功: {user}')
+                    return redirect('accounts:account_create_complete')
+                except Exception as e:
+                    form.add_error(None, f'アカウント作成中にエラーが発生しました: {e}')
+                    print(f'アカウント作成中にエラーが発生しました: {e}')
+        else:
+            print('フォームが無効です:', form.errors)
+
     context = {'form': form}
     return render(request, 'account_create.html', context)
 
-
 def account_create_complete(request):
-    form = UserForm(request.POST)
+    form = UserForm(request.POST or None)
     if form.is_valid():
-        # フォームが有効な場合、データを保存
         form.save()
-        # アカウント作成完了のテンプレートをレンダリング
-        return render(request, 'account_create_complete.html')
+        return redirect('accounts:account_create_complete')
     else:
-        # フォームが無効な場合、新しいフォームをインスタンス化
-        form = UserForm()
-    # アカウント作成完了のテンプレートをフォームと共にレンダリング
+        print('フォームが無効です:', form.errors)
+
     return render(request, 'account_create_complete.html', {'form': form})
 
 def manage_account_change(request, pk):
