@@ -23,8 +23,8 @@ urlpatterns = [
     path('member/upload_csv/', views.FileUploadView.as_view(), name='member_csv_upload'),
     path('member/make/complete/', views.MemberMakeCompleteView.as_view(), name='member_make_complete'),
     path('member/edit/complete/<int:member_id>/', views.MemberEditCompleteView.as_view(), name='member_edit_complete'),
-    path('member/delete/', views.MemberDeleteView.as_view(), name='member_delete'),
-    path('member/delete/complete/', views.MemberDeleteCompleteView.as_view(), name='member_delete_complete'),
+    path('member/delete/<int:member_id>/', views.MemberDeleteView.as_view(), name='member_delete'),
+    path('member/delete/complete/<int:member_id>/', views.MemberDeleteCompleteView.as_view(), name='member_delete_complete'),
 
 
 
