@@ -7,6 +7,7 @@ from django.views.decorators.http import require_http_methods
 from .models import *
 from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Project,CareerInformation,MBTI,Credentials,Category
 from django.utils import timezone
+from datetime import datetime
 import json
 from .forms import CSVUploadForm
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect
@@ -41,12 +42,31 @@ class MemberListView(TemplateView):
 
     def get(self, request, *args, **kwargs): 
         # カテゴリー一覧を取得
-        categories = Category.objects.filter(deletion_flag=False)
+        categories=self.get_queryset()
 
         context = {
             "categories": categories  # カテゴリー
         }
         return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        categories=self.get_queryset()
+
+        context = {
+            "categories": categories  # カテゴリー
+        }
+        return render(request, self.template_name, context)
+
+
+        # カテゴリ検索
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            categories = Category.objects.filter(category_name__icontains=query, deletion_flag=False)
+        else:
+            # フォーム未入力の場合はすべて
+            categories = Category.objects.filter(deletion_flag=False)
+        return categories
 
 
 class NewProjectView(TemplateView):
@@ -327,6 +347,7 @@ class MemberListEditView(TemplateView):
             'category': category,
             'category_id': category_id,
         }
+        
         return render(request, self.template_name, context)
 
     # メンバー検索
@@ -631,7 +652,7 @@ class MemberEditView(TemplateView):
         credentials = Credentials.objects.all()
         careerinformation = CareerInformation.objects.all()
         # 役職
-        mem_job=JobTitleInformation.objects.get(job_title_id=member.job_id)
+        mem_job=JobTitleInformation.objects.get(job_title_id=int(member.job_id))
         # 職歴
         try:
             career = MemberCareer.objects.get(member_id=member.member_id)
@@ -666,128 +687,123 @@ class MemberEditView(TemplateView):
 # -----メンバー編集保存-----
 class MemberEditCompleteView(TemplateView):
     template_name = "member_make_complete.html"
-    
+
     def post(self, request, *args, **kwargs):
         member_id = self.kwargs.get('member_id')
+        
         # フォームからの入力を取得
         name = request.POST.get('name')
         birthdate = request.POST.get('birthday')  # 日付は適切なフォーマットで受け取る
         job_title_id = request.POST.get('job_title')  # JobTitleInformation ID
-        memo = request.POST.get('memo', '')  # メモは任意なのでデフォルト値を設定
         mbti_id = request.POST.get('MBTI')  # MBTI ID を取得
 
         # 職歴と資格
         career = request.POST.get('career')
-        qualification = request.POST.get('qualification')
-        qualification2 = request.POST.get('qualification2')
-        qualification3 = request.POST.get('qualification3')
+        qualifications = [
+            request.POST.get('qualification'),
+            request.POST.get('qualification2'),
+            request.POST.get('qualification3'),
+        ]
 
-        # メンバーパラメータ変数 (デフォルト値を設定)
-        planning_presentation_power = 0
-        teamwork = 0
-        time_management_ability = 0
-        problem_solving_ability = 0
-        speciality_height = 0
-
-        # 入力検証
-        if not name:
-            messages.error(request, "名前を入力してください。")
-            return redirect('canri_app:member_edit', member_id=member_id)
-        if not birthdate:
-            messages.error(request, "生年月日を設定してください。")
-            return redirect('canri_app:member_edit', member_id=member_id)
-        if not job_title_id:
-            messages.error(request, "役職を選択してください。")
-            return redirect('canri_app:member_edit', member_id=member_id)
-        if not mbti_id:
-            messages.error(request, "MBTIを選択してください。")
-            return redirect('canri_app:member_edit', member_id=member_id)
-        
         try:
             # 外部キー関連のデータを取得
-            job_title = JobTitleInformation.objects.get(job_title_id=job_title_id)
+            member = Member.objects.get(member_id=member_id)
+            job_title = JobTitleInformation.objects.get(job_title_id=int(job_title_id))
             mbti = MBTI.objects.get(mbti_id=mbti_id)
-            
-            # メンバーオブジェクトの取得と更新
-            member = Member.objects.get(member_id=self.kwargs.get('member_id'))  # member_idをkwargsから取得
-            member.name = name
-            member.birthdate = birthdate
-            member.job = job_title  # 外部キーを関連付け
-            member.memo = memo
-            member.mbti = mbti  # 外部キーを関連付け
-            member.deletion_flag = False  # 削除フラグは初期状態でFalse
-            member.save()  # 更新されたインスタンスを保存
 
-            # -----役職の計算-----
-            planning_presentation_power += job_title.planning_presentation_power
-            teamwork += job_title.teamwork
-            time_management_ability += job_title.time_management_ability
-            problem_solving_ability += job_title.problem_solving_ability
-        
-            # -----職歴の計算-----
+            # 更新が必要かチェック
+            fields_updated = False
+
+            if member.name != name:
+                member.name = name
+                fields_updated = True
+            if str(member.birthdate) != birthdate:
+                member.birthdate = birthdate
+                fields_updated = True
+            if member.job != job_title:
+                member.job = job_title
+                fields_updated = True
+            if member.mbti != mbti:
+                member.mbti = mbti
+                fields_updated = True
+
+            # 変更があった場合に保存
+            if fields_updated:
+                member.save()
+
+            # 職歴の更新処理
             if career:
                 career_obj = CareerInformation.objects.get(career_id=career)
-                speciality_height += career_obj.speciality_height
-                # member_careerに保存
-                member_career = MemberCareer.objects.create(
-                    member=member,
-                    career=career_obj,
-                    creation_date=timezone.now()
-                )
-                member_career.save()
+                existing_career = MemberCareer.objects.filter(member=member, career=career_obj).exists()
+                if not existing_career:
+                    # 新規職歴を保存
+                    MemberCareer.objects.create(
+                        member=member,
+                        career=career_obj,
+                        creation_date=timezone.now()
+                    )
 
-            # -----前のデータを削除-----
-            MemberHoldingQualification.objects.filter(member_id=member.member_id).update(deletion_flag=True)
+            # 資格の更新処理
+            existing_qualifications = set(
+                MemberHoldingQualification.objects.filter(
+                    member=member, deletion_flag=False
+                ).values_list('qualification_id', flat=True)
+            )
+            new_qualifications = set(filter(None, qualifications))  # None を除外
+            if existing_qualifications != new_qualifications:
+                # 資格を一旦無効化
+                MemberHoldingQualification.objects.filter(member=member).update(deletion_flag=True)
 
-            # -----資格の計算-----
-            for quali_id in [qualification, qualification2, qualification3]:
-                if quali_id:
+                # 新しい資格情報を登録
+                for quali_id in new_qualifications:
                     quali = Credentials.objects.get(qualification_id=quali_id)
-                    speciality_height += float(quali.speciality_height)
-                    # MemberHoldingQualificationに保存
-                    member_qualification = MemberHoldingQualification.objects.create(
+                    MemberHoldingQualification.objects.create(
                         member=member,
                         qualification=quali,
                         creation_date=timezone.now()
                     )
-                    member_qualification.save()
 
-            # -----MBTIの計算-----
-            planning_presentation_power += mbti.planning_presentation_power
-            teamwork += mbti.teamwork
-            time_management_ability += mbti.time_management_ability
-            problem_solving_ability += mbti.problem_solving_ability 
-
-            # MemberParameter オブジェクトを作成して保存
-            member_parameter = MemberParameter.objects.get(member_id=member.member_id)
-            member_parameter.planning_presentation_power = planning_presentation_power
-            member_parameter.teamwork = teamwork
-            member_parameter.time_management_ability = time_management_ability
-            member_parameter.problem_solving_ability = problem_solving_ability
-            member_parameter.speciality_height = speciality_height
+            # メンバーのパラメータ計算（必要なら実施）
+            member_parameter, _ = MemberParameter.objects.get_or_create(member=member)
+            member_parameter.planning_presentation_power = (
+                int(job_title.planning_presentation_power) + int(mbti.planning_presentation_power)
+            )
+            member_parameter.teamwork = (
+                int(job_title.teamwork) + int(mbti.teamwork)
+            )
+            member_parameter.time_management_ability = (
+                int(job_title.time_management_ability) + int(mbti.time_management_ability)
+            )
+            member_parameter.problem_solving_ability = (
+                int(job_title.problem_solving_ability) + int(mbti.problem_solving_ability)
+            )
+            member_parameter.speciality_height = sum(
+                map(
+                    float,
+                    Credentials.objects.filter(qualification_id__in=new_qualifications).values_list('speciality_height', flat=True)
+                )
+            )
             member_parameter.save()
 
         except JobTitleInformation.DoesNotExist:
             messages.error(request, "指定された職業が見つかりません。")
-            return redirect('canri_app:member_edit', member_id=member.member_id)
+            return redirect('canri_app:member_edit', member_id=member_id)
         except MBTI.DoesNotExist:
             messages.error(request, "指定されたMBTIが見つかりません。")
-            return redirect('canri_app:member_edit', member_id=member.member_id)
+            return redirect('canri_app:member_edit', member_id=member_id)
         except CareerInformation.DoesNotExist:
             messages.error(request, "指定された職歴が見つかりません。")
-            return redirect('canri_app:member_edit', member_id=member.member_id)
+            return redirect('canri_app:member_edit', member_id=member_id)
         except Credentials.DoesNotExist:
             messages.error(request, "指定された資格が見つかりません。")
-            return redirect('canri_app:member_edit', member_id=member.member_id)
+            return redirect('canri_app:member_edit', member_id=member_id)
         except Exception as e:
-            # 保存に失敗した場合の処理
             messages.error(request, f"メンバーの保存中にエラーが発生しました: {e}")
-            return redirect('canri_app:member_edit', member_id=member.member_id)
-        
-                
+            return redirect('canri_app:member_edit', member_id=member_id)
+
         # 保存が成功した場合にmember_make_completeへ遷移
         return render(request, self.template_name, {"member": member})
-
+    
 
 # -----CSVファイル処理-----
 class FileUploadView(TemplateView):
@@ -813,15 +829,32 @@ class FileUploadView(TemplateView):
 
 # -----メンバー削除確認-----
 class MemberDeleteView(TemplateView):
-    template_name = "member_make_delete.html"
+    template_name = "member_delete.html"
     def get(self, request, *args, **kwargs):
-        category = Category.objects.all()
-        return render(request, 'member_make_delete.html', category)
+        member_id=kwargs.get('member_id')
+        member = Member.objects.get(member_id=member_id)
+        context = {
+            'member': member
+        }
+        return render(request, self.template_name, context)
 
 
 # -----メンバー削除処理-----
 class MemberDeleteCompleteView(TemplateView):
-    template_name = "member_make_delete_complete.html"
+    template_name = "member_delete_complete.html"
+
+    def get(self, request, *args, **kwargs):
+
+        # メンバー削除フラグを立てる
+        member_id=kwargs.get('member_id')
+        Member.objects.filter(member_id=member_id).update(deletion_flag=True)  # 削除フラグを立てる
+
+        member=Member.objects.get(member_id=member_id)
+
+        context = {
+            'member': member,
+        }
+        return render(request, self.template_name, context)
 
 #新規プロジェクト作成
 class NewProjectView(TemplateView):
