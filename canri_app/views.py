@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.base import TemplateView
 from django.views.generic import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from .models import *
@@ -19,21 +20,10 @@ from django.core import serializers
 
 
 # -----システムメニュー-----
-class IndexView(TemplateView):
-    template_name = "index.html"
-
-# -----------ログインでセッション未設定だと思われるため、まだ機能してません--百----------
-
-    def my_view(request):
-        if request.user.is_authenticated:
-            # ユーザーはログインしています
-            template_name = "index.html"
-            user_name = models.User.name
-            return render(request, template_name, {"name" : user_name})
-        else:
-            # ユーザーはログインしていません
-            return redirect('accounts:login/')
-
+class IndexView(LoginRequiredMixin, TemplateView):
+    template_name = 'index.html'
+    login_url = '/login/'  # ログインページのURL
+    redirect_field_name = 'redirect_to'
 
 # -----メンバーリスト一覧-----
 class MemberListView(TemplateView):

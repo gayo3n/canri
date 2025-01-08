@@ -36,14 +36,60 @@ class LogoutCompView(TemplateView):
 class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
+<<<<<<< HEAD
 class LogoutCompView(TemplateView):
     template_name = 'logout_complete.html'
 
+=======
+class AccLoginView(LoginView):
+    def post(self, request, *arg, **kwargs):
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            name = form.cleaned_data.get('name')
+            user = User.objects.get(name=name)
+            login(request, user)
+            return redirect('accounts:login_complete')
+        return render(request, 'login.html', {'form': form})
+        
+    def get(self, request, *args, **kwargs):
+        form = LoginForm()
+        return render(request, 'login.html', {'form': form})
+    
+    # def post(self, request):
+    #     if request.method == "POST":
+    #         form = LoginForm(request, data=request.POST)
+    #         if form.is_valid():
+    #             user = form.get_user()
+    #             if user:
+    #                 login(request, user)
+    #                 return redirect('accounts:login_complete')
+    #     else:
+    #         form = LoginForm()
+        
+    #     param = {
+    #         'form': form,
+    #     }
+    #     return render(request, 'login.html', param)
+    
+    # def get(self, request):
+    #     form = LoginForm()
+    #     param = {
+    #         'form': form,
+    #     }
+    #     return render(request, 'login.html', param)
+>>>>>>> 3547ad0db95613f81de3bfeb27c9bf03e428e8ae
 
 
 def logout(request):
     auth_logout(request)
-    return render(request, 'logout_confirmation.html')
+    request.session.flush()
+    print('ログアウト処理が実行されました')
+    if request.user.is_authenticated:
+        print('ユーザーはまだ認証されています')
+        return redirect('accounts:logout_confirmation')
+    else:
+        print('ログアウト完了')
+        return redirect('accounts:logout_complete')
 
 # アカウント管理
 class Manage_Account(TemplateView):
