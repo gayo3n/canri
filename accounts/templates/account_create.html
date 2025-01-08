@@ -4,14 +4,20 @@
 {% block head %}<link rel="stylesheet" href="{% static 'css/account_create.css' %}">{% endblock %}
 {% block content %}
 <h2>アカウント作成</h2>
-    <form action="{% url 'accounts:account_create_complete' %}" method="post">
+    <form action="{% url 'accounts:account_create' %}" method="post">
         {% csrf_token %}
     <div class="account_create">
         <div>
             <input type="text" placeholder="ユーザ名" id="username" name="name" required>
         </div>
         <div>
-            <input type="text" placeholder="パスワード" id="password" name="password" required>
+            <input type="text" placeholder="アカウントID" id="userid" name="user_id" maxlength="10"  pattern="\d*" required>
+        </div>
+        <div>
+            <input type="text" placeholder="パスワード" id="password" name="password" maxlength="10" required>
+            {% if form.password.errors %}
+                <div class="error">{{ form.password.errors }}</div>
+            {% endif %}
         </div>
         <div>
             <td><button type="submit" class="btn btn-danger">作成</button></td>

@@ -45,12 +45,24 @@
 .member-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end; /* 子要素を右揃えにする */
     padding: 10px;
     border: 1px solid #ccc;
     margin-bottom: 8px;
     border-radius: 4px;
     background-color: #f9f9f9;
+}
+
+.member-item span {
+    margin-right: auto; /* スパン要素を左に寄せる */
+}
+
+.btn {
+    margin-right: 20px; /* 「詳細」ボタンの右にスペースを追加 */
+}
+
+.delete-btn {
+    margin-left: 10px; /* ゴミ箱アイコンの左にスペースを追加（必要に応じて） */
 }
 
 .detail-btn {

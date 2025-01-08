@@ -9,7 +9,7 @@
 {% block content %}
 <div class="body">
 <h2>メンバー編集</h2>
-<form class="center" method="post" action="{% url 'canri_app:member_edit_complete' %}">
+<form class="center" method="post" action="{% url 'canri_app:member_edit_complete' member_id=member.member_id %}">
     {% csrf_token %}
 
     {% comment %} メンバーID
@@ -36,9 +36,10 @@
     <div class="form-area">
         <label for="job_title">役職</label>
         <select id="job_title" name="job_title" >
-            <option value="{{ mem_job.job_id }}" disabled selected>{{ mem_job.job_title }}</option>
             {% for job in job_title %}
-                <option value="{{ forloop.counter }}">{{ job.job_title }}</option>
+                <option value="{{ job.job_title_id }}" {% if job.job_title_id == mem_job.job_title_id %} selected {% endif %}>
+                    {{ job.job_title }}
+                </option>
             {% endfor %}
         </select>
     </div>
@@ -47,9 +48,12 @@
     <div class="form-area">
         <label for="career">職歴</label>
         <select id="career" name="career">
-            <option value="{{ mem_career.career_id }}" disabled selected>{{ mem_career.career }}</option>
+        {% if mem_career is null %}
+            <option value="" disabled selected>選択してください</option>
+        {% endif %}
             {% for career in careerinformation %}
-                <option value="{{ forloop.counter }}">{{ career.career }}</option>
+                <option value="{{ career.career_id }}" {% if career.career_id == mem_career.career_id %} selected {% endif %}>
+                    {{ career.career }}</option>
             {% endfor %}
         </select>
     </div>
@@ -58,13 +62,13 @@
     <div class="form-area">
         <label for="qualification">資格</label>
         <select id="qualification" name="qualification">
-            {% if mem_credentials.0.qualification_id %}
-                <option value="{{ mem_credentials.0.qualification_id }}" disabled selected>{{ mem_credentials.0.qualification_name }}</option>
-            {% else %}
+            {% if mem_credentials.0.qualification_id is null %}
                 <option value="" disabled selected>選択してください</option>
             {% endif %}
             {% for crede in credentials %}
-                <option value="{{ forloop.counter }}">{{ crede.qualification_name }}</option>
+                <option value="{{ crede.qualification_id }}"  {% if crede.qualification_id == mem_credentials.0.qualification_id %} selected {% endif %}>
+                    {{ crede.qualification_name }}
+                </option>
             {% endfor %}
         </select>
     </div>
@@ -73,13 +77,13 @@
     <div class="form-area2">
         <label for="qualification2">資格</label>
         <select id="qualification2" name="qualification2">
-        {% if mem_credentials.1.qualification_id %}
-            <option value="{{ mem_credentials.1.qualification_id }}" disabled selected>{{ mem_credentials.1.qualification_name }}</option>
-        {% else %}
+        {% if mem_credentials.1.qualification_id is null %}
             <option value="" disabled selected>選択してください</option>
         {% endif %}
             {% for crede in credentials %}
-                <option value="{{ forloop.counter }}">{{ crede.qualification_name }}</option>
+                <option value="{{ crede.qualification_id }}"  {% if crede.qualification_id == mem_credentials.1.qualification_id %} selected {% endif %}>
+                    {{ crede.qualification_name }}
+                </option>
             {% endfor %}
         </select>
     </div>
@@ -88,13 +92,13 @@
     <div class="form-area3">
         <label for="qualification3">資格</label>
         <select id="qualification3" name="qualification3">
-            {% if mem_credentials.2.qualification_id %}
-                <option value="{{ mem_credentials.2.qualification_id }}" disabled selected>{{ mem_credentials.2.qualification_name }}</option>
-            {% else %}
+            {% if mem_credentials.2.qualification_id is null %}
                 <option value="" disabled selected>選択してください</option>
             {% endif %}
             {% for crede in credentials %}
-                <option value="{{ forloop.counter }}">{{ crede.qualification_name }}</option>
+                <option value="{{ crede.qualification_id }}"  {% if crede.qualification_id == mem_credentials.2.qualification_id %} selected {% endif %}>
+                    {{ crede.qualification_name }}
+                </option>
             {% endfor %}
         </select>
     </div>
@@ -103,9 +107,10 @@
     <div class="form-area">
         <label for="MBTI">MBTI</label>
         <select id="MBTI" name="MBTI" required>
-            <option value="{{ mem_mbti.mbti_id }}" disabled selected>{{ mem_mbti.mbti_name }}</option>
-            {% for MBTI in mbti %}
-                <option value="{{ forloop.counter }}">{{ MBTI.mbti_name }}</option>
+            {% for mbti_item in mbti %}
+                <option value="{{ mbti_item.mbti_id }}" {% if mbti_item.mbti_id == mem_mbti.mbti_id %} selected {% endif %}>
+                    {{ mbti_item.mbti_name }}
+                </option>
             {% endfor %}
         </select>
     </div>
@@ -118,6 +123,7 @@
         </ul>
     {% endif %}
     <a href="{% url 'canri_app:member_delete' %}" class="btn delete">削除</a>
+    <input type="hidden" value="{{ member.member_id }}"/>
     <button type="submit" class="btn save">保存</button>
 </form>
 </div>
