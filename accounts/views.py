@@ -36,9 +36,6 @@ class LogoutCompView(TemplateView):
 class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
-class LogoutCompView(TemplateView):
-    template_name = 'logout_complete.html'
-
 class AccLoginView(LoginView):
     def post(self, request, *arg, **kwargs):
         form = LoginForm(data=request.POST)
@@ -79,7 +76,14 @@ class AccLoginView(LoginView):
 
 def logout(request):
     auth_logout(request)
-    return render(request, 'logout_confirmation.html')
+    request.session.flush()
+    print('ログアウト処理が実行されました')
+    if request.user.is_authenticated:
+        print('ユーザーはまだ認証されています')
+        return redirect('accounts:logout_confirmation')
+    else:
+        print('ログアウト完了')
+        return redirect('accounts:logout_complete')
 
 # アカウント管理
 class Manage_Account(TemplateView):
