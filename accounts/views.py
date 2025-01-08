@@ -88,7 +88,7 @@ def create(request):
         form = AccountAddForm()
     elif request.method == 'POST':
         # リクエストメソッドがPOSTの場合、POSTデータでフォームをインスタンス化
-        form =UserForm(request.POST)
+        form =AccountAddForm(request.POST)
         if form.is_valid():
             user_id=form.cleaned_data['user_id']
             if User.objects.filter(user_id=user_id).exists():
@@ -96,11 +96,12 @@ def create(request):
             else:
                 # フォームが有効な場合、クリーンデータを使用して新しいユーザーを作成
                 user = User.objects.create_user(
+                    user_id=form.cleaned_data['user_id'],
                     name=form.cleaned_data['name'],
                     password=form.cleaned_data['password']
                 )
                 # アカウント作成完了を示すテンプレートをレンダリング
-            return render(request, 'account_create_complete.html', {'user_id': user.user_id})
+                return redirect('accounts:account_create_complete')
     # アカウント作成フォームのテンプレートをレンダリング
     context = {'form': form}
     return render(request, 'account_create.html', context)
@@ -137,7 +138,7 @@ def manage_account_change(request, pk):
 def account_change_complete(request, pk):
     return render(request, 'account_change_complete.html', {'pk':pk})
     
-
+# アカウント削除
 def account_delete(request, name):
     obj = get_object_or_404(User, name=name)
     if request.method == 'POST':
