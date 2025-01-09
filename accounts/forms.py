@@ -10,13 +10,8 @@ User = get_user_model()
 class AccountAddForm(forms.Form):
         user_id = forms.CharField(
         required=True,
-<<<<<<< HEAD
-        max_length=24,
-        min_length=6,
-=======
         max_length=10,
         min_length=8,
->>>>>>> 209631dd9de492cb2413faf8a2d647686cbed064
         widget=forms.TextInput(
             attrs={
                 'placeholder': ''  # プレースホルダーを空に設定

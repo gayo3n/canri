@@ -19,11 +19,7 @@ from .models import User
 class LoginFailView(TemplateView):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_failure.html')
-    
-class LogoutConfView(TemplateView):
-    def post(self, request):
-        return redirect('logout_confirmation')
-
+            
 class CustomLoginView(LoginView):
     template_name = 'login.html'
     success_url = reverse_lazy('login_complete')  # ログイン成功時のリダイレクト先
@@ -34,43 +30,8 @@ class LoginCompView(TemplateView):
 class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
-class AccLoginView(LoginView):
-    def post(self, request, *arg, **kwargs):
-        form = LoginForm(data=request.POST)
-        if form.is_valid():
-            name = form.cleaned_data.get('name')
-            user = User.objects.get(name=name)
-            login(request, user)
-            return redirect('accounts:login_complete')
-        return render(request, 'login.html', {'form': form})
-        
-    def get(self, request, *args, **kwargs):
-        form = LoginForm()
-        return render(request, 'login.html', {'form': form})
-    
-    # def post(self, request):
-    #     if request.method == "POST":
-    #         form = LoginForm(request, data=request.POST)
-    #         if form.is_valid():
-    #             user = form.get_user()
-    #             if user:
-    #                 login(request, user)
-    #                 return redirect('accounts:login_complete')
-    #     else:
-    #         form = LoginForm()
-        
-    #     param = {
-    #         'form': form,
-    #     }
-    #     return render(request, 'login.html', param)
-    
-    # def get(self, request):
-    #     form = LoginForm()
-    #     param = {
-    #         'form': form,
-    #     }
-    #     return render(request, 'login.html', param)
-
+class LogoutCompView(TemplateView):
+    template_name = 'logout_complete.html'
 
 def logout(request):
     request.session.flush()
@@ -168,7 +129,6 @@ def manage_account_change(request, pk):
                 item.set_password(password)
             form.save()
             return redirect("accounts:account_change_complete", pk=pk)
-    else: print
     
     context = {
         "form": form,
