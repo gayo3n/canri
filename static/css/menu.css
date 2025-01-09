@@ -71,7 +71,7 @@ header nav a {
     border-radius: 8px;
 }
 
-.box a{
+.box a {
     text-decoration: none;
     color: #7c2020;
 }
@@ -83,23 +83,67 @@ header nav a {
 }
 
 .box1 {
-    background-color: #bebebe; 
-    text-decoration: none;
-} /* ライトグレー - 進行中プロジェクト */
-.box2 { 
-    background-color: #b7ecff; 
-    text-decoration: none;
-} /* ライトブルー - 過去プロジェクト */
-.box3 { 
-    background-color: #71f35a; 
-    text-decoration: none;
-} /* グリーン - アカウント管理 */
-.box4 { 
-    background-color: #b754ec; 
-    text-decoration: none;
-} /* パープル - メンバーリスト */
-.box5 { 
-    background-color: #f875b7; 
-    text-decoration: none;
-} /* ピンク - 進行中プロジェクト */
+    background-color: #bebebe;
+}
+.box2 {
+    background-color: #b7ecff;
+}
+.box3 {
+    background-color: #71f35a;
+}
+.box4 {
+    background-color: #b754ec;
+}
+.box5 {
+    background-color: #f875b7;
+}
 
+/* ハンバーガーメニュー */
+.hamburger-menu {
+    display: none;  /* デフォルトは非表示 */
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 20px;
+    width: 25px;
+    z-index: 1000; /* 他の要素より上に表示 */
+    position: relative;
+}
+
+.hamburger-menu .bar {
+    height: 4px;
+    background-color: #333;
+    width: 100%;
+    border-radius: 5px;
+}
+
+/* 小画面での表示 */
+@media (max-width: 1200px) {
+    .hamburger-menu {
+        display: flex; /* 小画面で表示 */
+    }
+
+    .navbar-left {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #fffff9;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        padding: 10px 0;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000; /* 他の要素より上に表示 */
+    }
+
+    .navbar-left.active {
+        display: flex; /* ハンバーガーメニューがクリックされたら表示 */
+    }
+
+    .navbar-left a {
+        margin: 10px 0;
+        text-align: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #ccc;
+    }
+}

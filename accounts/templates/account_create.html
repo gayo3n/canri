@@ -8,7 +8,7 @@
         {% csrf_token %}
     <div class="account_create">
         <div>
-            <input type="text" placeholder="ユーザ名" id="username" name="name" required>
+            <input type="text" placeholder="ユーザ名" id="username" name="name" maxlength="10" required>
         </div>
         <div>
             <input type="text" pattern="^[0-9]+$" placeholder="アカウントID" id="user_id" name="user_id" maxlength="10"  pattern="\d*" required>

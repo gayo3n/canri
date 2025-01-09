@@ -71,6 +71,25 @@ input[type="password"] {
 }
 
 .btn-cancel:hover {
-    background-color: #fd7979; /* ホバー時の背景色を薄いグレーに */
-    color: #fff; /* ホバー時の文字色を赤に */
+    color: #fc7b7b; /* ホバー時の色 */
+    transition: color 0.3s ease; /* 色の変化を滑らかに */
+    text-decoration: underline; /* ホバー時に下線を追加 */
+}
+
+/* ボタンのスタイル */
+.btn-save {
+    display: inline-block; /* インラインブロックに変更 */
+    font-size: 1rem;
+    color: #007bff; /* テキストカラー */
+    background: none; /* 背景をなくす */
+    border: none; /* ボーダーをなくす */
+    padding: 0; /* パディングをなくす */
+    cursor: pointer; /* カーソルをポインタに */
+    text-decoration: none; /* 下線をなくす */
+}
+
+.btn-save:hover {
+    color: #83adfc; /* ホバー時の色 */
+    transition: color 0.3s ease; /* 色の変化を滑らかに */
+    text-decoration: underline; /* ホバー時に下線を追加 */
 }

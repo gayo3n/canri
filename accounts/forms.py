@@ -10,8 +10,13 @@ User = get_user_model()
 class AccountAddForm(forms.Form):
         user_id = forms.CharField(
         required=True,
+<<<<<<< HEAD
         max_length=24,
         min_length=6,
+=======
+        max_length=10,
+        min_length=8,
+>>>>>>> 209631dd9de492cb2413faf8a2d647686cbed064
         widget=forms.TextInput(
             attrs={
                 'placeholder': ''  # プレースホルダーを空に設定
@@ -20,8 +25,8 @@ class AccountAddForm(forms.Form):
     )
         password = forms.CharField(
         required=True,
-        max_length=20,
-        min_length=8,
+        max_length=10,
+        min_length=6,
         widget=forms.PasswordInput(
             attrs={
                 'placeholder': '******',  # プレースホルダーを設定
@@ -38,8 +43,31 @@ class AccountAddForm(forms.Form):
             }
         )
     )
+        
+
         def clean_user_id(self):
             user_id = self.cleaned_data['user_id']
+            # ユーザーIDが数字のみで構成されているかチェック
+            if not user_id.isdigit():
+                raise ValidationError('ユーザーIDは数字のみでなければなりません。')
+            # ユーザーIDが既に存在するかチェック
+            if User.objects.filter(user_id=user_id).exists():
+                raise ValidationError('すでに使用されているIDです')
+            return user_id
+
+        def clean_password(self):
+            password = self.cleaned_data['password']
+            # パスワードに対する追加のバリデーションをここに追加可能
+            return password
+
+        def clean_name(self):
+            name = self.cleaned_data['name']
+            # 名前に対する追加のバリデーションをここに追加可能
+            return name
+        def clean_user_id(self):
+            user_id = self.cleaned_data['user_id']
+            if not user_id.isdigit():
+                raise ValidationError('ユーザーIDは数字のみでなければなりません。')
             if User.objects.filter(user_id=user_id).exists():
                 raise ValidationError('すでに使用されているIDです')
             return user_id
@@ -49,22 +77,15 @@ class AccountAddForm(forms.Form):
         def clean_name(self):
             name = self.cleaned_data['name']
             return name
-        def clean_user_id(self):
-            user_id = self.cleaned_data['user_id']
-            if User.objects.filter(user_id=user_id).exists():
-                raise ValidationError('すでに使用されているIDです')
-            return user_id
-        def clean_password(self):
-            password = self.cleaned_data['password']
-            return password
-        def clean_username(self):
-            username = self.cleaned_data['name']
-            return username
-
 
 
 
 class UserForm(forms.ModelForm):
+        # 最大入力数10文字指定
+    name = forms.CharField(max_length=10) # 名前の文字数10文字
+    user_id = forms.CharField(max_length=10) # アカウントIDの文字数10文字
+    password = forms.CharField(max_length=10) # パスワードの文字数10文字
+
     class Meta:
         model = User
         fields = ['user_id', 'password', 'name']
@@ -74,7 +95,11 @@ class UserForm(forms.ModelForm):
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
 
-class UserCreationForm(UserCreationForm):
+class UserCreationForm(UserCreationForm):    # 最大入力数10文字指定
+    name = forms.CharField(max_length=10) # 名前の文字数10文字
+    user_id = forms.CharField(max_length=10) # アカウントIDの文字数10文字
+    password = forms.CharField(max_length=10) # パスワードの文字数10文字
+
     class Meta:
         model = User
         fields = ('user_id', 'password', 'name')

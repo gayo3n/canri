@@ -10,7 +10,8 @@
     {% csrf_token %}
     <div class="modal">
         <div class="modal-content">
-            <h2>アカウントを削除しますか？</h2>
+            <p>アカウントを削除しますか？</p>
+            <p>{{ name }}</p>
             <div class="modal-buttons">
                 <button type="submit" class="btn btn-confirm">削除</button>
                 <a href="{% url 'accounts:manage_account' %}" class="btn btn-cancel">キャンセル</a>
