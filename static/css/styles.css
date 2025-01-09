@@ -28,12 +28,13 @@
 
 /* ハンバーガーメニュー */
 .hamburger-menu {
-    display: none;  /* デフォルトは非表示 */
+    display: none; /* デフォルトは非表示 */
     cursor: pointer;
     flex-direction: column;
     justify-content: space-between;
     height: 20px;
     width: 25px;
+    z-index: 1000; /* 他の要素より上に表示 */
 }
 
 .hamburger-menu .bar {
@@ -72,14 +73,14 @@
     color: #ff0000;
 }
 
-/* ハンバーガーメニューが表示される画面サイズ */
+/* 小画面での表示 */
 @media (max-width: 1200px) {
     .hamburger-menu {
-        display: flex;  /* 小画面でハンバーガーメニューを表示 */
+        display: flex; /* 小画面でハンバーガーメニューを表示 */
     }
 
     .navbar-left {
-        display: none;  /* 初期状態では非表示 */
+        display: none;
         flex-direction: column;
         width: 100%;
         background-color: #fffff9;
@@ -88,10 +89,11 @@
         left: 0;
         padding: 10px 0;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000; /* 他の要素より上に表示 */
     }
 
     .navbar-left.active {
-        display: flex;  /* ハンバーガーメニューがクリックされたら表示 */
+        display: flex; /* ハンバーガーメニューがクリックされたら表示 */
     }
 
     .navbar-left a {
@@ -102,6 +104,6 @@
     }
 
     .navbar-right {
-        display: none;  /* 小画面で非表示 */
+        display: none; /* 小画面で非表示 */
     }
 }
