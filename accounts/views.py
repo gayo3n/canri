@@ -1,6 +1,6 @@
 from django.contrib.auth.views import LogoutView, LoginView 
 from django.shortcuts import render, redirect, get_object_or_404, redirect
-from django.contrib.auth import login, get_user_model, logout, authenticate as auth_logout
+from django.contrib.auth import login, get_user_model, logout, authenticate
 from django.urls import reverse_lazy
 from django.views import View, generic
 from django.views.generic.base import TemplateView
@@ -33,7 +33,6 @@ class LogoutCompView(TemplateView):
     template_name = 'logout_complete.html'
 
 def logout(request):
-    auth_logout(request)
     request.session.flush()
     print('ログアウト処理が実行されました')
     if request.user.is_authenticated:
@@ -117,6 +116,7 @@ def account_create_complete(request):
 
     return render(request, 'account_create_complete.html', {'form': form})
 
+# パスワード変更
 def manage_account_change(request, pk):
     item = User.objects.get(user_id=pk)
     form = UserForm(instance=item)
