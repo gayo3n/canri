@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
     'canri_app.apps.CanriAppConfig',
+    'canri_app.templatetags',
 ]
 
 AUTH_USER_MODEL="accounts.User"
