@@ -129,6 +129,7 @@ def manage_account_change(request, pk):
                 item.set_password(password)
             form.save()
             return redirect("accounts:account_change_complete", pk=pk)
+    else: print
     
     context = {
         "form": form,
