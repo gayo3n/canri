@@ -12,6 +12,18 @@ h2 {
     margin: 20px 0;
 }
 
+a {
+    color: #36adf8;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #286090;
+    text-decoration: underline;
+    transition: background-color 0.3s ease; /* 色の変化を滑らかに */
+}
+
+
 .search-section, .selected-members-section, .save-section {
     margin: 20px auto;
     padding: 20px;
@@ -41,7 +53,7 @@ textarea.input-field {
     display: inline-block;
     padding: 10px 20px;
     margin: 5px;
-    background-color: #00b894;
+    background-color: #2eabff;
     color: white;
     border: none;
     border-radius: 4px;
@@ -50,7 +62,7 @@ textarea.input-field {
 }
 
 .btn:hover {
-    background-color: #019374;
+    background-color: #0b68a7;
 }
 
 .delete-btn {
@@ -80,12 +92,12 @@ ul li {
 }
 
 .memberlist_save {
-    background-color: #00cec9;
+    background-color: #2eabff;
     border-radius: 4px;
 }
 
 .memberlist_save:hover {
-    background-color: #00a8a6;
+    background-color: #0b68a7;
 }
 
 .memberlist_cancel {

@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-    <h2>メンバーリスト編集　　</h2>
+    <h2>メンバーリスト編集</h2>
 
     <section class="search-section">
         <form method="GET">
@@ -22,7 +22,6 @@
             {% for member in members %}
                 <li>
                     <a href="{% url 'canri_app:member_edit' member_id=member.member_id %}">{{ member.name }}</a>
-                    <form method="POST" action="{% url 'canri_app:memberlist_make' %}">
                     <form method="POST" action="{% url 'canri_app:memberlist_edit' category_id=category_id %}">
                         {% csrf_token %}
                         <input type="hidden" name="category_id" value="{{ category.category_id }}">

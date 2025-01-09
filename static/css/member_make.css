@@ -2,7 +2,6 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    display: flex;
     flex-direction: column;
     align-items: center;
     background-color: #f9f9f9;
@@ -74,7 +73,7 @@ input[type="text"], input[type="date"], select {
 }
 
 .btn.save {
-    background-color: #5cb85c;
+    background-color: #00b3ff;
     color: white;
 }
 
@@ -85,5 +84,12 @@ input[type="text"], input[type="date"], select {
 
 .btn.save:hover {
     text-decoration: underline;
-    background-color: #1e851e;
+    background-color: #0271a1;
+}
+
+.body {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 中央に移動 */
 }

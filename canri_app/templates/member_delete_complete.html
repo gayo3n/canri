@@ -9,7 +9,7 @@
 {% block content %}
 <!-- ポップアップダイアログ -->
 <div class="deleteok">
-    <h1>メンバー情報を削除しました</h1>
+    <h1>{{ member.name }}を削除しました</h1>
     <a href="{% url "canri_app:memberlist" %}" class="delete-btn">⇐メンバーリスト一覧画面に戻る</a>
 </div>
 

@@ -18,10 +18,6 @@ from .models import User
 class LoginFailView(TemplateView):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_failure.html')
-    
-class LogoutConfView(TemplateView):
-    def post(self, request):
-        return redirect('logout_confirmation')
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
@@ -36,43 +32,8 @@ class LogoutCompView(TemplateView):
 class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
-class AccLoginView(LoginView):
-    def post(self, request, *arg, **kwargs):
-        form = LoginForm(data=request.POST)
-        if form.is_valid():
-            name = form.cleaned_data.get('name')
-            user = User.objects.get(name=name)
-            login(request, user)
-            return redirect('accounts:login_complete')
-        return render(request, 'login.html', {'form': form})
-        
-    def get(self, request, *args, **kwargs):
-        form = LoginForm()
-        return render(request, 'login.html', {'form': form})
-    
-    # def post(self, request):
-    #     if request.method == "POST":
-    #         form = LoginForm(request, data=request.POST)
-    #         if form.is_valid():
-    #             user = form.get_user()
-    #             if user:
-    #                 login(request, user)
-    #                 return redirect('accounts:login_complete')
-    #     else:
-    #         form = LoginForm()
-        
-    #     param = {
-    #         'form': form,
-    #     }
-    #     return render(request, 'login.html', param)
-    
-    # def get(self, request):
-    #     form = LoginForm()
-    #     param = {
-    #         'form': form,
-    #     }
-    #     return render(request, 'login.html', param)
-
+class LogoutCompView(TemplateView):
+    template_name = 'logout_complete.html'
 
 def logout(request):
     auth_logout(request)
@@ -112,7 +73,7 @@ def account_change_employee(request, pk):
             form.save()
             return redirect("accounts:account_change_complete_employee", pk=pk)
     context = {
-         "form": form,
+        "form": form,
         "item": item
         }
     return render(request, 'account_change_employee.html', context)
@@ -128,16 +89,20 @@ def create(request):
         form = AccountAddForm()
     elif request.method == 'POST':
         # リクエストメソッドがPOSTの場合、POSTデータでフォームをインスタンス化
-        form =UserForm(request.POST)
+        form =AccountAddForm(request.POST)
         if form.is_valid():
-            # フォームが有効な場合、クリーンデータを使用して新しいユーザーを作成
-            user = User.objects.create_user(
-                user_id=form.cleaned_data['user_id'],
-                name=form.cleaned_data['name'],
-                password=form.cleaned_data['password']
-            )
-            # アカウント作成完了を示すテンプレートをレンダリング
-            return render(request, 'account_create_complete.html', {'user_id': user.user_id})
+            user_id=form.cleaned_data['user_id']
+            if User.objects.filter(user_id=user_id).exists():
+                form.add_error('user_id', 'このアカウントIDは既に使用されています。')
+            else:
+                # フォームが有効な場合、クリーンデータを使用して新しいユーザーを作成
+                user = User.objects.create_user(
+                    user_id=form.cleaned_data['user_id'],
+                    name=form.cleaned_data['name'],
+                    password=form.cleaned_data['password']
+                )
+                # アカウント作成完了を示すテンプレートをレンダリング
+                return redirect('accounts:account_create_complete')
     # アカウント作成フォームのテンプレートをレンダリング
     context = {'form': form}
     return render(request, 'account_create.html', context)
@@ -173,14 +138,13 @@ def manage_account_change(request, pk):
 
 def account_change_complete(request, pk):
     return render(request, 'account_change_complete.html', {'pk':pk})
-    
 
 def account_delete(request, name):
     obj = get_object_or_404(User, name=name)
     if request.method == 'POST':
         obj.delete()
         return redirect('accounts:account_delete_complete')
-    return render(request, 'account_delete.html', {'object':obj})
+    return render(request, 'account_delete.html', {'object':obj, 'name': name})
 
 def account_delete_complete(request):
     return render(request, 'account_delete_complete.html')

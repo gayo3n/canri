@@ -25,6 +25,4 @@ urlpatterns = [
     # アイコン
     path('change_employee/<int:pk>/', views.account_change_employee, name='account_change_employee'),
     path('change_employee_complete/', views.account_change_complete_employee, name='account_change_complete_employee'),
-
-    #path('#/<int:pk>/', views.ManageAcc.as_view(), name='#'),   #アカウントページ用url
 ]
