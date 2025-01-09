@@ -1,1 +1,1 @@
-# 空のファイル
+from . import custom_tags
