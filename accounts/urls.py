@@ -7,7 +7,7 @@ app_name = 'accounts'
 
 urlpatterns = [
     # アカウント管理    
-    path('login/', views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('login/', views.CustomLoginView.as_view(template_name='login.html'), name='login'),
     path('login_complete/', views.LoginCompView.as_view(), name='login_complete'), #ログイン完了
     path('logout/', views.logout, name='logout'),
     path('logout_complete/', views.LogoutCompView.as_view(), name='logout_complete'), #ログアウト完了
@@ -24,5 +24,5 @@ urlpatterns = [
     
     # アイコン
     path('change_employee/<int:pk>/', views.account_change_employee, name='account_change_employee'),
-    path('change_employee_complete/', views.account_change_complete_employee, name='account_change_complete_employee'),
+    path('change_employee_complete/<int:pk>/', views.account_change_complete_employee, name='account_change_complete_employee'),
 ]

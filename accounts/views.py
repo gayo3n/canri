@@ -1,3 +1,4 @@
+from pyexpat.errors import messages
 from django.contrib.auth.views import LogoutView, LoginView 
 from django.shortcuts import render, redirect, get_object_or_404, redirect
 from django.contrib.auth import login, get_user_model, logout, authenticate
@@ -18,7 +19,7 @@ from .models import User
 class LoginFailView(TemplateView):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_failure.html')
-
+            
 class CustomLoginView(LoginView):
     template_name = 'login.html'
     success_url = reverse_lazy('login_complete')  # ログイン成功時のリダイレクト先
@@ -118,14 +119,14 @@ def account_create_complete(request):
 
 # パスワード変更
 def manage_account_change(request, pk):
-    item = User.objects.get(user_id=pk)
+    item = get_object_or_404(User, pk=pk)
     form = UserForm(instance=item)
     if request.method == "POST":
         form = UserForm(request.POST, instance=item)
         if form.is_valid():
             form.save()
             return redirect("accounts:account_change_complete", pk=pk)
-        
+    
     context = {
         "form": form,
         "item": item
@@ -133,7 +134,9 @@ def manage_account_change(request, pk):
     return render(request, 'account_change.html', context)
 
 def account_change_complete(request, pk):
-    return render(request, 'account_change_complete.html', {'pk':pk})
+    return render(request, 'account_change_complete.html', {'pk': pk})
+
+
 
 def account_delete(request, name):
     obj = get_object_or_404(User, name=name)
