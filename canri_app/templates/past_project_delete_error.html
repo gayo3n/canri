@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/project_deleted.css' %}">
+{% endblock %}
+{% block content %}
+
+
+<div class="project_deleted">
+<h2>プロジェクトの削除に失敗しました</h2>
+<a href="{% url "canri_app:past_project" %}" class="past-project">過去プロジェクトへ</a>
+</div>
+
+{% endblock %}
