@@ -124,6 +124,9 @@ def manage_account_change(request, pk):
     if request.method == "POST":
         form = UserForm(request.POST, instance=item)
         if form.is_valid():
+            password = form.cleaned_data.get('password')
+            if password:
+                item.set_password(password)
             form.save()
             return redirect("accounts:account_change_complete", pk=pk)
     
