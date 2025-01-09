@@ -127,7 +127,7 @@ def manage_account_change(request, pk):
             password = form.cleaned_data.get('password')
             if password:
                 item.set_password(password)
-            form.save()
+            item.save()
             return redirect("accounts:account_change_complete", pk=pk)
     
     context = {
