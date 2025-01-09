@@ -2,6 +2,7 @@
     padding: 20px;
     display: flex;
     gap: 20px; /* セクション間の間隔を追加 */
+    flex-wrap: wrap; /* 子要素が横並びに収まりきらないときに折り返す */
 }
 
 .teams-grid {
@@ -52,6 +53,7 @@
     padding: 20px;
     border: 1px solid #ddd;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* タスクパネルにも影を追加 */
+    min-width: 250px; /* 最小幅を設定 */
 }
 
 .task-list {
@@ -64,6 +66,7 @@
     padding: 10px;
     border-bottom: 1px solid #eee;
     transition: background-color 0.3s ease;
+    overflow: hidden; /* 内容がはみ出すのを防止 */
 }
 
 .task-item:hover {
@@ -80,6 +83,9 @@
 
 .task-name {
     flex: 1;
+    text-overflow: ellipsis; /* テキストが長すぎる場合省略記号を表示 */
+    overflow: hidden; /* 内容がはみ出すのを防止 */
+    white-space: nowrap; /* テキストが折り返されないように設定 */
 }
 
 .task-date {
@@ -104,6 +110,7 @@
     display: flex;
     gap: 20px;
     margin-top: 20px;
+    flex-wrap: wrap; /* 子要素が横並びに収まりきらないときに折り返す */
 }
 
 .box {
@@ -117,6 +124,11 @@
     transition: background-color 0.3s ease, color 0.3s ease;
     border-width: 0.5px; /* 外枠の太さを指定 */
     border-radius: 4px; /* 角の丸みを指定 */
+    padding: 0 10px; /* 文字がボックスに収まるように左右のパディングを追加 */
+    flex: 1; /* 横幅を均等に分ける */
+    min-width: 100px; /* ボックスの最小幅を設定 */
+    text-align: center;
+    white-space: nowrap; /* テキストが折り返されないように設定 */
 }
 
 .box:hover {
@@ -130,6 +142,8 @@
     display: flex;
     align-items: center;
     gap: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 文字が長すぎる場合省略記号を表示 */
 }
 
 .fas {
