@@ -1,6 +1,6 @@
 # views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic.base import TemplateView
+from django.views.generic.base import View, TemplateView
 from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
@@ -211,7 +211,7 @@ class MemberListMakeCompleteView(TemplateView):
                 try:
                     # メンバーを取得
                     member = Member.objects.get(member_id=member_id)
-                    # MemberList オブジェクトを作成して保存
+                    # MemberList オブジェク��を作成して保存
                     member_list = MemberList(
                         member_id=member.member_id,
                         category_id=category.category_id,
@@ -370,7 +370,7 @@ class MemberListEditView(TemplateView):
         return render(request, 'upload_csv.html', {'form': form})
     
 
-# -----メンバーリスト編集保存-----
+# -----メン��ーリスト編集保存-----
 class MemberListEditCompleteView(TemplateView):
     template_name = "memberlist_make_complete.html"
 
@@ -776,7 +776,7 @@ class MemberEditCompleteView(TemplateView):
             member_parameter.save()
 
         except JobTitleInformation.DoesNotExist:
-            messages.error(request, "指定された職業が見つかりません。")
+            messages.error(request, "指定された職業が��つかりません。")
             return redirect('canri_app:member_edit', member_id=member_id)
         except MBTI.DoesNotExist:
             messages.error(request, "指定されたMBTIが見つかりません。")
@@ -928,7 +928,7 @@ class CreateTeamView(TemplateView):
 
 
 
-# チーム追加のステップ2用ビュー
+# チーム追加のス��ップ2用ビュー
 class CreateTeam2View(TemplateView):
     template_name = "create_team2.html"
 
@@ -1040,7 +1040,7 @@ class CreateTeam3View(TemplateView):
 
         if response.status_code == 200:
             team = response_data['team']
-            print("チームが作成されまし��:", team)  # メンバー情報をターミナルに表示
+            print("チームが作成されました:", team)  # メンバー情報をターミナルに表示
         else:
             team = None
             print("チームの作成に失敗しました")  # エラーメッセージをターミナルに表示
@@ -1073,7 +1073,7 @@ class SaveTeamView(TemplateView):
         team_type = request.POST.get('team_type')
         team = request.POST.get('team')
 
-        # デバッグ用にリクエストボディを表示
+        # デバ���グ用にリクエストボ���ィ���表示
         print("リクエストボディ:", request.body)
 
         try:
@@ -1404,7 +1404,7 @@ def project_detail_view(request, project_id):
     phases = ProjectProgressStatus.objects.filter(project=project)
 
     context = {
-        #プロジェクトテーブルの情���
+        #プロジェクトテーブルの情報
         'project': project,
         #プロジェクト所属チームテーブルの情報
         'teams': teams,
@@ -1416,7 +1416,7 @@ def project_detail_view(request, project_id):
 
 
 
-# プロジェク���詳細変更モーダル保存時
+# プロジェクト詳細変更モーダル保存時
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
@@ -1463,7 +1463,7 @@ def project_detail_update(request, project_id):
 
             # 開始日と終了日の論理チェック
             if start_date > end_date:
-                # 開始日が終了日より後の場合、エラーメッセージを表示して��表示
+                # 開始日が終了日より後の場合、エラーメッセージを表示して再表示
                 messages.error(request, '開始日は終了日よりも前の日付である必要があります。')
                 return render(request, templatename, {
                     'project': project,
@@ -1482,7 +1482,7 @@ def project_detail_update(request, project_id):
             # 更新日時の設定
             project.update_date = timezone.now()
 
-            # プロジ��ク��情報の保存
+            # プロジェクト情報の保存
             project.save()
 
             # 成功メッセージの追加
@@ -1498,7 +1498,7 @@ def project_detail_update(request, project_id):
             #プロジェクト所属チームテーブルのprojectに当てはまるデータを取得
             teams = ProjectAffiliationTeam.objects.filter(project=project).select_related('team')
 
-            # プロジェクトに関連するフェーズを取得
+            # プロジェクトに関連する���ェーズを取得
             # 上と同じ感じ
             phases = ProjectProgressStatus.objects.filter(project=project)
 
@@ -1599,7 +1599,7 @@ def project_phase_add(request, project_id):
             context = {
                 #プロジェクトテーブルの情報
                 'project': project,
-                #プロジェクト��属チームテーブルの情報
+                #プロジェクト所属チームテーブルの情報
                 'teams': teams,
                 #フェーズテーブルの情報
                 'phases': phases,
@@ -1618,7 +1618,7 @@ def project_phase_add(request, project_id):
                 # 'end_date': end_date,
             })
 
-    # GETリクエストの場合、プロジェクト詳細ペ��ジを表示
+    # GETリクエストの場合、プロジェクト詳細ページを表示
     return render(request, templatename, {'project': project})
 
 
@@ -1679,7 +1679,7 @@ class project_detail_Create_TeamView(TemplateView):
 
 
 
-# 進行中プロジェクト用のチーム追加のステップ2用ビュー
+# 進行中プロジェク��用のチーム追加のステップ2用ビュー
 import json
 from django.shortcuts import render
 from .models import TeamMember  # あなたのモデルに合わせてインポートしてください
@@ -1735,7 +1735,7 @@ class project_detail_Create_Team2View(TemplateView):
                 'end_date': end_date,  # 終了日
                 'member' : member,
                 # 'teams': teams,  # チーム情報（リスト形式）
-                'team_type': team_type,  # チーム��種類
+                'team_type': team_type,  # チームの種類
                 'categories': categories,  # カテゴリ情報
             })
 
@@ -1746,15 +1746,15 @@ class project_detail_Create_Team2View(TemplateView):
 
 
 #プロジェクト進行チーム追加3
-# memberが必要かどうか
+# memberが必要かどう��
 # 多分メンバー追加時に必要になる気がする
 # わからん
 class project_detail_CreateTeam3View(TemplateView):
-    # 使用するテンプレートファイルを指定
+    # 使用するテンプレート���ァイルを指定
     template_name = "project_detail_create_team3.html"
 
     def post(self, request, *args, **kwargs):
-        # フォームから送信されたデータを取��
+        # フォームから送信されたデータを取得
         project_id=request.POST.get('project_id')
         project_name = request.POST.get('project_name')  # プロジェクト名
         project_description = request.POST.get('project_description')  # プロジェクトの説明
@@ -1788,13 +1788,13 @@ class project_detail_CreateTeam3View(TemplateView):
         if response.status_code == 200:
             # チーム作成成功時の処理
             team = response_data['team']
-            print("チームが作成されました:", team)  # ターミナルに作成されたチーム情報���表示
+            print("チームが作成されました:", team)  # ターミナルに作成されたチーム情報を表示
         else:
             # チーム作成失敗時の処理
             team = None
-            print("チームの作成に失敗しました")  # エラーメッセージをターミナルに表示
+            print("チームの作成��失敗しました")  # エラーメッセージをターミナルに表示
 
-        # ユーザー入力の内容を保持しながらテンプレートをレンダリング
+        # ユーザ��入力の内容を保持しながらテンプレートをレンダリング
         return render(request, self.template_name, {
             'project_id' : project_id,
             'project_name': project_name,  # プロジェクト名
@@ -1947,7 +1947,7 @@ def Post_projectListView(request):
     qs = Project.objects.all()
     qs=qs.filter(complete_flag=1,deletion_flag=0)
     if query:
-        qs = qs.filter(project_name__icontains=query)  # プロジェ���ト名でフィルタリング
+        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
 
     ctx["project_list"] = qs
     return render(request, template_name, ctx)
@@ -2004,12 +2004,35 @@ class Past_ProjectView(TemplateView):
             except Project.DoesNotExist:
                 return HttpResponseNotFound("Project not found")
 
+# 過去プロジェクト削除確認
 class Past_ProjectDeletingView(TemplateView):
     template_name = "past_project_deleting_confirmation.html"
 
+    def get(self, request, *args, **kwargs):
+        project_id = self.kwargs['project_id']
+        project = get_object_or_404(Project, project_id=project_id)
+        context = {
+            'project_id': project_id,
+            'project': project
+        }
+        return render(request, self.template_name, context)
+    
+# 過去プロジェクト削除
 class Project_DeletedView(TemplateView):
     template_name = "project_deleted.html"
 
+    def post(self, request, *args, **kwargs):
+        project_id = self.kwargs['project_id']
+        try:
+            project = Project.objects.get(project_id=project_id)
+            project.deletion_flag = 1
+            project.save()
+            return render(request, self.template_name, {'project': project})
+        except Project.DoesNotExist:
+            return render(request, "past_project_delete_error.html", {'message': 'Project not found'})
+        except Exception as e:
+            return render(request, "past_project_delete_error.html", {'message': str(e)})
+    
 class Project_Save_CompleteView(TemplateView):
     template_name = "save_past_project.html"
 
