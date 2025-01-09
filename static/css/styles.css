@@ -61,6 +61,12 @@
     color: #007bff;
 }
 
+/* 現在のページリンクに色をつける */
+.navbar-left a.active {
+    color: #007bff; /* 現在選択中のリンクの色 */
+    font-weight: bold; /* 強調 */
+}
+
 /* 右側のリンクグループ */
 .navbar-right a {
     margin-left: 15px;
