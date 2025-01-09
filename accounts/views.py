@@ -10,9 +10,9 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.hashers import check_password
-from django.contrib.auth.hashers import make_password
+# from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.hashers import check_password
+# from django.contrib.auth.hashers import make_password
 from .models import User
 
 class LoginFailView(TemplateView):
