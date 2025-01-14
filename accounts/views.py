@@ -1,19 +1,17 @@
 from pyexpat.errors import messages
-from django.contrib.auth.views import LogoutView, LoginView 
+from django.contrib.auth.views import LogoutView, LoginView, PasswordChangeView, PasswordChangeDoneView
 from django.shortcuts import render, redirect, get_object_or_404, redirect
 from django.contrib.auth import login, get_user_model, logout, authenticate
 from django.urls import reverse_lazy
+from django.db import transaction
 from django.views import View, generic
 from django.views.generic.base import TemplateView
-from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm
+from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, CustomPasswordChangeForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
 from django.http import HttpResponse
-# from django.contrib.auth.decorators import login_required
-# from django.contrib.auth.hashers import check_password
-# from django.contrib.auth.hashers import make_password
 from .models import User
 
 class LoginFailView(TemplateView):
@@ -117,24 +115,25 @@ def account_create_complete(request):
 
     return render(request, 'account_create_complete.html', {'form': form})
 
-# パスワード変更
-def manage_account_change(request, pk):
-    item = get_object_or_404(User, pk=pk)
-    form = UserForm(instance=item)
-    if request.method == "POST":
-        form = UserForm(request.POST, instance=item)
-        if form.is_valid():
-            password = form.cleaned_data.get('password')
-            if password:
-                item.set_password(password)
-            item.save()
-            return redirect("accounts:account_change_complete", pk=pk)
+class ManageAccountChange(PasswordChangeView):
+    form_class = CustomPasswordChangeForm
+    template_name = 'account_change.html'
+
+    def get_success_url(self):
+        return reverse_lazy('accounts/account_change_complete', kwargs={'pk': self.request.user.pk})
     
-    context = {
-        "form": form,
-        "item": item
-    }
-    return render(request, 'account_change.html', context)
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        form.save()
+        print('Form is valid and has been saved.')
+        return response
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        context['item'] = self.request.user
+        return context
+
 
 def account_change_complete(request, pk):
     return render(request, 'account_change_complete.html', {'pk': pk})

@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm
 from django.contrib.auth import get_user_model
 from .models import User
 from django import forms
@@ -117,3 +117,15 @@ class UserCreationForm(UserCreationForm):    # 最大入力数10文字指定
 
 class LoginForm(AuthenticationForm):
     pass
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
+    new_password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
+    new_password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if commit:
+            user.save()
+            print("Password has been saved to the database.")
+            return user
