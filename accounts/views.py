@@ -1,7 +1,9 @@
 from pyexpat.errors import messages
 from django.contrib.auth.views import LogoutView, LoginView, PasswordChangeView, PasswordChangeDoneView
 from django.shortcuts import render, redirect, get_object_or_404, redirect
-from django.contrib.auth import login, get_user_model, logout, authenticate
+from django.contrib.auth import login, get_user_model, logout as auth_logout
+from django.contrib.auth import login, authenticate
+from django.utils import timezone
 from django.urls import reverse_lazy
 from django.db import transaction
 from django.views import View, generic
@@ -17,7 +19,11 @@ from .models import User
 class LoginFailView(TemplateView):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_failure.html')
-            
+    
+class LogoutConfView(TemplateView):
+    def post(self, request):
+        return redirect('logout_confirmation')
+
 class CustomLoginView(LoginView):
     template_name = 'login.html'
     success_url = reverse_lazy('login_complete')  # ログイン成功時のリダイレクト先
@@ -25,13 +31,64 @@ class CustomLoginView(LoginView):
 class LoginCompView(TemplateView):
     template_name = 'login_complete.html'
 
-class LogoutConfView(TemplateView):
-    template_name = 'logout_confirmation.html'
-
 class LogoutCompView(TemplateView):
     template_name = 'logout_complete.html'
 
+class LogoutConfView(TemplateView):
+    template_name = 'logout_confirmation.html'
+
+# views.py
+# views.py
+from django.contrib.auth import authenticate, login
+
+class AccLoginView(LoginView):
+    def post(self, request, *arg, **kwargs):
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            name = form.cleaned_data.get('name')
+            password = form.cleaned_data.get('password')
+            
+            # authenticate を呼び出して認証を試みる
+            user = authenticate(request, username=name, password=password)
+            
+            if user is not None:
+                if user.deletion_flag:  # 削除フラグが立っている場合はログイン拒否
+                    form.add_error(None, 'このアカウントは削除されています。')
+                    return render(request, 'login.html', {'form': form})
+                
+                login(request, user)
+                return redirect('accounts:login_complete')
+        
+        form.add_error(None, 'ログインに失敗しました。')
+        return render(request, 'login.html', {'form': form})
+
+
+    # def post(self, request):
+    #     if request.method == "POST":
+    #         form = LoginForm(request, data=request.POST)
+    #         if form.is_valid():
+    #             user = form.get_user()
+    #             if user:
+    #                 login(request, user)
+    #                 return redirect('accounts:login_complete')
+    #     else:
+    #         form = LoginForm()
+        
+    #     param = {
+    #         'form': form,
+    #     }
+    #     return render(request, 'login.html', param)
+    
+    # def get(self, request):
+    #     form = LoginForm()
+    #     param = {
+    #         'form': form,
+    #     }
+    #     return render(request, 'login.html', param)
+
+
 def logout(request):
+    auth_logout(request)
     request.session.flush()
     print('ログアウト処理が実行されました')
     if request.user.is_authenticated:
@@ -46,14 +103,12 @@ class Manage_Account(TemplateView):
     template_name = "management_account.html"
 
     def get(self, request, *args, **kwargs):
-        # データベースから全ユーザーを取得
-        users = User.objects.all()
-
-        # コンテキストにユーザー情報を渡す
+        # 論理削除されていないユーザーのみを取得
+        users = User.objects.filter(deletion_flag=False)
+        
         context = {
             'users': users,  # 全ユーザーをテンプレートに渡す
         }
-
         return render(request, 'management_account.html', context)
 
 
@@ -80,39 +135,41 @@ def account_change_complete_employee(request, pk):
 
 def create(request):
     if request.method == 'GET':
+        # リクエストメソッドがGETの場合、空のフォームをインスタンス化
         form = AccountAddForm()
     elif request.method == 'POST':
-        form = AccountAddForm(request.POST)
+        # リクエストメソッドがPOSTの場合、POSTデータでフォームをインスタンス化
+        form =UserForm(request.POST)
         if form.is_valid():
-            user_id = form.cleaned_data['user_id']
+            user_id=form.cleaned_data['user_id']
             if User.objects.filter(user_id=user_id).exists():
                 form.add_error('user_id', 'このアカウントIDは既に使用されています。')
             else:
-                try:
-                    user = User.objects.create_user(
-                        user_id=form.cleaned_data['user_id'],
-                        name=form.cleaned_data['name'],
-                        password=form.cleaned_data['password']
-                    )
-                    print(f'アカウント作成成功: {user}')
-                    return redirect('accounts:account_create_complete')
-                except Exception as e:
-                    form.add_error(None, f'アカウント作成中にエラーが発生しました: {e}')
-                    print(f'アカウント作成中にエラーが発生しました: {e}')
-        else:
-            print('フォームが無効です:', form.errors)
-
+                # フォームが有効な場合、クリーンデータを使用して新しいユーザーを作成
+                user = User.objects.create_user(
+                    user_id=form.cleaned_data['user_id'],
+                    name=form.cleaned_data['name'],
+                    password=form.cleaned_data['password'],
+                    administrator_flag=False  # ここでadministrator_flagを設定
+                )
+                # アカウント作成完了を示すテンプレートをレンダリング
+                return redirect('accounts:account_create_complete')
+    # アカウント作成フォームのテンプレートをレンダリング
     context = {'form': form}
     return render(request, 'account_create.html', context)
 
-def account_create_complete(request):
-    form = UserForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('accounts:account_create_complete')
-    else:
-        print('フォームが無効です:', form.errors)
 
+def account_create_complete(request):
+    form = UserForm(request.POST)
+    if form.is_valid():
+        # フォームが有効な場合、データを保存
+        form.save()
+        # アカウント作成完了のテンプレートをレンダリング
+        return render(request, 'account_create_complete.html')
+    else:
+        # フォームが無効な場合、新しいフォームをインスタンス化
+        form = UserForm()
+    # アカウント作成完了のテンプレートをフォームと共にレンダリング
     return render(request, 'account_create_complete.html', {'form': form})
 
 class ManageAccountChange(PasswordChangeView):
@@ -136,16 +193,31 @@ class ManageAccountChange(PasswordChangeView):
 
 
 def account_change_complete(request, pk):
-    return render(request, 'account_change_complete.html', {'pk': pk})
-
-
+    return render(request, 'account_change_complete.html', {'pk':pk})
 
 def account_delete(request, name):
-    obj = get_object_or_404(User, name=name)
+    # 該当ユーザーを取得（削除フラグが立っていないユーザーのみを対象）
+    obj = get_object_or_404(User, name=name, deletion_flag=False)
+    
     if request.method == 'POST':
-        obj.delete()
+        # 論理削除：削除フラグを立てる
+        obj.deletion_flag = True
+        obj.deletion_date = timezone.now()  # 削除日時を記録
+        obj.save()
         return redirect('accounts:account_delete_complete')
-    return render(request, 'account_delete.html', {'object':obj, 'name': name})
+    
+    return render(request, 'account_delete.html', {'object': obj, 'name': name})
+
+def account_restore(request, name):
+    # 削除フラグが立っているユーザーを取得
+    obj = get_object_or_404(User, name=name, deletion_flag=True)
+    
+    if request.method == 'POST':
+        obj.restore()  # 論理削除を解除
+        return redirect('accounts:manage_account')
+    
+    return render(request, 'account_restore.html', {'object': obj, 'name': name})
+
 
 def account_delete_complete(request):
     return render(request, 'account_delete_complete.html')

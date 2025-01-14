@@ -1,11 +1,11 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/account_change_employee.css' %}">
 {% endblock %}
 {% block content %}
 <h2>ユーザアカウント変更</h2>
-    <form method="POST" action="{% url 'accounts:account_change_complete' pk=item.pk %}">
+    <form method="POST" action="{% url 'accounts:account_change_complete' pk=user.pk %}">
         {% csrf_token %}
     
         <label for="username">ユーザ名🔒</label>

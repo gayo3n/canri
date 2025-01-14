@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 {% load static %}
 
@@ -12,11 +13,11 @@
     <div class="modal-content">
         <p>プロジェクトを削除しますか？</p>
         <h2>{{ project.project_name }}</h2>
-        <form method="POST" action="{% url 'project_deleted' project_id=project_id %}">
+        <form method="POST" action="{% url 'canri_app:past_project_deleted' project.project_id %}">
             {% csrf_token %}
             <div class="modal-buttons">
                 <button type="submit" class="btn btn-confirm">削除</button>
-                <a href="{% url 'past_project' %}" class="btn btn-cancel">キャンセル</a>
+                <a href="{% url 'canri_app:past_project' %}" class="btn btn-cancel">キャンセル</a>
             </div>
         </form>
     </div>
