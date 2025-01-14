@@ -39,6 +39,9 @@ class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
 # views.py
+# views.py
+from django.contrib.auth import authenticate, login
+
 class AccLoginView(LoginView):
     def post(self, request, *arg, **kwargs):
         form = LoginForm(data=request.POST)
@@ -46,22 +49,21 @@ class AccLoginView(LoginView):
             name = form.cleaned_data.get('name')
             password = form.cleaned_data.get('password')
             
-            # authenticate 関数を呼び出す
+            # authenticate を呼び出して認証を試みる
             user = authenticate(request, username=name, password=password)
             
             if user is not None:
-                if user.deletion_flag:  # 削除フラグを確認（カスタムバックエンドでもチェックされる）
+                if user.deletion_flag:  # 削除フラグが立っている場合はログイン拒否
                     form.add_error(None, 'このアカウントは削除されています。')
                     return render(request, 'login.html', {'form': form})
                 
                 login(request, user)
                 return redirect('accounts:login_complete')
         
+        form.add_error(None, 'ログインに失敗しました。')
         return render(request, 'login.html', {'form': form})
 
 
-
-    
     # def post(self, request):
     #     if request.method == "POST":
     #         form = LoginForm(request, data=request.POST)
