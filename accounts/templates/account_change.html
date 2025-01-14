@@ -5,7 +5,7 @@
 {% endblock %}
 {% block content %}
 <h2>ユーザアカウント変更</h2>
-    <form method="POST" action="{% url 'accounts:account_change_complete' pk=user.pk %}">
+    <form method="POST" action="{% url 'accounts:account_change_complete' pk=item.pk %}">
         {% csrf_token %}
     
         <label for="username">ユーザ名🔒</label>

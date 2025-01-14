@@ -8,7 +8,8 @@
 {% endblock %}
 
 {% block content %}
-    <h2>メンバーリスト編集</h2>
+    <h2>メンバーリスト編集
+    </h2>
 
     <section class="search-section">
         <form method="GET">
@@ -32,7 +33,7 @@
             {% endfor %}
         </ul>
 
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" action="{% url 'canri_app:member_csv_upload' %}">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">アップロード</button>

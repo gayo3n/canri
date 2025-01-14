@@ -7,7 +7,7 @@ app_name = 'accounts'
 
 urlpatterns = [
     # アカウント管理    
-    path('login/', views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('login/', views.CustomLoginView.as_view(template_name='login.html'), name='login'),
     path('login_complete/', views.LoginCompView.as_view(), name='login_complete'), #ログイン完了
     path('logout/', views.logout, name='logout'),
     path('logout_complete/', views.LogoutCompView.as_view(), name='logout_complete'), #ログアウト完了
@@ -15,7 +15,7 @@ urlpatterns = [
     path('logout_confirmation/', views.LogoutConfView.as_view(), name='logout_confirmation'), #ログアウト
 
     path('management_account/', views.Manage_Account.as_view(), name='manage_account'), #アカウント一覧
-    path('management_account/account_creating/', views.create, name='account_create'), #アカウント作成
+    path('management_account/account_create/', views.create, name='account_create'), #アカウント作成
     path('management_account/create/complete/', views.account_create_complete, name='account_create_complete'),  #アカウント作成完了
     path('account_delete/<str:name>/', views.account_delete, name='account_delete'), #アカウント削除
     path('account_delete_complete/', views.account_delete_complete, name="account_delete_complete"),
@@ -24,5 +24,5 @@ urlpatterns = [
     
     # アイコン
     path('change_employee/<int:pk>/', views.account_change_employee, name='account_change_employee'),
-    path('change_employee_complete/', views.account_change_complete_employee, name='account_change_complete_employee'),
+    path('change_employee_complete/<int:pk>/', views.account_change_complete_employee, name='account_change_complete_employee'),
 ]

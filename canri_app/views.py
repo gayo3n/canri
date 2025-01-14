@@ -143,24 +143,24 @@ class MemberListMakeView(TemplateView):
             members = Member.objects.filter(deletion_flag=False)
         return members
     
-    def upload_csv(request):
-        if request.method == 'POST':
-            form = CSVUploadForm(request.POST, request.FILES)
-            if form.is_valid():
-                csv_file = request.FILES['csv_file']
-                decoded_file = csv_file.read().decode('utf-8').splitlines()
-                reader = csv.reader(decoded_file)
+    # def upload_csv(request):
+    #     if request.method == 'POST':
+    #         form = CSVUploadForm(request.POST, request.FILES)
+    #         if form.is_valid():
+    #             csv_file = request.FILES['csv_file']
+    #             decoded_file = csv_file.read().decode('utf-8').splitlines()
+    #             reader = csv.reader(decoded_file)
                 
-                for row in reader:
-                    # 各行のデータを処理する
-                    print(row)
+    #             for row in reader:
+    #                 # 各行のデータを処理する
+    #                 print(row)
                 
-                # 成功した場合のレスポンス
-                return render(request, 'upload_success.html')
-        else:
-            form = CSVUploadForm()
+    #             # 成功した場合のレスポンス
+    #             return render(request, 'upload_success.html')
+    #     else:
+    #         form = CSVUploadForm()
 
-        return render(request, 'upload_csv.html', {'form': form})
+    #     return render(request, 'upload_csv.html', {'form': form})
 
 
 # -----メンバーリスト保存-----
@@ -350,24 +350,24 @@ class MemberListEditView(TemplateView):
             members = Member.objects.filter(deletion_flag=False)
         return members
 
-    def upload_csv(request):
-        if request.method == 'POST':
-            form = CSVUploadForm(request.POST, request.FILES)
-            if form.is_valid():
-                csv_file = request.FILES['csv_file']
-                decoded_file = csv_file.read().decode('utf-8').splitlines()
-                reader = csv.reader(decoded_file)
+    # def upload_csv(request):
+    #     if request.method == 'POST':
+    #         form = CSVUploadForm(request.POST, request.FILES)
+    #         if form.is_valid():
+    #             csv_file = request.FILES['csv_file']
+    #             decoded_file = csv_file.read().decode('utf-8').splitlines()
+    #             reader = csv.reader(decoded_file)
                 
-                for row in reader:
-                    # 各行のデータを処理する
-                    print(row)
+    #             for row in reader:
+    #                 # 各行のデータを処理する
+    #                 print(row)
                 
-                # 成功した場合のレスポンス
-                return render(request, 'upload_success.html')
-        else:
-            form = CSVUploadForm()
+    #             # 成功した場合のレスポンス
+    #             return render(request, 'canri_app:member_csv_upload')
+    #     else:
+    #         form = CSVUploadForm()
 
-        return render(request, 'upload_csv.html', {'form': form})
+    #     return render(request, 'memberlist_edit.html', {'form': form})
     
 
 # -----メン��ーリスト編集保存-----
@@ -797,24 +797,50 @@ class MemberEditCompleteView(TemplateView):
 
 # -----CSVファイル処理-----
 class FileUploadView(TemplateView):
-    def upload_csv(request):
-        if request.method == 'POST':
-            form = CSVUploadForm(request.POST, request.FILES)
-            if form.is_valid():
-                csv_file = request.FILES['csv_file']
-                decoded_file = csv_file.read().decode('utf-8').splitlines()
-                reader = csv.reader(decoded_file)
-                
-                for row in reader:
-                    # 各行のデータを処理する
-                    print(row)
-                
-                # 成功した場合のレスポンス
-                return render(request, 'upload_success.html')
-        else:
-            form = CSVUploadForm()
+    template_name = 'upload_success.html'
 
-        return render(request, 'upload_csv.html', {'form': form})
+    def post(self, request, *args, **kwargs):
+        form = CSVUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            csv_file = request.FILES['csv_file']
+            decoded_file = csv_file.read().decode('utf-8').splitlines()
+            reader = csv.reader(decoded_file)
+
+            # 各行のデータをデータベースに保存する
+            for column in reader:
+                try:
+                    birthdate = datetime.strptime(column[1], '%Y-%m-%d').date()  # 日付フォーマットの変換
+                except ValueError:
+                    return render(request, self.template_name, {'form': form, 'error': f"生年月日 '{column[1]}' のフォーマットが正しくありません。"})
+
+                try:
+                    job = column[2]
+                    JobTitleInformation.filter(name=job)
+                except ValueError:
+                    return render(request, self.template_name, {'form': form, 'error': f"役職'{column[2]}'のフォーマットが正しくありません。"})
+
+                member = Member.objects.create(name=column[0], birthdate=column[1], job=column[2])
+
+
+                
+                # MemberCareer.objects.create(member=member, career=column[3])
+
+                # if len(column) > 4:
+                #     MemberHoldingQualification.objects.create(member=member, qualification=column[4])
+                # if len(column) > 5:
+                #     MemberHoldingQualification.objects.create(member=member, qualification=column[5])
+                # if len(column) > 6:
+                #     MemberHoldingQualification.objects.create(member=member, qualification=column[6])
+            
+            # 成功した場合のレスポンス
+            return redirect('canri_app:member_make')  # リダイレクト先の名前空間とビュー名を指定
+            # return render(request, "upload_success.html")
+        
+        return render(request, self.template_name, {'form': form})
+
+    # def get(self, request, *args, **kwargs):
+        # form = CSVUploadForm()
+        # return render(request, self.template_name, {'form': form})
 
 
 # -----メンバー削除確認-----
