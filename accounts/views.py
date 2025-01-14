@@ -1,10 +1,12 @@
 from django.contrib.auth.views import LogoutView, LoginView 
 from django.shortcuts import render, redirect, get_object_or_404, redirect
-from django.contrib.auth import login, get_user_model, logout, authenticate as auth_logout
+from django.contrib.auth import login, get_user_model, logout as auth_logout
+from django.contrib.auth import login, authenticate
+from django.utils import timezone
 from django.urls import reverse_lazy
 from django.views import View, generic
 from django.views.generic.base import TemplateView
-from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm
+from .forms import AccountAddForm, UserForm, LoginForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
@@ -36,19 +38,29 @@ class LogoutCompView(TemplateView):
 class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
+# views.py
 class AccLoginView(LoginView):
     def post(self, request, *arg, **kwargs):
         form = LoginForm(data=request.POST)
         if form.is_valid():
             name = form.cleaned_data.get('name')
-            user = User.objects.get(name=name)
-            login(request, user)
-            return redirect('accounts:login_complete')
-        return render(request, 'login.html', {'form': form})
+            password = form.cleaned_data.get('password')
+            
+            # authenticate 関数を呼び出す
+            user = authenticate(request, username=name, password=password)
+            
+            if user is not None:
+                if user.deletion_flag:  # 削除フラグを確認（カスタムバックエンドでもチェックされる）
+                    form.add_error(None, 'このアカウントは削除されています。')
+                    return render(request, 'login.html', {'form': form})
+                
+                login(request, user)
+                return redirect('accounts:login_complete')
         
-    def get(self, request, *args, **kwargs):
-        form = LoginForm()
         return render(request, 'login.html', {'form': form})
+
+
+
     
     # def post(self, request):
     #     if request.method == "POST":
@@ -90,14 +102,12 @@ class Manage_Account(TemplateView):
     template_name = "management_account.html"
 
     def get(self, request, *args, **kwargs):
-        # データベースから全ユーザーを取得
-        users = User.objects.all()
-
-        # コンテキストにユーザー情報を渡す
+        # 論理削除されていないユーザーのみを取得
+        users = User.objects.filter(deletion_flag=False)
+        
         context = {
             'users': users,  # 全ユーザーをテンプレートに渡す
         }
-
         return render(request, 'management_account.html', context)
 
 
@@ -138,7 +148,8 @@ def create(request):
                 user = User.objects.create_user(
                     user_id=form.cleaned_data['user_id'],
                     name=form.cleaned_data['name'],
-                    password=form.cleaned_data['password']
+                    password=form.cleaned_data['password'],
+                    administrator_flag=False  # ここでadministrator_flagを設定
                 )
                 # アカウント作成完了を示すテンプレートをレンダリング
                 return redirect('accounts:account_create_complete')
@@ -179,11 +190,28 @@ def account_change_complete(request, pk):
     return render(request, 'account_change_complete.html', {'pk':pk})
 
 def account_delete(request, name):
-    obj = get_object_or_404(User, name=name)
+    # 該当ユーザーを取得（削除フラグが立っていないユーザーのみを対象）
+    obj = get_object_or_404(User, name=name, deletion_flag=False)
+    
     if request.method == 'POST':
-        obj.delete()
+        # 論理削除：削除フラグを立てる
+        obj.deletion_flag = True
+        obj.deletion_date = timezone.now()  # 削除日時を記録
+        obj.save()
         return redirect('accounts:account_delete_complete')
-    return render(request, 'account_delete.html', {'object':obj, 'name': name})
+    
+    return render(request, 'account_delete.html', {'object': obj, 'name': name})
+
+def account_restore(request, name):
+    # 削除フラグが立っているユーザーを取得
+    obj = get_object_or_404(User, name=name, deletion_flag=True)
+    
+    if request.method == 'POST':
+        obj.restore()  # 論理削除を解除
+        return redirect('accounts:manage_account')
+    
+    return render(request, 'account_restore.html', {'object': obj, 'name': name})
+
 
 def account_delete_complete(request):
     return render(request, 'account_delete_complete.html')

@@ -123,7 +123,8 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "static")),
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
+    'accounts.backends.CustomBackend',  # カスタムバックエンドを指定
+    'django.contrib.auth.backends.ModelBackend',  # 既存のバックエンドも残す場合
 ]
 
 LOGIN_URL = '/login'
