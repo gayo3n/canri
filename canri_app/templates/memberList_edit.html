@@ -1,4 +1,4 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
 
 {% load static %}
 {% load custom_filters %}
@@ -33,7 +33,7 @@
             {% endfor %}
         </ul>
 
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" action="{% url 'canri_app:member_csv_upload' %}">
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">アップロード</button>

@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
 from django.db import models
+from django.utils import timezone
+import uuid
 
 class UserManager(BaseUserManager):
     def create_user(self, name, password=None, **extra_fields):
@@ -34,9 +36,12 @@ class UserManager(BaseUserManager):
 
         # スーパーユーザーを作成して返す
         return self.create_user(name, password, **extra_fields)
+    
+def generate_unique_id():
+    return str(uuid.uuid4())[:10]
 
 class User(AbstractBaseUser, PermissionsMixin):
-    user_id = models.CharField(max_length=10, primary_key=True)
+    user_id = models.CharField(max_length=10, primary_key=True, default=generate_unique_id)
     name = models.CharField(max_length=10, unique=True)
     password = models.CharField(max_length=10)
 
@@ -47,10 +52,23 @@ class User(AbstractBaseUser, PermissionsMixin):
     creation_date = models.DateTimeField(auto_now_add=True)  # ユーザーが作成された日時
     deletion_date = models.DateTimeField(null=True, blank=True)  # ユーザーが削除された日時
     update_date = models.DateTimeField(auto_now=True)  # ユーザーが更新された日時
-    deletion_flag = models.BooleanField(default=False)  # ユーザーが削除されたかどうかを示すフラグ
-    administrator_flag = models.BooleanField(default=False)  # 追加の管理者権限を示すカスタムフラグ
+    administrator_flag = models.BooleanField(default=False)
+    deletion_flag = models.BooleanField(default=False)
+    deletion_date = models.DateTimeField(null=True, blank=True)
 
     objects = UserManager()
+
+    def delete(self):
+        """ 論理削除を行う """
+        self.deletion_flag = True
+        self.deletion_date = timezone.now()
+        self.save()
+    
+    def restore(self):
+        """ 論理削除を解除する（復元）"""
+        self.deletion_flag = False
+        self.deletion_date = None
+        self.save()
 
     USERNAME_FIELD = 'name'
     REQUIRED_FIELDS = []

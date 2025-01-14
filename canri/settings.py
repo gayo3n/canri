@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
     'canri_app.apps.CanriAppConfig',
+    'canri_app.templatetags',
 ]
 
 AUTH_USER_MODEL="accounts.User"
@@ -123,7 +124,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "static")),
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
+    'accounts.backends.CustomBackend',  # カスタムバックエンドを指定
 ]
 
 LOGIN_URL = '/login'

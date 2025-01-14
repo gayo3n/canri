@@ -48,7 +48,7 @@ urlpatterns = [
     #プロジェクト一覧
     path('progress_within_projectlist/', views.progress_within_ProjectlistView.as_view(), name='projectlist'),
     path('post_projectlist/', views.progress_within_ProjectlistView.as_view(), name='post_projectlist'),
-    path('project/', projectListView, name='project'),                                                      #進行中プロジェクト選択時利���
+    path('project/', projectListView, name='project'),                                                      #進行中プロジェクト選択時利用
 
     #プロジェクト詳細
     # path('project_detail/', views.Project_detailView.as_view(), name='project_detail'),
@@ -67,8 +67,8 @@ urlpatterns = [
     # 過去プロジェクト
     path('past_project/', Post_projectListView, name='past_project'),
     path('past_project_view/<int:project_id>/', views.Past_ProjectView.as_view(), name='past_project_view'),
-    path('past_project_deleting/', views.Past_ProjectDeletingView.as_view(), name='past_project_deleting_confirmation'),
-    path('past_project_deleting/deleted/', views.Project_DeletedView.as_view(), name='project_deleted'),
+    path('past_project_deleting_confirmation/<int:project_id>/', views.Past_ProjectDeletingView.as_view(), name='past_project_deleting_confirmation'),
+    path('past_project_deleted/<int:project_id>/', views.Past_Project_DeletedView.as_view(), name='past_project_deleted'),
     path('save_past_project/', views.Project_Save_CompleteView.as_view(), name='save_past_project'),
     path('feedback/save/', views.FeedbackSaveView.as_view(), name='feedback_save'),
     path('feedback/delete/', views.delete_feedback, name='delete_feedback'),
@@ -98,5 +98,4 @@ urlpatterns = [
     path('api/get_p_project_detail/<int:project_id>/', api.get_p_project_detail, name='get_p_project_detail'),
     path('api/get_members_by_project/<int:project_id>/', api.get_members_by_project, name='get_members_by_project'),
     path('api/get_feedbacks_by_project/<int:project_id>/', api.get_feedbacks_by_project, name='get_feedbacks_by_project'),
-
 ]
