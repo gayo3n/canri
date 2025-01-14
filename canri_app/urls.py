@@ -1,7 +1,7 @@
 # urls.py
 from django.urls import path
 from . import views
-from .views import projectListView,Post_projectListView,project_detail_view,team_detail_view,project_detail_update,project_phase_add
+from .views import projectListView,project_detail_view,team_detail_view,project_detail_update,project_phase_add
 from . import api
 
 app_name = 'canri_app'
@@ -65,7 +65,7 @@ urlpatterns = [
 
 
     # 過去プロジェクト
-    path('past_project/', Post_projectListView, name='past_project'),
+    path('past_project/', views.Past_ProjectListView.as_view(), name='past_project'),
     path('past_project_view/<int:project_id>/', views.Past_ProjectView.as_view(), name='past_project_view'),
     path('past_project_deleting_confirmation/<int:project_id>/', views.Past_ProjectDeletingView.as_view(), name='past_project_deleting_confirmation'),
     path('past_project_deleted/<int:project_id>/', views.Past_Project_DeletedView.as_view(), name='past_project_deleted'),
