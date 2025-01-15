@@ -1,14 +1,13 @@
 from pyexpat.errors import messages
 from django.contrib.auth.views import LogoutView, LoginView, PasswordChangeView, PasswordChangeDoneView
 from django.shortcuts import render, redirect, get_object_or_404, redirect
-from django.contrib.auth import login, get_user_model, logout as auth_logout
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, get_user_model, logout as auth_logout, authenticate, update_session_auth_hash
 from django.utils import timezone
 from django.urls import reverse_lazy
 from django.db import transaction
 from django.views import View, generic
 from django.views.generic.base import TemplateView
-from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, CustomPasswordChangeForm
+from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, PasswordChangeForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
@@ -175,26 +174,36 @@ def account_create_complete(request):
     # アカウント作成完了のテンプレートをフォームと共にレンダリング
     return render(request, 'account_create_complete.html', {'form': form})
 
-class ManageAccountChange(PasswordChangeView):
-    form_class = CustomPasswordChangeForm
-    template_name = 'account_change.html'
 
-    def get_success_url(self):
-        return reverse_lazy('accounts/account_change_complete', kwargs={'pk': self.request.user.pk})
+def account_change(request, pk):
+    user = get_object_or_404(User, pk=pk)
+
+    if request.method == "POST":
+        form = PasswordChangeForm(user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            return redirect('accounts:account_change_complete')
+        else:
+            messages.error(request, 'エラーが発生しました。もう一度お試しください。')
+    else:
+        form = PasswordChangeForm(user)
+
+    return render(request, 'account_change.html', {'user': user, 'form': form})
+
     
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        form.save()
-        print('Form is valid and has been saved.')
-        return response
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
-        return context
+
+    # def account_change(request):
+    #     if request.method == 'POST':
+    #         form = CustomPasswordChangeForm(request.user, request.POST)
+    #         if form.is_valid():
+    #             user = form.save()
+    #             update_session_auth_hash(request, user)
+    #             return redirect('account_change_complete.html', {'form':form})
+
 
 
 def account_change_complete(request, pk):
+    user = get_object_or_404(User, pk=pk)
     return render(request, 'account_change_complete.html', {'pk':pk})
 
 def account_delete(request, name):
