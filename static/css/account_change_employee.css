@@ -77,14 +77,6 @@ button:hover {
     background-color: #0056b3;
 }
 
-.btn-cancel {
-    background-color: #dc3545;  /* 赤色 (キャンセルボタン) */
-}
-
-.btn-cancel:hover {
-    background-color: #c82333;
-}
-
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
     .form-container {
