@@ -14,6 +14,9 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import make_password
 from .models import User
 
 class LoginFailView(TemplateView):
@@ -115,16 +118,16 @@ class Manage_Account(TemplateView):
 # アイコン
 
 def account_change_employee(request, pk):
-    item = User.objects.get(user_id=pk)
-    form = UserForm(instance=item)
+    user = User.objects.get(user_id=pk)
+    form = UserForm(instance=user)
     if request.method == "POST":
-        form = UserForm(request.POST, instance=item)
+        form = UserForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
             return redirect("accounts:account_change_complete_employee", pk=pk)
     context = {
         "form": form,
-        "item": item
+        "item": user
         }
     return render(request, 'account_change_employee.html', context)
 

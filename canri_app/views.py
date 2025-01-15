@@ -1407,17 +1407,6 @@ def projectListView(request):
     return render(request, template_name, ctx)
 
 
-
-# 過去プロジェクト
-class post_ProjectlistView(TemplateView):
-    template_name="post_projectlist.html"
-
-
-# プロジェクト詳細表示
-class Project_detailView(TemplateView):
-    template_name="project_detail.html"
-
-
 from django.shortcuts import render, get_object_or_404
 from .models import Project, ProjectAffiliationTeam, ProjectProgressStatus
 
@@ -1956,14 +1945,12 @@ def team_detail_view(request, team_id):
 
     # ctx["project_list"] = qsequest, self.template_name, {'members': members}
 
-# 過去プロジェクトリスト
 class Past_ProjectListView(TemplateView):
     template_name = "past_project_list.html"
 
     def get(self, request, *args, **kwargs):
-        query = request.GET.get('p')
-        qs = Project.objects.all()
-        qs=qs.filter(complete_flag=1,deletion_flag=0)
+        query = request.GET.get('q')
+        qs = Project.objects.filter(complete_flag=1, deletion_flag=0)
         if query:
             qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
 
@@ -1971,19 +1958,6 @@ class Past_ProjectListView(TemplateView):
             'project_list': qs
         }
         return render(request, self.template_name, context)
-
-# 過去プロジェクト検索
-def Post_projectListView(request):
-    template_name = "past_project_list.html"
-    ctx = {}
-    query = request.GET.get('p')
-    qs = Project.objects.all()
-    qs=qs.filter(complete_flag=1,deletion_flag=0)
-    if query:
-        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
-
-    ctx["project_list"] = qs
-    return render(request, template_name, ctx)
 
 # 過去プロジェクト閲覧
 class Past_ProjectView(TemplateView):
@@ -2059,7 +2033,7 @@ class Past_ProjectDeletingView(View):
         return render(request, self.template_name, context)
         
 class Past_Project_DeletedView(View):
-    template_name = "project_deleted.html"
+    template_name = "past_project_deleted.html"
 
     def get(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
