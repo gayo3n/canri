@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/past_project_list.css' %}">
 {% endblock %}
@@ -7,8 +8,8 @@
 {% block content %}
 <!-- 検索バー -->
 <div class="search-container">
-    <form method="GET" action="{% url 'canri_app:post_projectlist' %}">
-        <input type="text" name="p" class="search-input" placeholder="キーワードを入力" value="{{ request.GET.q }}" required>
+    <form method="GET" action="{% url 'canri_app:past_project' %}">
+        <input type="text" name="q" class="search-input" placeholder="キーワードを入力" value="{{ request.GET.q }}" required>
         <button type="submit" class="search-button">検索</button>
     </form>
 </div>
