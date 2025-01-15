@@ -263,7 +263,14 @@
     function goBack() {
         const form = document.createElement('form');
         form.method = 'post';
-        form.action = "{% url 'canri_app:create_team2_back' %}";
+
+        // team_sizeの値に基づいてform.actionを設定
+        const teamSize = '{{ team_size }}';
+        if (!teamSize || teamSize == 0) {
+            form.action = "{% url 'canri_app:create_team' %}";
+        } else {
+            form.action = "{% url 'canri_app:create_team2_back' %}";
+        }
 
         const csrfToken = document.createElement('input');
         csrfToken.type = 'hidden';
@@ -301,11 +308,11 @@
         teams.value = '{{ teams|safe }}';
         form.appendChild(teams);
 
-        const teamSize = document.createElement('input');
-        teamSize.type = 'hidden';
-        teamSize.name = 'team_size';
-        teamSize.value = '{{ team_size }}';
-        form.appendChild(teamSize);
+        const teamSizeInput = document.createElement('input');
+        teamSizeInput.type = 'hidden';
+        teamSizeInput.name = 'team_size';
+        teamSizeInput.value = teamSize;
+        form.appendChild(teamSizeInput);
 
         const teamType = document.createElement('input');
         teamType.type = 'hidden';
