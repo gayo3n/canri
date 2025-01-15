@@ -27,8 +27,16 @@
                 {% if user.is_superuser %}
                     <a href="{% url 'accounts:manage_account' %}">アカウント管理</a>
                 {% endif %}
+                <!-- 小画面用のユーザー情報 -->
+                <div class="hamburger-user-info">
+                    <div class="user-info">
+                        <img src="{% static 'img/user_icon.png' %}" alt="社員アイコン">
+                        <a href="{% url 'accounts:account_change_employee' pk=user.pk %}">{{ user.name }}様</a>
+                    </div>
+                    <a href="{% url 'accounts:logout_confirmation' %}" class="logout-link">ログアウト</a>
+                </div>
             </div>
-            <div class="navbar-right">
+            <div class="navbar-left">
                 <div class="user-info-container">
                     <div class="user-info">
                         <img src="{% static 'img/user_icon.png' %}" alt="社員アイコン">

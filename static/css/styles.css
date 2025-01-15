@@ -61,22 +61,19 @@
     color: #007bff;
 }
 
-/* 現在のページリンクに色をつける */
+/* 小画面用のユーザー情報 */
+.hamburger-user-info {
+    display: none; /* 小画面でのユーザー情報は非表示 */
+    margin-top: 10px;
+}
+
+.hamburger-user-info .user-info {
+    margin-bottom: 10px;
+}
+
 .navbar-left a.active {
     color: #007bff; /* 現在選択中のリンクの色 */
     font-weight: bold; /* 強調 */
-}
-
-/* 右側のリンクグループ */
-.navbar-right a {
-    margin-left: 15px;
-    text-decoration: none;
-    color: #000000;
-    font-size: 16px;
-}
-
-.navbar-right a:hover {
-    color: #ff0000;
 }
 
 /* 小画面での表示 */
@@ -107,6 +104,14 @@
         text-align: center;
         padding: 10px 0;
         border-bottom: 1px solid #ccc;
+    }
+
+    .hamburger-user-info {
+        display: flex; /* ハンバーガーメニューが開いたときに表示 */
+        flex-direction: column;
+        align-items: center;
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
     }
 
     .navbar-right {

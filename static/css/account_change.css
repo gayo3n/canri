@@ -39,22 +39,24 @@ input[type="password"] {
     gap: 10px; /* ボタン間の間隔 */
 }
 
-/* 保存ボタンのスタイル */
+/* ボタンのスタイル */
 .btn-save {
-    display: inline-block;
+    display: inline-block; /* インラインブロックに変更 */
     font-size: 1rem;
-    color: #ffffff; /* テキストを白に */
-    background-color: #007bff; /* 背景色を青に */
-    border: none;
-    padding: 10px 20px;
+    background-color: #007bff; /* テキストカラー */
+    color: #fff;
+    border: none; /* 外枠を消す */
+    padding: 8px 18px;
     border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
+    cursor: pointer; /* カーソルをポインタに */
+    text-decoration: none; /* 下線をなくす */
 }
 
 .btn-save:hover {
-    background-color: #0056b3; /* ホバー時の色を濃い青に */
+    color: #fff;
+    background-color: #83adfc; /* ホバー時の色 */
+    transition: color 0.3s ease; /* 色の変化を滑らかに */
+    text-decoration: underline; /* ホバー時に下線を追加 */
 }
 
 /* キャンセルボタンのスタイル */
@@ -71,25 +73,8 @@ input[type="password"] {
 }
 
 .btn-cancel:hover {
-    color: #fc7b7b; /* ホバー時の色 */
+    background-color: #fc7b7b; /* ホバー時の色 */
     transition: color 0.3s ease; /* 色の変化を滑らかに */
     text-decoration: underline; /* ホバー時に下線を追加 */
 }
 
-/* ボタンのスタイル */
-.btn-save {
-    display: inline-block; /* インラインブロックに変更 */
-    font-size: 1rem;
-    color: #007bff; /* テキストカラー */
-    background: none; /* 背景をなくす */
-    border: none; /* ボーダーをなくす */
-    padding: 0; /* パディングをなくす */
-    cursor: pointer; /* カーソルをポインタに */
-    text-decoration: none; /* 下線をなくす */
-}
-
-.btn-save:hover {
-    color: #83adfc; /* ホバー時の色 */
-    transition: color 0.3s ease; /* 色の変化を滑らかに */
-    text-decoration: underline; /* ホバー時に下線を追加 */
-}
