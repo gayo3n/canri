@@ -124,10 +124,10 @@ def account_change_employee(request, pk):
         form = UserForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            return redirect("accounts:account_change_complete_employee", pk=pk)
+            return redirect("accounts:account_change_complete_employee", {'pk':pk})
     context = {
         "form": form,
-        "item": user
+        "user": user
         }
     return render(request, 'account_change_employee.html', context)
 
@@ -191,7 +191,6 @@ class ManageAccountChange(PasswordChangeView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
-        context['item'] = self.request.user
         return context
 
 
