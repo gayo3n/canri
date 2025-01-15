@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm
 from django.contrib.auth import get_user_model
 from .models import User
 from django import forms
@@ -51,7 +51,7 @@ class UserForm(forms.ModelForm):
         # 最大入力数10文字指定
     name = forms.CharField(max_length=10) # 名前の文字数10文字
     user_id = forms.CharField(max_length=10) # アカウントIDの文字数10文字
-    password = forms.CharField(max_length=10, widget=forms.PasswordInput) # パスワードの文字数10文字
+    password = forms.CharField(max_length=10) # パスワードの文字数10文字
 
     class Meta:
         model = User
@@ -64,3 +64,15 @@ class UserForm(forms.ModelForm):
 
 class LoginForm(AuthenticationForm):
     pass
+
+
+class CustomPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
+    new_password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
+    new_password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if commit:
+            user.save()
+            print("Password has been saved to the database.")
+            return user

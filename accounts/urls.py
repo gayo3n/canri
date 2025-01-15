@@ -19,10 +19,10 @@ urlpatterns = [
     path('management_account/create/complete/', views.account_create_complete, name='account_create_complete'),  #アカウント作成完了
     path('account_delete/<str:name>/', views.account_delete, name='account_delete'), #アカウント削除
     path('account_delete_complete/', views.account_delete_complete, name="account_delete_complete"),
-    path('manage_account_change/<int:pk>/', views.manage_account_change, name='manage_account_change'),
+    path('manage_account_change/<int:pk>/', views.ManageAccountChange.as_view(), name='manage_account_change'),
     path('account_change_complete/<int:pk>/', views.account_change_complete, name='account_change_complete'),
     
     # アイコン
     path('change_employee/<int:pk>/', views.account_change_employee, name='account_change_employee'),
-    path('change_employee_complete/', views.account_change_complete_employee, name='account_change_complete_employee'),
+    path('change_employee_complete/<int:pk>/', views.account_change_complete_employee, name='account_change_complete_employee'),
 ]
