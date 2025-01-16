@@ -182,6 +182,9 @@ function updateEndDateMin(startDate) {
 
 <!-- ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー -->
 
+
+
+
 <div class="container">
     <h2>プロジェクト：{{ project.project_name }}のフィードバック</h2>
     <div class="teams-grid">
@@ -213,7 +216,8 @@ function updateEndDateMin(startDate) {
 
 
     <!-- プロジェクト所属フェーズ情報表示 -->
-    <h3>フェーズ情報</h3>
+    <div class="phase-boxes">
+    <h3>フェーズ情報</h3></div>
     <div class="tasks-panel">
         <div class="task-list">
             {% for phase in phases %}
@@ -241,4 +245,5 @@ function updateEndDateMin(startDate) {
         </div>
     </div>
 </div>
+
 {% endblock %}
