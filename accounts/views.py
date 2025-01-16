@@ -1,4 +1,4 @@
-from pyexpat.errors import messages
+from django import forms
 from django.contrib.auth.views import LogoutView, LoginView, PasswordChangeView, PasswordChangeDoneView
 from django.shortcuts import render, redirect, get_object_or_404, redirect
 from django.contrib.auth import login, get_user_model, logout as auth_logout, authenticate, update_session_auth_hash
@@ -7,8 +7,8 @@ from django.urls import reverse_lazy
 from django.db import transaction
 from django.views import View, generic
 from django.views.generic.base import TemplateView
-from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, PasswordChangeForm
-from django.contrib.auth.mixins import UserPassesTestMixin
+from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, CustomPasswordChangeForm
+from django.contrib.auth.mixins import UserPassesTestMixin,LoginRequiredMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
@@ -181,23 +181,17 @@ def account_create_complete(request):
 
 # アカウント一覧からのパスワード変更
 def account_change(request, pk):
-    user = get_object_or_404(User, pk=pk)
-
-    if request.method == "POST":
-        user.name = request.POST.get('name')
-        user.user_id = request.POST.get('user_id')
-        password = request.POST.get('password')
-        if password:
+    user = User.objects.get(pk=request.user.pk)
+    if request.method != 'POST':
+        form = CustomPasswordChangeForm(user.user_id)
+    else:
+        form = CustomPasswordChangeForm(user.user_id, request.POST)
+        if form.is_valid():
+            password = form.cleaned_data['confirm_new_password']
             user.set_password(password)
-
-        user.save()
-        
-        return redirect("accounts:account_change_complete", pk=pk)
-        
-    context = {
-        "user": user
-    }
-    return render(request, 'account_change.html', context)
+            user.save()
+            return redirect('accounts:account_change_complete', pk=pk)
+    return render(request, 'account_change.html', {'form':form})
 
     
 def account_change_complete(request, pk):
