@@ -103,7 +103,7 @@ class Manage_Account(TemplateView):
     template_name = "management_account.html"
 
     def get(self, request, *args, **kwargs):
-        # 論理削除されていないユーザーのみを取得
+        # 削除フラグがFalseのユーザーのみを取得
         users = User.objects.filter(deletion_flag=False)
         
         context = {
