@@ -1937,6 +1937,7 @@ def team_detail_view(request, team_id):
 
     # ctx["project_list"] = qsequest, self.template_name, {'members': members}
 
+# 過去プロジェクト一覧表示
 class Past_ProjectListView(TemplateView):
     template_name = "past_project_list.html"
 
@@ -1972,11 +1973,23 @@ class Past_ProjectView(TemplateView):
         team_members = TeamMember.objects.filter(team_id__in=teams, deletion_flag=0)
         members = Member.objects.filter(member_id__in=team_members, deletion_flag=0)
 
+        # project_dataに日付フィールドが含まれていることを確認
+        project_start_date = project_data.get('project_start_date')
+        project_end_date = project_data.get('project_end_date')
+
+        # 日付をパースしてからテンプレートに渡す
+        if project_start_date:
+            project_start_date = datetime.strptime(project_start_date, "%Y-%m-%d").date()
+        if project_end_date:
+            project_end_date = datetime.strptime(project_end_date, "%Y-%m-%d").date()
+
         context = {
             'project': project_data,
             'teams': teams,
             'members': members,
-            'feedbacks': feedbacks
+            'feedbacks': feedbacks,
+            'project_start_date': project_start_date,
+            'project_end_date': project_end_date
         }
 
         return render(request, self.template_name, context)
@@ -2003,6 +2016,7 @@ class Past_ProjectView(TemplateView):
             except Project.DoesNotExist:
                 return HttpResponseNotFound("Project not found")
 
+# 過去プロジェクト削除確認
 class Past_ProjectDeletingView(View):
     template_name = "past_project_deleting_confirmation.html"
 
@@ -2023,7 +2037,8 @@ class Past_ProjectDeletingView(View):
             'project': project
         }
         return render(request, self.template_name, context)
-        
+
+# 過去プロジェクト削除完了
 class Past_Project_DeletedView(View):
     template_name = "past_project_deleted.html"
 
@@ -2050,7 +2065,8 @@ class Past_Project_DeletedView(View):
             return render(request, "past_project_delete_error.html", {'message': 'Project not found'})
         except Exception as e:
             return render(request, "past_project_delete_error.html", {'message': str(e)})
-    
+
+# プロジェクト保存完了
 class Project_Save_CompleteView(TemplateView):
     template_name = "save_past_project.html"
 
