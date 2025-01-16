@@ -16,4 +16,3 @@ class CustomBackend(ModelBackend):
         except User.DoesNotExist:
             print("User does not exist")  # デバッグ用
             return None
-

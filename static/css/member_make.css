@@ -75,12 +75,14 @@ input[type="text"], input[type="date"], select {
     text-align:center;
     background-color: #d9534f;
     color: white;
+    text-decoration: underline;
 }
 
 .btn.save {
     text-align:center;
     background-color: #00b3ff;
     color: white;
+    text-decoration: underline;
 }
 
 .btn.delete:hover {
@@ -89,4 +91,19 @@ input[type="text"], input[type="date"], select {
 
 .btn.save:hover {
     background-color: #0271a1;
+}
+
+.mbti {
+    text-align:center;
+    background-color: #b7b7b7;
+    color: white;
+    height: 42px;
+    display: flex;
+    justify-content: center; /* 水平方向の中央揃え */
+    align-items: center; /* 垂直方向の中央揃え */
+    border-radius: 5px; /* 角を10ピクセル丸くする */
+}
+
+.mbti:hover {
+    background-color: #808080;
 }
