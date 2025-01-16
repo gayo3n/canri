@@ -17,6 +17,11 @@
 }
 
 .team-card {
+
+    position: relative; /* 今の位置を基準 */
+    top: 80px; /* 上から10px */
+    right: 5px; /* 左から20px */
+
     background: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 8px;

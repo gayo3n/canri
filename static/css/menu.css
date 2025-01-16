@@ -34,11 +34,11 @@
 
 .box a {
     text-decoration: none;
-    color: #7c2020;
+    color: #000000;
 }
 
 .box a:hover {
-    color: #5255ba; /* ホバー時の色 */
+    color: #000599; /* ホバー時の色 */
     transition: color 0.5s ease; /* 色の変化を滑らかに */
     text-decoration: underline; /* ホバー時に下線を追加 */
 }
@@ -57,6 +57,9 @@
 }
 .box5 {
     background-color: #f875b7;
+}
+.box6 {
+    background-color: #ff0;
 }
 
 /* ハンバーガーメニュー */
