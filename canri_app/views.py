@@ -17,6 +17,7 @@ from django.urls import reverse
 import csv
 from django.contrib import messages
 from django.core import serializers
+import os
 
 
 
@@ -802,14 +803,19 @@ class MemberEditCompleteView(TemplateView):
         return render(request, self.template_name, {"member": member})
     
 
+UPLOAD_DIR = os.path.dirname(os.path.abspath(__file__)) + '/static/files/'
+
 # -----CSVファイル処理-----
 class FileUploadView(TemplateView):
     template_name = 'upload_success.html'
+
+    
 
     def post(self, request, *args, **kwargs):
         form = CSVUploadForm(request.POST, request.FILES)
         if form.is_valid():
             csv_file = request.FILES['csv_file']
+            path = os.path.join(UPLOAD_DIR, csv_file.name)
             decoded_file = csv_file.read().decode('utf-8').splitlines()
             reader = csv.reader(decoded_file)
 
