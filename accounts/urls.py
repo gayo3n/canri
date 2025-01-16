@@ -18,9 +18,9 @@ urlpatterns = [
     path('management_account/account_creating/', views.create, name='account_create'), #アカウント作成
     path('management_account/create/complete/', views.account_create_complete, name='account_create_complete'),  #アカウント作成完了
     path('account_delete/<str:name>/', views.account_delete, name='account_delete'), #アカウント削除
-    path('account_delete_complete/', views.account_delete_complete, name="account_delete_complete"),
-    path('manage_account_change/<int:pk>/', views.Account_change.as_view(), name='manage_account_change'),
-    path('account_change_complete/<int:pk>/', views.account_change_complete, name='account_change_complete'),
+    path('account_delete_complete/', views.account_delete_complete, name="account_delete_complete"), # アカウント削除完了
+    path('manage_account_change/<int:pk>/', views.account_change, name='manage_account_change'), # パスワード変更
+    path('account_change_complete/<int:pk>/', views.account_change_complete, name='account_change_complete'), #パスワード変更完了
     
     # アイコン
     path('change_employee/<int:pk>/', views.account_change_employee, name='account_change_employee'),

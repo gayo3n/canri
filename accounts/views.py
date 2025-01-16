@@ -39,9 +39,7 @@ class LogoutCompView(TemplateView):
 class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
-# views.py
-# views.py
-from django.contrib.auth import authenticate, login
+
 
 class AccLoginView(LoginView):
     def post(self, request, *arg, **kwargs):
@@ -180,32 +178,26 @@ def account_create_complete(request):
     # アカウント作成完了のテンプレートをフォームと共にレンダリング
     return render(request, 'account_create_complete.html', {'form': form})
 
-class Account_change(PasswordChangeView):
-    success_url = reverse_lazy('account:account_change_complete')
-    template_name = 'account_change.html'
 
-
+# アカウント一覧からのパスワード変更
 def account_change(request, pk):
     user = get_object_or_404(User, pk=pk)
 
     if request.method == "POST":
         user.name = request.POST.get('name')
+        user.user_id = request.POST.get('user_id')
         password = request.POST.get('password')
-        user.set_password(password)
+        if password:
+            user.set_password(password)
+
         user.save()
-
-        # 再ログイン処理
-        user = authenticate(request, username=user.name, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect("accounts:account_change_complete_employee", pk=pk)
-        else:
-            return redirect("accounts:login")
-
+        
+        return redirect("accounts:account_change_complete", pk=pk)
+        
     context = {
         "user": user
     }
-    return render(request, 'account_change_employee.html', context)
+    return render(request, 'account_change.html', context)
 
     
 def account_change_complete(request, pk):
