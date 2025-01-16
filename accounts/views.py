@@ -117,17 +117,24 @@ class Manage_Account(TemplateView):
 # アイコン
 
 def account_change_employee(request, pk):
-    user = User.objects.get(user_id=pk)
-    form = UserForm(instance=user)
+    user = get_object_or_404(User, pk=pk)
     if request.method == "POST":
-        form = UserForm(request.POST, instance=user)
-        if form.is_valid():
-            form.save()
-            return redirect("accounts:account_change_complete_employee", {'pk':pk})
+        user.name = request.POST.get('name')
+        password = request.POST.get('password')
+        user.set_password(password)
+        user.save()
+
+        # 再ログイン処理
+        user = authenticate(request, username=user.name, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect("accounts:account_change_complete_employee", pk=pk)
+        else:
+            return redirect("accounts:login")
+
     context = {
-        "form": form,
         "user": user
-        }
+    }
     return render(request, 'account_change_employee.html', context)
 
 def account_change_complete_employee(request, pk):
@@ -173,34 +180,34 @@ def account_create_complete(request):
     # アカウント作成完了のテンプレートをフォームと共にレンダリング
     return render(request, 'account_create_complete.html', {'form': form})
 
+class Account_change(PasswordChangeView):
+    success_url = reverse_lazy('account:account_change_complete')
+    template_name = 'account_change.html'
+
 
 def account_change(request, pk):
     user = get_object_or_404(User, pk=pk)
 
     if request.method == "POST":
-        form = PasswordChangeForm(user, request.POST)
-        if form.is_valid():
-            user = form.save()
-            return redirect('accounts:account_change_complete')
-        else:
-            messages.error(request, 'エラーが発生しました。もう一度お試しください。')
-    else:
-        form = PasswordChangeForm(user)
+        user.name = request.POST.get('name')
+        password = request.POST.get('password')
+        user.set_password(password)
+        user.save()
 
-    return render(request, 'account_change.html', {'user': user, 'form': form})
+        # 再ログイン処理
+        user = authenticate(request, username=user.name, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect("accounts:account_change_complete_employee", pk=pk)
+        else:
+            return redirect("accounts:login")
+
+    context = {
+        "user": user
+    }
+    return render(request, 'account_change_employee.html', context)
 
     
-
-    # def account_change(request):
-    #     if request.method == 'POST':
-    #         form = CustomPasswordChangeForm(request.user, request.POST)
-    #         if form.is_valid():
-    #             user = form.save()
-    #             update_session_auth_hash(request, user)
-    #             return redirect('account_change_complete.html', {'form':form})
-
-
-
 def account_change_complete(request, pk):
     user = get_object_or_404(User, pk=pk)
     return render(request, 'account_change_complete.html', {'pk':pk})
