@@ -21,17 +21,9 @@ import os
 
 
 
-class IndexView(TemplateView):
+class IndexView(LoginRequiredMixin, TemplateView):
     template_name = "index.html"
-    def my_view(request):
-        if request.user.is_authenticated:
-            # ユーザーはログインしています
-            template_name = "index.html"
-            user_name = models.User.name
-            return render(request, template_name, {"name" : user_name})
-        else:
-            # ユーザーはログインしていません
-            return redirect('accounts:login/')
+    login_url = 'accounts:login'  # 未ログイン時にリダイレクトするURL
 
 
 # -----メンバーリスト一覧-----
