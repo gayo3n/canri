@@ -20,7 +20,7 @@ urlpatterns = [
     path('account_delete/<str:name>/', views.account_delete, name='account_delete'), #アカウント削除
     path('account_delete_complete/', views.account_delete_complete, name="account_delete_complete"), # アカウント削除完了
     path('manage_account_change/<int:pk>/', views.account_change, name='manage_account_change'), # パスワード変更
-    path('account_change_complete/<int:pk>/', views.account_change_complete, name='account_change_complete'), #パスワード変更完了
+    path('account_change_complete/<int:pk>/', views.account_change_complete, name='account_change_complete'), #パスワード変更完了   
     
     # アイコン
     path('change_employee/<int:pk>/', views.account_change_employee, name='account_change_employee'),
