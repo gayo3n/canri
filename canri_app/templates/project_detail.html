@@ -187,15 +187,8 @@ function updateEndDateMin(startDate) {
 
 <div class="container">
     <h2>プロジェクト：{{ project.project_name }}のフィードバック</h2>
-    <div class="teams-grid">
-        {% for affiliation in teams %}
-            <div class="team-card">
-                <a href="チーム詳細リンク">{{ affiliation.team.team_name }}</a>
-            </div>
-        {% endfor %}
-    </div>
 
-<!-- チーム新規作成 -->
+    <!-- チーム新規作成 -->
     <div class="team-add">
         <form method="post" action="{% url 'canri_app:project_detail_create_team' %}" >
             {% csrf_token %}
@@ -212,8 +205,13 @@ function updateEndDateMin(startDate) {
     </div>
 
 
-
-
+    <div class="teams-grid">
+        {% for affiliation in teams %}
+            <div class="team-card">
+                <a href="チーム詳細リンク">{{ affiliation.team.team_name }}</a>
+            </div>
+        {% endfor %}
+    </div>
 
     <!-- プロジェクト所属フェーズ情報表示 -->
     <div class="phase-boxes">
