@@ -68,8 +68,9 @@
 .phase {
     position: absolute;
     top: 20px;   /* フェーズ情報を上に配置 */
-    right: 20px; /* 右寄せ */
+    right: 10px; /* 右寄せ */
     z-index: 10; /* 他の要素より前に表示 */
+    font-size: 14px;
 }
 
 .team-add {
@@ -124,6 +125,7 @@
     border-bottom: 1px solid #eee;
     transition: background-color 0.3s ease;
     overflow: hidden; /* 内容がはみ出すのを防止 */
+    flex-direction: row; /* チェックボックスと名前を横並びに */
 }
 
 .task-item:hover {
@@ -136,6 +138,7 @@
 
 .task-checkbox {
     margin-right: 10px;
+    width: 25px;
 }
 
 .task-name {
@@ -143,6 +146,7 @@
     text-overflow: ellipsis; /* テキストが長すぎる場合省略記号を表示 */
     overflow: hidden; /* 内容がはみ出すのを防止 */
     white-space: nowrap; /* テキストが折り返されないように設定 */
+    max-width: 150px;
 }
 
 .task-date {
@@ -241,9 +245,9 @@
 
 .phase-boxes {
     position: absolute;
-    top: 150px;   /* 上からの距離を指定 */
-    right: 50px;  /* 右からの距離を指定 */
-    max-width: 50%; /* 画面幅を制限 */
+    top: 140px;   /* 上からの距離を指定 */
+    right: 100px;  /* 右からの距離を指定 */
+    max-width: 40%; /* 画面幅を制限 */
     text-align: right; /* 右寄せにする */
     z-index: 10;  /* 他の要素より前に表示 */
 }
