@@ -34,8 +34,8 @@
                     <input type="hidden" name="project_id" value="{{ project.project_id }}">
                     <h1>{{ project.project_name }}</h1>
                     <div class="horizontal-line"></div>
-                    <p>開始日: {{ project.creation_date|date:"Y年m月d日" }}</p>
-                    <p>完了日: {{ project.complete_date|date:"Y年m月d日" }}</p>
+                    <p>開始日：{{ project_start_date|date:"Y年m月d日" }}</p>
+                    <p>完了日：{{ project_end_date|date:"Y年m月d日" }}</p>
                     <label for="post_evaluation_memo">プロジェクト詳細：</label>
                     <p>&emsp;&emsp;{{ project.project_detail }}</p>
                     <label for="post_evaluation_memo">事後評価メモ</label>
