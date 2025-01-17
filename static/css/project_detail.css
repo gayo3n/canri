@@ -241,8 +241,17 @@
 
 .phase-boxes {
     position: absolute;
-    top: 20px;   /* 上からの距離を指定 */
-    right: 20px;  /* 右からの距離を指定 */
+    top: 150px;   /* 上からの距離を指定 */
+    right: 50px;  /* 右からの距離を指定 */
+    max-width: 50%; /* 画面幅を制限 */
+    text-align: right; /* 右寄せにする */
+    z-index: 10;  /* 他の要素より前に表示 */
+}
+
+.tasks-panel {
+    position: absolute;
+    top: 200px;   /* 上からの距離を指定 */
+    right: 50px;  /* 右からの距離を指定 */
     max-width: 50%; /* 画面幅を制限 */
     text-align: right; /* 右寄せにする */
     z-index: 10;  /* 他の要素より前に表示 */
