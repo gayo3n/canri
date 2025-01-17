@@ -1,5 +1,5 @@
 {% extends 'base2.html' %}
-
+<!-- 進行中プロジェクトチーム詳細表示時利用 -->
 {% load static %}
 
 {% block head %}
@@ -171,7 +171,8 @@
         <h2>削除確認</h2>
         <p>チーム{{ team.team_name }}を削除しますか？</p>
         <div class="button-container">
-            <button type="button" class="action-button" onclick="deleteTeam()">削除</button>
+            <a href="{% url 'canri_app:project_team_delete' team_id=team.team_id %}?project_id={{ project_id }}">削除</a>
+
         </div>
     </div>
 </div>
@@ -184,13 +185,15 @@
         <form id="moveTeamForm">
             <input type="hidden" id="currentTeamId" name="current_team_id" value="{{ team.team_id }}">
             <label for="teamSelect">移動先のチームを選択</label>
+
             <select id="teamSelect" name="team_id" required>
-                {% for team_id in teams %}
-                    {% if team_id != team.team_id %}
-                        <option value="{{ team_id }}">チーム{{ team_id }}</option>
+                {% for t in teams %}
+                    {% if t.team_id != team.team_id %}
+                        <option value="{{ t.team_id }}">チーム{{ t.team_name }}</option>
                     {% endif %}
                 {% endfor %}
             </select>
+
             <div class="button-container" style="justify-content: flex-end;">
                 <button type="button" class="action-button" onclick="moveMemberToTeam()">移動</button>
             </div>
@@ -209,50 +212,49 @@
         document.getElementById('addMemberWindow').style.display = 'none';
     }
 
+    // メンバー編集ウィンドウを開く関数
+    function openMemberEditWindow(event, memberId) {
+        // リンクのデフォルトの動作（ページ遷移など）を防ぐ
+        // これにより、クリックしてもページ遷移せずにJavaScriptの処理が実行されます
+        event.preventDefault();
 
-// メンバー編集ウィンドウを開く関数
-function openMemberEditWindow(event, memberId) {
-    // リンクのデフォルトの動作（ページ遷移など）を防ぐ
-    // これにより、クリックしてもページ遷移せずにJavaScriptの処理が実行されます
-    event.preventDefault();
+        // fetchでメンバーの情報をサーバーから非同期に取得
+        // `member_id=0` をクリックされたメンバーのID (`memberId`) に置き換えてURLを生成
+        fetch(`{% url 'canri_app:get_member_data' member_id=0 %}`.replace("0", memberId)) // 例: /get_member_data/123/
+            .then(response => {
+                // サーバーからのレスポンスが成功したか確認
+                // response.json() はレスポンスをJSON形式に変換します
+                if (!response.ok) {
+                    // レスポンスがエラーの場合、エラーメッセージを表示
+                    throw new Error('メンバー情報の取得に失敗しました');
+                }
+                return response.json();  // JSONに変換して次の.then()に渡す
+            })
+            .then(data => {
+                // サーバーから取得したデータ（メンバー情報）を変数に格納
+                const member = data.member_data;  // 例: { member_id: 123, name: '山田 太郎', job_title: 'エンジニア' }
 
-    // fetchでメンバーの情報をサーバーから非同期に取得
-    // `member_id=0` をクリックされたメンバーのID (`memberId`) に置き換えてURLを生成
-    fetch(`{% url 'canri_app:get_member_data' member_id=0 %}`.replace("0", memberId)) // 例: /get_member_data/123/
-        .then(response => {
-            // サーバーからのレスポンスが成功したか確認
-            // response.json() はレスポンスをJSON形式に変換します
-            if (!response.ok) {
-                // レスポンスがエラーの場合、エラーメッセージを表示
-                throw new Error('メンバー情報の取得に失敗しました');
-            }
-            return response.json();  // JSONに変換して次の.then()に渡す
-        })
-        .then(data => {
-            // サーバーから取得したデータ（メンバー情報）を変数に格納
-            const member = data.member_data;  // 例: { member_id: 123, name: '山田 太郎', job_title: 'エンジニア' }
+                // 取得したメンバー情報をフォームの各フィールドに設定
+                // メンバー情報が存在しない場合はデフォルトの値（'なし'）を設定
+                document.querySelector('input[name="member_id"]').value = member.member_id; // メンバーIDを入力フィールドに設定
+                document.getElementById('member_name').value = member.name;  // メンバー名を設定
+                document.getElementById('member_job').value = member.job_title || 'なし';  // 職業情報がなければ'なし'を設定
+                document.getElementById('member_career').value = member.career_name || 'なし';  // 経歴情報がなければ'なし'を設定
+                document.getElementById('qualification1').value = member.qualification_name1 || 'なし';  // 資格1情報がなければ'なし'を設定
+                document.getElementById('qualification2').value = member.qualification_name2 || 'なし';  // 資格2情報がなければ'なし'を設定
+                document.getElementById('qualification3').value = member.qualification_name3 || 'なし';  // 資格3情報がなければ'なし'を設定
+                document.getElementById('mbti').value = member.mbti_name || 'なし';  // MBTI情報がなければ'なし'を設定
+                document.getElementById('member_memo').value = member.memo || '';  // メモ情報がなければ空文字を設定
 
-            // 取得したメンバー情報をフォームの各フィールドに設定
-            // メンバー情報が存在しない場合はデフォルトの値（'なし'）を設定
-            document.querySelector('input[name="member_id"]').value = member.member_id; // メンバーIDを入力フィールドに設定
-            document.getElementById('member_name').value = member.name;  // メンバー名を設定
-            document.getElementById('member_job').value = member.job_title || 'なし';  // 職業情報がなければ'なし'を設定
-            document.getElementById('member_career').value = member.career_name || 'なし';  // 経歴情報がなければ'なし'を設定
-            document.getElementById('qualification1').value = member.qualification_name1 || 'なし';  // 資格1情報がなければ'なし'を設定
-            document.getElementById('qualification2').value = member.qualification_name2 || 'なし';  // 資格2情報がなければ'なし'を設定
-            document.getElementById('qualification3').value = member.qualification_name3 || 'なし';  // 資格3情報がなければ'なし'を設定
-            document.getElementById('mbti').value = member.mbti_name || 'なし';  // MBTI情報がなければ'なし'を設定
-            document.getElementById('member_memo').value = member.memo || '';  // メモ情報がなければ空文字を設定
-
-            // メンバー編集ウィンドウ（モーダルなど）を表示
-            // ここでは、表示したい要素のID ('memberEditWindow') を指定して、表示スタイルを変更します
-            document.getElementById('memberEditWindow').style.display = 'block';
-        })
-        .catch(error => {
-            // fetchエラーやJSON解析エラーが発生した場合、コンソールにエラーメッセージを表示
-            console.error('メンバー編集ウィンドウの読み込みエラー:', error);
-        });
-}
+                // メンバー編集ウィンドウ（モーダルなど）を表示
+                // ここでは、表示したい要素のID ('memberEditWindow') を指定して、表示スタイルを変更します
+                document.getElementById('memberEditWindow').style.display = 'block';
+            })
+            .catch(error => {
+                // fetchエラーやJSON解析エラーが発生した場合、コンソールにエラーメッセージを表示
+                console.error('メンバー編集ウィンドウの読み込みエラー:', error);
+            });
+    }
 
 
     // メンバー編集ウィンドウを閉じる処理
@@ -398,83 +400,24 @@ function openMemberEditWindow(event, memberId) {
         document.querySelector('form').appendChild(hiddenTeamMemo);
     }
 
+    // 要修正----------------------------------------------------------------------
     // チーム削除処理
-    function deleteTeam() {
-        const teamId = {{ team.team_id }};
-        const teams = JSON.parse(document.querySelector('input[name="teams"]').value);
-        const updatedTeams = teams.filter(id => id !== teamId);
+    //今の処理が不明
+    // チーム削除apiが詳細不明
+    // function deleteTeam() {
+    //     const teamId = {{ team.team_id }};
+    // }
+    // -----------------------------------------------------------------------
 
-        fetch(`{% url 'canri_app:delete_team_api' %}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({
-                team_id: teamId,
-                teams: updatedTeams,
-                project_name: '{{ project_name }}',
-                project_description: '{{ project_description }}',
-                start_date: '{{ start_date }}',
-                end_date: '{{ end_date }}'
-            })
-        }).then(response => response.json())
-          .then(data => {
-              if (data.error) {
-                  alert('チームの削除に失敗しました。');
-              } else {
-                  const form = document.createElement('form');
-                  form.method = 'post';
-                  form.action = "{% url 'canri_app:new_project_edit2' %}";
 
-                  const csrfToken = document.createElement('input');
-                  csrfToken.type = 'hidden';
-                  csrfToken.name = 'csrfmiddlewaretoken';
-                  csrfToken.value = '{{ csrf_token }}';
-                  form.appendChild(csrfToken);
 
-                  const projectName = document.createElement('input');
-                  projectName.type = 'hidden';
-                  projectName.name = 'project_name';
-                  projectName.value = data.project.project_name;
-                  form.appendChild(projectName);
-
-                  const projectDescription = document.createElement('input');
-                  projectDescription.type = 'hidden';
-                  projectDescription.name = 'project_description';
-                  projectDescription.value = data.project.project_description;
-                  form.appendChild(projectDescription);
-
-                  const startDate = document.createElement('input');
-                  startDate.type = 'hidden';
-                  startDate.name = 'start_date';
-                  startDate.value = data.project.start_date;
-                  form.appendChild(startDate);
-
-                  const endDate = document.createElement('input');
-                  endDate.type = 'hidden';
-                  endDate.name = 'end_date';
-                  endDate.value = data.project.end_date;
-                  form.appendChild(endDate);
-
-                  const teams = document.createElement('input');
-                  teams.type = 'hidden';
-                  teams.name = 'teams';
-                  teams.value = JSON.stringify(data.teams);
-                  form.appendChild(teams);
-
-                  document.body.appendChild(form);
-                  form.submit();
-              }
-          }).catch(error => {
-              console.error('チームの削除エラー:', error);
-              alert('チームの削除に失敗しました。');
-          });
-    }
 
     // チーム移動ウィンドウを開く処理
     function moveToAnotherTeam() {
+        // teamselectはチーム移動ウィンドウの移動先チーム選択
         const teamSelect = document.getElementById('teamSelect');
+        //options.lengthはteamselectのselectにある要素みたい
+        //そこが不明
         if (teamSelect.options.length === 0) {
             alert('移動先のチームが存在しません。');
         } else {
@@ -489,34 +432,40 @@ function openMemberEditWindow(event, memberId) {
 
     // メンバーを別のチームに移動
     function moveMemberToTeam() {
+        // フォームからメンバーIDを取得
         const memberId = document.querySelector('input[name="member_id"]').value;
+        // フォームから移動先のチームIDを取得
         const newTeamId = document.getElementById('teamSelect').value;
+        // フォームから現在のチームIDを取得
         const currentTeamId = document.getElementById('currentTeamId').value;
 
+        // メンバー移動のためのAPIエンドポイントにPOSTリクエストを送信
         fetch(`/api/move_member_to_team/`, {
-            method: 'POST',
+            method: 'POST', // HTTPメソッドをPOSTに設定
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
+                'Content-Type': 'application/json', // リクエストのコンテンツタイプをJSONに設定
+                'X-CSRFToken': '{{ csrf_token }}' // CSRFトークンをヘッダーに追加
             },
             body: JSON.stringify({
-                member_id: memberId,
-                new_team_id: newTeamId,
-                current_team_id: currentTeamId
+                member_id: memberId, // メンバーIDをリクエストボディに追加
+                new_team_id: newTeamId, // 新しいチームIDをリクエストボディに追加
+                current_team_id: currentTeamId // 現在のチームIDをリクエストボディに追加
             })
         })
-        .then(response => response.json())
+        .then(response => response.json()) // レスポンスをJSONとしてパース
         .then(data => {
+            // サーバーからのレスポンスが成功の場合の処理
             if (data.status === 'success') {
-                alert('メンバーが移動されました。');
-                closeMoveTeamWindow();
-                closeMemberEditWindow();
-                removeMemberFromTable(memberId);
+                alert('メンバーが移動されました。'); // 成功メッセージを表示
+                closeMoveTeamWindow(); // チーム移動ウィンドウを閉じる
+                closeMemberEditWindow(); // メンバー編集ウィンドウを閉じる
+                removeMemberFromTable(memberId); // メンバーをテーブルから削除
             } else {
-                alert('メンバーの移動に失敗しました。');
+                // サーバーからのレスポンスが失敗の場合の処理
+                alert('メンバーの移動に失敗しました。'); // 失敗メッセージを表示
             }
         })
-        .catch(error => console.error('メンバー移動エラー:', error));
+        .catch(error => console.error('メンバー移動エラー:', error)); // エラーハンドリング
     }
 
     // テーブルからメンバーを削除
@@ -573,7 +522,7 @@ function openMemberEditWindow(event, memberId) {
             .catch(error => console.error('データ取得エラー:', error));
     }
 
-    //　レーダーチャートの初期化
+    //レーダーチャートの初期化
     // DOMコンテンツが読み込まれたときに実行されるイベントリスナー
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -631,9 +580,9 @@ function openMemberEditWindow(event, memberId) {
                     }
                 })
                 .catch(error => console.error('チーム情報の取得エラー:', error)); // エラー時のログ出力
-        }
+            }
+        });
     });
-});
 
 
     // 戻るボタンの処理
