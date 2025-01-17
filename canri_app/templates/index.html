@@ -13,8 +13,9 @@
         <div class="box box2"><a href="{% url 'canri_app:project' %}">進行中プロジェクト</a></div>
         <div class="box box3"><a href="{% url 'canri_app:past_project'%}">過去プロジェクト</a></div>
         <div class="box box4"><a href="{% url 'canri_app:memberlist' %}">メンバーリスト</a></div>
-   
+         {% if user.is_superuser %}
             <div class="box box5"><a href="{% url 'accounts:manage_account' %}">アカウント管理</a></div>
+         {% endif %}
     </div>
 </div>
 {% endblock %}
