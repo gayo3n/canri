@@ -260,3 +260,24 @@
     text-align: right; /* 右寄せにする */
     z-index: 10;  /* 他の要素より前に表示 */
 }
+
+@media (max-width: 1400px) {
+    .teams-grid {
+        max-width: 100%; /* チームのグリッド幅を100%に変更 */
+    }
+
+    .phase-boxes,
+    .tasks-panel {
+        position: relative; /* 絶対位置から相対位置に変更 */
+        top: auto; /* 上からの距離を解除 */
+        right: auto; /* 右からの距離を解除 */
+        left: 0; /* 左寄せ */
+        text-align: left; /* 左寄せ */
+        margin-left: 10px; /* 左側の余白を少し追加 */
+    }
+
+    .tasks-panel {
+        margin-top: 20px; /* フェーズ情報との間に余白を追加 */
+    }
+}
+
