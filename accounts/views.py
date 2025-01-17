@@ -198,6 +198,8 @@ def account_change_complete(request, pk):
         if form.is_valid():
             form.save()
             return redirect('accounts:manage_account')
+        else:
+            print(form.errors)
     return render(request, 'account_change_complete.html', {'user':user})
 
 def account_delete(request, name):
