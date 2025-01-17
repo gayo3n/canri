@@ -1,114 +1,122 @@
-/* 全体のレイアウト */
+/* 全体のスタイル */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
+    font-family: 'Roboto', Arial, sans-serif;
+    background-color: #f7f8fa;
     margin: 0;
     padding: 0;
+    color: #333;
 }
 
+/* コンテナスタイル */
 .container {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 20px;
+    flex-wrap: wrap;
     gap: 20px;
+    padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-/* 各セクションの幅を調整 */
-.search-section, .selected-members-section, .save-section {
+/* セクションスタイル */
+section {
     flex: 1;
     padding: 20px;
     background: white;
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 10px;
 }
 
-.search-section {
-    max-width: 600px;
-}
-
-.selected-members-section, .save-section {
-    max-width: 400px;
-}
-
-/* ヘッダーのデザイン */
-h2 {
-    font-size: 18px;
-    margin-bottom: 15px;
-    color: #333;
+h2, h3 {
+    color: #2c3e50;
     text-align: center;
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 10px;
+    margin-bottom: 15px;
 }
 
-/* フォーム内の検索バー */
-input[type="search"], input[type="text"] {
-    width: calc(100% - 20px);
+/* フォームスタイル */
+.form-inline, .upload-form, .inline-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-field, .file-input, .textarea-field {
+    width: 100%;
     padding: 10px;
-    margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 14px;
-    outline: none;
     box-sizing: border-box;
+    transition: border-color 0.3s;
 }
 
-input[type="search"]:focus, input[type="text"]:focus {
-    border-color: #2eabff;
-    box-shadow: 0px 0px 5px rgba(46, 171, 255, 0.4);
+.input-field:focus, .textarea-field:focus {
+    border-color: #2fcfff;
+    box-shadow: 0px 0px 5px rgba(52, 152, 219, 0.4);
 }
 
-/* ボタンのスタイル */
+.textarea-field {
+    height: 100px;
+    resize: none;
+}
+
+/* ボタンスタイル */
 button {
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 5px;
-    font-size: 14px;
-    color: white;
     border: none;
     border-radius: 4px;
+    padding: 10px 15px;
+    font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.btn {
-    background-color: #2eabff;
+.btn-primary {
+    background-color: #3dc2eb;
+    color: white;
 }
 
-.btn:hover {
-    background-color: #0b68a7;
+.btn-primary:hover {
+    background-color: #10aeec;
 }
 
-.delete-btn {
-    background-color: #ff2e2e;
+.btn-secondary {
+    background-color: #2584ff;
+    color: white;
 }
 
-.delete-btn:hover {
+.btn-secondary:hover {
+    background-color: #1265ff;
+}
+
+.btn-danger {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-danger:hover {
     background-color: #c0392b;
 }
 
-.memberlist_save {
-    background-color: #2e89ff;
+.btn-success {
+    background-color: #2ecc71;
+    color: white;
 }
 
-.memberlist_save:hover {
-    background-color: #0b68a7;
+.btn-success:hover {
+    background-color: #27ae60;
 }
 
-.memberlist_cancel {
-    background-color: #bdbdbd;
+.btn-light {
+    background-color: white;
     color: #333;
+    border: 1px solid #ddd;
 }
 
-.memberlist_cancel:hover {
-    background-color: #8e8e8e;
+.btn-light:hover {
+    background-color: #f8f9fa;
 }
 
-/* リストのスタイル */
-ul {
+/* メンバーリストスタイル */
+ul.member-list, ul.selected-list {
     list-style: none;
     padding: 0;
 }
@@ -119,29 +127,22 @@ ul li {
     align-items: center;
     padding: 10px;
     border: 1px solid #ddd;
-    margin: 5px 0;
+    margin-bottom: 10px;
     border-radius: 4px;
-    background-color: #f7f7f7;
+    background-color: #f9f9f9;
 }
 
 ul li:hover {
-    background-color: #eef6ff;
+    background-color: #ecf0f1;
 }
 
-/* メッセージリスト */
-.save-section ul {
-    list-style: none;
-    padding: 0;
-}
+/* レスポンシブデザイン */
+@media screen and (max-width: 1000px) {
+    .container {
+        flex-direction: column;
+    }
 
-.save-section ul li {
-    color: #ff4c4c;
-    font-size: 14px;
-    margin: 5px 0;
-}
-
-/* セクションタイトルのスタイル */
-.selected-members-section p {
-    font-weight: bold;
-    margin-bottom: 10px;
+    .search-section, .selected-members-section, .save-section {
+        max-width: 100%;
+    }
 }
