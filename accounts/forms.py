@@ -108,7 +108,7 @@ class CustomPasswordChangeForm(forms.Form):
                 password = current_password
             )
             if not auth_result:
-                raise ValidationError('Password is incorrect')
+                raise ValidationError('パスワードが間違っています')
         return current_password
     
     def clean_new_password(self):
@@ -118,5 +118,18 @@ class CustomPasswordChangeForm(forms.Form):
     def clean_confirm_new_password(self):
         confirm_new_password = self.cleaned_data['confirm_new_password']
         if confirm_new_password != self.cleaned_data['new_password']:
-            raise ValidationError('Passwords do not match')
+            raise ValidationError('パスワードが一致しません')
         return confirm_new_password
+    
+
+class MySetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['new_password1'].widget.attrs['class'] = '[class名]'
+        self.fields['new_password2'].widget.attrs['class'] = '[class名]'
+        self.fields['new_password1'].widget.attrs['placeholder'] = '半角英字6文字以上'
+        self.fields['new_password2'].widget.attrs['placeholder'] = 'パスワード確認用'
+        self.fields['new_password1'].widget.attrs['minlength'] = 6 
+        self.fields['new_password1'].widget.attrs['maxlength'] = 10 
+        self.fields['new_password2'].widget.attrs['minlength'] = 6 
+        self.fields['new_password2'].widget.attrs['maxlength'] = 10

@@ -7,18 +7,10 @@
 {% endblock %}
 
 {% block content %}
-<div class="body">
-<h2>メンバー編集</h2>
-<form class="center" method="post" action="{% url 'canri_app:member_edit_complete' member_id=member.member_id %}">
+<h2 class="header-title">メンバー編集</h2>
+<div class="form-container">
+<form class="form-content" method="post" action="{% url 'canri_app:member_edit_complete' member_id=member.member_id %}">
     {% csrf_token %}
-
-    {% comment %} メンバーID
-    <div class="form-area">
-        <label for="member_id">メンバーID</label>
-        <!-- member_idを隠しフィールドで送信 -->
-        <input type="hidden" id="member_id" name="member_id" value="{{ member_id }}">
-        <h3>{{ member_id }}</h3>
-    </div> {% endcomment %}
 
     {% comment %} 名前 {% endcomment %}
     <div class="form-area">
@@ -74,7 +66,7 @@
     </div>
 
     {% comment %} 資格2 {% endcomment %}
-    <div class="form-area2">
+    <div class="form-area">
         <label for="qualification2">資格</label>
         <select id="qualification2" name="qualification2">
         {% if mem_credentials.1.qualification_id is null %}
@@ -89,7 +81,7 @@
     </div>
 
     {% comment %} 資格3 {% endcomment %}
-    <div class="form-area3">
+    <div class="form-area">
         <label for="qualification3">資格</label>
         <select id="qualification3" name="qualification3">
             {% if mem_credentials.2.qualification_id is null %}

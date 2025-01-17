@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.db import transaction
 from django.views import View, generic
 from django.views.generic.base import TemplateView
-from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, CustomPasswordChangeForm
+from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, MySetPasswordForm
 from django.contrib.auth.mixins import UserPassesTestMixin,LoginRequiredMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
@@ -181,22 +181,24 @@ def account_create_complete(request):
 
 # アカウント一覧からのパスワード変更
 def account_change(request, pk):
-    user = User.objects.get(pk=request.user.pk)
-    if request.method != 'POST':
-        form = CustomPasswordChangeForm(user.user_id)
-    else:
-        form = CustomPasswordChangeForm(user.user_id, request.POST)
-        if form.is_valid():
-            password = form.cleaned_data['confirm_new_password']
-            user.set_password(password)
-            user.save()
-            return redirect('accounts:account_change_complete', pk=pk)
-    return render(request, 'account_change.html', {'form':form})
+    template_name = 'account_change.html'
+    user = get_object_or_404(User, pk=pk)
+    form = MySetPasswordForm(user=request.user)
+    context = {
+        'form':form,
+        'user':user
+    }
+    return render(request, template_name, context)
 
-    
+# パスワード変更完了
 def account_change_complete(request, pk):
     user = get_object_or_404(User, pk=pk)
-    return render(request, 'account_change_complete.html', {'pk':pk})
+    if request.method == 'POST':
+        form = MySetPasswordForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts:manage_account')
+    return render(request, 'account_change_complete.html', {'user':user})
 
 def account_delete(request, name):
     # 該当ユーザーを取得（削除フラグが立っていないユーザーのみを対象）

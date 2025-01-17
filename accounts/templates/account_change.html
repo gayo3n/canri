@@ -15,8 +15,9 @@
         <input type="text" id="userid" name="user_id" value="{{ user.user_id }}" maxlength="10" readonly>
         
         <label for="password">パスワード</label>
-        <input type="password" id="password" name="password" class="form-control" maxlength="10"  required>
-
+        <!-- <input type="password" id="password" name="password" class="form-control" maxlength="10"  required> -->
+         <p>{{ form.new_password1 }}</p>
+         <p>パスワード確認用:{{ form.new_password2 }}</p>
         <button type="submit">保存</button>
         <a href="{% url 'accounts:manage_account' %}">キャンセル</a>
     </form>
