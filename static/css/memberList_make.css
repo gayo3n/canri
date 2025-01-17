@@ -1,64 +1,81 @@
-/* memberList_make.css */
+/* 全体のレイアウト */
 body {
     font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
     margin: 0;
     padding: 0;
-    background-color: #f9f9f9;
 }
 
-h2 {
-    text-align: center;
-    color: #2b2b2b;
-    margin: 20px 0;
-}
-
-a {
-    color: #36adf8;
-    text-decoration: none;
-}
-
-a:hover {
-    color: #286090;
-    text-decoration: underline;
-    transition: background-color 0.3s ease; /* 色の変化を滑らかに */
-}
-
-
-.search-section, .selected-members-section, .save-section {
-    margin: 20px auto;
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     padding: 20px;
-    width: 90%;
-    max-width: 800px;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 各セクションの幅を調整 */
+.search-section, .selected-members-section, .save-section {
+    flex: 1;
+    padding: 20px;
     background: white;
     border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
 }
 
-.input-field {
-    display: block;
-    width: 100%;
+.search-section {
+    max-width: 600px;
+}
+
+.selected-members-section, .save-section {
+    max-width: 400px;
+}
+
+/* ヘッダーのデザイン */
+h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+    text-align: center;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+/* フォーム内の検索バー */
+input[type="search"], input[type="text"] {
+    width: calc(100% - 20px);
     padding: 10px;
-    margin: 10px 0;
+    margin-bottom: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
 }
 
-textarea.input-field {
-    height: 100px;
-    resize: none;
+input[type="search"]:focus, input[type="text"]:focus {
+    border-color: #2eabff;
+    box-shadow: 0px 0px 5px rgba(46, 171, 255, 0.4);
 }
 
-.btn {
+/* ボタンのスタイル */
+button {
     display: inline-block;
     padding: 10px 20px;
     margin: 5px;
-    background-color: #2eabff;
+    font-size: 14px;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn {
+    background-color: #2eabff;
 }
 
 .btn:hover {
@@ -66,21 +83,31 @@ textarea.input-field {
 }
 
 .delete-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 5px;
     background-color: #ff2e2e;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
 }
 
 .delete-btn:hover {
     background-color: #c0392b;
 }
 
+.memberlist_save {
+    background-color: #2e89ff;
+}
+
+.memberlist_save:hover {
+    background-color: #0b68a7;
+}
+
+.memberlist_cancel {
+    background-color: #bdbdbd;
+    color: #333;
+}
+
+.memberlist_cancel:hover {
+    background-color: #8e8e8e;
+}
+
+/* リストのスタイル */
 ul {
     list-style: none;
     padding: 0;
@@ -97,53 +124,24 @@ ul li {
     background-color: #f7f7f7;
 }
 
-.memberlist_save {
-    display: inline-block;
-    padding: 10px 40px;
-    margin: 5px;
-    background-color: #2e89ff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+ul li:hover {
+    background-color: #eef6ff;
+}
+
+/* メッセージリスト */
+.save-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.save-section ul li {
+    color: #ff4c4c;
     font-size: 14px;
+    margin: 5px 0;
 }
 
-.memberlist_save:hover {
-    background-color: #0b68a7;
-}
-
-.memberlist_cancel {
-    display: inline-block;
-    padding: 10px 30px;
-    margin: 5px;
-    background-color: #bdbdbd;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.memberlist_cancel:hover {
-    background-color: #95a5a6;
-}
-/* その他のセクションやボタンのスタイル（変更なし） */
-.csv_ref {
-    display: block;
-    margin: 10px 0;
-    background-color: #337ab7;
-    color: white;
-    border: none;
-    padding: 8px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.csv_ref:hover {
-    background-color: #286090;
-}
-
-input[type="text"] {
-    width: 300px; /* 幅を300ピクセルに設定 */
+/* セクションタイトルのスタイル */
+.selected-members-section p {
+    font-weight: bold;
+    margin-bottom: 10px;
 }
