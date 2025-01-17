@@ -178,7 +178,7 @@
     width: fit-content;
     height: 30px;
     border: solid 3px #000000;
-    background-color: #ccc;
+    background-color: #4bb7ff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -193,7 +193,7 @@
 }
 
 .box:hover {
-    background-color: #bbb;
+    background-color: #23ccff;
     color: #fff;
 }
 
@@ -282,13 +282,13 @@
 }
 
 .tasks-panel .task-list .task-item:nth-child(odd) {
-    background-color: #f9f9f9; /* 奇数番目のタスクアイテムの背景色 */
+    background-color: #f7f7f7; /* 奇数番目のタスクアイテムの背景色 */
 }
 
 .tasks-panel .task-list .task-item:nth-child(even) {
-    background-color: #e9ecef; /* 偶数番目のタスクアイテムの背景色 */
+    background-color: #eeeeee; /* 偶数番目のタスクアイテムの背景色 */
 }
 
 .tasks-panel .task-list .task-item:hover {
-    background-color: #f0f0f0; /* ホバー時の背景色 */
+    background-color: #fffbdc; /* ホバー時の背景色 */
 }
