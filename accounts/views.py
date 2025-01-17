@@ -183,7 +183,7 @@ def account_create_complete(request):
 def account_change(request, pk):
     template_name = 'account_change.html'
     user = get_object_or_404(User, pk=pk)
-    form = MySetPasswordForm(user=request.user)
+    form = MySetPasswordForm(user=user)
     context = {
         'form':form,
         'user':user
@@ -194,13 +194,18 @@ def account_change(request, pk):
 def account_change_complete(request, pk):
     user = get_object_or_404(User, pk=pk)
     if request.method == 'POST':
-        form = MySetPasswordForm(request.POST)
+        form = MySetPasswordForm(user=user, data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect('accounts:manage_account')
+            return redirect('accounts:account_change_complete', pk=pk)
         else:
-            print(form.errors)
-    return render(request, 'account_change_complete.html', {'user':user})
+            for field, errors in form.errors.items(): 
+                for error in errors: print(f'Error in {field}: {error}') # 送信されたデータのデバッグ 
+            print(f'POST data: {request.POST}')
+            return render(request, 'account_change.html', {'form':form, 'user':user})
+    else:
+        form = MySetPasswordForm(user=user)
+    return render(request, 'account_change_complete.html', {'form':form,'user':user})
 
 def account_delete(request, name):
     # 該当ユーザーを取得（削除フラグが立っていないユーザーのみを対象）

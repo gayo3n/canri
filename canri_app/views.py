@@ -370,7 +370,7 @@ class MemberListEditView(TemplateView):
     #     return render(request, 'memberlist_edit.html', {'form': form})
     
 
-# -----メン��ーリスト編集保存-----
+# -----メンバーリスト編集保存-----
 class MemberListEditCompleteView(TemplateView):
     template_name = "memberlist_make_complete.html"
 
@@ -776,7 +776,7 @@ class MemberEditCompleteView(TemplateView):
             member_parameter.save()
 
         except JobTitleInformation.DoesNotExist:
-            messages.error(request, "指定された職業が��つかりません。")
+            messages.error(request, "指定された職業が見つかりません。")
             return redirect('canri_app:member_edit', member_id=member_id)
         except MBTI.DoesNotExist:
             messages.error(request, "指定されたMBTIが見つかりません。")
@@ -959,7 +959,7 @@ class CreateTeamView(TemplateView):
 
 
 
-# チーム追加のス��ップ2用ビュー
+# チーム追加のステップ2用ビュー
 class CreateTeam2View(TemplateView):
     template_name = "create_team2.html"
 
@@ -1103,9 +1103,6 @@ class SaveTeamView(TemplateView):
         team_name = request.POST.get('team_name')
         team_type = request.POST.get('team_type')
         team = request.POST.get('team')
-
-        # デバ���グ用にリクエストボ���ィ���表示
-        print("リクエストボディ:", request.body)
 
         try:
             teams = json.loads(teams)

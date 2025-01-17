@@ -129,7 +129,15 @@ class MySetPasswordForm(SetPasswordForm):
         self.fields['new_password2'].widget.attrs['class'] = '[class名]'
         self.fields['new_password1'].widget.attrs['placeholder'] = '半角英字6文字以上'
         self.fields['new_password2'].widget.attrs['placeholder'] = 'パスワード確認用'
-        self.fields['new_password1'].widget.attrs['minlength'] = 6 
-        self.fields['new_password1'].widget.attrs['maxlength'] = 10 
-        self.fields['new_password2'].widget.attrs['minlength'] = 6 
+        self.fields['new_password1'].widget.attrs['minlength'] = 6
+        self.fields['new_password1'].widget.attrs['maxlength'] = 10
+        self.fields['new_password2'].widget.attrs['minlength'] = 6
         self.fields['new_password2'].widget.attrs['maxlength'] = 10
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password1 = cleaned_data.get('new_password1')
+        new_password2 = cleaned_data.get('new_password2')
+        if new_password1 and new_password2 and new_password1 != new_password2:
+            raise ValidationError('パスワードが一致しません。')
+        return cleaned_data
