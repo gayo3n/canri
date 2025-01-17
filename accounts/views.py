@@ -192,6 +192,7 @@ def account_change(request, pk):
 
 # パスワード変更完了
 def account_change_complete(request, pk):
+    # ユーザー情報を取得
     user = get_object_or_404(User, pk=pk)
     if request.method == 'POST':
         form = MySetPasswordForm(user=user, data=request.POST)
@@ -202,9 +203,11 @@ def account_change_complete(request, pk):
             for field, errors in form.errors.items(): 
                 for error in errors: print(f'Error in {field}: {error}') # 送信されたデータのデバッグ 
             print(f'POST data: {request.POST}')
+            # 入力されたパスワードが確認用と違う場合エラーメッセージと変更画面を表示
             return render(request, 'account_change.html', {'form':form, 'user':user})
     else:
         form = MySetPasswordForm(user=user)
+    # パスワード変更完了画面を表示
     return render(request, 'account_change_complete.html', {'form':form,'user':user})
 
 def account_delete(request, name):
