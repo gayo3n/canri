@@ -27,7 +27,6 @@ urlpatterns = [
     path('member/delete/complete/<int:member_id>/', views.MemberDeleteCompleteView.as_view(), name='member_delete_complete'),
 
 
-
     #新規プロジェクト作成
     path('new_project/', views.NewProjectView.as_view(), name='new_project'),
     path('new_project_edit/', views.NewProjectEditView.as_view(), name='new_project_edit'),

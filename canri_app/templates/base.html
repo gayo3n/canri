@@ -30,10 +30,11 @@
                 {% endif %}
                 <!-- 小画面用のユーザー情報 -->
                 <div class="hamburger-user-info">
-                    <div class="user-info">
-                        <img src="{% static 'img/user_icon.png' %}" alt="社員アイコン">
-                        <a href="{% url 'accounts:account_change_employee' pk=user.pk %}">{{ user.name }}様</a>
-                    </div>
+                    <div class="hamburger-user-info">
+                        <div class="user-info">
+                            <img src="{% static 'img/user_icon.png' %}" alt="社員アイコン">
+                            <a href="{% url 'accounts:account_change_employee' pk=user.pk %}">{{ user.name }}様</a>
+                        </div>
                     <a href="{% url 'accounts:logout_confirmation' %}" class="logout-link">ログアウト</a>
                 </div>
             </div>
