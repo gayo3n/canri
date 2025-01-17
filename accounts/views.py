@@ -210,6 +210,7 @@ def account_change_complete(request, pk):
     # パスワード変更完了画面を表示
     return render(request, 'account_change_complete.html', {'form':form,'user':user})
 
+
 def account_delete(request, name):
     # 該当ユーザーを取得（削除フラグが立っていないユーザーのみを対象）
     obj = get_object_or_404(User, name=name, deletion_flag=False)

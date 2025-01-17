@@ -18,6 +18,8 @@ import csv
 from django.contrib import messages
 from django.core import serializers
 import os
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 
 
 
@@ -793,21 +795,27 @@ class MemberEditCompleteView(TemplateView):
 
         # 保存が成功した場合にmember_make_completeへ遷移
         return render(request, self.template_name, {"member": member})
-    
 
-UPLOAD_DIR = os.path.dirname(os.path.abspath(__file__)) + '/static/files/'
 
 # -----CSVファイル処理-----
 class FileUploadView(TemplateView):
     template_name = 'upload_success.html'
 
-    
-
     def post(self, request, *args, **kwargs):
         form = CSVUploadForm(request.POST, request.FILES)
         if form.is_valid():
             csv_file = request.FILES['csv_file']
-            path = os.path.join(UPLOAD_DIR, csv_file.name)
+            
+            # ファイル拡張子のチェック
+            if not csv_file.name.endswith('.csv'):
+                messages.error(request, "CSVファイルのみアップロード可能です。")
+                return redirect('canri_app:file_upload')
+
+            # ファイルをstaticディレクトリに保存
+            fs = FileSystemStorage(location=os.path.join(settings.BASE_DIR, 'static/uploads'))
+            filename = fs.save(csv_file.name, csv_file)
+            file_url = fs.url(filename)
+
             decoded_file = csv_file.read().decode('utf-8').splitlines()
             reader = csv.reader(decoded_file)
 
@@ -816,37 +824,25 @@ class FileUploadView(TemplateView):
                 try:
                     birthdate = datetime.strptime(column[1], '%Y-%m-%d').date()  # 日付フォーマットの変換
                 except ValueError:
-                    return render(request, self.template_name, {'form': form, 'error': f"生年月日 '{column[1]}' のフォーマットが正しくありません。"})
+                    messages.error(request, f"生年月日 '{column[1]}' のフォーマットが正しくありません。")
+                    return redirect('canri_app:member_csv_upload')
 
                 try:
                     job = column[2]
                     JobTitleInformation.filter(name=job)
                 except ValueError:
-                    return render(request, self.template_name, {'form': form, 'error': f"役職'{column[2]}'のフォーマットが正しくありません。"})
+                    messages.error(request, f"役職'{column[2]}'のフォーマットが正しくありません。")
+                    return redirect('canri_app:member_csv_upload')
 
                 member = Member.objects.create(name=column[0], birthdate=column[1], job=column[2])
 
-
-                
-                # MemberCareer.objects.create(member=member, career=column[3])
-
-                # if len(column) > 4:
-                #     MemberHoldingQualification.objects.create(member=member, qualification=column[4])
-                # if len(column) > 5:
-                #     MemberHoldingQualification.objects.create(member=member, qualification=column[5])
-                # if len(column) > 6:
-                #     MemberHoldingQualification.objects.create(member=member, qualification=column[6])
-            
             # 成功した場合のレスポンス
-            return redirect('canri_app:member_make')  # リダイレクト先の名前空間とビュー名を指定
-            # return render(request, "upload_success.html")
+            messages.success(request, "ファイルが正常にアップロードされました。")
+            return render(request, self.template_name, {'file_url': file_url})
         
-        return render(request, self.template_name, {'form': form})
-
-    # def get(self, request, *args, **kwargs):
-        # form = CSVUploadForm()
-        # return render(request, self.template_name, {'form': form})
-
+        messages.error(request, "フォームが無効です。")
+        return redirect('canri_app:member_csv_upload')
+    
 
 # -----メンバー削除確認-----
 class MemberDeleteView(TemplateView):
@@ -876,6 +872,7 @@ class MemberDeleteCompleteView(TemplateView):
             'member': member,
         }
         return render(request, self.template_name, context)
+
 
 #新規プロジェクト作成
 class NewProjectView(TemplateView):
