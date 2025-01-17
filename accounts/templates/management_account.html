@@ -24,6 +24,8 @@
                 <a href="{% url 'accounts:manage_account_change' pk=user.pk %}" class="btn save">
                     {{ user.name }}
                 </a>
+                {% else %}
+                
                 {% endif %}
             </td>
             <!-- ユーザーIDを表示 -->

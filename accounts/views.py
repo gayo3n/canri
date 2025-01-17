@@ -186,31 +186,20 @@ class Account_change(PasswordChangeView):
 
 
 def account_change(request, pk):
-    user = get_object_or_404(User, pk=pk)
 
     if request.method == "POST":
-        user.name = request.POST.get('name')
-        password = request.POST.get('password')
-        user.set_password(password)
-        user.save()
-
-        # 再ログイン処理
-        user = authenticate(request, username=user.name, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect("accounts:account_change_complete_employee", pk=pk)
-        else:
-            return redirect("accounts:login")
+        user = User.objects.get(pk=pk)
 
     context = {
-        "user": user
+        "users": user
     }
-    return render(request, 'account_change_employee.html', context)
+    return render(request, 'account_change.html', context)
 
     
 def account_change_complete(request, pk):
     user = get_object_or_404(User, pk=pk)
     return render(request, 'account_change_complete.html', {'pk':pk})
+
 
 def account_delete(request, name):
     # 該当ユーザーを取得（削除フラグが立っていないユーザーのみを対象）
