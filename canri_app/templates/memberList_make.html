@@ -1,4 +1,4 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
 
 {% load static %}
 {% load custom_filters %}
@@ -13,7 +13,7 @@
     <section class="search-section">
         <form method="GET">
             {% csrf_token %}
-            <input type="search" name="query" value="{{ request.POST.query }}" placeholder="メンバー名で検索"/>
+            <input type="search" name="query" value="{{ request.GET.query }}" placeholder="メンバー名で検索"/>
             <button type="submit" class="btn">検索</button>
         </form>
 
@@ -21,7 +21,7 @@
         <ul>
             {% for member in members %}
                 <li>
-                    {{ member.name }}
+                    <a href="{% url 'canri_app:member_edit' member_id=member.member_id %}">{{ member.name }}</a>
                     <form method="POST" action="{% url 'canri_app:memberlist_make' %}">
                         {% csrf_token %}
                         <input type="hidden" name="member_id" value="{{ member.member_id }}">
@@ -33,7 +33,7 @@
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p }}
+            <a>{{ form.as_p }}</a>
             <button type="submit">アップロード</button>
         </form>
         <form method="GET" action="{% url 'canri_app:member_make' %}">
@@ -63,6 +63,7 @@
         <form method="post" action="{% url 'canri_app:memberlist_make_complete' %}">
             {% csrf_token %}
             <input type="text" name="member_list_name" placeholder="メンバーリスト名を入力してください">
+            <br>
             <input type="text" name="member_list_details" placeholder="メンバーリストの詳細を入力してください">
             {% if messages %}
                 <ul>
@@ -74,6 +75,7 @@
             {% for member_id in memberID_list %}
             <input type="hidden" name="memberID_list" value="{{ member_id }}">
             {% endfor %}
+            <br>
             <button class="memberlist_save" type="submit">保存</button>
             <button class="memberlist_cancel" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
 

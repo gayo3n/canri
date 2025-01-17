@@ -1,45 +1,14 @@
-/* ボディのスタイル */
-body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #ffffff;
-}
-
-/* ヘッダーのスタイル */
-header nav {
-    width: 100%;
-    background-color: #333;
-    color: rgb(0, 0, 0);
-    padding: 10px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-
-header nav a {
-    color: rgb(0, 0, 0);
-    text-decoration: none;
-    padding: 5px 10px;
-    white-space: nowrap;
-}
-
-.navbar-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.navbar-left img {
-    width: 30%;
-    height: auto;
-}
-
 .navbar-left a {
     text-decoration: none;
     color: #333;
     font-size: 16px;
+}
+
+.sub-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 中央に移動 */
 }
 
 /* メインコンテンツのスタイル */
@@ -59,14 +28,86 @@ header nav a {
     justify-content: center;
     align-items: center;
     font-size: 1.5rem;
-    color: rgb(0, 0, 0);
     font-weight: bold;
     border-radius: 8px;
-    text-decoration: none;
 }
 
-.box1 { background-color: #d3d3d3; } /* ライトグレー - 進行中プロジェクト */
-.box2 { background-color: #87ceeb; } /* ライトブルー - 過去プロジェクト */
-.box3 { background-color: #8bc34a; } /* グリーン - アカウント管理 */
-.box4 { background-color: #d74ed7; } /* パープル - メンバーリスト */
-.box5 { background-color: #ff6db6; } /* ピンク - 進行中プロジェクト */
+.box a {
+    text-decoration: none;
+    color: #000000;
+}
+
+.box a:hover {
+    color: #000599; /* ホバー時の色 */
+    transition: color 0.5s ease; /* 色の変化を滑らかに */
+    text-decoration: underline; /* ホバー時に下線を追加 */
+}
+
+.box1 {
+    background-color: #bebebe;
+}
+.box2 {
+    background-color: #b7ecff;
+}
+.box3 {
+    background-color: #71f35a;
+}
+.box4 {
+    background-color: #b754ec;
+}
+.box5 {
+    background-color: #f875b7;
+}
+.box6 {
+    background-color: #ff0;
+}
+
+/* ハンバーガーメニュー */
+.hamburger-menu {
+    display: none;  /* デフォルトは非表示 */
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 20px;
+    width: 25px;
+    z-index: 1000; /* 他の要素より上に表示 */
+    position: relative;
+}
+
+.hamburger-menu .bar {
+    height: 4px;
+    background-color: #333;
+    width: 100%;
+    border-radius: 5px;
+}
+
+/* 小画面での表示 */
+@media (max-width: 1200px) {
+    .hamburger-menu {
+        display: flex; /* 小画面で表示 */
+    }
+
+    .navbar-left {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #fffff9;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        padding: 10px 0;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000; /* 他の要素より上に表示 */
+    }
+
+    .navbar-left.active {
+        display: flex; /* ハンバーガーメニューがクリックされたら表示 */
+    }
+
+    .navbar-left a {
+        margin: 10px 0;
+        text-align: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #ccc;
+    }
+}

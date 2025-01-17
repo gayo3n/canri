@@ -8,25 +8,25 @@ app_name = 'canri_app'
 
 urlpatterns = [
     path('', views.IndexView.as_view(), name='index'),
+
     # メンバーリスト
     path('memberlist/', views.MemberListView.as_view(), name='memberlist'),
     path('memberlist/make/', views.MemberListMakeView.as_view(), name='memberlist_make'),
     path('memberlist/make/complete/', views.MemberListMakeCompleteView.as_view(), name='memberlist_make_complete'),
-
-    path('memberlist/memberlist_delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
-    path('memberlist/memberlist_delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
-
-    path('memberlist/delete/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
-    path('memberlist/delete/complete/', views.MemberListDeleteOkView.as_view(), name='memberlist_delete_complete'),
+    path('memberlist/edit/<int:category_id>/', views.MemberListEditView.as_view(), name='memberlist_edit'),
+    path('memberlist/edit/complete/', views.MemberListEditCompleteView.as_view(), name='memberlist_edit_complete'),
+    path('memberlist/delete/<int:category_id>/', views.MemberListDeleteView.as_view(), name='memberlist_delete'),
+    path('memberlist/delete/complete/<int:category_id>/', views.MemberListDeleteCompleteView.as_view(), name='memberlist_delete_complete'),
     # メンバー
     path('member/make/', views.MemberMakeView.as_view(), name='member_make'),
+    path('member/edit/<int:member_id>/', views.MemberEditView.as_view(), name='member_edit'),
     path('member/upload_csv/', views.FileUploadView.as_view(), name='member_csv_upload'),
     path('member/make/complete/', views.MemberMakeCompleteView.as_view(), name='member_make_complete'),
-    path('member/delete/', views.MemberMakeDeleteView.as_view(), name='member_delete'),
-    path('member/delete/complete/', views.MemberListDeleteOkView.as_view(), name='member_delete_complete'),
+    path('member/edit/complete/<int:member_id>/', views.MemberEditCompleteView.as_view(), name='member_edit_complete'),
+    path('member/delete/<int:member_id>/', views.MemberDeleteView.as_view(), name='member_delete'),
+    path('member/delete/complete/<int:member_id>/', views.MemberDeleteCompleteView.as_view(), name='member_delete_complete'),
 
 
-    # path('member_search/', views.MemberSearchView.as_view(), name='member_search'),
 
     #新規プロジェクト作成
     path('new_project/', views.NewProjectView.as_view(), name='new_project'),
@@ -71,18 +71,19 @@ urlpatterns = [
 
 
     # 過去プロジェクト
-    path('past_project/', Post_projectListView, name='past_project'),
+    path('past_project/', views.Past_ProjectListView.as_view(), name='past_project'),
     path('past_project_view/<int:project_id>/', views.Past_ProjectView.as_view(), name='past_project_view'),
-    path('past_project_deleting/', views.Past_ProjectDeletingView.as_view(), name='past_project_deleting_confirmation'),
-    path('past_project_deleting/deleted/', views.Project_DeletedView.as_view(), name='project_deleted'),
+    path('past_project_deleting_confirmation/<int:project_id>/', views.Past_ProjectDeletingView.as_view(), name='past_project_deleting_confirmation'),
+    path('past_project_deleted/<int:project_id>/', views.Past_Project_DeletedView.as_view(), name='past_project_deleted'),
     path('save_past_project/', views.Project_Save_CompleteView.as_view(), name='save_past_project'),
     path('feedback/save/', views.FeedbackSaveView.as_view(), name='feedback_save'),
-    path('feedback/<int:project_id>/', views.FeedbackView.as_view(), name='feedback'),
+    path('feedback/delete/', views.delete_feedback, name='delete_feedback'),
     path('team_edit_past/<int:team_id>/', views.TeamEditPastView.as_view(), name='team_edit_past'),
     path('team_edit_past/complete/<int:project_id>/', views.TeamEditPastCompleteView.as_view(), name='team_edit_past_complete'),
     path('team_member_edit_past/', views.TeamMemberEditPastView.as_view(), name='team_member_edit_past'),
     path('team_member_edit_past/<int:member_id>/', views.TeamMemberEditPastView.as_view(), name='team_member_edit_past'),
     path('team_member_edit_save_past/', views.TeamMemberEditSavePastView.as_view(), name='team_member_edit_save_past'),
+    path('delete_past_project/', views.DeletePastProjectView.as_view(), name='delete_past_project'),
 
     #チーム詳細
     # path('team_detail/',views.team_detailView.as_view(), name='team_detail'),
@@ -101,5 +102,6 @@ urlpatterns = [
     path('api/save_member_memo/', api.save_member_memo, name='save_member_memo'),
     path('api/move_member_to_team/', api.move_member_to_team, name='move_member_to_team'),
     path('api/get_p_project_detail/<int:project_id>/', api.get_p_project_detail, name='get_p_project_detail'),
-
+    path('api/get_members_by_project/<int:project_id>/', api.get_members_by_project, name='get_members_by_project'),
+    path('api/get_feedbacks_by_project/<int:project_id>/', api.get_feedbacks_by_project, name='get_feedbacks_by_project'),
 ]

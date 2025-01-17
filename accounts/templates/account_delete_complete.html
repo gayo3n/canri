@@ -1,4 +1,4 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/account_employee_complete.css' %}">
@@ -9,8 +9,9 @@
     <div class="change">
     <h2>
         アカウントの削除が完了しました
-    </p>
+    </h2>
     <a href="{% url 'accounts:manage_account' %}">←アカウント管理画面へ</a>
+</div>
 </body>
 
 {% endblock %}

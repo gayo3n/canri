@@ -1,18 +1,29 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/account_change_employee.css' %}">
+{% endblock %}
 {% block content %}
 <h2>ユーザアカウント変更</h2>
-    <form>
+    <form method="POST" action="{% url 'accounts:account_change_complete' pk=user.pk %}">
+        {% csrf_token %}
+    
         <label for="username">ユーザ名🔒</label>
-        <input type="text" id="username" name="username" value="#" readonly>
+        <input type="text" id="username" name="name" value="{{ item.name }}" maxlength="10" readonly autocomplete="username">
         
         <label for="userid">ユーザID🔒</label>
-        <input type="text" id="userid" name="userid" value="#" readonly>
+        <input type="text" id="userid" name="user_id" value="{{ item.user_id }}" maxlength="10" readonly>
         
-        <label for="password">パスワード</label>
-        <input type="password" id="password" name="password" required>
-        
-        <a href="{% url 'accounts:account_change_complete' %}">保存</a>
+        <label for="old_password">古いパスワード</label>
+        <input type="password" id="old_password" name="old_password" class="form-control" maxlength="10"  required>
+
+        <label for="new_password1">新しいパスワード</label>
+        <input type="password" id="new_password1" name="new_password1" class="form-control" maxlength="10"  required>
+
+        <label for="new_password2">新しいパスワードの確認</label>
+        <input type="password" id="new_password2" name="new_password2" class="form-control" maxlength="10"  required>
+
+        <button type="submit">保存</button>
         <a href="{% url 'accounts:manage_account' %}">キャンセル</a>
     </form>
-
 {% endblock %}

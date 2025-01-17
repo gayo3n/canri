@@ -6,16 +6,35 @@
     background-color: #fffff9;
     padding: 10px 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 3px;
+}
+
+.user-info-container {
+    display: flex;
+    align-items: center;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-right: 20px; /* ログアウトリンクとの間にスペースを追加 */
+}
+
+.logout-link {
+    margin-left: 20px; /* 必要に応じて調整 */
 }
 
 /* ハンバーガーメニュー */
 .hamburger-menu {
-    display: none;  /* デフォルトは非表示 */
+    display: none; /* デフォルトは非表示 */
     cursor: pointer;
     flex-direction: column;
     justify-content: space-between;
     height: 20px;
     width: 25px;
+    z-index: 1000; /* 他の要素より上に表示 */
 }
 
 .hamburger-menu .bar {
@@ -42,26 +61,33 @@
     color: #007bff;
 }
 
-/* 右側のリンクグループ */
-.navbar-right a {
-    margin-left: 15px;
-    text-decoration: none;
-    color: #000000;
-    font-size: 16px;
+.user-link {
+    margin-left: 20px;
 }
 
-.navbar-right a:hover {
-    color: #ff0000;
+/* 小画面用のユーザー情報 */
+.hamburger-user-info {
+    display: none; /* 小画面でのユーザー情報は非表示 */
+    margin-top: 10px;
 }
 
-/* ハンバーガーメニューが表示される画面サイズ */
+.hamburger-user-info .user-info {
+    margin-bottom: 10px;
+}
+
+.navbar-left a.active {
+    color: #007bff; /* 現在選択中のリンクの色 */
+    font-weight: bold; /* 強調 */
+}
+
+/* 小画面での表示 */
 @media (max-width: 1200px) {
     .hamburger-menu {
-        display: flex;  /* 小画面でハンバーガーメニューを表示 */
+        display: flex; /* 小画面でハンバーガーメニューを表示 */
     }
 
     .navbar-left {
-        display: none;  /* 初期状態では非表示 */
+        display: none;
         flex-direction: column;
         width: 100%;
         background-color: #fffff9;
@@ -70,10 +96,11 @@
         left: 0;
         padding: 10px 0;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000; /* 他の要素より上に表示 */
     }
 
     .navbar-left.active {
-        display: flex;  /* ハンバーガーメニューがクリックされたら表示 */
+        display: flex; /* ハンバーガーメニューがクリックされたら表示 */
     }
 
     .navbar-left a {
@@ -83,7 +110,15 @@
         border-bottom: 1px solid #ccc;
     }
 
+    .hamburger-user-info {
+        display: flex; /* ハンバーガーメニューが開いたときに表示 */
+        flex-direction: column;
+        align-items: center;
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+    }
+
     .navbar-right {
-        display: none;  /* 小画面で非表示 */
+        display: none; /* 小画面で非表示 */
     }
 }

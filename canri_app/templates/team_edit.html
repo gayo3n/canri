@@ -1,4 +1,4 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
 <!--  新規プロジェクトプロジェクトチーム編集画面 -->
 {% load static %}
 
@@ -213,7 +213,8 @@
     function openMemberEditWindow(event, memberId) {
         event.preventDefault(); // リンクのデフォルトの動作を防ぐ
 
-        fetch(`{% url 'canri_app:get_member_data' member_id=0 %}`.replace("0", memberId))
+        console.log(memberId); // memberId の確認ログ
+        fetch(`/api/get_member_data/${memberId}/`)
             .then(response => response.json())
             .then(data => {
                 const member = data.member_data;
@@ -331,7 +332,7 @@
                 const row = document.createElement('tr');
                 row.dataset.memberId = checkbox.value;
                 row.innerHTML = `
-                    <td><a href="#" class="member-link" onclick="openMemberEditWindow(${checkbox.value})">${checkbox.parentElement.nextElementSibling.textContent}</td>
+                    <td><a href="#" class="member-link" onclick="openMemberEditWindow(event, ${checkbox.value})">${checkbox.parentElement.nextElementSibling.textContent}</td>
                     <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
                 `;
                 memberTableBody.insertBefore(row, memberTableBody.lastElementChild);

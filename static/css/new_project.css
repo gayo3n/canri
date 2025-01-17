@@ -1,69 +1,79 @@
-
-/* ボディのスタイル */
+/* 全体のレイアウト設定 */
 .main-content {
-    max-width: 1200px; /* 横幅を広げる */
-    margin: 20px auto;
+    width: 80%;
+    margin: 0 auto;  /* 中央揃え */
     padding: 20px;
-    background-color: #fff;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    text-align: left;
 }
 
+/* 見出し */
 h1 {
-    font-size: 40px;
-    margin-bottom: 20px;
+    font-size: 28px;
     color: #333;
-}
-
-form {
     margin-bottom: 20px;
 }
 
+/* フォームラベル */
 label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+    font-size: 16px;
+}
+
+/* 入力フィールド */
+input[type="text"],
+input[type="date"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* テキストエリアの設定 */
+textarea {
+    height: 100px;  /* 高さを指定 */
+    resize: vertical;  /* 垂直リサイズ可能 */
+}
+
+/* 送信ボタン */
+.create_button {
+    margin-top: 20px;
+    background-color: #2370ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100px;
     display: block;
 }
 
-select, input[type="text"], input[type="date"], input[type="submit"], button {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-button[type="button"], .action-button {
-    width: auto;
-    display: inline-block;
-    margin-right: 10px;
-    padding: 10px 20px; /* 横幅を調整 */
-}
-
-.create_button {
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-}
-
 .create_button:hover {
-    background-color: #0056b3;
+    background-color: #0d62ff;
 }
 
-.button-container {
+/* フォームの配置 */
+form {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
 }
 
-.error-message {
-    color: red;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .main-content {
+        width: 95%;  /* 画面幅が小さい場合に調整 */
+        padding: 10px;
+    }
 
-.form-inline label {
-    margin-right: 10px;
+    h1 {
+        font-size: 24px;
+    }
 }
-
-.form-inline select {
-    margin-right: 10px;
-}
-

@@ -1,0 +1,80 @@
+/* ページ全体のスタイル */
+body {
+    font-family: "Arial", sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff; /* 背景を真っ白に設定 */
+    text-align: center; /* コンテンツを中央揃え */
+}
+
+/* 入力フィールドのスタイル */
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+/* フォームコンテナのスタイル */
+.account_change {
+    margin: 20px auto; /* 上下に適度な余白 */
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 90%;
+}
+
+/* ボタンとリンクの共通スタイル */
+.button-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; /* ボタン間の間隔 */
+}
+
+/* ボタンのスタイル */
+.btn-save {
+    display: inline-block; /* インラインブロックに変更 */
+    font-size: 1rem;
+    background-color: #007bff; /* テキストカラー */
+    color: #fff;
+    border: none; /* 外枠を消す */
+    padding: 8px 18px;
+    border-radius: 5px;
+    cursor: pointer; /* カーソルをポインタに */
+    text-decoration: none; /* 下線をなくす */
+}
+
+.btn-save:hover {
+    color: #fff;
+    background-color: #83adfc; /* ホバー時の色 */
+    transition: color 0.3s ease; /* 色の変化を滑らかに */
+    text-decoration: underline; /* ホバー時に下線を追加 */
+}
+
+/* キャンセルボタンのスタイル */
+.btn-cancel {
+    display: inline-block;
+    font-size: 1rem;
+    color: #fff; /* テキストカラーを黒に */
+    background-color: #ff0000; /* 背景色を白に */
+    padding: 8px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #fc7b7b; /* ホバー時の色 */
+    transition: color 0.3s ease; /* 色の変化を滑らかに */
+    text-decoration: underline; /* ホバー時に下線を追加 */
+}
+

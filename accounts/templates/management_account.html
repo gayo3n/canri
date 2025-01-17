@@ -1,4 +1,4 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/management_account.css' %}">
@@ -20,7 +20,7 @@
         <tr>
             <!-- ユーザー名を表示し、編集リンクを作成 -->
             <td class="management_app">
-                <a href="{% url 'accounts:account_change' %}" class="btn save">
+                <a href="{% url 'accounts:manage_account_change' pk=user.pk %}" class="btn save">
                     {{ user.name }}
                 </a>
             </td>
@@ -28,7 +28,7 @@
             <td id="{{ forloop.counter }}">{{ user.user_id }}</td>
             <!-- 削除リンクを作成 -->
             <td>
-                <a href="{% url 'accounts:account_delete' %}" class="btn btn-danger" data-user-id="{{ user.user_id }}">
+                <a href="{% url 'accounts:account_delete' user.name  %}" class="btn btn-danger" data-user-id="{{ user.user_id }}">
                     🗑️
                 </a>
             </td>

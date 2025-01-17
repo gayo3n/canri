@@ -1,37 +1,27 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block head %}<link rel="stylesheet" href="{% static 'css/account_create.css' %}">{% endblock %}
 {% block content %}
 <h2>アカウント作成</h2>
-    <form action="{% url 'accounts:account_create_complete' %}" method="post">
+    <form action="{% url 'accounts:account_create' %}" method="post">
         {% csrf_token %}
+    <div class="account_create">
         <div>
-           <dt>アカウント名</dt>
-           <dt>{{ form.name }}{{ form.name.errors }}</dt>
-        </div>
-        <div> 
-            <dt>アカウントID</dt>
-            <dt>{{ form.user_id }}{{ form.user_id.errors }}</dt>
+            <input type="text" placeholder="ユーザ名" id="username" name="name" required>
         </div>
         <div>
-            <dt>パスワード</dt>
-            <dt>{{ form.password }}{{ form.password.errors }}</dt>
+            <input type="text" pattern="^[0-9]+$" placeholder="アカウントID" id="user_id" name="user_id" maxlength="10"  pattern="\d*" required>
         </div>
-        {% if form.errors %}
-    <div class="alert alert-danger">
-        <ul>
-            {% for field, errors in form.errors.items %}
-                {% for error in errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
         <div>
-            <button type="submit">作成</button>
+            <input type="text"  placeholder="パスワード" id="password" name="password" maxlength="10" required>
+            {% if form.password.errors %}
+                <div class="error">{{ form.password.errors }}</div>
+            {% endif %}
+        </div>
+        <div>
+            <td><button type="submit" class="btn btn-danger">作成</button></td>
         </div>
     </div>
-
+    </form>
 {% endblock %}

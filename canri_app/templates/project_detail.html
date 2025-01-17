@@ -57,7 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 modal1.style.display = "none"; // モーダルを非表示
             }
         });
-    });
+    }
+);
 
 // ---------------------------------ここまで-----------------------------------------
 
@@ -403,7 +404,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
 </div>
 
-<!-- チーム新規作成 -->
+    <!-- チーム新規作成 -->
     <div class="team-add">
         <form method="post" action="{% url 'canri_app:project_detail_create_team' %}" >
             {% csrf_token %}
@@ -471,4 +472,5 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
     </div>
 </div>
+
 {% endblock %}

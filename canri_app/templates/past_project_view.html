@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/past_project_view.css' %}">
+<link rel="stylesheet" href="{% static 'css/feedback_application.css' %}">
 {% endblock %}
-{% block content %}
 
+{% block content %}
 <main class="main-content">
     <div class="split-container">
         <!-- チームセクション -->
@@ -17,62 +19,72 @@
                             <a href="{% url 'canri_app:team_edit_past' team_id=team.team_id%}?project_id={{ project.project_id}}">{{ team.team_name }}</a>
                         </div>
                     {% endfor %}
-                </div>  
+                </div>
             </div>
         </section>
 
         <!-- 境界線 -->
         <div class="vertical-line"></div>
 
-        <!-- プロジェクト詳細セクション -->
+        <!-- 右側のプロジェクト詳細セクション -->
         <section class="project-section">
-            <!--プロジェクト情報-->
             <div class="project-list">
-                <div class="project-card">
-                    <form method="post" action="{% url 'canri_app:past_project_view' project_id=project.project_id %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="project_id" value="{{ project.project_id }}">
-                        <h1>{{ project.project_name }}</h1>
-                        <div class="horizontal-line"></div>
-                        <p>開始日: {{ project.creation_date|date:"Y年m月d日" }}</p>
-                        <p>完了日: {{ project.complete_date|date:"Y年m月d日" }}</p>
-                        <label for="post_evaluation_memo">プロジェクト詳細：</label>
-                        <p>&emsp;&emsp;{{ project.project_detail }}</p>
-                        <label for="post_evaluation_memo">事後評価メモ</label>
-                        <textarea id="post_evaluation_memo" name="post_evaluation_memo" rows="15" style="width: 100%; margin-bottom: 20px;">{{ project.post_evaluation_memo }}</textarea>
-                        <div class="button-container">
-                            <button type="button" class="feedbackbutton" onclick="openAddFeedback()">フィードバック</button>
-                            <button type="button" class="delete-button" onclick="openDeleteModal()">削除</button>
-                            <button type="submit" class="action-button">保存</button>
-                        </div>
-                    </form>
-                </div>
+                <form method="post" action="{% url 'canri_app:past_project_view' project_id=project.project_id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="project_id" value="{{ project.project_id }}">
+                    <h1>{{ project.project_name }}</h1>
+                    <div class="horizontal-line"></div>
+                    <p>開始日：{{ project_start_date|date:"Y年m月d日" }}</p>
+                    <p>完了日：{{ project_end_date|date:"Y年m月d日" }}</p>
+                    <label for="post_evaluation_memo">プロジェクト詳細：</label>
+                    <p>&emsp;&emsp;{{ project.project_detail }}</p>
+                    <label for="post_evaluation_memo">事後評価メモ</label>
+                    <textarea id="post_evaluation_memo" name="post_evaluation_memo" rows="15" style="width: 100%; margin-bottom: 20px;">{{ project.post_evaluation_memo }}</textarea>
+                    <div class="button-container">
+                        <button type="button" class="feedbackbutton" onclick="openAddFeedback()">フィードバック</button>
+                        <button type="button" class="delete-button" onclick="openDeleteModal()">削除</button>
+                        <button type="submit" class="action-button">保存</button>
+                    </div>
+                </form>
             </div>
         </section>
     </div>
 </main>
 
-<!-- フィードバックモーダルのHTML -->
+<!-- フィードバックモーダル -->
 <div class="modal" style="display: none;">
     <div class="modal-content" style="width: 70%; max-width: 1000px;">
         <span class="close" onclick="closeFeedbackModal()">&times;</span>
         <div id="modal-body">
-            <!-- feedback_application.htmlの内容がここに読み込まれる -->        
+            <div class="feedback-form">
+                <h2>フィードバックの反映</h2>
+                <table border="1">
+                    <!-- フィードバックコンテナ -->
+                    <div id="feedback-container">
+                        <!-- フィードバック行はJavaScriptで動的に追加されます -->
+                    </div>
+                </table>
+                <!-- フィードバック追加ボタン -->
+                <button class="add-feedback" type="button" onclick="addFeedbackRow()">＋ フィードバックを追加</button>
+                <!-- 保存ボタン -->
+                <button class="btn-save" type="button" onclick="saveFeedback()">保存</button>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- フィードバック保存完了モーダルのHTML -->
 <div class="modal" id="saveCompleteModal" style="display: none;">
     <div class="modal-content" style="width: 70%; height: 30vh; max-width: 1000px;">
         <span class="close" onclick="closeSaveCompleteModal()">&times;</span>
         <div id="save-complete-body">
-            <!-- feedback_save_complete.htmlの内容がここに読み込まれる -->
+            <div class="save-complete">
+                <h1 style="display: flex; justify-content: center; align-items: center; height: 25vh; text-align: center;">フィードバックの保存が完了しました</h1>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- 削除確認モーダルのHTML -->
+<!-- 削除確認モーダル -->
 <div class="modal" id="deleteModal" style="display: none;">
     <div class="modal-content" style="width: 50%; max-width: 600px;">
         <span class="close" onclick="closeDeleteModal()">&times;</span>
@@ -86,47 +98,178 @@
     </div>
 </div>
 
+
+
+
 <script>
     // フィードバックモーダルを開く
     function openAddFeedback() {
-        const projectId = document.querySelector('input[name="project_id"]').value;
-        if (!projectId) {
-            console.error('Project ID is missing');
-            return;
-        }
+        document.querySelector('.modal').style.display = 'block';
+        fetchMembers();
+        fetchFeedbacks();
+    }
 
-        fetch("{% url 'canri_app:feedback' project_id=0 %}".replace('0', projectId))
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('modal-body').innerHTML = html;
-                document.querySelector('.modal').style.display = 'block';
+    // メンバー情報を取得する
+    function fetchMembers() {
+        const projectId = document.querySelector('input[name="project_id"]').value;
+        fetch("{% url 'canri_app:get_members_by_project' project_id=0 %}".replace('0', projectId))
+            .then(response => response.json())
+            .then(data => {
+                window.members = data.members;
             })
-            .catch(error => console.error('Error loading feedback application:', error));
+            .catch(error => console.error('Error fetching members:', error));
+    }
+
+    // フィードバック情報を取得する
+    function fetchFeedbacks() {
+        const projectId = document.querySelector('input[name="project_id"]').value;
+        fetch("{% url 'canri_app:get_feedbacks_by_project' project_id=0 %}".replace('0', projectId))
+            .then(response => response.json())
+            .then(data => {
+                const feedbackContainer = document.getElementById('feedback-container');
+                feedbackContainer.innerHTML = ''; // 既存のフィードバック行をクリア
+                data.feedbacks.forEach(feedback => {
+                    const feedbackRow = document.createElement('div');
+                    feedbackRow.classList.add('feedback-row', 'existing-feedback');
+                    feedbackRow.innerHTML = `
+                        <form method="post" class="feedback-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="feedback_id" value="${feedback.feedback_id}">
+                            <select name="member1" title="member1" onchange="validateMembers(this)">
+                                ${window.members.map(member => `<option value="${member.member_id}" ${member.member_id == feedback.member1_id ? 'selected' : ''}>${member.name}</option>`).join('')}
+                            </select>
+                            と
+                            <select name="member2" title="member2" onchange="validateMembers(this)">
+                                ${window.members.map(member => `<option value="${member.member_id}" ${member.member_id == feedback.member2_id ? 'selected' : ''}>${member.name}</option>`).join('')}
+                            </select>
+                            を
+                            <select name="priority" title="condition:">
+                                <option value="True" ${feedback.priority_flag ? 'selected' : ''}>優先的に同じチームに編成する</option>
+                                <option value="False" ${!feedback.priority_flag ? 'selected' : ''}>同じチームに編成しない</option>
+                            </select>
+                            <button type="button" class="btn btn-danger" onclick="deleteFeedback(${feedback.feedback_id})">🗑️</button>
+                        </form>
+                    `;
+                    feedbackContainer.appendChild(feedbackRow);
+                });
+            })
+            .catch(error => console.error('Error fetching feedbacks:', error));
+    }
+
+
+
+    // フィードバック行を追加する
+    function addFeedbackRow() {
+        const feedbackContainer = document.getElementById('feedback-container');
+        const newRow = document.createElement('div');
+        newRow.classList.add('feedback-row', 'new-feedback');
+        newRow.innerHTML = `
+            <form method="post" class="feedback-form">
+                {% csrf_token %}
+                <select name="member1" title="member1" onchange="validateMembers(this)">
+                    <option value="">メンバーを選択</option>
+                    ${window.members.map(member => `<option value="${member.member_id}">${member.name}</option>`).join('')}
+                </select>
+                と
+                <select name="member2" title="member2" onchange="validateMembers(this)">
+                    <option value="">メンバーを選択</option>
+                    ${window.members.map(member => `<option value="${member.member_id}">${member.name}</option>`).join('')}
+                </select>
+                を
+                <select name="priority" title="condition:">
+                    <option value="True">優先的に同じチームに編成する</option>
+                    <option value="False">同じチームに編成しない</option>
+                </select>
+                <button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">🗑️</button>
+            </form>
+        `;
+        feedbackContainer.appendChild(newRow);
+    }
+
+    // メンバー選択のバリデーション
+    function validateMembers(selectElement) {
+        const form = selectElement.closest('form');
+        const member1 = form.querySelector('select[name="member1"]').value;
+        const member2 = form.querySelector('select[name="member2"]').value;
+
+        if (member1 === member2) {
+            alert('同じメンバーを選択することはできません。');
+            selectElement.value = '';
+        }
     }
 
     // フィードバックモーダルを閉じる
     function closeFeedbackModal() {
         document.querySelector('.modal').style.display = 'none';
     }
-
-    // フィードバック保存完了モーダルを閉じる
     function closeSaveCompleteModal() {
         document.getElementById('saveCompleteModal').style.display = 'none';
     }
-
-    // 削除確認モーダルを開く
     function openDeleteModal() {
         document.getElementById('deleteModal').style.display = 'block';
     }
-
-    // 削除確認モーダルを閉じる
     function closeDeleteModal() {
         document.getElementById('deleteModal').style.display = 'none';
     }
 
     // フィードバックを保存する
     function saveFeedback() {
-        fetch("{% url 'canri_app:feedback_save' %}")
+        const feedbackContainer = document.getElementById('feedback-container');
+        const existingForms = feedbackContainer.querySelectorAll('.existing-feedback .feedback-form');
+        const newForms = feedbackContainer.querySelectorAll('.new-feedback .feedback-form');
+        const existingFeedbacks = [];
+        const newFeedbacks = [];
+
+        let isValid = true;
+
+        existingForms.forEach((form) => {
+            const feedbackId = form.querySelector('input[name="feedback_id"]').value;
+            const member1 = form.querySelector('select[name="member1"]').value;
+            const member2 = form.querySelector('select[name="member2"]').value;
+            const priority = form.querySelector('select[name="priority"]').value;
+
+            if (!member1 || !member2) {
+                isValid = false;
+                alert('メンバー1とメンバー2を選択してください。');
+                return;
+            }
+
+            existingFeedbacks.push({ feedback_id: feedbackId, member1, member2, priority });
+        });
+
+        newForms.forEach((form) => {
+            const member1 = form.querySelector('select[name="member1"]').value;
+            const member2 = form.querySelector('select[name="member2"]').value;
+            const priority = form.querySelector('select[name="priority"]').value;
+
+            if (!member1 || !member2) {
+                isValid = false;
+                alert('メンバー1とメンバー2を選択してください。');
+                return;
+            }
+
+            newFeedbacks.push({ member1, member2, priority });
+        });
+
+        if (!isValid) {
+            return;
+        }
+
+        const projectId = document.querySelector('input[name="project_id"]').value;
+        const data = {
+            project_id: projectId,
+            existing_feedbacks: existingFeedbacks,
+            new_feedbacks: newFeedbacks
+        };
+
+        fetch("{% url 'canri_app:feedback_save' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(data)
+        })
         .then(response => response.text())
         .then(html => {
             document.querySelector('.modal').style.display = 'none';
@@ -134,6 +277,42 @@
             document.getElementById('saveCompleteModal').style.display = 'block';
         })
         .catch(error => console.error('Error saving feedback:', error));
+    }
+
+    // フィードバックを削除する
+    function deleteFeedback(feedbackId) {
+        fetch("{% url 'canri_app:delete_feedback' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ feedback_id: feedbackId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const form = document.querySelector(`input[value="${feedbackId}"]`).closest('form');
+                form.style.display = 'none';
+            }
+        })
+        .catch(error => console.error('Error deleting feedback:', error));
+    }
+
+    // CSRFトークンを取得する関数
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
     }
 </script>
 {% endblock %}

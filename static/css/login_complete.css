@@ -1,0 +1,24 @@
+body {
+    font-family: "Arial", sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff; /* 背景を真っ白に設定 */
+    text-align: center; /* コンテンツを中央揃え */
+}
+
+/* コンテンツをheaderの下に配置 */
+.complete {
+    margin: 20px auto; /* 上下中央揃えではなく、適度な余白を作成 */
+    padding: 30px;
+    background-color: #ffffff; /* 背景色を白 */
+    border-radius: 10px;
+    max-width: 400px;
+    width: 90%; /* 小さい画面でもデザインが崩れないよう設定 */
+}
+
+/* 見出しのスタイル */
+.complete h2 {
+    font-size: 1.5rem;
+    color: #333333;
+    margin-bottom: 20px;
+}

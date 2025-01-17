@@ -166,11 +166,13 @@ def create_team(team_type, members, team_size):
         feedback_dict[key] = feedback.priority_flag
 
     # チームの生成ロジック
+    team = []
+    remaining_team_size = int(team_size)
+    
     if team_type == 'event':
         sorted_members = sorted(members, key=lambda x: x['birthdate'])
-        team = []
         left, right = 0, len(sorted_members) - 1
-        while len(team) < int(team_size) and left <= right:
+        while len(team) < remaining_team_size and left <= right:
             if len(team) % 2 == 0:
                 member = sorted_members[left]
                 left += 1
@@ -180,14 +182,33 @@ def create_team(team_type, members, team_size):
             # フィードバック優先度を考慮
             if all(feedback_dict.get((member['member_id'], teammate['member_id']), True) for teammate in team):
                 team.append(member)
+                remaining_team_size -= 1
+                # 優先フラグを持つメンバーを追加
+                for key, priority in feedback_dict.items():
+                    if priority and (member['member_id'] in key):
+                        other_member_id = key[1] if member['member_id'] == key[0] else key[0]
+                        other_member = next((m for m in members if m['member_id'] == other_member_id), None)
+                        if other_member and other_member not in team:
+                            team.append(other_member)
+                            remaining_team_size -= 1
+                            break
 
     elif team_type == 'training':
         sorted_members = sorted(members, key=lambda x: x['speciality_height'], reverse=True)
-        team = []
         for member in sorted_members:
-            if len(team) < int(team_size):
+            if len(team) < remaining_team_size:
                 if all(feedback_dict.get((member['member_id'], teammate['member_id']), True) for teammate in team):
                     team.append(member)
+                    remaining_team_size -= 1
+                    # 優先フラグを持つメンバーを追加
+                    for key, priority in feedback_dict.items():
+                        if priority and (member['member_id'] in key):
+                            other_member_id = key[1] if member['member_id'] == key[0] else key[0]
+                            other_member = next((m for m in members if m['member_id'] == other_member_id), None)
+                            if other_member and other_member not in team:
+                                team.append(other_member)
+                                remaining_team_size -= 1
+                                break
 
     elif team_type == 'project':
         sorted_members = sorted(members, key=lambda x: (
@@ -197,23 +218,54 @@ def create_team(team_type, members, team_size):
             x['time_management_ability'], 
             x['problem_solving_ability']
         ), reverse=True)
-        team = []
         for member in sorted_members:
-            if len(team) < int(team_size):
+            if len(team) < remaining_team_size:
                 if all(feedback_dict.get((member['member_id'], teammate['member_id']), True) for teammate in team):
                     team.append(member)
+                    remaining_team_size -= 1
+                    # 優先フラグを持つメンバーを追加
+                    for key, priority in feedback_dict.items():
+                        if priority and (member['member_id'] in key):
+                            other_member_id = key[1] if member['member_id'] == key[0] else key[0]
+                            other_member = next((m for m in members if m['member_id'] == other_member_id), None)
+                            if other_member and other_member not in team:
+                                team.append(other_member)
+                                remaining_team_size -= 1
+                                break
 
     elif team_type == 'idea_generation':
         sorted_members = sorted(members, key=lambda x: x['planning_presentation_power'], reverse=True)
-        team = []
         for member in sorted_members:
-            if len(team) < int(team_size):
+            if len(team) < remaining_team_size:
                 if all(feedback_dict.get((member['member_id'], teammate['member_id']), True) for teammate in team):
                     team.append(member)
+                    remaining_team_size -= 1
+                    # 優先フラグを持つメンバーを追加
+                    for key, priority in feedback_dict.items():
+                        if priority and (member['member_id'] in key):
+                            other_member_id = key[1] if member['member_id'] == key[0] else key[0]
+                            other_member = next((m for m in members if m['member_id'] == other_member_id), None)
+                            if other_member and other_member not in team:
+                                team.append(other_member)
+                                remaining_team_size -= 1
+                                break
     else:
         return {"error": "無効なチームタイプです"}
 
-    return team
+    # チームにメンバーを追加する際に同じチームにならないフラグを持つメンバーが既にチームに存在していた場合、別のメンバーを配属
+    final_team = []
+    for member in team:
+        if all(feedback_dict.get((member['member_id'], teammate['member_id']), True) for teammate in final_team):
+            final_team.append(member)
+
+    # 配属されなかった分の穴埋め
+    remaining_members = [m for m in members if m not in final_team]
+    for member in remaining_members:
+        if len(final_team) < int(team_size):
+            if all(feedback_dict.get((member['member_id'], teammate['member_id']), True) for teammate in final_team):
+                final_team.append(member)
+
+    return final_team
 
 #プロジェクトチームの一覧を取得するAPI
 @require_http_methods(["GET"])
@@ -543,5 +595,42 @@ def get_p_project_detail(request, project_id):
 
     except Project.DoesNotExist:
         return JsonResponse({'error': 'Project not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+# プロジェクトに関連するメンバー情報を取得するAPI
+@require_http_methods(["GET"])
+def get_members_by_project(request, project_id):
+    try:
+        # プロジェクトに関連するチームメンバーを取得
+        teams = Team.objects.filter(team_id__in=ProjectAffiliationTeam.objects.filter(project_id=project_id,deletion_flag=0).values_list('team_id', flat=True))
+        team_members = TeamMember.objects.filter(team_id__in=teams, deletion_flag=False)
+        members = Member.objects.filter(member_id__in=team_members, deletion_flag=False)
+        for member in members:
+            print(member.name)
+
+        # メンバー情報を辞書形式で返す
+        members_data = [{'member_id': member.member_id, 'name': member.name} for member in members]
+
+        return JsonResponse({'members': members_data})
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+# プロジェクトに関連するフィードバック情報を取得するAPI
+@require_http_methods(["GET"])
+def get_feedbacks_by_project(request, project_id):
+    try:
+        feedbacks = Feedback.objects.filter(project_id=project_id, deletion_flag=False)
+        feedbacks_data = [
+            {
+                'feedback_id': feedback.feedback_id,
+                'member1_id': feedback.member1_id,
+                'member2_id': feedback.member2_id,
+                'priority_flag': feedback.priority_flag,
+            }
+            for feedback in feedbacks
+        ]
+        return JsonResponse({'feedbacks': feedbacks_data})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)

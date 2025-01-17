@@ -1,10 +1,14 @@
-from django.contrib.auth.views import LogoutView, LoginView 
+from pyexpat.errors import messages
+from django.contrib.auth.views import LogoutView, LoginView, PasswordChangeView, PasswordChangeDoneView
 from django.shortcuts import render, redirect, get_object_or_404, redirect
-from django.contrib.auth import login, get_user_model, logout as auth_logout, authenticate
-from django.urls import reverse
+from django.contrib.auth import login, get_user_model, logout as auth_logout
+from django.contrib.auth import login, authenticate
+from django.utils import timezone
+from django.urls import reverse_lazy
+from django.db import transaction
 from django.views import View, generic
 from django.views.generic.base import TemplateView
-from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm
+from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, CustomPasswordChangeForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
@@ -15,135 +19,151 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
 from .models import User
 
-def login_view(request):
-    # リクエストメソッドがPOSTかどうかを確認
-    if request.method == "POST":
-        # リクエストからユーザー名とパスワードを取得
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-
-        try:
-            # ユーザー名でユーザーを取得しようとする
-            user = User.objects.get(username=username)
-            # 提供されたパスワードが保存されたパスワードと一致するか確認
-            if auth_logout(request, username=user.username, password=password):  # ハッシュ化されたパスワードを比較
-                login(request, user)  # ユーザーをログインさせる
-                return redirect("accounts:login_complete")  # ログイン完了ページにリダイレクト
-            else:
-                # パスワードが間違っている場合、エラーメッセージを表示
-                return render(request, "login.html", {"error_message": "パスワードが正しくありません"})
-        except User.DoesNotExist:
-            # ユーザーが存在しない場合、エラーメッセージを表示
-            return render(request, "login.html", {"error_message": "ユーザーが存在しません"})
-
-    # リクエストメソッドがPOSTでない場合、ログインページを表示
-    return render(request, "login.html")
-
-
-@login_required  # ログイン必須にするデコレータ
-def login_complete_view(request):
-    return render(request, "login_complete.html")  # login_complete.htmlを表示
-
-# class LoginView(TemplateView):
-#     form_class = UserForm
-#     template_name = 'login.html'
-#     def post(self, request, *args, **kwargs):
-#         return render(request, 'login_complete.html')
-
-def acclogin(request):
-    if request.method == 'POST':
-        form = LoginForm(request, data=request.POST)
-        if form.is_valid():
-            user_id = form.cleaned_data.get('user_id')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, user_id=user_id, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('login_complete', user_id=user.id)  
-    else:
-        form = LoginForm()
-    return render(request, 'login.html', {'form': form})
-
-def logincomp(request, user_id):
-    return render(request, 'login_complete.html', {'user_id': user_id})
-
-    
 class LoginFailView(TemplateView):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_failure.html')
     
-# class LogoutConfView(TemplateView):
-#     def post(self, request):
-#         return redirect('logout_confirmation')
+class LogoutConfView(TemplateView):
+    def post(self, request):
+        return redirect('logout_confirmation')
+
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
+    success_url = reverse_lazy('login_complete')  # ログイン成功時のリダイレクト先
+
+class LoginCompView(TemplateView):
+    template_name = 'login_complete.html'
 
 class LogoutCompView(TemplateView):
-    template_name = 'logout_confirmation_complete.html'
-    def post(self, request, *args, **kwargs):
-        return render(request, 'logout_complete.html')
+    template_name = 'logout_complete.html'
 
-# class AccLoginView(LoginView):
-#     def login(request):
-#         if request.method == "POST":
-#             form = LoginForm(request, data=request.POST)
-#             if form.is_valid():
-#                 user = form.get_user()
-#                 if user:
-#                     login(request, user)
-#         else:
-#             form = LoginForm()
+class LogoutConfView(TemplateView):
+    template_name = 'logout_confirmation.html'
+
+# views.py
+# views.py
+from django.contrib.auth import authenticate, login
+
+class AccLoginView(LoginView):
+    def post(self, request, *arg, **kwargs):
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            name = form.cleaned_data.get('name')
+            password = form.cleaned_data.get('password')
+            
+            # authenticate を呼び出して認証を試みる
+            user = authenticate(request, username=name, password=password)
+            
+            if user is not None:
+                if user.deletion_flag:  # 削除フラグが立っている場合はログイン拒否
+                    form.add_error(None, 'このアカウントは削除されています。')
+                    return render(request, 'login.html', {'form': form})
+                
+                login(request, user)
+                return redirect('accounts:login_complete')
         
-#         param = {
-#             'form': form,
-#         }
-#         return render(request, 'login.html', param)
+        form.add_error(None, 'ログインに失敗しました。')
+        return render(request, 'login.html', {'form': form})
+
+
+    # def post(self, request):
+    #     if request.method == "POST":
+    #         form = LoginForm(request, data=request.POST)
+    #         if form.is_valid():
+    #             user = form.get_user()
+    #             if user:
+    #                 login(request, user)
+    #                 return redirect('accounts:login_complete')
+    #     else:
+    #         form = LoginForm()
+        
+    #     param = {
+    #         'form': form,
+    #     }
+    #     return render(request, 'login.html', param)
+    
+    # def get(self, request):
+    #     form = LoginForm()
+    #     param = {
+    #         'form': form,
+    #     }
+    #     return render(request, 'login.html', param)
 
 
 def logout(request):
     auth_logout(request)
-    return render(request, 'logout_confirmation.html')
+    request.session.flush()
+    print('ログアウト処理が実行されました')
+    if request.user.is_authenticated:
+        print('ユーザーはまだ認証されています')
+        return redirect('accounts:logout_confirmation')
+    else:
+        print('ログアウト完了')
+        return redirect('accounts:logout_complete')
 
 # アカウント管理
-def manage_account(request):
+class Manage_Account(TemplateView):
     template_name = "management_account.html"
 
     def get(self, request, *args, **kwargs):
-        # データベースから全ユーザーを取得
-        users = User.objects.all()
-
-        # コンテキストにユーザー情報を渡す
+        # 論理削除されていないユーザーのみを取得
+        users = User.objects.filter(deletion_flag=False)
+        
         context = {
             'users': users,  # 全ユーザーをテンプレートに渡す
         }
-
         return render(request, 'management_account.html', context)
 
 
-class AccountChangeView(TemplateView):
-    template_name = "account_change.html"
-
-class AccountChangeCompleteView(TemplateView):
-    template_name = "account_change_complete.html"
-
 # アイコン
-class AccountChangeEmployeeView(TemplateView):
-    template_name = "account_change_employee.html"
 
-class AccountChangeEmployeeCompleteView(TemplateView):
-    template_name = "account_change_complete_employee.html"
+def account_change_employee(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    if request.method == "POST":
+        user.name = request.POST.get('name')
+        password = request.POST.get('password')
+        user.set_password(password)
+        user.save()
+
+        # 再ログイン処理
+        user = authenticate(request, username=user.name, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect("accounts:account_change_complete_employee", pk=pk)
+        else:
+            return redirect("accounts:login")
+
+    context = {
+        "user": user
+    }
+    return render(request, 'account_change_employee.html', context)
+
+def account_change_complete_employee(request, pk):
+    return render(request, 'account_change_complete_employee.html', {'pk': pk})
 
 
 def create(request):
     if request.method == 'GET':
+        # リクエストメソッドがGETの場合、空のフォームをインスタンス化
         form = AccountAddForm()
     elif request.method == 'POST':
-        form = AccountAddForm(request.POST)
+        # リクエストメソッドがPOSTの場合、POSTデータでフォームをインスタンス化
+        form =UserForm(request.POST)
         if form.is_valid():
-            user = User.objects.create_user(
-                name=form.cleaned_data['name'],
-                user_id=form.cleaned_data['user_id'],
-                password=form.cleaned_data['password']
-            )
-            return render(request, 'account_create_complete.html', {'user_id': user.user_id})
+            user_id=form.cleaned_data['user_id']
+            if User.objects.filter(user_id=user_id).exists():
+                form.add_error('user_id', 'このアカウントIDは既に使用されています。')
+            else:
+                # フォームが有効な場合、クリーンデータを使用して新しいユーザーを作成
+                user = User.objects.create_user(
+                    user_id=form.cleaned_data['user_id'],
+                    name=form.cleaned_data['name'],
+                    password=form.cleaned_data['password'],
+                    administrator_flag=False  # ここでadministrator_flagを設定
+                )
+                # アカウント作成完了を示すテンプレートをレンダリング
+                return redirect('accounts:account_create_complete')
+    # アカウント作成フォームのテンプレートをレンダリング
     context = {'form': form}
     return render(request, 'account_create.html', context)
 
@@ -151,51 +171,61 @@ def create(request):
 def account_create_complete(request):
     form = UserForm(request.POST)
     if form.is_valid():
+        # フォームが有効な場合、データを保存
         form.save()
-    return render(request, 'account_create_complete.html')
+        # アカウント作成完了のテンプレートをレンダリング
+        return render(request, 'account_create_complete.html')
+    else:
+        # フォームが無効な場合、新しいフォームをインスタンス化
+        form = UserForm()
+    # アカウント作成完了のテンプレートをフォームと共にレンダリング
+    return render(request, 'account_create_complete.html', {'form': form})
 
-# class AccountLogin(AuthLoginView):
-#     template_name = "login.html"
-#     def post(self, request, *args, **kwargs):
-#         form = UserForm(data=request.POST)
-#         if form.is_valid():
-#             name = form.cleaned_data.get('username')
-#             password = form.cleaned_data.get('password')
-#             try:
-#                 user = User.objects.get(name=name)
-#                 if user.check_password(password):
-#                     login(request, user)
-#                     return redirect('login_complete')  # URL名を使用
-#                 else:
-#                     error_message = "ユーザー名またはパスワードが正しくありません。"
-#             except User.DoesNotExist:
-#                 error_message = "ユーザー名またはパスワードが正しくありません。"
-#         else:
-#             error_message = "フォームにエラーがあります。"
+class ManageAccountChange(PasswordChangeView):
+    form_class = CustomPasswordChangeForm
+    template_name = 'account_change.html'
 
-#         return render(request, 'login.html', {'form': form, 'error_message': error_message})
+    def get_success_url(self):
+        return reverse_lazy('accounts:account_change_complete', kwargs={'pk': self.request.user.pk})
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        form.save()
+        print('Form is valid and has been saved.')
+        return response
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        return context
 
-# account_login = AccountLogin.as_view()
 
-def account_chaenge(request, name):
-    user_change = get_object_or_404(User, name=name)
-    form = UserForm(instance=user_change)
-    return render(request, 'account_change_employee.html', {'form': form})
-
-def account_change_complete(request, name):
-    user_change = get_object_or_404(User, name=name)
-    if request.method == "POST":
-        form = UserForm(request.POST, instance=user_change)
-        if form.is_valid():
-            form.save()
-    return render(request, 'account_change_employee_complete.html')
+def account_change_complete(request, pk):
+    return render(request, 'account_change_complete.html', {'pk':pk})
 
 def account_delete(request, name):
-    obj = get_object_or_404(User, name=name)
+    # 該当ユーザーを取得（削除フラグが立っていないユーザーのみを対象）
+    obj = get_object_or_404(User, name=name, deletion_flag=False)
+    
     if request.method == 'POST':
-        obj.delete()
-        return redirect('account_delete_complete', name=name)
-    return render(request, 'account_delete.html', {'object':obj})
+        # 論理削除：削除フラグを立てる
+        obj.deletion_flag = True
+        obj.deletion_date = timezone.now()  # 削除日時を記録
+        obj.save()
+        return redirect('accounts:account_delete_complete')
+    
+    return render(request, 'account_delete.html', {'object': obj, 'name': name})
 
-def account_delete_complete(request, name):
-    return render(request, 'account_delete_complete.html', name=name)
+def account_restore(request, name):
+    # 削除フラグが立っているユーザーを取得
+    obj = get_object_or_404(User, name=name, deletion_flag=True)
+    
+    if request.method == 'POST':
+        obj.restore()  # 論理削除を解除
+        return redirect('accounts:manage_account')
+    
+    return render(request, 'account_restore.html', {'object': obj, 'name': name})
+
+
+def account_delete_complete(request):
+    return render(request, 'account_delete_complete.html')

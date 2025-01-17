@@ -190,7 +190,7 @@ class Feedback(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     priority_flag = models.BooleanField()
     deletion_flag = models.BooleanField()
-    # expiration_date = models.DateTimeField()
+    # expiration_date = models.DateTimeField(null=True, blank=True)
     creation_date = models.DateTimeField()
     deletion_date = models.DateTimeField(null=True, blank=True)
 
@@ -205,7 +205,7 @@ class MemberParameter(models.Model):
     teamwork = models.IntegerField()
     time_management_ability = models.IntegerField()
     problem_solving_ability = models.IntegerField()
-    speciality_height = models.IntegerField()
+    speciality_height = models.FloatField()
 
     class Meta:
         db_table = 'member_parameter'
