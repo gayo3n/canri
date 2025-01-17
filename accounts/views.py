@@ -1,4 +1,4 @@
-from pyexpat.errors import messages
+from django import forms
 from django.contrib.auth.views import LogoutView, LoginView, PasswordChangeView, PasswordChangeDoneView
 from django.shortcuts import render, redirect, get_object_or_404, redirect
 from django.contrib.auth import login, get_user_model, logout as auth_logout, authenticate, update_session_auth_hash
@@ -7,8 +7,8 @@ from django.urls import reverse_lazy
 from django.db import transaction
 from django.views import View, generic
 from django.views.generic.base import TemplateView
-from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, PasswordChangeForm
-from django.contrib.auth.mixins import UserPassesTestMixin
+from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, MySetPasswordForm
+from django.contrib.auth.mixins import UserPassesTestMixin,LoginRequiredMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
@@ -39,9 +39,7 @@ class LogoutCompView(TemplateView):
 class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
-# views.py
-# views.py
-from django.contrib.auth import authenticate, login
+
 
 class AccLoginView(LoginView):
     def post(self, request, *arg, **kwargs):
@@ -180,25 +178,29 @@ def account_create_complete(request):
     # アカウント作成完了のテンプレートをフォームと共にレンダリング
     return render(request, 'account_create_complete.html', {'form': form})
 
-class Account_change(PasswordChangeView):
-    success_url = reverse_lazy('account:account_change_complete')
-    template_name = 'account_change.html'
 
-
+# アカウント一覧からのパスワード変更
 def account_change(request, pk):
-
-    if request.method == "POST":
-        user = User.objects.get(pk=pk)
-
+    template_name = 'account_change.html'
+    user = get_object_or_404(User, pk=pk)
+    form = MySetPasswordForm(user=request.user)
     context = {
-        "users": user
+        'form':form,
+        'user':user
     }
-    return render(request, 'account_change.html', context)
+    return render(request, template_name, context)
 
-    
+# パスワード変更完了
 def account_change_complete(request, pk):
     user = get_object_or_404(User, pk=pk)
-    return render(request, 'account_change_complete.html', {'pk':pk})
+    if request.method == 'POST':
+        form = MySetPasswordForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts:manage_account')
+        else:
+            print(form.errors)
+    return render(request, 'account_change_complete.html', {'user':user})
 
 
 def account_delete(request, name):

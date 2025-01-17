@@ -9,20 +9,15 @@
         {% csrf_token %}
     
         <label for="username">ユーザ名🔒</label>
-        <input type="text" id="username" name="name" value="{{ users.name }}" maxlength="10" readonly autocomplete="username">
+        <input type="text" id="username" name="name" value="{{ user.name }}" maxlength="10" readonly autocomplete="username">
         
         <label for="userid">ユーザID🔒</label>
-        <input type="text" id="userid" name="user_id" value="{{ users.user_id }}" maxlength="10" readonly>
-{% comment %}         
-        <label for="old_password">古いパスワード</label>
-        <input type="password" id="old_password" name="old_password" class="form-control" maxlength="10"  required> {% endcomment %}
-
-        <label for="new_password1">新しいパスワード</label>
-        <input type="password" id="new_password1" name="new_password1" class="form-control" maxlength="10"  required>
-
-        <label for="new_password2">新しいパスワードの確認</label>
-        <input type="password" id="new_password2" name="new_password2" class="form-control" maxlength="10"  required>
-
+        <input type="text" id="userid" name="user_id" value="{{ user.user_id }}" maxlength="10" readonly>
+        
+        <label for="password">パスワード</label>
+        <!-- <input type="password" id="password" name="password" class="form-control" maxlength="10"  required> -->
+         <p>{{ form.new_password1 }}</p>
+         <p>パスワード確認用:{{ form.new_password2 }}</p>
         <button type="submit">保存</button>
         <a href="{% url 'accounts:manage_account' %}">キャンセル</a>
     </form>

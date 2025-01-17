@@ -61,6 +61,10 @@
     color: #007bff;
 }
 
+.user-link {
+    margin-left: 20px;
+}
+
 /* 小画面用のユーザー情報 */
 .hamburger-user-info {
     display: none; /* 小画面でのユーザー情報は非表示 */
