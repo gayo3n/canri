@@ -17,7 +17,9 @@ from django.urls import reverse
 import csv
 from django.contrib import messages
 from django.core import serializers
-
+from django.test import TestCase
+from django.http import HttpResponseServerError
+from django.test import TestCase, override_settings
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -1690,7 +1692,7 @@ class project_detail_Create_TeamView(TemplateView):
 
 
 
-# 進行中プロジェク��用のチーム追加のステップ2用ビュー
+# 進行中プロジェクト用のチーム追加のステップ2用ビュー
 import json
 from django.shortcuts import render
 from .models import TeamMember  # あなたのモデルに合わせてインポートしてください
@@ -1757,11 +1759,11 @@ class project_detail_Create_Team2View(TemplateView):
 
 
 #プロジェクト進行チーム追加3
-# memberが必要かどう��
+# memberが必要かどう
 # 多分メンバー追加時に必要になる気がする
 # わからん
 class project_detail_CreateTeam3View(TemplateView):
-    # 使用するテンプレート���ァイルを指定
+    # 使用するテンプレートファイルを指定
     template_name = "project_detail_create_team3.html"
 
     def post(self, request, *args, **kwargs):
@@ -2252,3 +2254,10 @@ class TeamMemberEditSavePastView(TemplateView):
     
 class DeletePastProjectView(TemplateView):
     template_name = "delete_past_project.html"
+
+# エラー画面を表示するためのビュー
+def trigger_error(request):
+    raise Exception("Intentional 500 Error")
+
+class errorhtmlView(TemplateView):
+    template_name = "500.html"

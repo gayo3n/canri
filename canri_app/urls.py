@@ -98,4 +98,8 @@ urlpatterns = [
     path('api/get_p_project_detail/<int:project_id>/', api.get_p_project_detail, name='get_p_project_detail'),
     path('api/get_members_by_project/<int:project_id>/', api.get_members_by_project, name='get_members_by_project'),
     path('api/get_feedbacks_by_project/<int:project_id>/', api.get_feedbacks_by_project, name='get_feedbacks_by_project'),
+
+    # エラー画面
+    path('trigger-error/', views.trigger_error, name='trigger_error'),
+    path('error500html/', views.errorhtmlView.as_view(), name='error_500'),
 ]
