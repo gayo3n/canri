@@ -178,7 +178,7 @@
     width: fit-content;
     height: 30px;
     border: solid 3px #000000;
-    background-color: #4bb7ff;
+    background-color: #53d7ff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -193,7 +193,7 @@
 }
 
 .box:hover {
-    background-color: #23ccff;
+    background-color: #1eb9e9;
     color: #fff;
 }
 
