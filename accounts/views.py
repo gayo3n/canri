@@ -1,15 +1,14 @@
-from pyexpat.errors import messages
+from django import forms
 from django.contrib.auth.views import LogoutView, LoginView, PasswordChangeView, PasswordChangeDoneView
 from django.shortcuts import render, redirect, get_object_or_404, redirect
-from django.contrib.auth import login, get_user_model, logout as auth_logout
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, get_user_model, logout as auth_logout, authenticate, update_session_auth_hash
 from django.utils import timezone
 from django.urls import reverse_lazy
 from django.db import transaction
 from django.views import View, generic
 from django.views.generic.base import TemplateView
-from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, CustomPasswordChangeForm
-from django.contrib.auth.mixins import UserPassesTestMixin
+from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, MySetPasswordForm
+from django.contrib.auth.mixins import UserPassesTestMixin,LoginRequiredMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
@@ -40,9 +39,7 @@ class LogoutCompView(TemplateView):
 class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
-# views.py
-# views.py
-from django.contrib.auth import authenticate, login
+
 
 class AccLoginView(LoginView):
     def post(self, request, *arg, **kwargs):
@@ -106,7 +103,7 @@ class Manage_Account(TemplateView):
     template_name = "management_account.html"
 
     def get(self, request, *args, **kwargs):
-        # 論理削除されていないユーザーのみを取得
+        # 削除フラグがFalseのユーザーのみを取得
         users = User.objects.filter(deletion_flag=False)
         
         context = {
@@ -181,27 +178,38 @@ def account_create_complete(request):
     # アカウント作成完了のテンプレートをフォームと共にレンダリング
     return render(request, 'account_create_complete.html', {'form': form})
 
-class ManageAccountChange(PasswordChangeView):
-    form_class = CustomPasswordChangeForm
+
+# アカウント一覧からのパスワード変更
+def account_change(request, pk):
     template_name = 'account_change.html'
+    user = get_object_or_404(User, pk=pk)
+    form = MySetPasswordForm(user=user)
+    context = {
+        'form':form,
+        'user':user
+    }
+    return render(request, template_name, context)
 
-    def get_success_url(self):
-        return reverse_lazy('accounts:account_change_complete', kwargs={'pk': self.request.user.pk})
-    
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        form.save()
-        print('Form is valid and has been saved.')
-        return response
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
-        return context
-
-
+# パスワード変更完了
 def account_change_complete(request, pk):
-    return render(request, 'account_change_complete.html', {'pk':pk})
+    # ユーザー情報を取得
+    user = get_object_or_404(User, pk=pk)
+    if request.method == 'POST':
+        form = MySetPasswordForm(user=user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('accounts:account_change_complete', pk=pk)
+        else:
+            for field, errors in form.errors.items(): 
+                for error in errors: print(f'Error in {field}: {error}') # 送信されたデータのデバッグ 
+            print(f'POST data: {request.POST}')
+            # 入力されたパスワードが確認用と違う場合エラーメッセージと変更画面を表示
+            return render(request, 'account_change.html', {'form':form, 'user':user})
+    else:
+        form = MySetPasswordForm(user=user)
+    # パスワード変更完了画面を表示
+    return render(request, 'account_change_complete.html', {'form':form,'user':user})
+
 
 def account_delete(request, name):
     # 該当ユーザーを取得（削除フラグが立っていないユーザーのみを対象）

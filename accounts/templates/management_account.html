@@ -20,9 +20,13 @@
         <tr>
             <!-- ユーザー名を表示し、編集リンクを作成 -->
             <td class="management_app">
+                {% if user.pk %}
                 <a href="{% url 'accounts:manage_account_change' pk=user.pk %}" class="btn save">
                     {{ user.name }}
                 </a>
+                {% else %}
+                
+                {% endif %}
             </td>
             <!-- ユーザーIDを表示 -->
             <td id="{{ forloop.counter }}">{{ user.user_id }}</td>
