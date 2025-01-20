@@ -56,6 +56,14 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['user_id', 'password', 'name', 'administrator_flag']
+        error_messages = {
+            'user_id':{
+                'unique': 'このアカウントIDは既に使用されています。'
+            },
+            'name':{
+                'unique': 'この名前のユーザーは既に存在しています。'
+            }
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
