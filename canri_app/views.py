@@ -2459,11 +2459,52 @@ class Past_ProjectView(TemplateView):
 class Past_ProjectDeletingView(View):
     template_name = "past_project_deleting_confirmation.html"
 
-class Project_DeletedView(TemplateView):
-    template_name = "project_deleted.html"
+    def get(self, request, *args, **kwargs):
+        project_id = self.kwargs['project_id']
+        project = get_object_or_404(Project, project_id=project_id)
+        context = {
+            'project_id': project_id,
+            'project': project
+        }
+        return render(request, self.template_name, context)
 
-class Project_Save_CompleteView(TemplateView):
-    template_name = "save_past_project.html"
+    def post(self, request, *args, **kwargs):
+        project_id = self.kwargs['project_id']
+        project = get_object_or_404(Project, project_id=project_id)
+        context = {
+            'project_id': project_id,
+            'project': project
+        }
+        return render(request, self.template_name, context)
+
+# 過去プロジェクト削除完了
+class Past_Project_DeletedView(View):
+    template_name = "past_project_deleted.html"
+
+    def get(self, request, *args, **kwargs):
+        project_id = self.kwargs['project_id']
+        try:
+            project = Project.objects.get(project_id=project_id)
+            project.deletion_flag = 1
+            project.save()
+            return render(request, self.template_name, {'project': project})
+        except Project.DoesNotExist:
+            return render(request, "past_project_delete_error.html", {'message': 'Project not found'})
+        except Exception as e:
+            return render(request, "past_project_delete_error.html", {'message': str(e)})
+
+    def post(self, request, *args, **kwargs):
+        project_id = self.kwargs['project_id']
+        try:
+            project = Project.objects.get(project_id=project_id)
+            project.deletion_flag = 1
+            project.save()
+            return render(request, self.template_name, {'project': project})
+        except Project.DoesNotExist:
+            return render(request, "past_project_delete_error.html", {'message': 'Project not found'})
+        except Exception as e:
+            return render(request, "past_project_delete_error.html", {'message': str(e)})
+
 #フィードバックモーダル表示
 class FeedbackView(TemplateView):
     template_name = "feedback_application.html"
