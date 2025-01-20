@@ -107,4 +107,5 @@ urlpatterns = [
     # エラー画面
     path('trigger-error/', views.trigger_error, name='trigger_error'),
     path('error500html/', views.errorhtmlView.as_view(), name='error_500'),
+    
 ]

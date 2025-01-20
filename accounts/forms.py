@@ -70,6 +70,18 @@ class UserForm(forms.ModelForm):
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
 
+    def new_username(self):
+        name = self.changed_data['name']
+        if User.objects.filter(name=name):
+            raise ValidationError('この名前のユーザーは既に存在しています。')
+        return name
+    
+    def new_user_id(self):
+        user_id = self.changed_data['user_id']
+        if User.objects.filter(user_id=user_id):
+            raise ValidationError('このユーザーIDは既に使用されています。')
+        return user_id
+
 class LoginForm(AuthenticationForm):
     pass
 
