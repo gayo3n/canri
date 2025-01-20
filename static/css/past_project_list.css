@@ -54,16 +54,24 @@
 /* プロジェクト名のスタイル */
 .project-name {
     width: 150px;
+    margin-left: 10px;
+    margin-right: 20px;
     font-weight: bold;
 }
 
-/* プロジェクト期間のスタイル */
+/* プロジェクト開始日のスタイル */
 .project-period {
+    width: 200px;
+}
+
+/* プロジェクト完了日のスタイル */
+.project-complete {
     width: 200px;
 }
 
 /* プロジェクト詳細のスタイル */
 .project-details {
+    
     flex-grow: 1;
 }
 

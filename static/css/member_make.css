@@ -1,32 +1,32 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    flex-direction: column;
-    align-items: center;
-    background-color: #f9f9f9;
+/* ヘッダーはそのままのスタイル */
+.header-title {
+    font-size: 24px;
+    margin-top: 20px;
+    text-align: center;
 }
 
+/* フォーム全体のコンテナ */
 .form-container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-form {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    justify-content: center;
+    padding: 20px 0;
 }
 
+/* フォームの幅とスタイルを調整 */
+.form-content {
+    width: 80%;         /* フォーム全体の幅を80%に設定 */
+    max-width: 600px;   /* 最大幅を600pxに制限 */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* フォーム内の各要素 */
 .form-area {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 20px;
 }
 
 label {
@@ -42,21 +42,30 @@ input[type="text"], input[type="date"], select {
     border-radius: 4px;
 }
 
-.qualifications {
+.mbti {
+    text-align: center;
+    background-color: #b7b7b7;
+    color: white;
+    height: 42px;
     display: flex;
-    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    margin-bottom: 20px;
 }
 
-.qualifications select {
-    flex: 1;
+.mbti:hover {
+    background-color: #808080;
 }
 
+/* ボタンエリアのスタイル */
 .button-area {
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+    justify-content: flex-end; /* ボタンを右寄せ */
+    gap: 20px; /* ボタン間の間隔を広げる */
 }
 
+/* 各ボタンのスタイル */
 .btn {
     padding: 10px 20px;
     font-size: 14px;
@@ -65,31 +74,22 @@ input[type="text"], input[type="date"], select {
     cursor: pointer;
 }
 
-.btn.delete {
-    background-color: #d9534f;
-    text-align: center;
-    color: white;
-    text-decoration: none;
-}
-
 .btn.save {
     background-color: #00b3ff;
     color: white;
-}
-
-.btn.delete:hover {
     text-decoration: underline;
-    background-color: #b02722;
 }
 
 .btn.save:hover {
-    text-decoration: underline;
     background-color: #0271a1;
 }
 
-.body {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* 中央に移動 */
+.btn.delete {
+    background-color: #d9534f;
+    color: white;
+    text-decoration: underline;
+}
+
+.btn.delete:hover {
+    background-color: #b02722;
 }

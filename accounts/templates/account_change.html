@@ -9,20 +9,27 @@
         {% csrf_token %}
     
         <label for="username">ユーザ名🔒</label>
-        <input type="text" id="username" name="name" value="{{ item.name }}" maxlength="10" readonly autocomplete="username">
+        <input type="text" id="username" name="name" value="{{ user.name }}" maxlength="10" readonly autocomplete="username">
         
         <label for="userid">ユーザID🔒</label>
-        <input type="text" id="userid" name="user_id" value="{{ item.user_id }}" maxlength="10" readonly>
+        <input type="text" id="userid" name="user_id" value="{{ user.user_id }}" maxlength="10" readonly>
         
-        <label for="old_password">古いパスワード</label>
-        <input type="password" id="old_password" name="old_password" class="form-control" maxlength="10"  required>
-
-        <label for="new_password1">新しいパスワード</label>
-        <input type="password" id="new_password1" name="new_password1" class="form-control" maxlength="10"  required>
-
-        <label for="new_password2">新しいパスワードの確認</label>
-        <input type="password" id="new_password2" name="new_password2" class="form-control" maxlength="10"  required>
-
+        <label for="password">パスワード</label>
+        <!-- <input type="password" id="password" name="password" class="form-control" maxlength="10"  required> -->
+         <p>{{ form.new_password1 }}</p>
+         <p>パスワード確認用:{{ form.new_password2 }}</p>
+         {% if form.errors %}
+             <ul class="errorlist">
+                {% for field in form %}
+                     {% for error in field.errors %}
+                         <li>{{ error }}</li>
+                     {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+             </ul>
+         {% endif %}
         <button type="submit">保存</button>
         <a href="{% url 'accounts:manage_account' %}">キャンセル</a>
     </form>

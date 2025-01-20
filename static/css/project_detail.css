@@ -1,49 +1,105 @@
 .container {
     padding: 20px;
     display: flex;
+    flex-direction: column; /* 子要素を縦に並べる */
     gap: 20px; /* セクション間の間隔を追加 */
-    flex-wrap: wrap; /* 子要素が横並びに収まりきらないときに折り返す */
+    position: relative; /* 親要素の位置設定 */
 }
 
 .teams-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(3, 1fr); /* 最大3列に制限 */
     gap: 20px;
-    flex: 3;
     padding-right: 20px;
-    height: 150px; /* 親要素の高さを設定 */
-    line-height: 150px; /* 親要素の高さと同じに設定 */
-    text-align: center; /* 横軸の中央に配置 */
-}
-
-.team-card {
-    background: #f9f9f9;
+    height: auto; /* 高さを自動調整 */
+    line-height: normal; /* 中央揃えの調整 */
+    text-align: center;
+    margin-top: 5px;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 15px;
-    min-height: 150px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* カードに影を追加 */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    justify-content: start; /* 左寄せに変更 */
+    margin-left: 0; /* グリッド全体を左寄せ */
+    max-width: 60%; /* 画面幅を制限 */
+    overflow: hidden; /* はみ出すアイテムを隠す */
+}
+
+.team-card {
+    display: flex;
+    flex-direction: column; /* 子要素を縦に並べる */
+    align-items: center;
+    justify-content: start; /* 上に詰める */
+    width: 250px;
+    height: 200px;
+    background-color: #ffffff;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin: 10px;
+    padding: 10px; /* 内側の余白を追加 */
+    font-size: 16px;
+    font-weight: bold;
+    color: #133eff;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.team-card a {
+    text-decoration: none;
+    color: #0084ff;
+}
+
+.team-card .team-name {
+    font-size: 18px; /* チーム名の文字サイズを調整 */
+    font-weight: bold;
+    color: #007bff; /* チーム名の色 */
+    margin-bottom: 10px; /* 下に余白を追加 */
+}
+
+.team-card .other-content {
+    font-size: 14px;
+    color: #383838;
 }
 
 .team-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* ホバー時に強調 */
+    box-shadow: 4px 4px 10px rgba(95, 95, 95, 0.2); /* ホバー時の影を強調 */
 }
 
-.new-team-button {
+.phase {
+    position: absolute;
+    top: 20px;   /* フェーズ情報を上に配置 */
+    right: 10px; /* 右寄せ */
+    z-index: 10; /* 他の要素より前に表示 */
+    font-size: 14px;
+}
+
+.team-add {
     margin-top: 20px;
-    color: #007bff;
     display: flex;
-    align-items: center;
-    gap: 5px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.2s ease;
+    justify-content: flex-start; /* 左寄せ */
+    margin-bottom: 20px; /* 下部に余白 */
+    gap: 10px; /* ボタンとフォームの間隔を縮める */
+    max-width: 30%; /* 画面幅を制限 */
 }
 
-.new-team-button:hover {
-    color: #0056b3; /* ホバー時の色変更 */
+.team-add form {
+    display: flex;
+    justify-content: flex-start; /* 左寄せ */
+    gap: 5px; /* フォームの中の要素間の間隔を縮める */
+}
+
+.team-add button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px; /* ボタンのパディングを調整してコンパクトに */
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.team-add button:hover {
+    background-color: #0056b3;
 }
 
 .tasks-panel {
@@ -54,6 +110,8 @@
     border: 1px solid #ddd;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* タスクパネルにも影を追加 */
     min-width: 250px; /* 最小幅を設定 */
+    margin-top: 20px; /* フェーズ情報との間に余白を追加 */
+    margin-left: auto; /* 右寄せ */
 }
 
 .task-list {
@@ -67,6 +125,7 @@
     border-bottom: 1px solid #eee;
     transition: background-color 0.3s ease;
     overflow: hidden; /* 内容がはみ出すのを防止 */
+    flex-direction: row; /* チェックボックスと名前を横並びに */
 }
 
 .task-item:hover {
@@ -79,6 +138,7 @@
 
 .task-checkbox {
     margin-right: 10px;
+    width: 25px;
 }
 
 .task-name {
@@ -86,6 +146,7 @@
     text-overflow: ellipsis; /* テキストが長すぎる場合省略記号を表示 */
     overflow: hidden; /* 内容がはみ出すのを防止 */
     white-space: nowrap; /* テキストが折り返されないように設定 */
+    max-width: 150px;
 }
 
 .task-date {
@@ -163,41 +224,60 @@
 }
 
 .modal-content {
-    background-color: white;
     margin: 10% auto;
     padding: 20px;
-    border: 1px solid #ddd;
+    width: 60%;
+    background: white;
     border-radius: 8px;
-    width: 50%;
-    position: relative;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* モーダルに影を追加 */
 }
 
 .close-button {
-    position: absolute;
-    top: 10px;
-    right: 15px;
+    float: right;
     font-size: 20px;
     font-weight: bold;
     color: #333;
     cursor: pointer;
-    transition: color 0.2s ease;
 }
 
 .close-button:hover {
-    color: #d9534f; /* 閉じるボタンのホバー時色変更 */
+    color: #d9534f;
 }
 
-.submit-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+.phase-boxes {
+    position: absolute;
+    top: 140px;   /* 上からの距離を指定 */
+    right: 100px;  /* 右からの距離を指定 */
+    max-width: 40%; /* 画面幅を制限 */
+    text-align: right; /* 右寄せにする */
+    z-index: 10;  /* 他の要素より前に表示 */
 }
 
-.submit-button:hover {
-    background-color: #0056b3;
+.tasks-panel {
+    position: absolute;
+    top: 200px;   /* 上からの距離を指定 */
+    right: 50px;  /* 右からの距離を指定 */
+    max-width: 50%; /* 画面幅を制限 */
+    text-align: right; /* 右寄せにする */
+    z-index: 10;  /* 他の要素より前に表示 */
 }
+
+@media (max-width: 1400px) {
+    .teams-grid {
+        max-width: 100%; /* チームのグリッド幅を100%に変更 */
+    }
+
+    .phase-boxes,
+    .tasks-panel {
+        position: relative; /* 絶対位置から相対位置に変更 */
+        top: auto; /* 上からの距離を解除 */
+        right: auto; /* 右からの距離を解除 */
+        left: 0; /* 左寄せ */
+        text-align: left; /* 左寄せ */
+        margin-left: 10px; /* 左側の余白を少し追加 */
+    }
+
+    .tasks-panel {
+        margin-top: 20px; /* フェーズ情報との間に余白を追加 */
+    }
+}
+

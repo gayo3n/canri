@@ -77,10 +77,21 @@
                 <!-- ボタンコンテナ -->
                 <div class="button-container">
                     <!-- 戻るボタン -->
-                    <button type="button" class="action-button back-button" onclick="goBack()">戻る</button>
+
                     <!-- 保存ボタン -->
                     <button type="submit" class="action-button next-button" onclick="setTeamMembers()">保存</button>
                 </div>
+            </form>
+            <form method="post" action="{% url 'canri_app:project_detail_create_team' %}">
+                {% csrf_token %}
+                <input type="hidden" name="project_id" value="{{ project_id }}">
+                <input type="hidden" name="project_name" value="{{ project_name }}">
+                <input type="hidden" name="project_description" value="{{ project_description }}">
+                <input type="hidden" name="start_date" value="{{ start_date }}">
+                <input type="hidden" name="end_date" value="{{ end_date }}">
+                <input type="hidden" name="member" value="{{ member }}">
+
+                <button type="submit" class="action-button">戻る</button>
             </form>
         </div>
     </div>

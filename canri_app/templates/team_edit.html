@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+<!--  新規プロジェクトプロジェクトチーム編集画面 -->
 {% load static %}
 
 {% block head %}
@@ -44,11 +44,8 @@
             <form method="post" action="{% url 'canri_app:team_edit' team_id=team.team_id %}">
                 {% csrf_token %}
                 <input type="hidden" name="team" id="team">
-                <input type="hidden" name="project_name" value="{{ project_name }}">
-                <input type="hidden" name="project_description" value="{{ project_description }}">
-                <input type="hidden" name="start_date" value="{{ start_date }}">
-                <input type="hidden" name="end_date" value="{{ end_date }}">
-                <input type="hidden" name="teams" value="{{ teams|safe }}">
+                <input type="hidden" name="project_id" value="{{ project_id }}">
+
                 <label for="team_name">チーム名</label>
                 <input type="text" name="team_name" id="team_name" value="{{ team.team_name }}" required>
                 
