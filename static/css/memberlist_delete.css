@@ -7,84 +7,89 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;  /* 中央寄せ */
 }
 
 /* ポップアップの内容 */
 .popup-content {
     background-color: #fff;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 300px;
-    position: relative;
+    padding: 30px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
     text-align: center;
-}
-
-/* 閉じるボタン */
-.close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 20px;
-    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* 削除ボタン */
 .confirm-delete-btn {
-    background-color: #28a745;
+    background-color: #eb0000;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 12px 25px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     text-decoration: none;
+    border-radius: 5px;
+    margin: 10px;
 }
 
 .confirm-delete-btn:hover {
-    background-color: #68e886;
-    transition: color 0.5s ease; /* 色の変化を滑らかに */
-    text-decoration: underline;
+    background-color: #da0000;
+    transition: background-color 0.3s ease;
 }
 
-/* 削除完了文字 */
-.popup-content {
-    background-color: #fff;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 300px;
-    position: relative;
-    text-align: center;
+/* キャンセルボタン */
+.cancel-btn {
+    background-color: #a5a5a5;
+    color: white;
+    padding: 12px 25px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 5px;
+    margin: 10px;
+    border: none;
 }
 
+.cancel-btn:hover {
+    background-color: #838383;
+    transition: background-color 0.3s ease;
+}
+
+/* ボタンコンテナ */
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* 削除確認メッセージ */
+.popup-content p {
+    font-size: 18px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* キャンセルリンクのスタイル */
 .cancel {
     text-decoration: none;
     color: #686868;
 }
 
 .cancel:hover {
-    color: #989898; /* ホバー時の色 */
-    transition: color 0.5s ease; /* 色の変化を滑らかに */
-    text-decoration: underline; /* ホバー時に下線を追加 */
+    color: #989898;
+    transition: color 0.5s ease;
+    text-decoration: underline;
 }
 
-.deleteok {
-    background-color: #fff;
-    margin: 15% auto;
-    padding: 20px;
-    width: 80%;
-    max-width: 600px;
-    position: relative;
-    text-align: center;
+/* モバイル対応 */
+@media (max-width: 480px) {
+    .modal-content {
+        width: 90%;
+        padding: 20px;
+    }
 }
 
-.delete-btn {
-    text-decoration: none;
-    color: #10822a;
-}
-
-.delete-btn:hover {
-    color: #4ad56a; /* ホバー時の色 */
-    transition: color 0.5s ease; /* 色の変化を滑らかに */
-    text-decoration: underline; /* ホバー時に下線を追加 */
-}
