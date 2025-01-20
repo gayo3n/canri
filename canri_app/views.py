@@ -1935,7 +1935,9 @@ def project_phase_coplete(request, project_id):
             print(phase_name)
             end_date4 = request.GET.get('expirationdate')
             print(end_date4)
-            enddate42 = datetime.strptime(end_date4, "%b. %d, %Y").date()
+            end_date4_cleaned = end_date4.replace(', midnight', '').strip()
+            enddate42 = datetime.strptime(end_date4_cleaned, "%b. %d, %Y").date()
+
 
 
             # # 必須項目の入力チェック
