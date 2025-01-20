@@ -141,3 +141,9 @@ class MySetPasswordForm(SetPasswordForm):
         if new_password1 and new_password2 and new_password1 != new_password2:
             raise ValidationError('パスワードが一致しません。')
         return cleaned_data
+    
+    def clean_new_password2(self):
+        new_password2 = self.cleaned_data.get('new_password2')
+        if self.user.check_password(new_password2):
+            raise forms.ValidationError('現在と同じパスワードです')
+        return new_password2
