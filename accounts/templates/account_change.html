@@ -22,7 +22,7 @@
              <ul class="errorlist">
                 {% for field in form %}
                      {% for error in field.errors %}
-                         <li>{{ error }}</li>
+                         <li><p>同じパスワードを入力してください</p></li>
                      {% endfor %}
                 {% endfor %}
                 {% for error in form.non_field_errors %}
