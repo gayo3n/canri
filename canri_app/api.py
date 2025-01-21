@@ -389,6 +389,7 @@ def save_team_api(request):
             team_name=team_name,
             count=len(team_members),  # メンバーの数をカウント
             objective=team_type,
+            memo='{team_name}のメモ',  # メモを設定
             creation_date=timezone.now()  # 現在の日時を設定
         )
 
