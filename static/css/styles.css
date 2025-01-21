@@ -9,11 +9,20 @@
     margin-bottom: 3px;
 }
 
+/* 右側のユーザー情報 */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* 右寄せ */
+}
+
+/* ユーザー情報コンテナ */
 .user-info-container {
     display: flex;
     align-items: center;
 }
 
+/* ユーザー情報 */
 .user-info {
     display: flex;
     flex-direction: column;
@@ -22,6 +31,7 @@
     margin-right: 20px; /* ログアウトリンクとの間にスペースを追加 */
 }
 
+/* ログアウトリンク */
 .logout-link {
     margin-left: 20px; /* 必要に応じて調整 */
 }
@@ -59,10 +69,6 @@
 
 .navbar-left a:hover {
     color: #007bff;
-}
-
-.user-link {
-    margin-left: 20px;
 }
 
 /* 小画面用のユーザー情報 */
