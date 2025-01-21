@@ -74,3 +74,8 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+.modal-content {
+    text-align: center;
+    font-size: 20px;
+}

@@ -11,7 +11,7 @@ class AccountAddForm(forms.Form):
     user_id = forms.CharField(
         required=True,
         max_length=10,
-        min_length=8,
+        min_length=6,
         widget=forms.TextInput(attrs={'placeholder': ''})
     )
     password = forms.CharField(
@@ -156,7 +156,7 @@ class MySetPasswordForm(SetPasswordForm):
         super().__init__(*args, **kwargs)
         self.fields['new_password1'].widget.attrs['class'] = '[class名]'
         self.fields['new_password2'].widget.attrs['class'] = '[class名]'
-        self.fields['new_password1'].widget.attrs['placeholder'] = '半角英字6文字以上'
+        self.fields['new_password1'].widget.attrs['placeholder'] = '半角英字8文字以上'
         self.fields['new_password2'].widget.attrs['placeholder'] = 'パスワード確認用'
         self.fields['new_password1'].widget.attrs['minlength'] = 6
         self.fields['new_password1'].widget.attrs['maxlength'] = 10

@@ -8,77 +8,84 @@
 {% endblock %}
 
 {% block content %}
-    <h2>メンバーリスト作成</h2>
-
+<div class="container">
+    <!-- メンバー検索セクション -->
     <section class="search-section">
-        <form method="GET">
+        <h2>メンバー検索</h2>
+        <form method="GET" class="form-inline">
             {% csrf_token %}
-            <input type="search" name="query" value="{{ request.GET.query }}" placeholder="メンバー名で検索"/>
-            <button type="submit" class="btn">検索</button>
+            <input type="search" name="query" value="{{ request.GET.query }}" placeholder="メンバー名を入力してください" class="input-field">
+            <button type="submit" class="btn-primary">検索</button>
         </form>
 
-        <h2>検索結果</h2>
-        <ul>
+        <h3>検索結果</h3>
+        <ul class="member-list">
             {% for member in members %}
                 <li>
                     <a href="{% url 'canri_app:member_edit' member_id=member.member_id %}">{{ member.name }}</a>
-                    <form method="POST" action="{% url 'canri_app:memberlist_make' %}">
+                    <form method="POST" action="{% url 'canri_app:memberlist_make' %}" class="inline-form">
                         {% csrf_token %}
                         <input type="hidden" name="member_id" value="{{ member.member_id }}">
-                        <button type="submit" class="btn">リストに追加</button>
+                        <button type="submit" class="btn-secondary">リストに追加</button>
                     </form>
                 </li>
             {% endfor %}
         </ul>
 
-        <form method="post" enctype="multipart/form-data">
+        <!-- CSVアップロード -->
+        <h3>CSVファイルからメンバーを追加</h3>
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
             {% csrf_token %}
-            <a>{{ form.as_p }}</a>
-            <button type="submit">アップロード</button>
+            <input type="file" name="csv_file" accept=".csv" class="file-input" required>
+            <button type="submit" class="btn-primary">アップロード</button>
         </form>
-        <form method="GET" action="{% url 'canri_app:member_make' %}">
+
+        <!-- 新規メンバー追加 -->
+        <form method="GET" action="{% url 'canri_app:member_make' %}" class="inline-form">
             {% csrf_token %}
-            <button type="submit">⊕新規メンバー追加</button>
+            <button type="submit" class="btn-add">⊕ 新規メンバー追加</button>
         </form>
     </section>
 
+    <!-- 選択されたメンバーセクション -->
     <section class="selected-members-section">
-        <p>リスト内メンバー</p>
-        <ul>
+        <h2>選択されたメンバー</h2>
+        <ul class="selected-list">
             {% for member_id in memberID_list %}
                 <li>
-                    {{ member_dict|get_item:member_id }} <!-- member_id に対応する name を取得 -->
-                    <!-- 削除用のフォーム -->
-                    <form method="POST" action="{% url 'canri_app:memberlist_make' %}">
+                    {{ member_dict|get_item:member_id }}
+                    <form method="POST" action="{% url 'canri_app:memberlist_make' %}" class="inline-form">
                         {% csrf_token %}
                         <input type="hidden" name="delete_member_id" value="{{ member_id }}">
-                        <button type="submit" class="delete-btn">️削除</button>
+                        <button type="submit" class="btn-danger">削除</button>
                     </form>
                 </li>
             {% endfor %}
         </ul>
     </section>
 
+    <!-- メンバーリスト保存セクション -->
     <section class="save-section">
-        <form method="post" action="{% url 'canri_app:memberlist_make_complete' %}">
+        <h2>メンバーリスト保存</h2>
+        <form method="post" action="{% url 'canri_app:memberlist_make_complete' %}" class="save-form">
             {% csrf_token %}
-            <input type="text" name="member_list_name" placeholder="メンバーリスト名を入力してください">
-            <br>
-            <input type="text" name="member_list_details" placeholder="メンバーリストの詳細を入力してください">
+            <input type="text" name="member_list_name" placeholder="リスト名を入力してください" class="input-field" required>
+            <textarea name="member_list_details" placeholder="リスト詳細を入力してください" class="textarea-field"></textarea>
             {% if messages %}
-                <ul>
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
+            <ul class="messages">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
             {% endif %}
             {% for member_id in memberID_list %}
             <input type="hidden" name="memberID_list" value="{{ member_id }}">
             {% endfor %}
-            <br>
-            <button class="memberlist_save" type="submit">保存</button>
-            <button class="memberlist_cancel" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
-
+            <div class="button-group">
+                <button class="btn-success" type="submit">保存</button>
+                <button class="btn-light" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
+            </div>
         </form>
     </section>
+</div>
 {% endblock %}
