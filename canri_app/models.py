@@ -175,7 +175,7 @@ class ProjectProgressStatus(models.Model):
     phase_name = models.CharField(max_length=255)
     complete_flag = models.BooleanField(default=False)
     deletion_flag = models.BooleanField(default=False)
-    expiration_date = models.DateTimeField()
+    expiration_date = models.DateField()
     creation_date = models.DateTimeField()
     complete_date = models.DateTimeField(null=True, blank=True)
 

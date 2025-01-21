@@ -1,5 +1,5 @@
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm
-from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm, SetPasswordForm
+from django.contrib.auth import get_user_model, authenticate
 from .models import User
 from django import forms
 from django.core.exceptions import ValidationError
@@ -66,13 +66,78 @@ class LoginForm(AuthenticationForm):
     pass
 
 
-class CustomPasswordChangeForm(PasswordChangeForm):
-    old_password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
-    new_password1 = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
-    new_password2 = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control'}))
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        if commit:
-            user.save()
-            print("Password has been saved to the database.")
-            return user
+class CustomPasswordChangeForm(forms.Form):
+    current_password = forms.CharField(
+        required=True,
+        max_length=255,
+        min_length=6,
+        widget=forms.PasswordInput(
+        )
+    )
+
+    new_password = forms.CharField(
+        required=True,
+        max_length=255,
+        min_length=6,
+        widget=forms.PasswordInput(
+        )
+    )
+
+    confirm_new_password = forms.CharField(
+        required=True,
+        max_length=255,
+        min_length=6,
+        widget=forms.PasswordInput(
+        )
+    )
+
+    def __init__(self, _user_name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._user_name = _user_name
+
+    def clean(self):
+        cleaned_data = super(CustomPasswordChangeForm, self).clean()
+        print(cleaned_data)
+        return cleaned_data
+    
+    def clean_current_password(self):
+        current_password = self.cleaned_data['current_password']
+        if self._user_name and current_password:
+            auth_result = authenticate(
+                username = self._user_name,
+                password = current_password
+            )
+            if not auth_result:
+                raise ValidationError('パスワードが間違っています')
+        return current_password
+    
+    def clean_new_password(self):
+        new_password = self.cleaned_data['newpassword']
+        return new_password
+    
+    def clean_confirm_new_password(self):
+        confirm_new_password = self.cleaned_data['confirm_new_password']
+        if confirm_new_password != self.cleaned_data['new_password']:
+            raise ValidationError('パスワードが一致しません')
+        return confirm_new_password
+    
+
+class MySetPasswordForm(SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['new_password1'].widget.attrs['class'] = '[class名]'
+        self.fields['new_password2'].widget.attrs['class'] = '[class名]'
+        self.fields['new_password1'].widget.attrs['placeholder'] = '半角英字6文字以上'
+        self.fields['new_password2'].widget.attrs['placeholder'] = 'パスワード確認用'
+        self.fields['new_password1'].widget.attrs['minlength'] = 6
+        self.fields['new_password1'].widget.attrs['maxlength'] = 10
+        self.fields['new_password2'].widget.attrs['minlength'] = 6
+        self.fields['new_password2'].widget.attrs['maxlength'] = 10
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password1 = cleaned_data.get('new_password1')
+        new_password2 = cleaned_data.get('new_password2')
+        if new_password1 and new_password2 and new_password1 != new_password2:
+            raise ValidationError('パスワードが一致しません。')
+        return cleaned_data

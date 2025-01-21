@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/500.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<body class="500error">
+    <div class="change">
+        <h2>データベースとの接続に失敗しました</h2>
+        <a href="{% url 'canri_app:index' %}">→システムメニューへ</a>
+    </div>
+</body>
+
+
+{% endblock %}
