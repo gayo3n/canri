@@ -1388,11 +1388,11 @@ class TeamMemberEditSaveView(TemplateView):
 
         return JsonResponse({'status': 'success'})
 #プロジェクトリスト
-class ProjectlistView(TemplateView):
-    template_name="projectlist.html"
+# class ProjectlistView(TemplateView):
+#     template_name="projectlist.html"
 # プロジェクトリスト表示
-class progress_within_ProjectlistView(TemplateView):
-    template_name="progress_within_projectlist.html"
+# class progress_within_ProjectlistView(TemplateView):
+#     template_name="progress_within_projectlist.html"
 # プロジェクトリスト表示
 def projectListView(request):
     template_name = "progress_within_projectlist.html"
@@ -1444,25 +1444,15 @@ def project_detail_view(request, project_id):
 
 
 
-# プロジェクト詳細変更モーダル保存時
+# プロジェクト詳細変更保存時
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
 from .models import Project
 from django.views.decorators.http import require_http_methods
 @require_http_methods(["GET", "POST"])
-# プロジェクト詳細変更モーダル保存時
+# プロジェクト詳細変更保存時
 def project_detail_update(request, project_id):
-    """
-    プロジェクト詳細の更新処理を行うビュー関数
-
-    Args:
-        request (HttpRequest): HTTPリクエスト
-        project_id (int): 更新対象のプロジェクトID
-
-    Returns:
-        HttpResponse: プロジェクト詳細ページまたはエラーメッセージを含むレンダリング結果
-    """
     # テンプレート名の定義
     templatename = f"project_detail.html"
 
@@ -1519,15 +1509,12 @@ def project_detail_update(request, project_id):
             # プロジェクトを取得
             #project_idに当てはまるprojectテーブルのデータを取得
             project = get_object_or_404(Project, project_id=project_id)
-
             #プロジェクトに関連するチームを取得
             #プロジェクト所属チームテーブルのprojectに当てはまるデータを取得
             teams = ProjectAffiliationTeam.objects.filter(project=project,team__deletion_flag=0).select_related('team')
-
             # プロジェクトに関連する���ェーズを取得
             # 上と同じ感じ
             phases = ProjectProgressStatus.objects.filter(project=project,deletion_flag=0).order_by('expiration_date')
-
             context = {
                 #プロジェクトテーブルの情報
                 'project': project,
@@ -1538,10 +1525,6 @@ def project_detail_update(request, project_id):
             }
             # 情報を保持した状態でrender
             return render(request, 'project_detail.html', context)
-
-
-
-
 
         except Exception as e:
             # 予期しないエラーが発生した場合のエラーハンドリング
@@ -1556,7 +1539,7 @@ def project_detail_update(request, project_id):
 
     # GETリクエストの場合、プロジェクト詳細ページを表示
     return render(request, templatename, {'project': project})
-# プロジェクト削除
+# プロジェクト完了
 def ProjectComplete(request, project_id):
     # テンプレート名の定義
     template_name = "progress_within_projectlist.html"
@@ -2006,8 +1989,6 @@ def project_phase_coplete(request, project_id):
     # # GETリクエストの場合、プロジェクト詳細ページを表示
     # return render(request, templatename, {'project': project})
 
-
-
 # 進行中プロジェクト用のチーム追加用のビュー
 # 元々のからteamを削除
 #プロジェクトIDを追加
@@ -2023,27 +2004,17 @@ class project_detail_Create_TeamView(TemplateView):
         end_date = request.POST.get('end_date')         # 終了日
 
         projectaffilitionteam_all= ProjectAffiliationTeam.objects.all()  #プロジェクト所属チームを全部取得
-
-
         teams=projectaffilitionteam_all.filter(project=project_id)      #プロジェクト所属チームからプロジェクト情報を利用して
                                                                         #プロジェクトに所属するものを取得
-
         # teamにプロジェクトに所属しているチームが入っている
         # projectaffilitionteamテーブルの
         # チームIDを取得
         # それをもとにチームテーブルから情報を取得
         #そこからメンバー情報を抽出
-
-
         team_ids=teams.values_list('team_id',flat=True)                 #テーブルからteam_idだけ取得
         #team_idsにはteeam_idだけが入っている
-
-        #エラー吐く
         teammembers = TeamMember.objects.filter(team_id__in=team_ids)  # チームIDに基づいてメンバーをフィルタリング チームが同じ奴だけ取得
         members = list(teammembers.values_list('member_id', flat=True))
-
-
-
         # 入力された情報を保持したまま create_team.html テンプレートをレンダリング
         return render(request, self.template_name, {
             'project_id':project_id,
