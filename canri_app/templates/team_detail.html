@@ -356,7 +356,7 @@
                 const row = document.createElement('tr');
                 row.dataset.memberId = checkbox.value;
                 row.innerHTML = `
-                    <td><a href="#" class="member-link" onclick="openMemberEditWindow(${checkbox.value})">${checkbox.parentElement.nextElementSibling.textContent}</td>
+                    <td><a href="#" class="member-link" onclick="openMemberEditWindow(event, ${checkbox.value})">${checkbox.parentElement.nextElementSibling.textContent}</td>
                     <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
                 `;
                 memberTableBody.insertBefore(row, memberTableBody.lastElementChild);
