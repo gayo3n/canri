@@ -43,6 +43,8 @@ class AccountAddForm(forms.Form):
     def clean_name(self):
         name = self.cleaned_data['name']
         # 名前の追加バリデーションはここに記述可能
+        if User.objects.filter(name=name).exists():
+            raise ValidationError('この名前のユーザーは既に存在しています。')
         return name
 
 
@@ -64,23 +66,30 @@ class UserForm(forms.ModelForm):
                 'unique': 'この名前のユーザーは既に存在しています。'
             }
         }
+    def clean_user_id(self):
+        user_id = self.cleaned_data['user_id']
+        if not user_id.isdigit():
+            raise ValidationError('ユーザーIDは数字のみでなければなりません。')
+        if User.objects.filter(user_id=user_id).exists():
+            raise ValidationError('すでに使用されているIDです')
+        return user_id
+
+    def clean_password(self):
+        password = self.cleaned_data['password']
+        # パスワードの追加バリデーションはここに記述可能
+        return password
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        # 名前の追加バリデーションはここに記述可能
+        if User.objects.filter(name=name).exists():
+            raise ValidationError('この名前のユーザーは既に存在しています。')
+        return name
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs['class'] = 'form-control'
-
-    def new_username(self):
-        name = self.changed_data['name']
-        if User.objects.filter(name=name):
-            raise ValidationError('この名前のユーザーは既に存在しています。')
-        return name
-    
-    def new_user_id(self):
-        user_id = self.changed_data['user_id']
-        if User.objects.filter(user_id=user_id):
-            raise ValidationError('このユーザーIDは既に使用されています。')
-        return user_id
 
 class LoginForm(AuthenticationForm):
     pass

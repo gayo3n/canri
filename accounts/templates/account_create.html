@@ -9,21 +9,15 @@
     <div class="account_create">
         <div>
             <input type="text" placeholder="ユーザ名" id="username" name="name" required>
-            {% if form.name.errors %}
-                <div class="error">{{ form.name.errors }}</div>
-            {% endif %}
+            {{ form.name.errors }}
         </div>
         <div>
             <input type="text" pattern="^[0-9]+$" placeholder="アカウントID" id="user_id" name="user_id" maxlength="10"  pattern="\d*" required>
-            {% if form.user_id.errors %}
-                <div class="error">{{ form.user_id.errors }}</div>
-            {% endif %}
+            {{ form.user_id.errors }}
         </div>
         <div>
             <input type="text"  placeholder="パスワード" id="password" name="password" maxlength="10" required>
-            {% if form.password.errors %}
-                <div class="error">{{ form.password.errors }}</div>
-            {% endif %}
+            {{ form.password.errors }}
         </div>
         <div>
             <td><button type="submit" class="btn btn-danger">作成</button></td>

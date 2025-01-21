@@ -148,7 +148,7 @@ def create(request):
         form =UserForm(request.POST)
         if form.is_valid():
             user_id = form.cleaned_data['user_id']
-            name = form.changed_data['name']
+            name = form.cleaned_data['name']
             user_id_exists = User.objects.filter(user_id=user_id).exists()
             name_exists = User.objects.filter(name=name).exists()
 
