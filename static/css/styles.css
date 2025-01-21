@@ -16,6 +16,18 @@
     justify-content: flex-end; /* 右寄せ */
 }
 
+.navbar-right a {
+    margin-right: 20px;
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+}
+
+.navbar-right a:hover {
+    color: #007bff;
+}
+
+
 /* ユーザー情報コンテナ */
 .user-info-container {
     display: flex;
