@@ -61,7 +61,7 @@ input[type="text"], input[type="date"], select {
 /* ボタンエリアのスタイル */
 .button-area {
     display: flex;
-    justify-content: flex-end; /* ボタンを右寄せ */
+    justify-content: center; /* ボタンを中央寄せ */
     gap: 20px; /* ボタン間の間隔を広げる */
 }
 

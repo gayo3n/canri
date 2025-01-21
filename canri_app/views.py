@@ -1260,6 +1260,7 @@ class TeamEditView(TemplateView):
         teams = request.POST.get('teams')
 
         return HttpResponseRedirect(f"{reverse('canri_app:team_edit_complete')}?project_name={project_name}&project_description={project_description}&start_date={start_date}&end_date={end_date}&teams={teams}&team_members={team_members}")
+
 #チーム編集完了
 class TeamEditCompleteView(TemplateView):
     template_name = "new_project_edit.html"
@@ -1283,6 +1284,7 @@ class TeamEditCompleteView(TemplateView):
         }
 
         return render(request, self.template_name, {'project': project_data, 'teams': teams})
+    
 #チーム削除
 class TeamDeleteView(TemplateView):
     template_name = "new_project_edit.html"

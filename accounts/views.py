@@ -147,11 +147,19 @@ def create(request):
         # リクエストメソッドがPOSTの場合、POSTデータでフォームをインスタンス化
         form =UserForm(request.POST)
         if form.is_valid():
-            user_id=form.cleaned_data['user_id']
-            if User.objects.filter(user_id=user_id).exists():
+            user_id = form.cleaned_data['user_id']
+            name = form.cleaned_data['name']
+            user_id_exists = User.objects.filter(user_id=user_id).exists()
+            name_exists = User.objects.filter(name=name).exists()
+
+            if user_id_exists:
                 form.add_error('user_id', 'このアカウントIDは既に使用されています。')
-            else:
+            
+            if name_exists:
+                form.add_error('name', 'この名前のユーザーはすでに存在しています。')
+            
                 # フォームが有効な場合、クリーンデータを使用して新しいユーザーを作成
+            if not user_id_exists and not name_exists:    
                 user = User.objects.create_user(
                     user_id=form.cleaned_data['user_id'],
                     name=form.cleaned_data['name'],
@@ -197,6 +205,7 @@ def account_change_complete(request, pk):
     if request.method == 'POST':
         form = MySetPasswordForm(user=user, data=request.POST)
         if form.is_valid():
+            # ユーザー情報を保存
             form.save()
             return redirect('accounts:account_change_complete', pk=pk)
         else:
