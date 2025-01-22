@@ -85,6 +85,14 @@
     text-decoration: underline;
 }
 
+
+.deleteok {
+    text-align:center;
+    font-size: 18px;
+}
+
+
+
 /* モバイル対応 */
 @media (max-width: 480px) {
     .modal-content {
