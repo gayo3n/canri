@@ -17,7 +17,8 @@
         <div>
             <p class="password">パスワード:</p>
             <p>{{ form.new_password1 }}</p>
-            <p class="password2">※パスワード(確認用):{{ form.new_password2 }}</p>
+            <p class="password2">※パスワード(確認用):</p>
+            <p>{{ form.new_password2 }}</p>
             {% if form.errors %}
                 <ul class="errorlist">
                     {% for field in form %}
