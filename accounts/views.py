@@ -62,31 +62,6 @@ class AccLoginView(LoginView):
         form.add_error(None, 'ログインに失敗しました。')
         return render(request, 'login.html', {'form': form})
 
-
-    # def post(self, request):
-    #     if request.method == "POST":
-    #         form = LoginForm(request, data=request.POST)
-    #         if form.is_valid():
-    #             user = form.get_user()
-    #             if user:
-    #                 login(request, user)
-    #                 return redirect('accounts:login_complete')
-    #     else:
-    #         form = LoginForm()
-        
-    #     param = {
-    #         'form': form,
-    #     }
-    #     return render(request, 'login.html', param)
-    
-    # def get(self, request):
-    #     form = LoginForm()
-    #     param = {
-    #         'form': form,
-    #     }
-    #     return render(request, 'login.html', param)
-
-
 def logout(request):
     auth_logout(request)
     request.session.flush()
