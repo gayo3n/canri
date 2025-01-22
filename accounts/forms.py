@@ -43,6 +43,8 @@ class AccountAddForm(forms.Form):
     def clean_name(self):
         name = self.cleaned_data['name']
         # 名前の追加バリデーションはここに記述可能
+        if User.objects.filter(name=name).exists():
+            raise ValidationError('この名前のユーザーは既に存在しています。')
         return name
 
 
@@ -56,6 +58,33 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['user_id', 'password', 'name', 'administrator_flag']
+        error_messages = {
+            'user_id':{
+                'unique': 'このアカウントIDは既に使用されています。'
+            },
+            'name':{
+                'unique': 'この名前のユーザーは既に存在しています。'
+            }
+        }
+    def clean_user_id(self):
+        user_id = self.cleaned_data['user_id']
+        if not user_id.isdigit():
+            raise ValidationError('ユーザーIDは数字のみでなければなりません。')
+        if User.objects.filter(user_id=user_id).exists():
+            raise ValidationError('すでに使用されているIDです')
+        return user_id
+
+    def clean_password(self):
+        password = self.cleaned_data['password']
+        # パスワードの追加バリデーションはここに記述可能
+        return password
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        # 名前の追加バリデーションはここに記述可能
+        if User.objects.filter(name=name).exists():
+            raise ValidationError('この名前のユーザーは既に存在しています。')
+        return name
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -141,3 +170,9 @@ class MySetPasswordForm(SetPasswordForm):
         if new_password1 and new_password2 and new_password1 != new_password2:
             raise ValidationError('パスワードが一致しません。')
         return cleaned_data
+    
+    def clean_new_password2(self):
+        new_password2 = self.cleaned_data.get('new_password2')
+        if self.user.check_password(new_password2):
+            raise forms.ValidationError('現在と同じパスワードです')
+        return new_password2
