@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model, authenticate
 from .models import User
 from django import forms
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 
 # 現在のユーザーモデルを取得
 User = get_user_model()
@@ -11,13 +12,13 @@ class AccountAddForm(forms.Form):
     user_id = forms.CharField(
         required=True,
         max_length=10,
-        min_length=6,
+        min_length=8,
         widget=forms.TextInput(attrs={'placeholder': ''})
     )
     password = forms.CharField(
         required=True,
         max_length=10,
-        min_length=6,
+        min_length=8,
         widget=forms.PasswordInput(attrs={'placeholder': '******'})
     )
     name = forms.CharField(
@@ -158,10 +159,16 @@ class MySetPasswordForm(SetPasswordForm):
         self.fields['new_password2'].widget.attrs['class'] = '[class名]'
         self.fields['new_password1'].widget.attrs['placeholder'] = '半角英数字+半角英字8文字以上'
         self.fields['new_password2'].widget.attrs['placeholder'] = 'パスワード確認用'
-        self.fields['new_password1'].widget.attrs['minlength'] = 6
+        self.fields['new_password1'].widget.attrs['minlength'] = 8
         self.fields['new_password1'].widget.attrs['maxlength'] = 10
-        self.fields['new_password2'].widget.attrs['minlength'] = 6
+        self.fields['new_password2'].widget.attrs['minlength'] = 8
         self.fields['new_password2'].widget.attrs['maxlength'] = 10
+
+        alphanumeric_validator = RegexValidator(
+            regex='^[a-zA-Z0-9]*$',
+            message='パスワードは半角英数字を入力してください。'
+        )
+        self.fields['new_password1'].validators.append(alphanumeric_validator)
 
     def clean(self):
         cleaned_data = super().clean()
