@@ -23,9 +23,9 @@
         <div class="project-name">
             <a href="{% url 'canri_app:past_project_view' project.project_id %}" class="project_a">{{ project.project_name }}</a>
         </div>
-        <div class="project-period">プロジェクト開始日：<br>&emsp;{{ project.project_start_date|date:"Y年m月d日" }}</div>
-        <div class="project-complete">プロジェクト完了日：<br>&emsp;{{ project.project_end_date|date:"Y年m月d日" }}</div>
-        <div class="project-details">プロジェクト詳細：<br>&emsp;{{ project.project_detail }}</div>
+        <div class="project-period">プロジェクト開始日：<br>{{ project.project_start_date|date:"Y年m月d日" }}</div>
+        <div class="project-complete">プロジェクト完了日：<br>{{ project.project_end_date|date:"Y年m月d日" }}</div>
+        <div class="project-details">プロジェクト詳細：<br>{{ project.project_detail }}</div>
         <!-- 削除確認モーダルを開くリンク -->
         <form method="POST" action="{% url 'canri_app:past_project_deleting_confirmation' project.project_id %}">
             {% csrf_token %}
