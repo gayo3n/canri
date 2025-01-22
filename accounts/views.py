@@ -62,31 +62,6 @@ class AccLoginView(LoginView):
         form.add_error(None, 'ログインに失敗しました。')
         return render(request, 'login.html', {'form': form})
 
-
-    # def post(self, request):
-    #     if request.method == "POST":
-    #         form = LoginForm(request, data=request.POST)
-    #         if form.is_valid():
-    #             user = form.get_user()
-    #             if user:
-    #                 login(request, user)
-    #                 return redirect('accounts:login_complete')
-    #     else:
-    #         form = LoginForm()
-        
-    #     param = {
-    #         'form': form,
-    #     }
-    #     return render(request, 'login.html', param)
-    
-    # def get(self, request):
-    #     form = LoginForm()
-    #     param = {
-    #         'form': form,
-    #     }
-    #     return render(request, 'login.html', param)
-
-
 def logout(request):
     auth_logout(request)
     request.session.flush()
@@ -103,8 +78,8 @@ class Manage_Account(TemplateView):
     template_name = "management_account.html"
 
     def get(self, request, *args, **kwargs):
-        # 削除フラグがFalseのユーザーのみを取得
-        users = User.objects.filter(deletion_flag=False)
+        # 削除フラグがFalseかつスーパーユーザーでないユーザーのみを取得
+        users = User.objects.filter(deletion_flag=False, is_superuser=False)
         
         context = {
             'users': users,  # 全ユーザーをテンプレートに渡す
@@ -117,21 +92,23 @@ class Manage_Account(TemplateView):
 def account_change_employee(request, pk):
     user = get_object_or_404(User, pk=pk)
     if request.method == "POST":
-        user.name = request.POST.get('name')
-        password = request.POST.get('password')
-        user.set_password(password)
-        user.save()
-
-        # 再ログイン処理
-        user = authenticate(request, username=user.name, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect("accounts:account_change_complete_employee", pk=pk)
-        else:
-            return redirect("accounts:login")
+        form = MySetPasswordForm(user=user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            # 再ログイン処理
+            password = form.cleaned_data.get('new_password1')
+            user = authenticate(request, username=user.name, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect("accounts:account_change_complete_employee", pk=pk)
+            else:
+                return redirect("accounts:login")
+    else:
+        form = MySetPasswordForm(user=user)
 
     context = {
-        "user": user
+        "user": user,
+        "form": form
     }
     return render(request, 'account_change_employee.html', context)
 
@@ -212,7 +189,7 @@ def account_change_complete(request, pk):
             for field, errors in form.errors.items(): 
                 for error in errors: print(f'Error in {field}: {error}') # 送信されたデータのデバッグ 
             print(f'POST data: {request.POST}')
-            # 入力されたパスワードが確認用と違う場合エラーメッセージと変更画面を表示
+            # 入力されたパスワードが確認���と違う場合エラーメ��セージと変更画面を表示
             return render(request, 'account_change.html', {'form':form, 'user':user})
     else:
         form = MySetPasswordForm(user=user)

@@ -59,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 );
-
 // ---------------------------------ここまで-----------------------------------------
 
 // --------フェーズ追加モーダルの処理のjavascript-------------------------
@@ -122,20 +121,25 @@ document.addEventListener("DOMContentLoaded", () => {
     openButtons3.forEach(button => {
         button.addEventListener("click", (e) => {
             e.preventDefault(); // リンクのデフォルト動作（遷移）を防止
-            // データ属性からフェーズ情報を取得
+
             const phaseId = button.getAttribute("data-phase-id");
             const phaseName = button.getAttribute("data-phase-name");
-            const phaseDate = button.getAttribute("data-phase-date");
+            let phaseDate = button.getAttribute("data-phase-date"); // "2025年10月31日" の形式
 
-            // モーダル内のフォームにフェーズ情報を設定
+            // "2025年10月31日" を "2025-10-31" に変換する処理
+            const dateParts = phaseDate.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+            const formattedDate = `${dateParts[1]}-${dateParts[2].padStart(2, '0')}-${dateParts[3].padStart(2, '0')}`;
+
+            console.log(`Formatted Date: ${formattedDate}`); // デバッグ用
+
             document.getElementById("modalPhaseId").value = phaseId;
             document.getElementById("modalPhaseName").value = phaseName;
-            document.getElementById("modalPhaseDate").value = phaseDate;
+            document.getElementById("modalPhaseDate").value = formattedDate; // フォーマット済みの日付
 
-            // モーダルを表示
             modal3.style.display = "block";
         });
     });
+
 
     // モーダルを閉じる処理
     closeButton3.addEventListener("click", () => {
@@ -431,7 +435,7 @@ document.addEventListener("DOMContentLoaded", () => {
             {% for phase in phases %}
                 <div class="task-item">
                     <!-- チェックボックス(完了時はチェックがつく) -->
-                    <input type="checkbox" {% if phase.complete_flag %}checked{% endif %}>
+                    <input type="checkbox" disabled {% if phase.complete_flag %}checked{% endif %}>
                     <!-- フェーズIDをhiddenで送信 -->
                     <input type="hidden" name="phase_id" value="{{ phase.progress_status_id }}">
                     <input type="hidden" name="expirationdate" value="{{ phase.expiration_date }}">

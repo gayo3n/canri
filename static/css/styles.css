@@ -43,6 +43,10 @@
     margin-right: 20px; /* ログアウトリンクとの間にスペースを追加 */
 }
 
+.user-into {
+    text-indent: 1em;
+}
+
 /* ログアウトリンク */
 .logout-link {
     margin-left: 20px; /* 必要に応じて調整 */

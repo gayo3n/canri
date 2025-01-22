@@ -78,3 +78,26 @@ input[type="password"] {
     text-decoration: underline; /* ホバー時に下線を追加 */
 }
 
+.name {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+    color: #555;
+    text-align: left; /* 左寄せ */
+}
+
+.password {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+    color: #555;
+    text-align: left; /* 左寄せ */
+}
+
+.password2 {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+    color: #555;
+    text-align: left; /* 左寄せ */
+}

@@ -10,11 +10,27 @@
     <form action="{% url 'accounts:account_change_employee' pk=user.pk %}" method="post">
         {% csrf_token %}
         <div>
+            <p class="name">ユーザー名:</p>
             <input type="text" id="user_name" name="name" placeholder="名前を入力してください" value="{{ user.name }}" maxlength="10" required>
         </div>
 
         <div>
-            <input type="password" id="user_password" name="password" placeholder="パスワードを入力してください" maxlength="10" required>
+            <p class="password">パスワード:</p>
+            <p>{{ form.new_password1 }}</p>
+            <p class="password2">※パスワード(確認用):</p>
+            <p>{{ form.new_password2 }}</p>
+            {% if form.errors %}
+                <ul class="errorlist">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li><p>{{ error }}</p></li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         </div>
 
         <div class="button-group">
