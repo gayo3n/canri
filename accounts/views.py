@@ -78,8 +78,8 @@ class Manage_Account(TemplateView):
     template_name = "management_account.html"
 
     def get(self, request, *args, **kwargs):
-        # 削除フラグがFalseのユーザーのみを取得
-        users = User.objects.filter(deletion_flag=False)
+        # 削除フラグがFalseかつスーパーユーザーでないユーザーのみを取得
+        users = User.objects.filter(deletion_flag=False, is_superuser=False)
         
         context = {
             'users': users,  # 全ユーザーをテンプレートに渡す
