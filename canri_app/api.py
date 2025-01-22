@@ -4,7 +4,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic import CreateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Team, ProjectAffiliationTeam, Project, Category, TeamMember
+from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Team, ProjectAffiliationTeam, Project, Category, TeamMember, CareerInformation
 import json
 from django.utils import timezone
 
@@ -16,12 +16,16 @@ def get_member_data(request, member_id):
     try:
         # 指定された member_id に一致するメンバー情報を取得
         member = Member.objects.get(member_id=member_id)
-        carrer = MemberCareer.objects.get(member=member_id)
         memberparameter = MemberParameter.objects.get(member=member_id)
         try:
             memberjob = JobTitleInformation.objects.get(job_title_id=member.job_id)
         except JobTitleInformation.DoesNotExist:
             memberjob = None
+        try:
+            career = MemberCareer.objects.get(member=member.member_id)
+        except MemberCareer.DoesNotExist:
+            career = None
+        
         # 同じメンバーIDを持つ資格を3件まで取得
         memberqualification = MemberHoldingQualification.objects.filter(member=member_id)[:3]
         # メンバー情報を辞書として返す
@@ -29,8 +33,8 @@ def get_member_data(request, member_id):
             'member_id': member.member_id,#メンバーID
             'name': member.name,#名前
             'birthdate': member.birthdate,#生年月日
-            'career_id': carrer.career.career_id,#職歴ID
-            'career_name': carrer.career.career,#職歴名
+            'career_id': career.career.career if career else None,#職歴ID
+            'career_name': CareerInformation.objects.get(career=career.career.career).career if career else None,#職歴名
             'job_id': member.job_id,#役職ID
             'job_title': memberjob.job_title,#役職名
             'mbti_id': member.mbti.mbti_id,#MBTIタイプID
@@ -68,6 +72,7 @@ def get_members_by_member_list(request, category_id):
         # 指定された category_id に一致する MemberList を取得
         member_lists = MemberList.objects.filter(category=category_id, deletion_flag=False)
         members = Member.objects.filter(memberlist__in=member_lists, deletion_flag=False).distinct()
+        
 
         # メンバー情報を辞書形式で返す
         members_data = []
@@ -310,17 +315,21 @@ def get_team_members(request, team_id):
         for team_member in team_members:
             member = team_member.member
             memberparameter = MemberParameter.objects.get(member=member)
-            carrer = MemberCareer.objects.get(member=member)
             try:
                 memberjob = JobTitleInformation.objects.get(job_title_id=member.job_id)
             except JobTitleInformation.DoesNotExist:
                 memberjob = None
+            try:
+                career = MemberCareer.objects.get(member=member)
+            except MemberCareer.DoesNotExist:
+                career = None
+            
             member_data.append({
-                'member_id': member.member_id,#メンバーID
+            'member_id': member.member_id,#メンバーID
             'name': member.name,#名前
             'birthdate': member.birthdate,#生年月日
-            'career_id': carrer.career.career_id,#職歴ID
-            'career_name': carrer.career.career,#職歴名
+            'career_id': career.career.career if career else None,#職歴ID
+            'career_name': CareerInformation.objects.get(career=career.career.career).career if career else None,#職歴名
             'job_id': member.job_id,#役職ID
             'job_title': memberjob.job_title,#役職名
             'mbti_id': member.mbti.mbti_id,#MBTIタイプID
@@ -395,20 +404,21 @@ def save_team_api(request):
 
         # チームメンバーを追加
         for member_id in team_members:
-            member = Member.objects.get(member_id=member_id)  # メンバーを取得
-            TeamMember.objects.create(
-                team=team,
-                member=member,
-                creation_date=timezone.now(),  # 作成日時を設定
-                update_date=timezone.now()  # 更新日時を設定
-            )
+            try:
+                member = Member.objects.get(member_id=member_id)  # メンバーを取得
+                TeamMember.objects.create(
+                    team=team,
+                    member=member,
+                    creation_date=timezone.now(),  # 作成日時を設定
+                    update_date=timezone.now()  # 更新日時を設定
+                )
+            except Member.DoesNotExist:
+                return JsonResponse({'error': f'Member with id {member_id} not found'}, status=404)  # メンバーが見つからないエラー
 
         return JsonResponse({'team_id': team.team_id})  # 作成したチームのIDを返す
 
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON'}, status=400)  # JSONデコードエラー
-    except Member.DoesNotExist:
-        return JsonResponse({'error': 'Member not found'}, status=404)  # メンバーが見つからないエラー
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)  # その他のエラー
 
