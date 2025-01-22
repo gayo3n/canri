@@ -1737,86 +1737,86 @@ def project_phase_edit(request, project_id):
     # GETリクエストの場合、プロジェクト詳細ページを表示
     return render(request, templatename, {'project': project})
 
-@require_http_methods(["GET", "POST"])
-# フェーズ変更
-def project_phase_edit(request, project_id):
+# @require_http_methods(["GET", "POST"])
+# # フェーズ変更
+# def project_phase_edit(request, project_id):
 
-    # テンプレート名の定義
-    templatename = f"project_detail.html"
+#     # テンプレート名の定義
+#     templatename = f"project_detail.html"
 
-    # 指定されたIDのプロジェクトを取得（削除されていないプロジェクトのみ）
-    # project = get_object_or_404(Project, project_id=project_id, deletion_flag=False)
+#     # 指定されたIDのプロジェクトを取得（削除されていないプロジェクトのみ）
+#     # project = get_object_or_404(Project, project_id=project_id, deletion_flag=False)
 
-    if request.method == "POST":
-        try:
-            # POSTデータから各プロジェクト情報を取得
-            phaseid=request.POST.get('phase_id')
-            phase_name = request.POST.get('phase_name')
-            end_date3 = request.POST.get('expirationdate')
+#     if request.method == "POST":
+#         try:
+#             # POSTデータから各プロジェクト情報を取得
+#             phaseid=request.POST.get('phase_id')
+#             phase_name = request.POST.get('phase_name')
+#             end_date3 = request.POST.get('expirationdate')
 
-            # # 必須項目の入力チェック
-            if not all([project_id,phaseid,phase_name,end_date3]):
-                # 必須項目が未入力の場合、エラーメッセージを表示して再表示
-                messages.error(request, '全ての必須項目を入力してください。')
-                return render(request, templatename, {
-                    'project_id': project_id,
-                    'phase_id': phaseid,
-                    'phase_name':phase_name,
-                    'end_name3': end_date3,
-                })
+#             # # 必須項目の入力チェック
+#             if not all([project_id,phaseid,phase_name,end_date3]):
+#                 # 必須項目が未入力の場合、エラーメッセージを表示して再表示
+#                 messages.error(request, '全ての必須項目を入力してください。')
+#                 return render(request, templatename, {
+#                     'project_id': project_id,
+#                     'phase_id': phaseid,
+#                     'phase_name':phase_name,
+#                     'end_name3': end_date3,
+#                 })
 
-            # 更新日時の設定
-            # creation_date = timezone.now()
+#             # 更新日時の設定
+#             # creation_date = timezone.now()
 
-            project_progress_status = ProjectProgressStatus(
-            project_id=project_id,
-            progress_status_id=phaseid,
-            phase_name=phase_name,
-            expiration_date=end_date3,
-            creation_date=timezone.now()  # 現在の日時を設定
-            )
+#             project_progress_status = ProjectProgressStatus(
+#             project_id=project_id,
+#             progress_status_id=phaseid,
+#             phase_name=phase_name,
+#             expiration_date=end_date3,
+#             creation_date=timezone.now()  # 現在の日時を設定
+#             )
 
-# インスタンスをデータベースに保存
-            project_progress_status.save()
+# # インスタンスをデータベースに保存
+#             project_progress_status.save()
 
-            # 成功メッセージの追加
-            messages.success(request, 'フェーズの追加がかんりょうしました')
-            #-------------ここまででフェーズの追加完了-----------------
+#             # 成功メッセージの追加
+#             messages.success(request, 'フェーズの追加がかんりょうしました')
+#             #-------------ここまででフェーズの追加完了-----------------
 
-            #‐‐‐‐‐‐‐‐‐‐‐ここから進行中プロジェクト表示用の処理----------
-            # プロジェクトを取得
-            #project_idに当てはまるprojectテーブルのデータを取得
-            project = get_object_or_404(Project, project_id=project_id)
+#             #‐‐‐‐‐‐‐‐‐‐‐ここから進行中プロジェクト表示用の処理----------
+#             # プロジェクトを取得
+#             #project_idに当てはまるprojectテーブルのデータを取得
+#             project = get_object_or_404(Project, project_id=project_id)
 
-            #プロジェクトに関連するチームを取得
-            #プロジェクト所属チームテーブルのprojectに当てはまるデータを取得
-            teams = ProjectAffiliationTeam.objects.filter(project=project,team__deletion_flag=0).select_related('team')
+#             #プロジェクトに関連するチームを取得
+#             #プロジェクト所属チームテーブルのprojectに当てはまるデータを取得
+#             teams = ProjectAffiliationTeam.objects.filter(project=project,team__deletion_flag=0).select_related('team')
 
-            # プロジェクトに関連するフェーズを取得
-            # 上と同じ感じ
-            phases = ProjectProgressStatus.objects.filter(project=project,deletion_flag=0).order_by('expiration_date')
+#             # プロジェクトに関連するフェーズを取得
+#             # 上と同じ感じ
+#             phases = ProjectProgressStatus.objects.filter(project=project,deletion_flag=0).order_by('expiration_date')
 
-            context = {
-                #プロジェクトテーブルの情報
-                'project': project,
-                #プロジェクト��属チームテーブルの情報
-                'teams': teams,
-                #フェーズテーブルの情報
-                'phases': phases,
-            }
-            # 情報を保持した状態でrender
-            return render(request, 'project_detail.html', context)
+#             context = {
+#                 #プロジェクトテーブルの情報
+#                 'project': project,
+#                 #プロジェクト��属チームテーブルの情報
+#                 'teams': teams,
+#                 #フェーズテーブルの情報
+#                 'phases': phases,
+#             }
+#             # 情報を保持した状態でrender
+#             return render(request, 'project_detail.html', context)
 
-        except Exception as e:
-            # 予期しないエラーが発生した場合のエラーハンドリング
-            messages.error(request, f'更新中にエラーが発生しました: {str(e)}')
-            return render(request, templatename, {
-                'project': project,
+#         except Exception as e:
+#             # 予期しないエラーが発生した場合のエラーハンドリング
+#             messages.error(request, f'更新中にエラーが発生しました: {str(e)}')
+#             return render(request, templatename, {
+#                 'project': project,
 
-            })
+#             })
 
-    # GETリクエストの場合、プロジェクト詳細ページを表示
-    return render(request, templatename, {'project': project})
+#     # GETリクエストの場合、プロジェクト詳細ページを表示
+#     return render(request, templatename, {'project': project})
 
 # 進行中プロジェクトのフェーズ削除
 #フェーズ変更のコピペ
@@ -2259,8 +2259,6 @@ class projectTeamEditView(TemplateView):
         team_ids=tem.values_list('team_id',flat=True)
         # チームテーブルからチーム情報を取得
         teams=Team.objects.filter(team_id__in=team_ids)
-        # チーム情報を表示
-        print(teams)
 
         # 取得したデータをコンテキストとしてテンプレートに渡す
         context = {
