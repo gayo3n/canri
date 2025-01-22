@@ -75,7 +75,7 @@ button {
 }
 
 .btn-primary:hover {
-    background-color: #10aeec;
+    background-color: #1481ac;
 }
 
 .btn-secondary {
@@ -84,7 +84,7 @@ button {
 }
 
 .btn-secondary:hover {
-    background-color: #1265ff;
+    background-color: #0c48b8;
 }
 
 .btn-danger {
@@ -97,12 +97,12 @@ button {
 }
 
 .btn-success {
-    background-color: #2ecc71;
+    background-color: #3dc2eb;
     color: white;
 }
 
 .btn-success:hover {
-    background-color: #27ae60;
+    background-color: #1481ac;
 }
 
 .btn-light {
@@ -113,6 +113,10 @@ button {
 
 .btn-light:hover {
     background-color: #f8f9fa;
+}
+
+.btn-add:hover {
+    background-color: #b0b0b0;
 }
 
 /* メンバーリストスタイル */
