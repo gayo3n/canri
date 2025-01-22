@@ -7,8 +7,16 @@
 {% endblock %}
 
 {% block content %}
-        <form class="center" method="post" action="{% url 'canri_app:member_delete_complete' member_id=member.member_id %}">
-        <p>{{ member.name }}を削除しますか？</p>
-        <a href="{% url 'canri_app:member_delete_complete' member_id=member.member_id %}" class="confirm-delete-btn">削除</a>
-        <button type="button" onclick="history.back()">キャンセル</button>
+<!-- フォームを中央に配置 -->
+<div class="popup">
+    <div class="popup-content">
+        <p>{{ member.name }} を削除しますか？</p>
+        <div class="button-container">
+            <!-- 削除ボタン -->
+            <a href="{% url 'canri_app:member_delete_complete' member_id=member.member_id %}" class="confirm-delete-btn">削除</a>
+            <!-- キャンセルボタン -->
+            <button type="button" class="cancel-btn" onclick="history.back()">キャンセル</button>
+        </div>
+    </div>
+</div>
 {% endblock %}

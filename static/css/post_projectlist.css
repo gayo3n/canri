@@ -45,6 +45,15 @@
     font-weight: bold;
 }
 
+.project-name a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.project-name a:hover {
+    text-decoration: underline;
+}
+
 /* プロジェクト期間のスタイル */
 .project-period {
     width: 200px;
