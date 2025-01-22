@@ -282,13 +282,13 @@
 }
 
 .tasks-panel .task-list .task-item:nth-child(odd) {
-    background-color: #f7f7f7; /* 奇数番目のタスクアイテムの背景色 */
+    background-color: #f5f5f5; /* 奇数番目のタスクアイテムの背景色 */
 }
 
 .tasks-panel .task-list .task-item:nth-child(even) {
-    background-color: #eeeeee; /* 偶数番目のタスクアイテムの背景色 */
+    background-color: #e9e8e8; /* 偶数番目のタスクアイテムの背景色 */
 }
 
 .tasks-panel .task-list .task-item:hover {
-    background-color: #fffbdc; /* ホバー時の背景色 */
+    background-color: #c9c9c9; /* ホバー時の背景色 */
 }

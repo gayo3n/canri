@@ -16,20 +16,20 @@
         
         <label for="password">パスワード:</label>
         <!-- <input type="password" id="password" name="password" class="form-control" maxlength="10"  required> -->
-         <p>{{ form.new_password1 }}</p>
-         <p>※パスワード(確認用):{{ form.new_password2 }}</p>
-         {% if form.errors %}
-             <ul class="errorlist">
+            <p>{{ form.new_password1 }}</p>
+            <p>※パスワード(確認用):{{ form.new_password2 }}</p>
+            {% if form.errors %}
+                <ul class="errorlist">
                 {% for field in form %}
-                     {% for error in field.errors %}
-                         <li>{{ error }}</li>
-                     {% endfor %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
                 {% endfor %}
                 {% for error in form.non_field_errors %}
                     <li>{{ error }}</li>
                 {% endfor %}
-             </ul>
-         {% endif %}
+                </ul>
+            {% endif %}
         <button type="submit">保存</button>
         <a href="{% url 'accounts:manage_account' %}">キャンセル</a>
     </form>
