@@ -12,13 +12,13 @@ class AccountAddForm(forms.Form):
     user_id = forms.CharField(
         required=True,
         max_length=10,
-        min_length=6,
+        min_length=8,
         widget=forms.TextInput(attrs={'placeholder': ''})
     )
     password = forms.CharField(
         required=True,
         max_length=10,
-        min_length=6,
+        min_length=8,
         widget=forms.PasswordInput(attrs={'placeholder': '******'})
     )
     name = forms.CharField(
