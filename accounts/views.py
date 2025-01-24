@@ -18,29 +18,35 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
 from .models import User
 
+# ログイン失敗画面
 class LoginFailView(TemplateView):
     def get(self, request, *args, **kwargs):
         return render(request, 'login_failure.html')
     
+# ログアウト確認画面
 class LogoutConfView(TemplateView):
     def post(self, request):
         return redirect('logout_confirmation')
 
+# ログイン画面
 class CustomLoginView(LoginView):
     template_name = 'login.html'
     success_url = reverse_lazy('login_complete')  # ログイン成功時のリダイレクト先
 
+# ログイン完了画面
 class LoginCompView(TemplateView):
     template_name = 'login_complete.html'
 
+# ログアウト完了画面
 class LogoutCompView(TemplateView):
     template_name = 'logout_complete.html'
 
+# ログアウト
 class LogoutConfView(TemplateView):
     template_name = 'logout_confirmation.html'
 
 
-
+# ログイン機能
 class AccLoginView(LoginView):
     def post(self, request, *arg, **kwargs):
         form = LoginForm(data=request.POST)
@@ -59,9 +65,11 @@ class AccLoginView(LoginView):
                 login(request, user)
                 return redirect('accounts:login_complete')
         
+        # ログインできなかった場合のエラーメッセージ
         form.add_error(None, 'ログインに失敗しました。')
         return render(request, 'login.html', {'form': form})
 
+# ログアウト機能
 def logout(request):
     auth_logout(request)
     request.session.flush()
@@ -90,11 +98,15 @@ class Manage_Account(TemplateView):
 # アイコン
 
 def account_change_employee(request, pk):
+    # ユーザー情報を取得
     user = get_object_or_404(User, pk=pk)
     if request.method == "POST":
+        # 入力されたユーザー名を取得
         user.name = request.POST.get('name')
+        # 入力されたパスワードを取得
         password = request.POST.get('password')
         user.set_password(password)
+        # ユーザー情報を保存
         user.save()
 
         # 再ログイン処理
@@ -113,7 +125,7 @@ def account_change_employee(request, pk):
 def account_change_complete_employee(request, pk):
     return render(request, 'account_change_complete_employee.html', {'pk': pk})
 
-
+# アカウント作成
 def create(request):
     if request.method == 'GET':
         # リクエストメソッドがGETの場合、空のフォームをインスタンス化
@@ -124,12 +136,15 @@ def create(request):
         if form.is_valid():
             user_id = form.cleaned_data['user_id']
             name = form.cleaned_data['name']
+            # 入力された情報がDB上に存在するか検証
             user_id_exists = User.objects.filter(user_id=user_id).exists()
             name_exists = User.objects.filter(name=name).exists()
 
+            # ユーザーIDが存在している時のエラーメッセージを表示
             if user_id_exists:
                 form.add_error('user_id', 'このアカウントIDは既に使用されています。')
             
+            # ユーザー名が存在している時のエラーメッセージを表示
             if name_exists:
                 form.add_error('name', 'この名前のユーザーはすでに存在しています。')
             
@@ -147,7 +162,7 @@ def create(request):
     context = {'form': form}
     return render(request, 'account_create.html', context)
 
-
+# アカウント作成完了画面
 def account_create_complete(request):
     form = UserForm(request.POST)
     if form.is_valid():
@@ -164,7 +179,9 @@ def account_create_complete(request):
 
 # アカウント一覧からのパスワード変更
 def account_change(request, pk):
+    # アカウント編集のテンプレートを表示
     template_name = 'account_change.html'
+    # ユーザー情報を取得
     user = get_object_or_404(User, pk=pk)
     form = MySetPasswordForm(user=user)
     context = {
@@ -195,6 +212,7 @@ def account_change_complete(request, pk):
     return render(request, 'account_change_complete.html', {'form':form,'user':user})
 
 
+# アカウント削除
 def account_delete(request, name):
     # 該当ユーザーを取得（削除フラグが立っていないユーザーのみを対象）
     obj = get_object_or_404(User, name=name, deletion_flag=False)
