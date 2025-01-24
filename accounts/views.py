@@ -95,6 +95,9 @@ def account_change_employee(request, pk):
         form = MySetPasswordForm(user=user, data=request.POST)
         if form.is_valid():
             form.save()
+            # ユーザー名の変更を処理
+            user.name = request.POST.get('name')
+            user.save()
             # 再ログイン処理
             password = form.cleaned_data.get('new_password1')
             user = authenticate(request, username=user.name, password=password)
