@@ -25,9 +25,9 @@
                 <a href="{% url 'canri_app:project' %}">進行中プロジェクト</a>
                 <a href="{% url 'canri_app:past_project' %}">過去プロジェクト</a>
                 <a href="{% url 'canri_app:memberlist' %}">メンバーリスト</a>
-                
+                {% if user.is_superuser %}
                     <a href="{% url 'accounts:manage_account' %}">アカウント管理</a>
-                
+                {% endif %}
             </div>
 
             <!-- 右寄せにするための新しいコンテナ -->
