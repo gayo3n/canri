@@ -21,6 +21,7 @@ urlpatterns = [
     path('member/make/', views.MemberMakeView.as_view(), name='member_make'),
     path('member/edit/<int:member_id>/', views.MemberEditView.as_view(), name='member_edit'),
     path('member/upload_csv/', views.FileUploadView.as_view(), name='member_csv_upload'),
+    path('member/overwrite/', views.MemberOverwriteView.as_view(), name='member_overwrite'),
     path('member/make/complete/', views.MemberMakeCompleteView.as_view(), name='member_make_complete'),
     path('member/edit/complete/<int:member_id>/', views.MemberEditCompleteView.as_view(), name='member_edit_complete'),
     path('member/delete/<int:member_id>/', views.MemberDeleteView.as_view(), name='member_delete'),
