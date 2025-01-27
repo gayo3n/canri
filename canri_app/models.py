@@ -16,6 +16,9 @@ class Category(models.Model):
     class Meta:
         db_table = 'Category'
 
+    def __str__(self):
+        return self.category_name
+
 
 class Project(models.Model):
     project_id = models.AutoField(primary_key=True)
