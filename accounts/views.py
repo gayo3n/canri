@@ -1,4 +1,4 @@
-from django import forms
+from pyexpat.errors import messages
 from django.contrib.auth.views import LogoutView, LoginView, PasswordChangeView, PasswordChangeDoneView
 from django.shortcuts import render, redirect, get_object_or_404, redirect
 from django.contrib.auth import login, get_user_model, logout as auth_logout, authenticate, update_session_auth_hash
@@ -7,8 +7,8 @@ from django.urls import reverse_lazy
 from django.db import transaction
 from django.views import View, generic
 from django.views.generic.base import TemplateView
-from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, MySetPasswordForm
-from django.contrib.auth.mixins import UserPassesTestMixin,LoginRequiredMixin
+from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, PasswordChangeForm
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
 from django.views.generic.edit import CreateView
@@ -192,7 +192,24 @@ def account_change(request, pk):
     }
     return render(request, template_name, context)
 
-# パスワード変更完了
+
+def account_change(request, pk):
+    user = get_object_or_404(User, pk=pk)
+
+    if request.method == "POST":
+        user.name = request.POST.get('name')
+        password = request.POST.get('password')
+        user.set_password(password)
+        user.save()
+
+        item = User.objects.get(pk=pk)
+
+    context = {
+        "user": item
+    }
+    return render(request, 'account_change_employee.html', context)
+
+    
 def account_change_complete(request, pk):
     # ユーザー情報を取得
     user = get_object_or_404(User, pk=pk)

@@ -4,7 +4,7 @@
 {% load custom_filters %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/memberlist_make.css' %}">
+<link rel="stylesheet" href="{% static 'css/memberList_make.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -32,12 +32,10 @@
             {% endfor %}
         </ul>
 
-        <!-- CSVアップロード -->
-        <h3>CSVファイルからメンバーを追加</h3>
-        <form method="POST" enctype="multipart/form-data" class="upload-form">
+        <form method="post" enctype="multipart/form-data" action="{% url 'canri_app:member_csv_upload' %}">
             {% csrf_token %}
-            <input type="file" name="csv_file" accept=".csv" class="file-input" required>
-            <button type="submit" class="btn-primary">アップロード</button>
+            {{ form.as_p }}
+            <button type="submit">アップロード</button>
         </form>
 
         <!-- 新規メンバー追加 -->
@@ -66,8 +64,7 @@
 
     <!-- メンバーリスト保存セクション -->
     <section class="save-section">
-        <h2>メンバーリスト保存</h2>
-        <form method="post" action="{% url 'canri_app:memberlist_make_complete' %}" class="save-form">
+        <form method="post" action="{% url 'canri_app:memberlist_make_complete' %}" id="saveForm">
             {% csrf_token %}
             <input type="text" name="member_list_name" placeholder="リスト名を入力してください" class="input-field" required>
             <textarea name="member_list_details" placeholder="リスト詳細を入力してください" class="textarea-field"></textarea>
@@ -81,11 +78,84 @@
             {% for member_id in memberID_list %}
             <input type="hidden" name="memberID_list" value="{{ member_id }}">
             {% endfor %}
-            <div class="button-group">
-                <button class="btn-success" type="submit">保存</button>
-                <button class="btn-light" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
-            </div>
+            <br>
+            <button class="memberlist_save" type="button" id="uploadButton">保存</button>
+            <button class="memberlist_cancel" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
         </form>
     </section>
-</div>
+
+    <!-- モーダルのHTML構造 -->
+    <div id="overwriteModal" class="modal" style="display: {% if show_modal %}block{% else %}none{% endif %};">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>上書きメンバー選択</h2>
+            <a>重複しているメンバーがいます。上書き保存するメンバーを選択してください。</a>
+            <form action="{% url 'canri_app:member_overwrite' %}" method="post">
+                {% csrf_token %}
+                <ul>
+                    {% for member in duplicate_members %}
+                        <li>
+                            <input type="checkbox" id="member_{{ member.member_id }}" name="members" value="{{ member.member_id }}" {% if member.selected %}checked{% endif %}>
+                            <label for="member_{{ member.member_id }}">{{ member.name }}</label>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <button type="button" onclick="checkAll()">すべてをチェックする</button>
+                <button type="button" onclick="uncheckAll()">すべてのチェックを外す</button>
+                <button type="submit">完了</button>
+                <button class="memberlist_cancel" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
+            </form>
+
+            <!-- モーダル内のページネーションリンク -->
+            <div class="pagination">
+                <span class="step-links">
+                    {% if duplicate_members.has_previous %}
+                        <a href="?page=1">&laquo; 最初</a>
+                        <a href="?page={{ duplicate_members.previous_page_number }}">前</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ duplicate_members.number }} of {{ duplicate_members.paginator.num_pages }}.
+                    </span>
+
+                    {% if duplicate_members.has_next %}
+                        <a href="?page={{ duplicate_members.next_page_number }}">次</a>
+                        <a href="?page={{ duplicate_members.paginator.num_pages }}">最後 &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadButton').addEventListener('click', function() {
+            if (confirm('本当に保存しますか？')) {
+                document.getElementById('saveForm').submit();
+            }
+        });
+
+        document.querySelector('.close').addEventListener('click', function() {
+            const modal = document.getElementById('overwriteModal');
+            modal.style.display = 'none';
+        });
+
+        function checkAll() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = true);
+        }
+
+        function uncheckAll() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = false);
+        }
+
+        // 重複メンバーがいる場合にモーダルを表示
+        {% if show_modal %}
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('overwriteModal');
+            modal.style.display = 'block';
+        });
+        {% endif %}
+    </script>
+</body>
 {% endblock %}
