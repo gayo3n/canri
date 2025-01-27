@@ -2217,34 +2217,31 @@ class project_detail_Create_TeamView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         # POSTデータからプロジェクト情報を取得
-        project_id = request.POST.get('project_id')     # プロジェクト名
-        project_name = request.POST.get('project_name') # プロジェクト名
-        project_description = request.POST.get('project_description')  # プロジェクト説明
-        start_date = request.POST.get('start_date')     # 開始日
-        end_date = request.POST.get('end_date')         # 終了日
+        project_id          = request.POST.get('project_id')            # プロジェクト名
+        project_name        = request.POST.get('project_name')          # プロジェクト名
+        project_description = request.POST.get('project_description')   # プロジェクト説明
+        start_date          = request.POST.get('start_date')            #  開始日
+        end_date            = request.POST.get('end_date')              # 終了日
 
-        projectaffilitionteam_all= ProjectAffiliationTeam.objects.all()  #プロジェクト所属チームを全部取得
-        teams=projectaffilitionteam_all.filter(project=project_id)      #プロジェクト所属チームからプロジェクト情報を利用して
-                                                                        #プロジェクトに所属するものを取得
-        # teamにプロジェクトに所属しているチームが入っている
-        # projectaffilitionteamテーブルの
-        # チームIDを取得
+        projectaffilitionteam_all= ProjectAffiliationTeam.objects.all()     #プロジェクト所属チームを全部取得
+        teams=projectaffilitionteam_all.filter(project=project_id)          #プロジェクト所属チームからプロジェクト情報を利用して
+                                                                            #プロジェクトに所属するものを取得
+        # teamにプロジェクトに所属しているチームが入っているprojectaffilitionteamテーブルのチームIDを取得
         # それをもとにチームテーブルから情報を取得
         #そこからメンバー情報を抽出
         team_ids=teams.values_list('team_id',flat=True)                 #テーブルからteam_idだけ取得
         #team_idsにはteeam_idだけが入っている
         teammembers = TeamMember.objects.filter(team_id__in=team_ids)  # チームIDに基づいてメンバーをフィルタリング チームが同じ奴だけ取得
-        members = list(teammembers.values_list('member_id', flat=True))
+        members     = list(teammembers.values_list('member_id', flat=True))
         # 入力された情報を保持したまま create_team.html テンプレートをレンダリング
         return render(request, self.template_name, {
-            'project_id':project_id,
-            'project_name': project_name,                   # プロジェクト名
-            'project_description': project_description,     # プロジェクト説明
-            'start_date': start_date,                       # 開始日
-            'end_date': end_date,                           # 終了日
+            'project_id'            :project_id,
+            'project_name'          : project_name,            # プロジェクト名
+            'project_description'   : project_description,     # プロジェクト説明
+            'start_date'            : start_date,              # 開始日
+            'end_date'              : end_date,                # 終了日
 
             'member':members,
-            # 'teams': teams  # チーム情報（リスト形式）
         })
 
 
@@ -2261,54 +2258,50 @@ class project_detail_Create_Team2View(TemplateView):
 
     def post(self, request, *args, **kwargs):
         # プロジェクト情報の取得
-        project_id=request.POST.get('project_id')
-        project_name = request.POST.get('project_name')
+        project_id          =request.POST.get('project_id')
+        project_name        = request.POST.get('project_name')
         project_description = request.POST.get('project_description')
-        start_date = request.POST.get('start_date')
-        end_date = request.POST.get('end_date')
-        member = request.POST.get('member')
+        start_date          = request.POST.get('start_date')
+        end_date            = request.POST.get('end_date')
+        member              = request.POST.get('member')
         # category=request.POST.get('category')
 
         # チーム情報の取得
-        team_size = request.POST.get('team_size')
-        team_type = request.POST.get('team_type')
-        auto_generate = request.POST.get('auto_generate')
+        team_size       = request.POST.get('team_size')
+        team_type       = request.POST.get('team_type')
+        auto_generate   = request.POST.get('auto_generate')
 
-        categories = Category.objects.filter(deletion_flag=False)
+        categories      = Category.objects.filter(deletion_flag=False)
 
-        # メンバー情報をQuerySetからJSON形式に変換
-        # members = TeamMember.objects.filter(member_id__in=[1, 2, 5, 6, 9, 10])  # member_idを使ってフィルタリング
-        # member_ids = [member.member_id for member in member]  # member_idをリストに保存
 
 
         if auto_generate:
             # 自動生成が有効な場合、create_team2.html にレンダリング
             # メンバー選択画面
             return render(request, self.template_name, {
-                'project_id':project_id,
-                'project_name': project_name,  # プロジェクト名
-                'project_description': project_description,  # プロジェクト説明
-                'start_date': start_date,  # 開始日
-                'end_date': end_date,  # 終了日
-                'member': json.dumps(member),  # メンバーIDをJSON形式で渡す
-                # 'teams': teams,  # チーム情報（リスト形式）
-                'team_size': team_size,  # チームの規模
-                'team_type': team_type,  # チームの種類
-                'categories': categories,  # カテゴリ情報
+                'project_id'            :project_id,
+                'project_name'          : project_name,             # プロジェクト名
+                'project_description'   : project_description,      # プロジェクト説明
+                'start_date'            : start_date,               # 開始日
+                'end_date'              : end_date,                 # 終了日
+                'member'                : json.dumps(member),       # メンバーIDをJSON形式で渡す
+                'team_size'             : team_size,                # チームの規模
+                'team_type'             : team_type,                # チームの種類
+                'categories'            : categories,               # カテゴリ情報
             })
         else:
             # 自動生成が無効な場合、create_team3.html にレンダリング
+            #memberとteam_sizeが変更される
             # チーム詳細画面
             return render(request, 'project_detail_create_team3.html', {
-                'project_id':project_id,
-                'project_name': project_name,  # プロジェクト名
-                'project_description': project_description,  # プロジェクト説明
-                'start_date': start_date,  # 開始日
-                'end_date': end_date,  # 終了日
-                'member' : member,
-                # 'teams': teams,  # チーム情報（リスト形式）
-                'team_type': team_type,  # チームの種類
-                'categories': categories,  # カテゴリ情報
+                'project_id'            :project_id,
+                'project_name'          : project_name,             # プロジェクト名
+                'project_description'   : project_description,      # プロジェクト説明
+                'start_date'            : start_date,               # 開始日
+                'end_date'              : end_date,                 # 終了日
+                'member'                : member,
+                'team_type'             : team_type,                # チームの種類
+                'categories'            : categories,               # カテゴリ情報
             })
 #プロジェクト進行チーム追加3
 # memberが必要かどう
@@ -2319,32 +2312,27 @@ class project_detail_CreateTeam3View(TemplateView):
 
     def post(self, request, *args, **kwargs):
         # フォームから送信されたデータを取得
-        project_id=request.POST.get('project_id')
-        project_name = request.POST.get('project_name')  # プロジェクト名
-        project_description = request.POST.get('project_description')  # プロジェクトの説明
-        start_date = request.POST.get('start_date')  # 開始日
-        end_date = request.POST.get('end_date')  # 終了日
-        # teams = request.POST.get('teams')
+        project_id          = request.POST.get('project_id')
+        project_name        = request.POST.get('project_name')                  # プロジェクト名
+        project_description = request.POST.get('project_description')           # プロジェクトの説明
+        start_date          = request.POST.get('start_date')                    # 開始日
+        end_date            = request.POST.get('end_date')                      # 終了日
         # チームの編成に関する情報を取得
-        team_size = request.POST.get('team_size')  # チームサイズ
-        team_type = request.POST.get('team_type')  # チームタイプ
-        categories = Category.objects.filter(deletion_flag=False)  # 削除されていないカテゴリを取得
-        selected_members = json.loads(request.POST.get('selected_members'))  # 選択されたメンバー情報をJSON形式からPythonオブジェクトに変換
-
-        # もし `teams` を使用する場合、文字列ならリストに変換
-        # if isinstance(teams, str):
-        #     teams = json.loads(teams)
+        team_size           = request.POST.get('team_size')                     # チームサイズ
+        team_type           = request.POST.get('team_type')                     # チームタイプ
+        categories          = Category.objects.filter(deletion_flag=False)      # 削除されていないカテゴリを取得
+        selected_members    = json.loads(request.POST.get('selected_members'))  # 選択されたメンバー情報をJSON形式からPythonオブジェクトに変換
 
         # チーム編成APIに送信するデータを準備
         data = {
-            'team_type': team_type,  # チームタイプ
-            'members': selected_members,  # 選択されたメンバー
-            'team_size': team_size  # チームサイズ
+            'team_type' : team_type,         # チームタイプ
+            'members'   : selected_members,  # 選択されたメンバー
+            'team_size' : team_size          # チームサイズ
         }
 
         # `request` の `_body` 属性にAPIリクエスト用のデータを設定
-        request._body = json.dumps(data).encode('utf-8')
-        response = create_team_api(request)  # 外部API呼び出し
+        request._body   = json.dumps(data).encode('utf-8')
+        response        = create_team_api(request)                 # 外部API呼び出し
 
         # APIのレスポンスを解析
         response_data = json.loads(response.content)
@@ -2352,26 +2340,27 @@ class project_detail_CreateTeam3View(TemplateView):
         if response.status_code == 200:
             # チーム作成成功時の処理
             team = response_data['team']
-            print("チームが作成されました:", team)  # ターミナルに作成されたチーム情報を表示
+            print("チームが作成されました:", team)      # ターミナルに作成されたチーム情報を表示
         else:
             # チーム作成失敗時の処理
             team = None
-            print("チームの作成��失敗しました")  # エラーメッセージをターミナルに表示
+            print("チームの作成に失敗しました")        # エラーメッセージをターミナルに表示
 
         # ユーザ��入力の内容を保持しながらテンプレートをレンダリング
         return render(request, self.template_name, {
-            'project_id' : project_id,
-            'project_name': project_name,  # プロジェクト名
-            'project_description': project_description,  # プロジェクトの説明
-            'start_date': start_date,  # 開始日
-            'end_date': end_date,  # 終了日
+            'project_id'            : project_id,
+            'project_name'          : project_name,            # プロジェクト名
+            'project_description'   : project_description,     # プロジェクトの説明
+            'start_date'            : start_date,              # 開始日
+            'end_date'              : end_date,                # 終了日
             # 'teams': teams,
-            'team_size': team_size,  # チームサイズ
-            'team_type': team_type,  # チームタイプ
-            'categories': categories,  # 利用可能なカテゴリリスト
-            'selected_members': selected_members,  # 選択されたメンバー
-            'team': team  # 作成されたチーム情報（または失敗した場合はNone）
+            'team_size'             : team_size,               # チームサイズ
+            'team_type'             : team_type,               # チームタイプ
+            'categories'            : categories,              # 利用可能なカテゴリリスト
+            'selected_members'      : selected_members,        # 選択されたメンバー
+            'team'                  : team                     # 作成されたチーム情報（または失敗した場合はNone）
         })
+
 #チーム保存
 class project_detail_SaveTeamView(TemplateView):
     # 保存後の画面に使用するテンプレート
@@ -2380,16 +2369,16 @@ class project_detail_SaveTeamView(TemplateView):
     def post(self, request, *args, **kwargs):
         # POSTリクエストからプロジェクト情報を取得
         # projectの情報
-        project_id = request.POST.get('project_id')  # プロジェクトID
-        project_name = request.POST.get('project_name')  # プロジェクト名
-        project_description = request.POST.get('project_description')  # プロジェクトの説明
-        start_date = request.POST.get('start_date')  # プロジェクト開始日
-        end_date = request.POST.get('end_date')  # プロジェクト終了日
+        project_id              = request.POST.get('project_id')            # プロジェクトID
+        project_name            = request.POST.get('project_name')          # プロジェクト名
+        project_description     = request.POST.get('project_description')   # プロジェクトの説明
+        start_date              = request.POST.get('start_date')            # プロジェクト開始日
+        end_date                = request.POST.get('end_date')              # プロジェクト終了日
 
         #
-        team_name = request.POST.get('team_name')  # チーム名
-        team_type = request.POST.get('team_type')  # チームの種類
-        team = request.POST.get('team')  # チーム情報（JSON形式）   member_idのみ
+        team_name   = request.POST.get('team_name')     # チーム名
+        team_type   = request.POST.get('team_type')     # チームの種類
+        team        = request.POST.get('team')          # チーム情報（JSON形式）   member_idのみ
 
         print(team)
 
