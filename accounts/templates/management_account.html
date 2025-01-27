@@ -21,7 +21,7 @@
             <!-- ユーザー名を表示し、編集リンクを作成 -->
             <td class="management_app">
                 {% if user.pk %}
-                <a href="{% url 'accounts:manage_account_change' pk=user.pk %}" class="btn save">
+                <a href="{% url 'accounts:manage_account_change' pk=user.pk %}" class="btn btn-save">
                     {{ user.name }}
                 </a>
                 {% else %}

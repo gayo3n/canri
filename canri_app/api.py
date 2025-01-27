@@ -4,7 +4,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic import CreateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Team, ProjectAffiliationTeam, Project, Category, TeamMember
+from .models import MemberList, Member, Feedback, MemberParameter, MemberCareer, JobTitleInformation, MemberHoldingQualification, Team, ProjectAffiliationTeam, Project, Category, TeamMember, CareerInformation
 import json
 from django.utils import timezone
 
@@ -16,12 +16,16 @@ def get_member_data(request, member_id):
     try:
         # 指定された member_id に一致するメンバー情報を取得
         member = Member.objects.get(member_id=member_id)
-        carrer = MemberCareer.objects.get(member=member_id)
         memberparameter = MemberParameter.objects.get(member=member_id)
         try:
             memberjob = JobTitleInformation.objects.get(job_title_id=member.job_id)
         except JobTitleInformation.DoesNotExist:
             memberjob = None
+        try:
+            career = MemberCareer.objects.get(member=member.member_id)
+        except MemberCareer.DoesNotExist:
+            career = None
+        
         # 同じメンバーIDを持つ資格を3件まで取得
         memberqualification = MemberHoldingQualification.objects.filter(member=member_id)[:3]
         # メンバー情報を辞書として返す
@@ -29,8 +33,8 @@ def get_member_data(request, member_id):
             'member_id': member.member_id,#メンバーID
             'name': member.name,#名前
             'birthdate': member.birthdate,#生年月日
-            'career_id': carrer.career.career_id,#職歴ID
-            'career_name': carrer.career.career,#職歴名
+            'career_id': career.career.career if career else None,#職歴ID
+            'career_name': CareerInformation.objects.get(career=career.career.career).career if career else None,#職歴名
             'job_id': member.job_id,#役職ID
             'job_title': memberjob.job_title,#役職名
             'mbti_id': member.mbti.mbti_id,#MBTIタイプID
@@ -68,6 +72,7 @@ def get_members_by_member_list(request, category_id):
         # 指定された category_id に一致する MemberList を取得
         member_lists = MemberList.objects.filter(category=category_id, deletion_flag=False)
         members = Member.objects.filter(memberlist__in=member_lists, deletion_flag=False).distinct()
+        
 
         # メンバー情報を辞書形式で返す
         members_data = []
@@ -310,17 +315,21 @@ def get_team_members(request, team_id):
         for team_member in team_members:
             member = team_member.member
             memberparameter = MemberParameter.objects.get(member=member)
-            carrer = MemberCareer.objects.get(member=member)
             try:
                 memberjob = JobTitleInformation.objects.get(job_title_id=member.job_id)
             except JobTitleInformation.DoesNotExist:
                 memberjob = None
+            try:
+                career = MemberCareer.objects.get(member=member)
+            except MemberCareer.DoesNotExist:
+                career = None
+            
             member_data.append({
-                'member_id': member.member_id,#メンバーID
+            'member_id': member.member_id,#メンバーID
             'name': member.name,#名前
             'birthdate': member.birthdate,#生年月日
-            'career_id': carrer.career.career_id,#職歴ID
-            'career_name': carrer.career.career,#職歴名
+            'career_id': career.career.career if career else None,#職歴ID
+            'career_name': CareerInformation.objects.get(career=career.career.career).career if career else None,#職歴名
             'job_id': member.job_id,#役職ID
             'job_title': memberjob.job_title,#役職名
             'mbti_id': member.mbti.mbti_id,#MBTIタイプID
@@ -389,25 +398,27 @@ def save_team_api(request):
             team_name=team_name,
             count=len(team_members),  # メンバーの数をカウント
             objective=team_type,
+            memo=f'{team_name}のメモ',  # f-stringを使用してメモを設定
             creation_date=timezone.now()  # 現在の日時を設定
         )
 
         # チームメンバーを追加
         for member_id in team_members:
-            member = Member.objects.get(member_id=member_id)  # メンバーを取得
-            TeamMember.objects.create(
-                team=team,
-                member=member,
-                creation_date=timezone.now(),  # 作成日時を設定
-                update_date=timezone.now()  # 更新日時を設定
-            )
+            try:
+                member = Member.objects.get(member_id=member_id)  # メンバーを取得
+                TeamMember.objects.create(
+                    team=team,
+                    member=member,
+                    creation_date=timezone.now(),  # 作成日時を設定
+                    update_date=timezone.now()  # 更新日時を設定
+                )
+            except Member.DoesNotExist:
+                return JsonResponse({'error': f'Member with id {member_id} not found'}, status=404)  # メンバーが見つからないエラー
 
         return JsonResponse({'team_id': team.team_id})  # 作成したチームのIDを返す
 
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON'}, status=400)  # JSONデコードエラー
-    except Member.DoesNotExist:
-        return JsonResponse({'error': 'Member not found'}, status=404)  # メンバーが見つからないエラー
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)  # その他のエラー
 
@@ -458,32 +469,35 @@ def save_project_api(request):
 @require_http_methods(["POST"])
 def delete_team_api(request):
     try:
+        # リクエストのボディをJSON形式で解析
         data = json.loads(request.body)
-        team_id = data.get('team_id')
-        teams = data.get('teams')
-        project_name = data.get('project_name')
-        project_description = data.get('project_description')
-        start_date = data.get('start_date')
-        end_date = data.get('end_date')
+        team_id = data.get('team_id')  # 削除対象のチームID
+        teams = data.get('teams')  # 更新後のチームリスト
+        project_name = data.get('project_name')  # プロジェクト名
+        project_description = data.get('project_description')  # プロジェクト説明
+        start_date = data.get('start_date')  # プロジェクト開始日
+        end_date = data.get('end_date')  # プロジェクト終了日
 
-        # teams をリストとして扱う
+        # teamsが文字列として渡された場合はJSON形式として解析
         if isinstance(teams, str):
             teams = json.loads(teams)
 
         try:
-            # チームとチームメンバーの削除フラグを1に設定
+            # Teamモデルからteam_idでチームを取得し、削除フラグを1に設定
             team = Team.objects.get(team_id=team_id)
             team.deletion_flag = 1
-            team.save()
+            team.save()  # データベースに変更を保存
 
+            # 関連するTeamMemberの削除フラグも1に設定
             TeamMember.objects.filter(team=team).update(deletion_flag=1)
 
-            # teamsからチームIDを削除
+            # 更新後のteamsリストから削除対象のチームIDを除外
             teams = [t for t in teams if t != int(team_id)]
         except Team.DoesNotExist:
+            # team_idに該当するチームが見つからない場合のエラーレスポンス
             return JsonResponse({'error': 'Team not found'}, status=404)
 
-        # 入力された情報をリスト化
+        # プロジェクト情報をリスト化してレスポンスデータに含める
         project_data = {
             'project_name': project_name,
             'project_description': project_description,
@@ -491,11 +505,14 @@ def delete_team_api(request):
             'end_date': end_date
         }
 
+        # 正常終了時のレスポンス
         return JsonResponse({'project': project_data, 'teams': teams})
 
     except json.JSONDecodeError:
+        # リクエストボディがJSON形式でない場合のエラーレスポンス
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
     except Exception as e:
+        # その他の例外が発生した場合のエラーレスポンス
         return JsonResponse({'error': str(e)}, status=500)
 
 #メモ保存API

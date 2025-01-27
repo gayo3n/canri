@@ -1,109 +1,72 @@
 {% extends 'base.html' %}
-
+<!-- 進行中プロジェクトチーム詳細表示時利用 -->
 {% load static %}
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/create_team3.css' %}">
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% endblock %}
 
 {% block content %}
-
-
-<!-- 画面の表示 -->
 <div class="main-content">
-    <!-- メインコンテンツのコンテナ -->
-    <!-- ページの見出し -->
-    <h1>新規チーム作成</h1>
-    <div class="container">
-        <!-- 左側のパネル: チームメンバーリスト -->
-        <div class="left-panel">
-            <h2>作成中のチーム</h2>
-            <!-- メンバーリストを表示するテーブル -->
+    <h1>チーム編集</h1>
+    <div class="container" style="justify-content: space-around;">
+        <div class="left-spacer" style="flex: 0.5;"></div>
+        <div class="left-panel" style="flex: 3;">
+            <h2>チームメンバー</h2>
             <table>
                 <thead>
-                    <!-- テーブルのヘッダー -->
                     <tr>
-                        <!-- メンバー名列 -->
                         <th style="width: 90%;">メンバー名</th>
-                        <!-- 削除ボタン列 -->
                         <th style="width: 10%;">削除</th>
                     </tr>
                 </thead>
                 <tbody id="memberTableBody">
-                    <!-- チームメンバーが存在する場合 -->
-                    {% if team %}
-                        <!-- チームメンバーごとに行を生成 -->
-                        {% for member in team %}
-                        <tr data-member-id="{{ member.member_id }}">
-                            <!-- メンバー名を表示 -->
-                            <td>{{ member.name }}</td>
-                            <!-- 削除ボタン -->
-                            <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
-                        </tr>
-                        {% endfor %}
-                    {% else %}
-                        <!-- メンバーが存在しない場合のメッセージ -->
-                        <tr id="noMembersMessage">
-                            <td colspan="2">メンバーが存在しません</td>
-                        </tr>
-                    {% endif %}
-                    <!-- メンバー追加ボタン -->
+                    {% for member in members %}
+                    <tr data-member-id="{{ member.member.member_id }}">
+                        <td><a href="#" class="member-link" onclick="openMemberEditWindow(event, {{ member.member.member_id }})">{{ member.member.name }}</a></td>
+                        <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
+                    </tr>
+                    {% endfor %}
                     <tr>
-                        <td colspan="2">
-                            <!-- メンバー追加用のリンク -->
-                            <a href="#" class="add-member" onclick="openAddMemberWindow()">＋</a>
-                        </td>
+                        <td colspan="2"><a href="#" class="add-member" onclick="openAddMemberWindow()">＋</a></td>
                     </tr>
                 </tbody>
             </table>
         </div>
-
-        <!-- 右側のパネル: チーム情報の入力フォーム -->
-        <div class="right-panel">
-            <form method="post" action="{% url 'canri_app:project_detail_save_team' %}">
+        <div class="middle-spacer" style="flex: 0.5;"></div>
+        <div class="middle-panel" style="flex: 3;">
+            <h2>メモ欄</h2>
+            <textarea id="team_memo" name="team_memo" rows="10" style="width: 100%;">{{ team.memo }}</textarea>
+        </div>
+        <div class="right-spacer" style="flex: 0.5;"></div>
+        <div class="right-panel" style="flex: 3;">
+            <form method="post" action="{% url 'canri_app:project_team_edit' team_id=team.team_id %}">
                 {% csrf_token %}
-                <!-- CSRFトークンを含めてセキュリティを確保 -->
-                <!-- プロジェクト情報をhiddenフィールドで送信 -->
+                <input type="hidden" name="team" id="team">
                 <input type="hidden" name="project_id" value="{{ project_id }}">
-                <input type="hidden" name="project_name" value="{{ project_name }}">
-                <input type="hidden" name="project_description" value="{{ project_description }}">
-                <input type="hidden" name="start_date" value="{{ start_date }}">
-                <input type="hidden" name="end_date" value="{{ end_date }}">
 
-                <input type="hidden" name="team_type" value="{{ team_type }}">
-                <input type="hidden" name="team" id="team"> <!-- 選択されたメンバー情報を格納 -->
-
-                <!-- チーム名の入力 -->
                 <label for="team_name">チーム名</label>
-                <input type="text" name="team_name" id="team_name" required>
+                <input type="text" name="team_name" id="team_name" value="{{ team.team_name }}" required>
 
-                <!-- チームの特徴を表示するレーダーチャート -->
                 <div class="chart-container">
                     <div class="chart-wrapper">
-                        <canvas id="teamRadarChart"></canvas> <!-- レーダーチャート用のCanvas -->
+                        <canvas id="teamRadarChart"></canvas>
                     </div>
                 </div>
 
-                <!-- ボタンコンテナ -->
                 <div class="button-container">
-                    <!-- 戻るボタン -->
                     <button type="button" class="action-button back-button" onclick="goBack()">戻る</button>
-                    <!-- 保存ボタン -->
-                    <button type="submit" class="action-button next-button" onclick="setTeamMembers()">保存</button>
+                    <button type="button" class="action-button delete-button" onclick="openDeleteConfirmation()">削除</button>
+                    <button type="submit" class="action-button next-button" onclick="setTeamMembers(); setTeamMemo()">保存</button>
                 </div>
             </form>
         </div>
+        <div class="right-spacer" style="flex: 0.5;"></div>
     </div>
 </div>
 
-<!-- --------------------------------------------------------------------------- -->
-
-
-
-
-<!-- 小ウィンドウのHTML -->
+<!-- メンバーウィンドウのHTML -->
 <div id="addMemberWindow" class="modal">
     <div class="modal-content" style="width: 70%; max-width: 1000px;">
         <span class="close" onclick="closeAddMemberWindow()">&times;</span>
@@ -147,18 +110,197 @@
     </div>
 </div>
 
+<!-- メンバー編集ウィンドウ -->
+<div id="memberEditWindow" class="modal">
+    <div class="modal-content" style="width: 70%; max-width: 1000px;">
+        <span class="close" onclick="closeMemberEditWindow()">&times;</span>
+        <div id="memberEditContent">
+            <h1>メンバー詳細</h1>
+            <div class="container" style="justify-content: space-around;">
+                <div class="left-spacer" style="flex: 0.5;"></div>
+                <div class="left-panel" style="flex: 3;">
+                    <form id="memberEditForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="member_id" value="">
+                        <input type="hidden" name="team_id" value="{{ team_id }}">
+                        <input type="hidden" name="project_id" value="{{ project_id }}">
+                        <!-- <input type="hidden" name="project_description" value="{{ project_description }}">
+                        <input type="hidden" name="start_date" value="{{ start_date }}">
+                        <input type="hidden" name="end_date" value="{{ end_date }}">
+                        <input type="hidden" name="teams" value="{{ teams|safe }}"> -->
+                        <input type="hidden" name="team_name" value="{{ team_name }}">
+                        <input type="hidden" name="team_memo" value="{{ team_memo }}">
+                        <input type="hidden" name="team_members" value="{{ team_members }}">
+                        <label for="member_name">メンバー名</label>
+                        <input type="text" name="member_name" id="member_name" value="" required readonly>
+                        <label for="member_job">役職</label>
+                        <input type="text" name="member_job" id="member_job" value="" required readonly>
+                        <label for="member_career">職歴</label>
+                        <input type="text" name="member_career" id="member_career" value="" required readonly>
+                        <label for="qualification1">資格1</label>
+                        <input type="text" name="qualification1" id="qualification1" value="" required readonly>
+                        <label for="qualification2">資格2</label>
+                        <input type="text" name="qualification2" id="qualification2" value="" required readonly>
+                        <label for="qualification3">資格3</label>
+                        <input type="text" name="qualification3" id="qualification3" value="" required readonly>
+                        <label for="mbti">MBTI</label>
+                        <input type="text" name="mbti" id="mbti" value="" required readonly>
+                    </form>
+                </div>
+                <div class="middle-spacer" style="flex: 0.5;"></div>
+                <div class="middle-panel" style="flex: 3;">
+                    <h2>メモ欄</h2>
+                    <textarea id="member_memo" name="member_memo" rows="10" style="width: 100%;"></textarea>
+                </div>
+                <div class="right-spacer" style="flex: 0.5;"></div>
+                <div class="right-panel" style="flex: 1;">
+                    <div class="button-container" style="flex-direction: column; justify-content: flex-end; height: 100%;">
+                        <button type="button" class="action-button" onclick="moveToAnotherTeam()">チーム移動</button>
+                        <button type="button" class="action-button" onclick="saveMemberMemo()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 削除確認ウィンドウ -->
+<div id="deleteConfirmationWindow" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeDeleteConfirmation()">&times;</span>
+        <h2>削除確認</h2>
+        <p>チーム{{ team.team_name }}を削除しますか？</p>
+        <div class="button-container">
+            <a href="{% url 'canri_app:project_team_delete' team_id=team.team_id %}?project_id={{ project_id }}">削除</a>
+
+        </div>
+    </div>
+</div>
+
+<!-- チーム移動ウィンドウ -->
+<div class="modal" id="moveTeamWindow">
+    <div class="modal-content">
+        <span class="close" onclick="closeMoveTeamWindow()">&times;</span>
+        <h2>チーム移動</h2>
+        <form id="moveTeamForm">
+            <input type="hidden" id="currentTeamId" name="current_team_id" value="{{ team.team_id }}">
+            <label for="teamSelect">移動先のチームを選択</label>
+
+            <select id="teamSelect" name="team_id" required>
+                {% for t in teams %}
+                    {% if t.team_id != team.team_id %}
+                        <option value="{{ t.team_id }}">チーム{{ t.team_name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+
+            <div class="button-container" style="justify-content: flex-end;">
+                <button type="button" class="action-button" onclick="moveMemberToTeam()">移動</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-    // 小ウィンドウを表示する処理
+    // メンバー追加ウィンドウを開く処理
     function openAddMemberWindow() {
         document.getElementById('addMemberWindow').style.display = 'block';
     }
 
-    // 小ウィンドウを閉じる処理
+    // メンバー追加ウィンドウを閉じる処理
     function closeAddMemberWindow() {
         document.getElementById('addMemberWindow').style.display = 'none';
     }
 
-    // メンバー情報を取得する処理
+    // メンバー編集ウィンドウを開く関数
+    function openMemberEditWindow(event, memberId) {
+        // リンクのデフォルトの動作（ページ遷移など）を防ぐ
+        // これにより、クリックしてもページ遷移せずにJavaScriptの処理が実行されます
+        event.preventDefault();
+
+        // fetchでメンバーの情報をサーバーから非同期に取得
+        // `member_id=0` をクリックされたメンバーのID (`memberId`) に置き換えてURLを生成
+        fetch(`{% url 'canri_app:get_member_data' member_id=0 %}`.replace("0", memberId)) // 例: /get_member_data/123/
+            .then(response => {
+                // サーバーからのレスポンスが成功したか確認
+                // response.json() はレスポンスをJSON形式に変換します
+                if (!response.ok) {
+                    // レスポンスがエラーの場合、エラーメッセージを表示
+                    throw new Error('メンバー情報の取得に失敗しました');
+                }
+                return response.json();  // JSONに変換して次の.then()に渡す
+            })
+            .then(data => {
+                // サーバーから取得したデータ（メンバー情報）を変数に格納
+                const member = data.member_data;  // 例: { member_id: 123, name: '山田 太郎', job_title: 'エンジニア' }
+
+                // 取得したメンバー情報をフォームの各フィールドに設定
+                // メンバー情報が存在しない場合はデフォルトの値（'なし'）を設定
+                document.querySelector('input[name="member_id"]').value = member.member_id; // メンバーIDを入力フィールドに設定
+                document.getElementById('member_name').value = member.name;  // メンバー名を設定
+                document.getElementById('member_job').value = member.job_title || 'なし';  // 職業情報がなければ'なし'を設定
+                document.getElementById('member_career').value = member.career_name || 'なし';  // 経歴情報がなければ'なし'を設定
+                document.getElementById('qualification1').value = member.qualification_name1 || 'なし';  // 資格1情報がなければ'なし'を設定
+                document.getElementById('qualification2').value = member.qualification_name2 || 'なし';  // 資格2情報がなければ'なし'を設定
+                document.getElementById('qualification3').value = member.qualification_name3 || 'なし';  // 資格3情報がなければ'なし'を設定
+                document.getElementById('mbti').value = member.mbti_name || 'なし';  // MBTI情報がなければ'なし'を設定
+                document.getElementById('member_memo').value = member.memo || '';  // メモ情報がなければ空文字を設定
+
+                // メンバー編集ウィンドウ（モーダルなど）を表示
+                // ここでは、表示したい要素のID ('memberEditWindow') を指定して、表示スタイルを変更します
+                document.getElementById('memberEditWindow').style.display = 'block';
+            })
+            .catch(error => {
+                // fetchエラーやJSON解析エラーが発生した場合、コンソールにエラーメッセージを表示
+                console.error('メンバー編集ウィンドウの読み込みエラー:', error);
+            });
+    }
+
+
+    // メンバー編集ウィンドウを閉じる処理
+    function closeMemberEditWindow() {
+        document.getElementById('memberEditWindow').style.display = 'none';
+    }
+
+    // メモの保存処理
+    function saveMemberMemo() {
+        const memberId = document.querySelector('input[name="member_id"]').value;
+        const memberMemo = document.getElementById('member_memo').value;
+
+        fetch(`/api/save_member_memo/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                member_id: memberId,
+                member_memo: memberMemo
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('メモが保存されました。');
+                closeMemberEditWindow();
+            } else {
+                alert('メモの保存に失敗しました。');
+            }
+        })
+        .catch(error => console.error('メモの保存エラー:', error));
+    }
+
+    // 削除確認ウィンドウを開く処理
+    function openDeleteConfirmation() {
+        document.getElementById('deleteConfirmationWindow').style.display = 'block';
+    }
+
+    // 削除確認ウィンドウを閉じる処理
+    function closeDeleteConfirmation() {
+        document.getElementById('deleteConfirmationWindow').style.display = 'none';
+    }
+
+    // メンバー情報の取得処理
     function fetchMembers() {
         var categorySelect = document.getElementById('category');
         if (categorySelect.value === "null") {
@@ -191,14 +333,14 @@
             .catch(error => console.error('データ取得エラー:', error));
     }
 
-    // 全選択処理
+    // メンバー全選択処理
     function selectAllMembers() {
         document.querySelectorAll('#memberTableBodyModal input[name="member"]').forEach(checkbox => {
             checkbox.checked = true;
         });
     }
 
-    // 選択されたメンバーを追加する処理
+    // チームメンバーの追加処理
     function addSelectedMembers() {
         const memberTableBody = document.getElementById('memberTableBody');
         const noMembersMessage = document.getElementById('noMembersMessage');
@@ -214,7 +356,7 @@
                 const row = document.createElement('tr');
                 row.dataset.memberId = checkbox.value;
                 row.innerHTML = `
-                    <td>${checkbox.parentElement.nextElementSibling.textContent}</td>
+                    <td><a href="#" class="member-link" onclick="openMemberEditWindow(event, ${checkbox.value})">${checkbox.parentElement.nextElementSibling.textContent}</td>
                     <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
                 `;
                 memberTableBody.insertBefore(row, memberTableBody.lastElementChild);
@@ -226,107 +368,228 @@
         updateRadarChart();
     }
 
-// メンバーを削除する処理
-function removeMember(link) {
-    // 削除対象の行（tr要素）を取得
-    const row = link.parentElement.parentElement;
-
-    // 行をテーブルから削除
-    row.remove();
-
-    // メンバーリストのテーブルボディ要素を取得
-    const memberTableBody = document.getElementById('memberTableBody');
-
-    // メンバーが存在しなくなった場合、"メンバーが存在しません"メッセージを表示
-    if (memberTableBody.children.length === 1) { // "+ボタン"の行のみが残った場合
-        const noMembersMessage = document.createElement('tr');
-        noMembersMessage.id = 'noMembersMessage'; // メッセージ行のIDを設定
-        noMembersMessage.innerHTML = '<td colspan="2">メンバーが存在しません</td>'; // メッセージ内容を設定
-        memberTableBody.insertBefore(noMembersMessage, memberTableBody.firstChild); // メッセージ行をテーブルの最初に追加
+    // チームメンバーの削除処理
+    function removeMember(link) {
+        const row = link.parentElement.parentElement;
+        row.remove();
+        const memberTableBody = document.getElementById('memberTableBody');
+        if (memberTableBody.children.length === 1) {
+            const noMembersMessage = document.createElement('tr');
+            noMembersMessage.id = 'noMembersMessage';
+            noMembersMessage.innerHTML = '<td colspan="2">メンバーが存在しません</td>';
+            memberTableBody.insertBefore(noMembersMessage, memberTableBody.firstChild);
+        }
+        updateRadarChart();
     }
 
-    // レーダーチャートを更新
-    updateRadarChart();
-}
+    // チームメンバーをフォームに追加
+    function setTeamMembers() {
+        const memberIds = Array.from(document.querySelectorAll('#memberTableBody tr'))
+            .map(row => row.dataset.memberId)
+            .filter(id => id !== undefined);
+        document.getElementById('team').value = JSON.stringify(memberIds);
+    }
 
-// チームメンバーを設定する処理
-function setTeamMembers() {
-    // テーブル内の全てのメンバー行を取得し、データ属性 `memberId` を抽出
-    const memberIds = Array.from(document.querySelectorAll('#memberTableBody tr')) // テーブルの行を配列に変換
-        .map(row => row.dataset.memberId) // 各行のデータ属性 `memberId` を取得
-        .filter(id => id !== undefined); // `memberId` が存在するものだけをフィルタリング
+    // チームメモをフォームに追加
+    function setTeamMemo() {
+        const teamMemo = document.getElementById('team_memo').value;
+        const hiddenTeamMemo = document.createElement('input');
+        hiddenTeamMemo.type = 'hidden';
+        hiddenTeamMemo.name = 'team_memo';
+        hiddenTeamMemo.value = teamMemo;
+        document.querySelector('form').appendChild(hiddenTeamMemo);
+    }
 
-    // メンバーIDリストをJSON文字列に変換してhiddenフィールドに設定
-    document.getElementById('team').value = JSON.stringify(memberIds);
-}
+    // 要修正----------------------------------------------------------------------
+    // チーム削除処理
+    //今の処理が不明
+    // チーム削除apiが詳細不明
+    // function deleteTeam() {
+    //     const teamId = {{ team.team_id }};
+    // }
+    // -----------------------------------------------------------------------
 
+
+
+
+    // チーム移動ウィンドウを開く処理
+    function moveToAnotherTeam() {
+        // teamselectはチーム移動ウィンドウの移動先チーム選択
+        const teamSelect = document.getElementById('teamSelect');
+        //options.lengthはteamselectのselectにある要素みたい
+        //そこが不明
+        if (teamSelect.options.length === 0) {
+            alert('移動先のチームが存在しません。');
+        } else {
+            document.getElementById('moveTeamWindow').style.display = 'block';
+        }
+    }
+
+    // チーム移動ウィンドウを閉じる処理
+    function closeMoveTeamWindow() {
+        document.getElementById('moveTeamWindow').style.display = 'none';
+    }
+
+    // メンバーを別のチームに移動
+    function moveMemberToTeam() {
+        // フォームからメンバーIDを取得
+        const memberId = document.querySelector('input[name="member_id"]').value;
+        // フォームから移動先のチームIDを取得
+        const newTeamId = document.getElementById('teamSelect').value;
+        // フォームから現在のチームIDを取得
+        const currentTeamId = document.getElementById('currentTeamId').value;
+
+        // メンバー移動のためのAPIエンドポイントにPOSTリクエストを送信
+        fetch(`/api/move_member_to_team/`, {
+            method: 'POST', // HTTPメソッドをPOSTに設定
+            headers: {
+                'Content-Type': 'application/json', // リクエストのコンテンツタイプをJSONに設定
+                'X-CSRFToken': '{{ csrf_token }}' // CSRFトークンをヘッダーに追加
+            },
+            body: JSON.stringify({
+                member_id: memberId, // メンバーIDをリクエストボディに追加
+                new_team_id: newTeamId, // 新しいチームIDをリクエストボディに追加
+                current_team_id: currentTeamId // 現在のチームIDをリクエストボディに追加
+            })
+        })
+        .then(response => response.json()) // レスポンスをJSONとしてパース
+        .then(data => {
+            // サーバーからのレスポンスが成功の場合の処理
+            if (data.status === 'success') {
+                alert('メンバーが移動されました。'); // 成功メッセージを表示
+                closeMoveTeamWindow(); // チーム移動ウィンドウを閉じる
+                closeMemberEditWindow(); // メンバー編集ウィンドウを閉じる
+                removeMemberFromTable(memberId); // メンバーをテーブルから削除
+            } else {
+                // サーバーからのレスポンスが失敗の場合の処理
+                alert('メンバーの移動に失敗しました。'); // 失敗メッセージを表示
+            }
+        })
+        .catch(error => console.error('メンバー移動エラー:', error)); // エラーハンドリング
+    }
+
+    // テーブルからメンバーを削除
+    function removeMemberFromTable(memberId) {
+        const memberRow = document.querySelector(`#memberTableBody tr[data-member-id="${memberId}"]`);
+        if (memberRow) {
+            memberRow.remove();
+        }
+    }
 
     // レーダーチャートを更新する処理
-function updateRadarChart() {
-    // メンバーの行を取得し、データ属性からメンバーIDを抽出
-    // membertablebody内の要素を全件取得
-    // membertablebody内のdata-member-idを取得
-    const memberRows = document.querySelectorAll('#memberTableBody tr[data-member-id]');
+    function updateRadarChart() {
+        const memberRows = document.querySelectorAll('#memberTableBody tr[data-member-id]');
+        const memberIds = Array.from(memberRows).map(row => row.dataset.memberId);
 
-    //
-    const memberIds = Array.from(memberRows).map(row => row.dataset.memberId);
+        if (memberIds.length === 0) {
+            radarChart.data.datasets[0].data = [0, 0, 0, 0, 0];
+            radarChart.update();
+            return;
+        }
 
-    // メンバーがいない場合、チャートのデータをゼロに設定
-    if (memberIds.length === 0) {
-        radarChart.data.datasets[0].data = [0, 0, 0, 0, 0];
-        radarChart.update(); // チャートを更新
-        return;
+        const promises = memberIds.map(memberId =>
+            fetch(`{% url 'canri_app:get_member_data' member_id=0 %}`.replace("0", memberId))
+                .then(response => response.json())
+        );
+
+        Promise.all(promises)
+            .then(results => {
+                let totalSpecialityHeight = 0;
+                let totalTimeManagementAbility = 0;
+                let totalProblemSolvingAbility = 0;
+                let totalPlanningPresentationPower = 0;
+                let totalTeamwork = 0;
+
+                results.forEach(data => {
+                    const memberData = data.member_data;
+                    totalSpecialityHeight += memberData.speciality_height;
+                    totalTimeManagementAbility += memberData.time_management_ability;
+                    totalProblemSolvingAbility += memberData.problem_solving_ability;
+                    totalPlanningPresentationPower += memberData.planning_presentation_power;
+                    totalTeamwork += memberData.teamwork;
+                });
+
+                const memberCount = results.length;
+                radarChart.data.datasets[0].data = [
+                    totalSpecialityHeight / memberCount,
+                    totalTimeManagementAbility / memberCount,
+                    totalProblemSolvingAbility / memberCount,
+                    totalPlanningPresentationPower / memberCount,
+                    totalTeamwork / memberCount
+                ];
+                radarChart.update();
+            })
+            .catch(error => console.error('データ取得エラー:', error));
     }
 
-    // 各メンバーのデータを取得するためのPromiseを作成
-    const promises = memberIds.map(memberId =>
-        fetch(`{% url 'canri_app:get_member_data' member_id=0 %}`.replace("0", memberId))
-            .then(response => response.json())
-    );
+    //レーダーチャートの初期化
+    // DOMコンテンツが読み込まれたときに実行されるイベントリスナー
+    document.addEventListener('DOMContentLoaded', function() {
 
-    // すべてのPromiseが解決された後の処理
-    Promise.all(promises)
-        .then(results => {
-            // 各能力の合計を初期化
-            let totalSpecialityHeight = 0;
-            let totalTimeManagementAbility = 0;
-            let totalProblemSolvingAbility = 0;
-            let totalPlanningPresentationPower = 0;
-            let totalTeamwork = 0;
+    // 'teamRadarChart'というIDを持つキャンバス要素のコンテキストを取得
+    const ctx = document.getElementById('teamRadarChart').getContext('2d');
 
-            // 各メンバーのデータを集計
-            results.forEach(data => {
-                const memberData = data.member_data;
-                totalSpecialityHeight += memberData.speciality_height;
-                totalTimeManagementAbility += memberData.time_management_ability;
-                totalProblemSolvingAbility += memberData.problem_solving_ability;
-                totalPlanningPresentationPower += memberData.planning_presentation_power;
-                totalTeamwork += memberData.teamwork;
-            });
+    // Radarチャートを作成し、グローバル変数 'radarChart' に保存
+    window.radarChart = new Chart(ctx, {
+        type: 'radar', // チャートの種類を'Radar'に指定
+        data: {
+            // チャートの軸ラベル
+            labels: ['専門性の高さ', '時間管理能力', '問題解決能力', '企画・プレゼン力', 'チームワーク'],
+            datasets: [{
+                label: 'チームの能力評価', // データセットのラベル
+                data: [0, 0, 0, 0, 0], // 初期値（全て0）
+                backgroundColor: 'rgba(54, 162, 235, 0.2)', // 背景色（透明度あり）
+                borderColor: 'rgba(54, 162, 235, 1)', // 枠線の色
+                borderWidth: 1 // 枠線の太さ
+            }]
+        },
+        options: {
+            scale: { // スケール（チャートの軸設定）
+                r: {
+                    beginAtZero: true, // 軸の開始値を0に設定
+                    min: 0, // 最小値を0に設定
+                    max: 10, // 最大値を10に設定
+                    stepSize: 1 // 目盛り間隔を1に設定
+                }
+            }
+        }
+    });
 
-            // メンバーの数を取得
-            const memberCount = results.length;
+    // Radarチャートを更新する関数を呼び出し
+    updateRadarChart();
 
-            // 各能力の平均を計算し、チャートデータに設定
-            radarChart.data.datasets[0].data = [
-                totalSpecialityHeight / memberCount,
-                totalTimeManagementAbility / memberCount,
-                totalProblemSolvingAbility / memberCount,
-                totalPlanningPresentationPower / memberCount,
-                totalTeamwork / memberCount
-            ];
-            radarChart.update(); // チャートを更新
-        })
-        .catch(error => console.error('データ取得エラー:', error)); // エラーハンドリング
-}
+    // 'teamSelect'というIDを持つセレクトボックス要素を取得
+    const teamSelect = document.getElementById('teamSelect');
+
+    // サーバーから取得したチームIDのリスト（Djangoのテンプレートタグを使用）
+    // const teamIds = {{ teams|safe }};
+
+    // 各チームIDに対して処理を実行
+    teamIds.forEach(teamId => {
+        // 現在選択中のチーム以外が対象
+        if (teamId !== {{ team.team_id }}) {
+            // 各チームのデータを取得するためのAPIリクエスト
+            fetch(`{% url 'canri_app:get_team_data' team_id=0 %}`.replace("0", teamId))
+                .then(response => response.json()) // レスポンスをJSON形式でパース
+                .then(data => {
+                    if (data.team) { // チーム情報が存在する場合
+                        // セレクトボックス内の対応するオプション要素を取得
+                        const option = document.querySelector(`#teamSelect option[value="${teamId}"]`);
+                        // オプションのテキストをチーム名に更新
+                        option.textContent = data.team.team_name;
+                    }
+                })
+                .catch(error => console.error('チーム情報の取得エラー:', error)); // エラー時のログ出力
+            }
+        });
+    });
 
 
-
-    // 戻るボタンを押したときの処理
+    // 戻るボタンの処理
     function goBack() {
         const form = document.createElement('form');
         form.method = 'post';
-        form.action = "{% url 'canri_app:create_team2_back' %}";
+        form.action = "{% url 'canri_app:project_detail' project_id %}";
 
         const csrfToken = document.createElement('input');
         csrfToken.type = 'hidden';
@@ -336,84 +599,36 @@ function updateRadarChart() {
 
         const projectName = document.createElement('input');
         projectName.type = 'hidden';
-        projectName.name = 'project_name';
-        projectName.value = '{{ project_name }}';
+        projectName.name = 'project_id';
+        projectName.value = '{{ project_id }}';
         form.appendChild(projectName);
 
-        const projectDescription = document.createElement('input');
-        projectDescription.type = 'hidden';
-        projectDescription.name = 'project_description';
-        projectDescription.value = '{{ project_description }}';
-        form.appendChild(projectDescription);
+        // const projectDescription = document.createElement('input');
+        // projectDescription.type = 'hidden';
+        // projectDescription.name = 'project_description';
+        // projectDescription.value = '{{ project_description }}';
+        // form.appendChild(projectDescription);
 
-        const startDate = document.createElement('input');
-        startDate.type = 'hidden';
-        startDate.name = 'start_date';
-        startDate.value = '{{ start_date }}';
-        form.appendChild(startDate);
+        // const startDate = document.createElement('input');
+        // startDate.type = 'hidden';
+        // startDate.name = 'start_date';
+        // startDate.value = '{{ start_date }}';
+        // form.appendChild(startDate);
 
-        const endDate = document.createElement('input');
-        endDate.type = 'hidden';
-        endDate.name = 'end_date';
-        endDate.value = '{{ end_date }}';
-        form.appendChild(endDate);
+        // const endDate = document.createElement('input');
+        // endDate.type = 'hidden';
+        // endDate.name = 'end_date';
+        // endDate.value = '{{ end_date }}';
+        // form.appendChild(endDate);
 
-        const teams = document.createElement('input');
-        teams.type = 'hidden';
-        teams.name = 'teams';
-        teams.value = '{{ teams|safe }}';
-        form.appendChild(teams);
-
-        const teamSize = document.createElement('input');
-        teamSize.type = 'hidden';
-        teamSize.name = 'team_size';
-        teamSize.value = '{{ team_size }}';
-        form.appendChild(teamSize);
-
-        const teamType = document.createElement('input');
-        teamType.type = 'hidden';
-        teamType.name = 'team_type';
-        teamType.value = '{{ team_type }}';
-        form.appendChild(teamType);
+        // const teams = document.createElement('input');
+        // teams.type = 'hidden';
+        // teams.name = 'teams';
+        // teams.value = '{{ teams|safe }}';
+        // form.appendChild(teams);
 
         document.body.appendChild(form);
         form.submit();
     }
-
-    // レーダーチャートの初期化
-    // DOMが完全に読み込まれた後に実行されるイベントリスナーを追加
-    document.addEventListener('DOMContentLoaded', function() {
-        // <canvas>要素から2D描画コンテキストを取得
-        const ctx = document.getElementById('teamRadarChart').getContext('2d');
-
-        // 新しいレーダーチャートを作成
-        window.radarChart = new Chart(ctx, {
-            type: 'radar', // チャートの種類をレーダーに設定
-            data: {
-                // チャートのラベル（評価項目）
-                labels: ['専門性の高さ', '時間管理能力', '問題解決能力', '企画・プレゼン力', 'チームワーク'],
-                datasets: [{
-                    label: 'チームの能力評価', // データセットのラベル
-                    data: [0, 0, 0, 0, 0], // 初期データ（すべて0）
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)', // 背景色
-                    borderColor: 'rgba(54, 162, 235, 1)', // 境界線の色
-                    borderWidth: 1 // 境界線の幅
-                }]
-            },
-            options: {
-                scale: {
-                    r: {
-                        beginAtZero: true, // スケールを0から始める
-                        min: 0, // 最小値
-                        max: 10, // 最大値
-                        stepSize: 1 // ステップサイズ
-                    }
-                }
-            }
-        });
-
-    // チャートを更新する関数を呼び出す
-    updateRadarChart();
-});
 </script>
 {% endblock %}
