@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // モーダルの外側をクリックした際にモーダルを閉じる処理
          // targetがmodal全体の場合閉じる
-        // modal内部の場合 e.targetが具体的な要素になり全体にならない
+        // modal内部の場合 e.targetが具体的な要素になり全体ｋにならない
         // 外部の場合要素がないからmodal全体になる
         //モーダルを開いた時点で画面全体がそのドキュメントになる(projectDetailModel)
         window.addEventListener("click", (e) => {
@@ -60,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 );
 // ---------------------------------ここまで-----------------------------------------
-
 // --------フェーズ追加モーダルの処理のjavascript-------------------------
 document.addEventListener("DOMContentLoaded", () => {
         // モーダル要素を取得
@@ -107,7 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 // ------------------------------------ここまで----------------------------------------------
-
 // ----------------------------------フェーズ編集モーダルのjavascript-------------------------
 document.addEventListener("DOMContentLoaded", () => {
     // モーダル要素を取得
@@ -154,7 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 // ----------------------------------------------------ここまで---------------------------------------
-
 //-------------------------フェーズ削除確認モーダルのjavascript------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
         // モーダル要素を取得
@@ -212,7 +209,43 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-);
+)
+;
+{% comment %} ここまで  {% endcomment %}
+
+document.addEventListener("DOMContentLoaded", () => {
+    // モーダル要素を取得
+    const modal5 = document.getElementById("saveConfirmationWindow");
+
+    // 「保存」のリンクを取得
+    const openButton5 = document.querySelector(".box a[href='完了確認']");
+
+    // モーダルを閉じるボタンを取得
+    const closeButton5 = modal5.querySelector(".cancel-button");
+
+    // 「保存」リンクがクリックされたときモーダルを開く
+    if (openButton5) {
+        openButton5.addEventListener("click", (e) => {
+            e.preventDefault(); // デフォルトのリンク動作をキャンセル
+            modal5.style.display = "block"; // モーダルを表示
+        });
+    }
+
+    // 「キャンセル」ボタンがクリックされたときモーダルを閉じる
+    if (closeButton5) {
+        closeButton5.addEventListener("click", () => {
+            modal5.style.display = "none"; // モーダルを非表示
+        });
+    }
+
+    // モーダル外部をクリックしたときモーダルを閉じる
+    window.addEventListener("click", (e) => {
+        if (e.target === modal5) {
+            modal5.style.display = "none"; // モーダルを非表示
+        }
+    });
+});
+
 
 //
 
@@ -302,7 +335,6 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
 </div>
 <!-- ---------------------------------------------------- -->
- 
 <!-- フェーズ追加モーダル -->
 <!-- ーーーーーーーーーーーーーーーーーーーーーーーーーーー -->
 <div id="phase_addtionModal" class="modal">
@@ -388,9 +420,25 @@ document.addEventListener("DOMContentLoaded", () => {
         </form>
     </div>
 </div>
-<!-- ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐ -->
- 
-<!--ここまで----------------------------------------------------------------------------------------->
+<!-- ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐-->
+
+<!-- プロジェクト保存確認モーダル -->
+<div id="saveConfirmationWindow" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <form method="POST" action="{% url 'canri_app:project_complete' project.project_id %}">
+            {% csrf_token %}
+            <h2>保存確認</h2>
+            <p>プロジェクトを保存しますか？</p>
+            <div class="button-container">
+                <button type="submit" class="submit-button">保存</button>
+                <button type="button" class="cancel-button">キャンセル</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- モーダルここまで -->
+
 
 <!-- チーム一覧 -->
 <div class="container">
@@ -472,7 +520,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <a href="プロジェクト詳細入力モーダル"> プロジェクト詳細</a>
             </div>
             <div class="box">
-                <a href="{% url 'canri_app:project_complete' project_id=project.project_id %}"> 保存</a>
+                <a href="完了確認"> 保存</a>
             </div>
         </div>
     </div>
