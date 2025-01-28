@@ -28,11 +28,11 @@ SECRET_KEY = 'django-insecure-vji#31=^v!by@5s%pxc&7vjg4djeprr&(4c=x)!z@-ld-no)=b
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '54.91.159.231',
+    '23.20.19.61',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://54.91.159.231',
+    'http://23.20.19.61',
 ]
 
 INSTALLED_APPS = [
