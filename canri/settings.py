@@ -28,6 +28,7 @@ SECRET_KEY = 'django-insecure-vji#31=^v!by@5s%pxc&7vjg4djeprr&(4c=x)!z@-ld-no)=b
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    '*'
     'localhost',
     '127.0.0.1',
     '23.20.19.61', 
@@ -123,10 +124,12 @@ USE_TZ = True
 
 
 STATIC_URL = 'static/'
+
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+STATIC_ROOT = 'canri\static'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
