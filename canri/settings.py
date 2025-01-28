@@ -28,10 +28,13 @@ SECRET_KEY = 'django-insecure-vji#31=^v!by@5s%pxc&7vjg4djeprr&(4c=x)!z@-ld-no)=b
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'localhost:8000',
+    '127.0.0.1',
     '23.20.19.61', 
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
     'http://23.20.19.61',
 ]
 
