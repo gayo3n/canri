@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
     'http://23.20.19.61',
 ]
 
