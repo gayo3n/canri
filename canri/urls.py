@@ -25,7 +25,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('canri_app.urls')),
     path('', include('accounts.urls')),
-] 
-
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

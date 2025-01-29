@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth.views import LoginView, LogoutView
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'accounts'
 
@@ -25,4 +27,4 @@ urlpatterns = [
     # アイコン
     path('change_employee/<int:pk>/', views.account_change_employee, name='account_change_employee'),
     path('change_employee_complete/<int:pk>/', views.account_change_complete_employee, name='account_change_complete_employee'),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
