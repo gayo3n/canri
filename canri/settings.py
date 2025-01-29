@@ -27,10 +27,17 @@ SECRET_KEY = 'django-insecure-vji#31=^v!by@5s%pxc&7vjg4djeprr&(4c=x)!z@-ld-no)=b
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*',
+    'localhost',
+    '127.0.0.1',
+    '34.226.192.163',
+]
 
-
-
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://34.226.192.163',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -116,11 +123,13 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    os.path.join(BASE_DIR, "static"),  # プロジェクトのルートにある static フォルダ
 ]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
