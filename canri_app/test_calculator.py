@@ -137,8 +137,8 @@ class TestModels(TestCase):
     #     # 意図的にエラーを発生させる
     #     response = self.client.get('/non_existent_view/')  # 存在しないURLを指定
     #     self.assertEqual(response.status_code, 500)  # ステータスコードが500であることを確認
-
-
+    
+    
     def setUp(self):
         self.category = Category.objects.create(
             category_name='Test Category',
@@ -210,22 +210,66 @@ class JobTitleInformationTestCase(TestCase):
 
 
 class TeamMemberTestCase(TestCase):
+    def setUp(self):
+        self.team = Team.objects.create(
+            team_name='開発チーム',
+            count=5,
+            objective='製品開発を行う。',
+            creation_date=timezone.now()
+        )
+
+        self.job_title = JobTitleInformation.objects.create(
+            job_title="エンジニア",
+            speciality_height=7,
+            planning_presentation_power=6,
+            teamwork=8,
+            time_management_ability=7,
+            problem_solving_ability=6
+        )
+
+        self.mbti = MBTI.objects.create(
+            mbti_name="ENTP",
+            planning_presentation_power=6,
+            teamwork=7,
+            time_management_ability=6,
+            problem_solving_ability=7
+        )
+
+        self.member = Member.objects.create(
+            name="佐藤 一郎",
+            birthdate=timezone.make_aware(datetime(1995, 5, 15)),
+            job=self.job_title,
+            memo="これはテストメモです。",
+            mbti=self.mbti,
+            creation_date=timezone.now()
+        )
+
+        self.team_member = TeamMember.objects.create(
+            team=self.team,
+            member=self.member,
+            deletion_flag=False,
+            creation_date=timezone.now(),
+            update_date=timezone.now(),
+            deletion_date=None
+        )
+
     def test_team_member_creation(self):
         self.assertEqual(self.team_member.team, self.team)
         self.assertEqual(self.team_member.member, self.member)
         self.assertEqual(self.team_member.deletion_flag, False)
         self.assertIsNotNone(self.team_member.creation_date)
         self.assertIsNotNone(self.team_member.update_date)
-        
+
     def test_team_member_string_representation(self):
         self.assertEqual(str(self.team_member), str(self.team_member.team_member_id))
-        
+
     def test_team_member_soft_deletion(self):
         self.team_member.deletion_flag = True
         self.team_member.deletion_date = timezone.now()
         self.team_member.save()
         self.assertTrue(self.team_member.deletion_flag)
         self.assertIsNotNone(self.team_member.deletion_date)
+
 
 if __name__ == "__main__":
     unittest.main()
