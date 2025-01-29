@@ -75,90 +75,83 @@ class MemberListMakeView(TemplateView):
     template_name = "memberList_make.html"
 
     def get(self, request, *args, **kwargs):
-
         # フォームget
         form = CSVUploadForm()
-        # メンバー検索(未入力の場合はすべて
+
+        # メンバー検索
         members = self.get_queryset()
 
         # セッションから memberID_list を取得
         memberID_list = request.session.get('memberID_list', [])
 
-        # `memberID_list` の各 `member_id` に対応する `member_name` を取得
-        members_in_list = Member.objects.filter(member_id__in=memberID_list, deletion_flag=False)
+        # member_dict を作成
+        member_dict = self.get_member_dict(memberID_list)
 
-        # member_dict を作成する
-        member_dicts = {member.member_id: member.name for member in members_in_list}
-
-        messages.error(request , '')
-
-        if member_dicts >= 20:
-                page = request.GET.get('page', 1)
-                paginator = Paginator(member_dict, 20)
-                try:
-                    member_dict = paginator.page(page)
-                except PageNotAnInteger:
-                    member_dict = paginator.page(1)
-                except EmptyPage:
-                    member_dict = paginator.page(paginator.num_pages)
+        if member_dict:
+            page = request.GET.get('page', 1)
+            paginator = Paginator(list(member_dict.items()), 20)
+            try:
+                member_dict = paginator.page(int(page))
+            except PageNotAnInteger:
+                member_dict = paginator.page(1)
+            except EmptyPage:
+                member_dict = paginator.page(paginator.num_pages)
 
         context = {
-            'form': form, # フォーム
-            'members': members, # 検索メンバー
-            'memberID_list': memberID_list,  # 現在のリストを表示
-            'member_dict':member_dict,
+            'form': form,
+            'members': members,
+            'memberID_list': memberID_list,
+            'member_dict': member_dict,
         }
         return render(request, self.template_name, context)
-    
+
     def post(self, request, *args, **kwargs):
-        # セッションから memberID_list を取得
         memberID_list = request.session.get('memberID_list', [])
 
-        # 削除リクエストがあるか判定
+        # 削除リクエストの処理
         delete_member_id = request.POST.get('delete_member_id')
         if delete_member_id and delete_member_id.isdigit():
             delete_member_id = int(delete_member_id)
             if delete_member_id in memberID_list:
-                memberID_list.remove(delete_member_id)  # リストから削除
+                memberID_list.remove(delete_member_id)
         else:
-            # 追加リクエストの場合
+            # 追加リクエストの処理
             member_id = request.POST.get('member_id')
             if member_id and member_id.isdigit():
                 member_id = int(member_id)
                 if member_id not in memberID_list:
                     try:
-                        Member.objects.get(member_id=member_id)  # メンバーIDの確認
-                        memberID_list.append(member_id)  # リストに追加
+                        Member.objects.get(member_id=member_id)
+                        memberID_list.append(member_id)
                     except Member.DoesNotExist:
                         print(f"Member with ID {member_id} not found")
 
-        # セッションに memberID_list を保存
+        # セッションに保存
         request.session['memberID_list'] = memberID_list
 
-        # `memberID_list` の各 `member_id` に対応する `member_name` を取得
-        members_in_list = Member.objects.filter(member_id__in=memberID_list, deletion_flag=False)
-
-        # member_dict を作成する
-        member_dict = {member.member_id: member.name for member in members_in_list}
+        # member_dict を作成
+        member_dict = self.get_member_dict(memberID_list)
 
         members = self.get_queryset()
         context = {
             'members': members,
             'memberID_list': memberID_list,
-            'member_dict': member_dict,  # member_dict を渡す
+            'member_dict': member_dict,
         }
         return render(request, self.template_name, context)
 
-    # メンバー検索
     def get_queryset(self):
         query = self.request.GET.get('query')
         if query:
             members = Member.objects.filter(name__icontains=query, deletion_flag=False)
         else:
-            # フォーム未入力の場合はすべて
             members = Member.objects.filter(deletion_flag=False)
         return members
-    
+
+    def get_member_dict(self, memberID_list):
+        members_in_list = Member.objects.filter(member_id__in=memberID_list, deletion_flag=False)
+        return {member.member_id: member.name for member in members_in_list}
+ 
 
 # -----メンバーリスト保存-----
 class MemberListMakeCompleteView(TemplateView):
@@ -465,26 +458,8 @@ class MemberMakeView(TemplateView):
         'careerinformation': careerinformation,
     }
         return render(request, 'member_make.html', context)
-# -----CSVファイル処理-----
-class FileUploadView(TemplateView):
-    def upload_csv(request):
-        if request.method == 'POST':
-            form = CSVUploadForm(request.POST, request.FILES)
-            if form.is_valid():
-                csv_file = request.FILES['csv_file']
-                decoded_file = csv_file.read().decode('utf-8').splitlines()
-                reader = csv.reader(decoded_file)
-                
-                for row in reader:
-                    # 各行のデータを処理する
-                    print(row)
-                
-                # 成功した場合のレスポンス
-                return render(request, 'upload_success.html')
-        else:
-            form = CSVUploadForm()
 
-        return render(request, 'upload_csv.html', {'form': form})
+
 # -----メンバー保存-----
 class MemberMakeCompleteView(TemplateView):
     template_name = 'member_make_complete.html'

@@ -133,22 +133,22 @@
                 document.getElementById('saveForm').submit();
             }
         });
-
+    
         document.querySelector('.close').addEventListener('click', function() {
             const modal = document.getElementById('overwriteModal');
             modal.style.display = 'none';
         });
-
+    
         function checkAll() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach(checkbox => checkbox.checked = true);
         }
-
+    
         function uncheckAll() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach(checkbox => checkbox.checked = false);
         }
-
+    
         // 重複メンバーがいる場合にモーダルを表示
         {% if show_modal %}
         document.addEventListener('DOMContentLoaded', function() {
@@ -156,6 +156,32 @@
             modal.style.display = 'block';
         });
         {% endif %}
+    
+        // ページネーションリンクのクリックイベントを処理
+        document.addEventListener('DOMContentLoaded', function() {
+            const paginationLinks = document.querySelectorAll('.pagination a');
+            
+            paginationLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const url = this.href;
+    
+                    fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newModalContent = doc.querySelector('.modal-content').innerHTML;
+                        document.querySelector('.modal-content').innerHTML = newModalContent;
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+        });
     </script>
 </body>
 {% endblock %}
