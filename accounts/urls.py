@@ -27,4 +27,4 @@ urlpatterns = [
     # アイコン
     path('change_employee/<int:pk>/', views.account_change_employee, name='account_change_employee'),
     path('change_employee_complete/<int:pk>/', views.account_change_complete_employee, name='account_change_complete_employee'),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] 
