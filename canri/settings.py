@@ -31,12 +31,12 @@ ALLOWED_HOSTS = [
     '*',
     'localhost',
     '127.0.0.1',
-    '54.87.44.233', 
+    '34.226.192.163',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://localhost:8000',
-    'https://54.87.44.233',
+    'http://localhost:8000',
+    'http://34.226.192.163',
 ]
 
 INSTALLED_APPS = [
