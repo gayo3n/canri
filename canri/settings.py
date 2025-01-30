@@ -25,8 +25,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-vji#31=^v!by@5s%pxc&7vjg4djeprr&(4c=x)!z@-ld-no)=b'
 
 
+
+#ローカルで実行する場合はTrueにする
 DEBUG = False
 
+#ローカルで実行する場合は中身を空にする
 ALLOWED_HOSTS = [
     '*',
     'localhost',
@@ -34,10 +37,13 @@ ALLOWED_HOSTS = [
     '18.207.143.74',
 ]
 
+#ローカルで実行する場合はコメントアウト
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://18.207.143.74',
 ]
+
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -124,6 +130,11 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
+
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),  # プロジェクトのルートにある static フォルダ
+]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
