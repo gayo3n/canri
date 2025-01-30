@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-vji#31=^v!by@5s%pxc&7vjg4djeprr&(4c=x)!z@-ld-no)=b'
 
-
+##################################################################################################
 
 #ローカルで実行する場合はTrueにする
 DEBUG = False
@@ -43,7 +43,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://18.207.143.74',
 ]
 
-
+##################################################################################################
 
 INSTALLED_APPS = [
     'django.contrib.admin',
