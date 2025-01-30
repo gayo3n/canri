@@ -103,6 +103,3 @@ urlpatterns = [
     path('error500html/',   views.errorhtmlView.as_view(),  name='error_500'),
     
 ] 
-
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
