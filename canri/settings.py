@@ -25,12 +25,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-vji#31=^v!by@5s%pxc&7vjg4djeprr&(4c=x)!z@-ld-no)=b'
 
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    
+    '*',
+    'localhost',
+    '127.0.0.1',
+    '18.207.143.74',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000',
+    'http://18.207.143.74',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -115,14 +122,9 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+STATIC_URL = '/static/'
 
-# メディアファイルの保存先
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/uploads')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

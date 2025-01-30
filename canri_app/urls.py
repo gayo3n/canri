@@ -3,6 +3,8 @@ from django.urls import path
 from . import views
 from .views import projectListView,Post_projectListView,project_detail_view,project_detail_update,project_phase_add,project_phase_edit,project_phase_delete,project_phase_coplete,ProjectComplete
 from . import api
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'canri_app'
 
@@ -101,4 +103,4 @@ urlpatterns = [
     path('trigger-error/',  views.trigger_error,            name='trigger_error'),
     path('error500html/',   views.errorhtmlView.as_view(),  name='error_500'),
     
-]
+] 
