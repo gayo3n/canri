@@ -107,24 +107,34 @@
             </form>
 
             <!-- モーダル内のページネーションリンク -->
-            <div class="pagination">
-                <span class="step-links">
-                    {% if duplicate_members.has_previous %}
-                        <a href="?page=1">&laquo; 最初</a>
-                        <a href="?page={{ duplicate_members.previous_page_number }}">前</a>
-                    {% endif %}
-
-                    <span class="current">
-                        Page {{ duplicate_members.number }} of {{ duplicate_members.paginator.num_pages }}.
+            <div id="duplicate-members">
+                {% comment %} <ul class="member-list">
+                    {% for member in duplicate_members %}
+                        <li>
+                            <input type="checkbox" id="member_{{ member.member_id }}" name="members" value="{{ member.member_id }}">
+                            <label for="member_{{ member.member_id }}">{{ member.name }}</label>
+                        </li>
+                    {% endfor %}
+                </ul>
+             {% endcomment %}
+                {% comment %} <div class="pagination">
+                    <span class="step-links">
+                        {% if duplicate_members.has_previous %}
+                            <a href="?page=1">&laquo; 最初</a>
+                            <a href="?page={{ duplicate_members.previous_page_number }}">前</a>
+                        {% endif %}
+            
+                        <span class="current">
+                            {{ duplicate_members.number }} - {{ duplicate_members.paginator.num_pages }}.
+                        </span>
+            
+                        {% if duplicate_members.has_next %}
+                            <a href="?page={{ duplicate_members.next_page_number }}">次</a>
+                            <a href="?page={{ duplicate_members.paginator.num_pages }}">最後 &raquo;</a>
+                        {% endif %}
                     </span>
-
-                    {% if duplicate_members.has_next %}
-                        <a href="?page={{ duplicate_members.next_page_number }}">次</a>
-                        <a href="?page={{ duplicate_members.paginator.num_pages }}">最後 &raquo;</a>
-                    {% endif %}
-                </span>
+                </div> {% endcomment %}
             </div>
-        </div>
     </div>
 
     <script>
@@ -156,8 +166,8 @@
             modal.style.display = 'block';
         });
         {% endif %}
-    
-        // ページネーションリンクのクリックイベントを処理
+
+{% comment %} 
         document.addEventListener('DOMContentLoaded', function() {
             const paginationLinks = document.querySelectorAll('.pagination a');
             
@@ -165,23 +175,23 @@
                 link.addEventListener('click', function(event) {
                     event.preventDefault();
                     const url = this.href;
-    
+        
                     fetch(url, {
+                        method: 'GET',
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest'
                         }
                     })
-                    .then(response => response.text())
-                    .then(html => {
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const newModalContent = doc.querySelector('.modal-content').innerHTML;
-                        document.querySelector('.modal-content').innerHTML = newModalContent;
+                    .then(response => response.json())
+                    .then(data => {
+                        const duplicateMembersDiv = document.getElementById('duplicate-members');
+                        duplicateMembersDiv.innerHTML = data.html;
                     })
                     .catch(error => console.error('Error:', error));
                 });
             });
-        });
+        }); {% endcomment %}
+        
     </script>
 </body>
 {% endblock %}
