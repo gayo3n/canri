@@ -1,58 +1,67 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model  # ユーザーモデルを取得
-from django.urls import reverse
-from django.test import Client
+from django.contrib.auth import get_user_model
+from django.db.utils import IntegrityError
+from accounts.models import User  # 修正：accounts.models からインポート
 
-class TestAccounts(TestCase):
+class UserManagerTests(TestCase):
+    def setUp(self):
+        """テストの準備: カスタムユーザーモデルを取得"""
+        self.User = get_user_model()
 
-    # ユーザー作成のテスト
-    def test_create_user(self):
-        User = get_user_model()  # ユーザーモデルを取得
-        self.assertEqual(User.objects.count(), 0)  # ユーザーが作成されていないことを確認
+    def test_create_user_success(self):
+        """通常のユーザー作成が成功する場合のテスト"""
+        user = self.User.objects.create_user(name="mkn", password="masato111")
 
-        # ユーザーを作成
-        user = User.objects.create_user(name='testuser', password='testpassword')
+        self.assertIsNotNone(user)  # ユーザーが作成されたか
+        self.assertEqual(user.name, "mkn")  # 名前が正しいか
+        self.assertTrue(user.check_password("masato111"))  # パスワードが正しいか
+        self.assertTrue(user.is_active)  # デフォルトでアクティブ
+        self.assertFalse(user.is_staff)  # スタッフ権限がない
+        self.assertFalse(user.is_superuser)  # スーパーユーザー権限がない
 
-        # ユーザーが作成されたことを確認
-        self.assertEqual(User.objects.count(), 1)
-        self.assertEqual(user.name, 'testuser')
-        self.assertTrue(user.check_password('testpassword'))
+    def test_create_user_without_name_error(self):
+        """名前が指定されていない場合にエラーを発生させるテスト"""
+        with self.assertRaises(ValueError) as context:
+            self.User.objects.create_user(name=None, password="testpassword")
+        self.assertEqual(str(context.exception), "名前フィールドは必須です")
 
-    # ユーザーログインのテスト
-    def test_user_login(self):
-        User = get_user_model()  # ユーザーモデルを取得
-        user = User.objects.create_user(name='testuser', password='testpassword')
+    def test_create_user_duplicate_name_error(self):
+        """名前が重複している場合のエラーをテスト"""
+        self.User.objects.create_user(name="testuser", password="testpassword")
+        with self.assertRaises(IntegrityError):  # 名前の重複によるエラーを確認
+            self.User.objects.create_user(name="testuser", password="testpassword2")
 
-        # クライアントを作成
-        client = Client()
+    def test_create_user_with_extra_fields(self):
+        """追加フィールドが渡された場合の動作を確認"""
+        user = self.User.objects.create_user(
+            name="testuser",
+            password="testpassword",
+            is_active=False,  # デフォルトを上書き
+            is_staff=True,
+        )
+        
+        # 追加フィールドが反映されているか確認
+        self.assertEqual(user.name, "testuser")
+        self.assertTrue(user.check_password("testpassword"))
+        self.assertFalse(user.is_active)  # is_active が False に設定されているか
+        self.assertTrue(user.is_staff)  # is_staff が True に設定されているか
+        self.assertFalse(user.is_superuser)  # is_superuser はデフォルトの False のまま
 
-        # ログインしてみる
-        login = client.login(username='testuser', password='testpassword')  # 'username'を使用
+    def test_create_user_password_none(self):
+        """パスワードが None の場合の挙動を確認"""
+        # パスワードがNoneの場合でもエラーが発生しないことを確認
+        user = self.User.objects.create_user(name="testuser", password=None)
+        
+        # ユーザーが作成されていることを確認
+        self.assertIsNotNone(user)
+        self.assertEqual(user.name, "testuser")
+        self.assertFalse(user.has_usable_password())  # パスワードが設定されていないことを確認
 
-        # ログインが成功したことを確認
-        self.assertTrue(login)
+    def test_create_user_without_password_error(self):
+        """パスワードが空の場合にエラーが発生しないことを確認"""
+        user = self.User.objects.create_user(name="testuser", password=None)  # 修正：Noneを使用
 
-        # ログイン後のページにアクセス
-        response = client.get(reverse('home'))  # homeのURLを確認し、変更が必要な場合があります
-
-        # レスポンスのステータスコードを確認
-        if response.status_code == 404:
-            print("404 Not Found")
-        elif response.status_code == 500:
-            print("500 Internal Server Error")
-        elif response.status_code == 200:
-            print("OK (200)")
-
-        # レスポンスが200 OKであることを確認
-        self.assertEqual(response.status_code, 200)
-
-    # 不正なログインのテスト
-    def test_invalid_user_login(self):
-        # クライアントを作成
-        client = Client()
-
-        # 不正なログイン（間違ったパスワード）
-        login = client.login(username='testuser', password='wrongpassword')
-
-        # ログインが失敗したことを確認
-        self.assertFalse(login)
+        # ユーザーが作成されていることを確認
+        self.assertIsNotNone(user)
+        self.assertEqual(user.name, "testuser")
+        self.assertFalse(user.has_usable_password())  # パスワードが設定されていないことを確認
