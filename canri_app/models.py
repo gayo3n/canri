@@ -113,6 +113,7 @@ class TeamMember(models.Model):
 
 
 
+
 class MemberList(models.Model):
     member_list_id = models.AutoField(primary_key=True)
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
@@ -210,15 +211,3 @@ class MemberParameter(models.Model):
     class Meta:
         db_table = 'member_parameter'
 
-
-# class JobTitleInformation(models.Model):
-#     job_title_id = models.AutoField(primary_key=True)
-#     job_title = models.CharField(max_length=255)
-#     speciality_height = models.IntegerField()
-#     planning_presentation_power = models.IntegerField()
-#     teamwork = models.IntegerField()
-#     time_management_ability = models.IntegerField()
-#     problem_solving_ability = models.IntegerField()
-
-#     class Meta:
-#         db_table = 'job_title_information'
