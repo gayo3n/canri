@@ -83,5 +83,62 @@
         </div>
         </form>
     </section>
+
+    
+    <!-- モーダルのHTML構造 -->
+    <div id="overwriteModal" class="modal" style="display: {% if show_modal %}block{% else %}none{% endif %};">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>上書きメンバー選択</h2>
+            <a>重複しているメンバーがいます。上書き保存するメンバーを選択してください。</a>
+            <form action="{% url 'canri_app:member_overwrite' %}" method="post">
+                {% csrf_token %}
+                <ul>
+                    {% for member in duplicate_members %}
+                        <li>
+                            <input type="checkbox" id="member_{{ member.member_id }}" name="members" value="{{ member.member_id }}" {% if member.selected %}checked{% endif %}>
+                            <label for="member_{{ member.member_id }}">{{ member.name }}</label>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <button type="button" onclick="checkAll()">すべてをチェックする</button>
+                <button type="button" onclick="uncheckAll()">すべてのチェックを外す</button>
+                <button type="submit">完了</button>
+                <button class="memberlist_cancel" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadButton').addEventListener('click', function() {
+            if (confirm('本当に保存しますか？')) {
+                document.getElementById('saveForm').submit();
+            }
+        });
+    
+        document.querySelector('.close').addEventListener('click', function() {
+            const modal = document.getElementById('overwriteModal');
+            modal.style.display = 'none';
+        });
+    
+        function checkAll() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = true);
+        }
+    
+        function uncheckAll() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = false);
+        }
+    
+        // 重複メンバーがいる場合にモーダルを表示
+        {% if show_modal %}
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('overwriteModal');
+            modal.style.display = 'block';
+        });
+        {% endif %}
+        
+    </script>
 </div>
 {% endblock %}
