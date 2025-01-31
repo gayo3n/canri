@@ -98,6 +98,25 @@
     transition: color 0.2s ease !important;
 }
 
+.btn-primary:hover{
+    color: #074990;
+}
+
+.submit-button2{
+    cursor: pointer;
+    background-color: #FFF;
+    color: #007bff;
+    border: 1px solid #000;
+    border-width: 0.5px; /* 外枠の太さを指定 */
+    border-radius: 4px; /* 角の丸みを指定 */
+    font-size: 16px;
+    transition: color 0.2s ease;
+}
+
+.submit-button2:hover{
+    color: #074990;
+}
+
 .action-boxes {
     display: flex !important;
     gap: 20px !important;
@@ -119,7 +138,7 @@
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    transition: background-color 0.3s ease !important, color 0.3s ease !important;
+    transition: background-color 0.3s ease !important: color 0.3s ease !important;
     border-width: 0.5px !important;
     border-radius: 4px !important;
     padding: 0 10px !important;
@@ -228,6 +247,7 @@
     background: white !important;
     border-radius: 8px !important;
 }
+
 
 .close-button {
     float: right !important;
