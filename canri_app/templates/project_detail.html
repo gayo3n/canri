@@ -9,239 +9,155 @@
 <!-- JavaScript -->
 <script>
 // --------------------------プロジェクト詳細変更モーダルのjavascript----------------------------
-    // ページが完全に読み込まれた後にスクリプトを実行
-    // 読み込みが完了したらこのスクリプトを起動
-    //addEventListener 設定したイベントが発生時処理を実行
-    // DOMContentLoaded DOMツリー読み込み完了後に発火
 document.addEventListener("DOMContentLoaded", () => {
-        // モーダル要素を取得
-        // 作成したhtmlの要素をmodalに設定
-        // getElementById 任意のHTMLタグで指定したIDにマッチするドキュメント要素を取得するメソッド
-        const modal1 = document.getElementById("projectDetailModal");
+    const modal1 = document.getElementById("projectDetailModal");
+    const openButton1 = document.querySelector("a[href='プロジェクト詳細入力モーダル']");
+    const closeButton1 = modal1.querySelector(".close-button");
 
-        // 「プロジェクト詳細入力モーダル」を開くリンクを取得
-        // openButtonにリンクを設定
-        // querySelector 指定されたセレクターまたはセレクター群に一致する、文書内の最初の Elementを指定
-        const openButton1 = document.querySelector("a[href='プロジェクト詳細入力モーダル']");
-
-        // モーダルを閉じるボタンを取得
-        // 上と同じ
-        // 開いたモーダルからelementを指定
-        const closeButton1 = modal1.querySelector(".close-button");
-
-    //  ここまで起動時に実行---------------------------------------------------
-
-        // モーダルを開く処理
-        // openbuttonが押されたとき
-        //event.preventDefault submitイベントの発生元であるフォームが持つデフォルトの動作をキャンセルする
+    if (openButton1) {
         openButton1.addEventListener("click", (e) => {
-            e.preventDefault(); // リンクのデフォルト動作（遷移）を防止
-            modal1.style.display = "block"; // モーダルを表示
-        });
-
-        // モーダルを閉じる処理
-        // 上と同じ
-        // noneで閉じる
-        closeButton1.addEventListener("click", () => {
-            modal1.style.display = "none"; // モーダルを非表示
-        });
-
-        // モーダルの外側をクリックした際にモーダルを閉じる処理
-         // targetがmodal全体の場合閉じる
-        // modal内部の場合 e.targetが具体的な要素になり全体ｋにならない
-        // 外部の場合要素がないからmodal全体になる
-        //モーダルを開いた時点で画面全体がそのドキュメントになる(projectDetailModel)
-        window.addEventListener("click", (e) => {
-            // クリックした対象がモーダル自体である場合に閉じる
-            if (e.target === modal1) {
-                modal1.style.display = "none"; // モーダルを非表示
-            }
+            e.preventDefault();
+            modal1.style.display = "block";
         });
     }
+
+    if (closeButton1) {
+        closeButton1.addEventListener("click", () => {
+            modal1.style.display = "none";
+        });
+    }
+    window.addEventListener("click", (e) => {
+        if (e.target === modal1) {
+            modal1.style.display = "none";
+        }
+    });
+}
 );
 // ---------------------------------ここまで-----------------------------------------
 // --------フェーズ追加モーダルの処理のjavascript-------------------------
 document.addEventListener("DOMContentLoaded", () => {
-        // モーダル要素を取得
-        // 作成したhtmlの要素をmodalに設定
-        // getElementById 任意のHTMLタグで指定したIDにマッチするドキュメント要素を取得するメソッド
-        const modal2 = document.getElementById("phase_addtionModal");
+    const modal2 = document.getElementById("phase_addtionModal");
+    const openButton2 = document.querySelector("a[href='フェーズ追加画面モーダル']");
+    const closeButton2 = modal2.querySelector(".close-button");
 
-        // 「プロジェクト詳細入力モーダル」を開くリンクを取得
-        // openButtonにリンクを設定
-        // querySelector 指定されたセレクターまたはセレクター群に一致する、文書内の最初の Elementを指定
-        const openButton2 = document.querySelector("a[href='フェーズ追加画面モーダル']");
-
-        // モーダルを閉じるボタンを取得
-        // 上と同じ
-        // 開いたモーダルからelementを指定
-        const closeButton2 = modal2.querySelector(".close-button");
-
-        // モーダルを開く処理
-        // openbuttonが押されたとき
-        //event.preventDefault submitイベントの発生元であるフォームが持つデフォルトの動作をキャンセルする
-
+    if (openButton2) {
         openButton2.addEventListener("click", (e) => {
-            e.preventDefault(); // リンクのデフォルト動作（遷移）を防止
-            modal2.style.display = "block"; // モーダルを表示
+            e.preventDefault();
+            modal2.style.display = "block";
         });
+    }
 
-        // モーダルを閉じる処理
-        // 上と同じ
-        // noneで閉じる
+    if (closeButton2) {
         closeButton2.addEventListener("click", () => {
-            modal2.style.display = "none"; // モーダルを非表示
+            modal2.style.display = "none";
         });
+    }
 
-        // モーダルの外側をクリックした際にモーダルを閉じる処理
-         // targetがmodal全体の場合閉じる
-        // modal内部の場合 e.targetが具体的な要素になり全体にならない
-        // 外部の場合要素がないからmodal全体になる
-        //モーダルを開いた時点で画面全体がそのドキュメントになる(projectDetailModel)
-        window.addEventListener("click", (e) => {
-            // クリックした対象がモーダル自体である場合に閉じる
-            if (e.target === modal2) {
-                modal2.style.display = "none"; // モーダルを非表示
-            }
-        });
+
+    window.addEventListener("click", (e) => {
+        if (e.target === modal2) {
+            modal2.style.display = "none";
+        }
     });
+});
 // ------------------------------------ここまで----------------------------------------------
 // ----------------------------------フェーズ編集モーダルのjavascript-------------------------
 document.addEventListener("DOMContentLoaded", () => {
-    // モーダル要素を取得
-    const modal3 = document.getElementById("phase_editModal");
-    // モーダルを開くリンクを取得
-    const openButtons3 = document.querySelectorAll(".open-modal");
-    // モーダルを閉じるボタンを取得
-    const closeButton3 = modal3.querySelector(".close-button");
+const modal3 = document.getElementById("phase_editModal");
+const openButtons3 = document.querySelectorAll(".open-modal");
+const closeButton3 = modal3.querySelector(".close-button");
 
-    // 各リンクにクリックイベントを追加
-    openButtons3.forEach(button => {
-        button.addEventListener("click", (e) => {
-            e.preventDefault(); // リンクのデフォルト動作（遷移）を防止
+// 各リンクにクリックイベントを追加
+openButtons3.forEach(button => {
+    button.addEventListener("click", (e) => {
+        e.preventDefault();
 
-            const phaseId = button.getAttribute("data-phase-id");
-            const phaseName = button.getAttribute("data-phase-name");
-            let phaseDate = button.getAttribute("data-phase-date"); // "2025年10月31日" の形式
+        const phaseId = button.getAttribute("data-phase-id");
+        const phaseName = button.getAttribute("data-phase-name");
+        let phaseDate = button.getAttribute("data-phase-date");
 
-            // "2025年10月31日" を "2025-10-31" に変換する処理
-            const dateParts = phaseDate.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
-            const formattedDate = `${dateParts[1]}-${dateParts[2].padStart(2, '0')}-${dateParts[3].padStart(2, '0')}`;
+        const dateParts = phaseDate.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+        const formattedDate = `${dateParts[1]}-${dateParts[2].padStart(2, '0')}-${dateParts[3].padStart(2, '0')}`;
 
-            console.log(`Formatted Date: ${formattedDate}`); // デバッグ用
+        document.getElementById("modalPhaseId").value = phaseId;
+        document.getElementById("modalPhaseName").value = phaseName;
+        document.getElementById("modalPhaseDate").value = formattedDate;
 
-            document.getElementById("modalPhaseId").value = phaseId;
-            document.getElementById("modalPhaseName").value = phaseName;
-            document.getElementById("modalPhaseDate").value = formattedDate; // フォーマット済みの日付
+        modal3.style.display = "block";
+    });
+});
 
-            modal3.style.display = "block";
+    if (closeButton3) {
+        // モーダルを閉じる処理
+        closeButton3.addEventListener("click", () => {
+            modal3.style.display = "none";
         });
-    });
-
-
-    // モーダルを閉じる処理
-    closeButton3.addEventListener("click", () => {
-        modal3.style.display = "none"; // モーダルを非表示
-    });
+    }
 
     // モーダルの外側をクリックした際にモーダルを閉じる処理
     window.addEventListener("click", (e) => {
         if (e.target === modal3) {
-            modal3.style.display = "none"; // モーダルを非表示
+            modal3.style.display = "none";
         }
     });
 });
 // ----------------------------------------------------ここまで---------------------------------------
 //-------------------------フェーズ削除確認モーダルのjavascript------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-        // モーダル要素を取得
-        // 作成したhtmlの要素をmodalに設定
-        // getElementById 任意のHTMLタグで指定したIDにマッチするドキュメント要素を取得するメソッド
-        const modal14 = document.getElementById("deleteConfirmationWindow");
-
-      // .action-buttonクラスを持つすべての要素を取得
+    const modal14 = document.getElementById("deleteConfirmationWindow");
         const openButtons4 = document.querySelectorAll(".aaction-button");
-
-        // モーダルを閉じるボタンを取得
-        // 上と同じ
-        // 開いたモーダルからelementを指定
         const closeButton14 = modal14.querySelector(".close-button");
 
-    //  ここまで起動時に実行---------------------------------------------------
-
-        // モーダルを開く処理
-        // openbuttonが押されたとき
-        //event.preventDefault submitイベントの発生元であるフォームが持つデフォルトの動作をキャンセルする
         openButtons4.forEach(button => {
         button.addEventListener("click", (e) => {
-            e.preventDefault(); // リンクのデフォルト動作（遷移）を防止
-            // データ属性からフェーズ情報を取得
+            e.preventDefault();
             const phaseId = button.getAttribute("data-phase-id");
             const phaseDate = button.getAttribute("data-phase-date");
             const phaseName = button.getAttribute("data-phase-name");
 
-            // モーダル内のフォームにフェーズ情報を設定
             document.getElementById("amodalPhaseId").value = phaseId;
             document.getElementById("amodalPhaseDate").value = phaseDate;
             document.getElementById("amodalPhaseName").value = phaseName;
 
-            // モーダルを表示
             modal14.style.display = "block";
         });
     });
 
-        // モーダルを閉じる処理
-        // 上と同じ
-        // noneで閉じる
-        closeButton14.addEventListener("click", () => {
-            modal14.style.display = "none"; // モーダルを非表示
-        });
+        if (closeButton14) {
+           closeButton14.addEventListener("click", () => {
+               modal14.style.display = "none";
+           });
+       }
 
-        // モーダルの外側をクリックした際にモーダルを閉じる処理
-         // targetがmodal全体の場合閉じる
-        // modal内部の場合 e.targetが具体的な要素になり全体にならない
-        // 外部の場合要素がないからmodal全体になる
-        //モーダルを開いた時点で画面全体がそのドキュメントになる(projectDetailModel)
         window.addEventListener("click", (e) => {
-            // クリックした対象がモーダル自体である場合に閉じる
             if (e.target === modal14) {
-                modal14.style.display = "none"; // モーダルを非表示
+                modal14.style.display = "none";
             }
         });
     }
-)
-;
-{% comment %} ここまで  {% endcomment %}
+);
+// ---------------------------------ここまで-----------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-    // モーダル要素を取得
     const modal5 = document.getElementById("saveConfirmationWindow");
-
-    // 「保存」のリンクを取得
     const openButton5 = document.querySelector(".box a[href='完了確認']");
-
-    // モーダルを閉じるボタンを取得
     const closeButton5 = modal5.querySelector(".cancel-button");
 
-    // 「保存」リンクがクリックされたときモーダルを開く
     if (openButton5) {
         openButton5.addEventListener("click", (e) => {
-            e.preventDefault(); // デフォルトのリンク動作をキャンセル
-            modal5.style.display = "block"; // モーダルを表示
+            e.preventDefault();
+            modal5.style.display = "block";
         });
     }
 
-    // 「キャンセル」ボタンがクリックされたときモーダルを閉じる
     if (closeButton5) {
         closeButton5.addEventListener("click", () => {
-            modal5.style.display = "none"; // モーダルを非表示
+            modal5.style.display = "none";
         });
     }
-
-    // モーダル外部をクリックしたときモーダルを閉じる
     window.addEventListener("click", (e) => {
         if (e.target === modal5) {
-            modal5.style.display = "none"; // モーダルを非表示
+            modal5.style.display = "none";
         }
     });
 });
@@ -257,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <div id="projectDetailModal" class="modal">
     <div class="modal-content">
     <!-- モーダルを閉じるボタン -->
-    <span class="close-button">&times;</span>
+    <span class="close-button">×</span>
 <form method="POST" action="{% url 'canri_app:project_detail_update' project.project_id %}" class="project-form">
 
     {% csrf_token %}
@@ -330,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <!-- モーダルの内容を包む要素 -->
     <div class="modal-content">
         <!-- モーダルを閉じるボタン -->
-        <span class="close-button">&times;</span>   <!-- ☓マーク -->
+        <span class="close-button">×</span>   <!-- ☓マーク -->
 
         <!-- モーダルのタイトル -->
         <h3>フェーズ追加</h3>
@@ -365,7 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <!-- フェーズ編集モーダル -->
 <div id="phase_editModal" class="modal">
     <div class="modal-content">
-        <span class="close-button">&times;</span>
+        <span class="close-button">×</span>
         <h3>フェーズ編集</h3>
         <!-- フェーズ編集用URL -->
         <form method="POST" action="{% url 'canri_app:project_phase_edit' project.project_id %}">
@@ -389,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <!-- フェーズ削除確認ウィンドウ -->
 <div id="deleteConfirmationWindow" class="modal">
     <div class="modal-content">
-        <span class="close-button" >&times;</span>
+        <span class="close-button" >×</span>
         <!-- project_idはどのフェーズでも固定なので最初から設定(url用のデータなので見えない) -->
         <!-- <input type="hidden" name="project_id" value="{{ project_id }}">-->
         <form method="POST" action="{% url 'canri_app:project_phase_delete' project.project_id %}">
@@ -409,7 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <!-- プロジェクト保存確認モーダル -->
 <div id="saveConfirmationWindow" class="modal">
     <div class="modal-content">
-        <span class="close-button">&times;</span>
+        <span class="close-button">×</span>
         <form method="POST" action="{% url 'canri_app:project_complete' project.project_id %}">
             {% csrf_token %}
             <h2>保存確認</h2>
@@ -423,87 +339,84 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
 <!-- モーダルここまで -->
 
-<!-- チーム一覧 -->
-<div class="container">
-    <h2>{{ project.project_name }}</h2>
-    <h3>関連チーム</h3>
-    <div class="teams-grid">
-        {% for affiliation in teams %}
-            <div class="team-card">
-                <!-- チーム詳細ページのリンクにproject_idを追加 -->
-                <a href="{% url 'canri_app:project_team_edit' team_id=affiliation.team.team_id %}?project_id={{ project.project_id }}">
-                    {{ affiliation.team.team_name }}
-                </a>
+<!-- 全体のコンテナ -->
+    <div class="container">
+            <h2>{{ project.project_name }}</h2>
+             <!-- フェーズ情報とボタン -->
+            <div class="phase-and-actions-container">
+                <div class="tasks-panel">
+                    <!-- 削除されていないフェーズをすべて表示 -->
+                    <h3>フェーズ情報</h3>
+                    <div class="task-list">
+                        {% for phase in phases %}
+                            <div class="task-item">
+                                <!-- チェックボックス(完了時はチェックがつく) -->
+                                <input type="checkbox" disabled {% if phase.complete_flag %}checked{% endif %}>
+                                <!-- フェーズIDをhiddenで送信 -->
+                                <input type="hidden" name="phase_id" value="{{ phase.progress_status_id }}">
+                                <input type="hidden" name="expirationdate" value="{{ phase.expiration_date }}">
+                                <input type="hidden" name="phase_name" value="{{ phase.phase_name }}">
+                                <!--フェーズ名と期限-->
+                                <!--フェーズ名のopen-modelが選択された場合フェーズ編集画面表示(そのためのデータを付けている) -->
+                                <span class="task-name"><a href="#" class="open-modal" data-phase-id="{{ phase.progress_status_id }}" data-phase-name="{{ phase.phase_name }}" data-phase-date="{{ phase.expiration_date |date:"Y年m月d日"}}">{{ phase.phase_name }}</a></span>
+                                <span class="task-date">期限日{{ phase.expiration_date |date:"Y年m月d日"}}</span>
+                                {% if phase.complete_date %}
+                                    <span class="complete-date">完了日{{ phase.complete_date |date:"Y年m月d日"}}</span>
+                                {% endif %}
+                                <!-- フェーズ削除用ボタン -->
+                                <button type="button" class="aaction-button" data-phase-id="{{ phase.progress_status_id }}"  data-phase-name="{{ phase.phase_name }}" data-phase-date="{{ phase.expiration_date |date:"Y年m月d日"}}" >
+                                <i class="fas fa-trash" aria-hidden="true"></i></button>
+                                <!-- フェーズ完了ボタン -->
+                                <form method="get" action="{% url 'canri_app:project_phase_coplete' project.project_id %}">
+                                    <input type="hidden" name="phase_id" value="{{ phase.progress_status_id }}">
+                                    <input type="hidden" name="expirationdate" value="{{ phase.expiration_date }}">
+                                    <input type="hidden" name="phase_name" value="{{ phase.phase_name }}">
+                                    <button type="submit" class="submit-button">完了</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- ボタンボックス -->
+                <div class="action-boxes">
+                    <div class="box">
+                        <a href="フェーズ追加画面モーダル"> フェーズ追加</a>
+                    </div>
+                    <div class="box">
+                        <a href="プロジェクト詳細入力モーダル"> プロジェクト詳細</a>
+                    </div>
+                    <div class="box">
+                        <a href="完了確認"> 保存</a>
+                    </div>
+                </div>
             </div>
-        {% endfor %}
-    </div>
-</div>
-<!-- チーム新規作成 -->
-<div class="team-add">
-    <form method="post" action="{% url 'canri_app:project_detail_create_team' %}" >
-        {% csrf_token %}
-        <!-- プロジェクト情報をhiddenで送信 -->
-        <input type="hidden" name="project_id" value="{{ project.project_id }}">
-        <input type="hidden" name="project_name" value="{{ project.project_name }}">
-        <input type="hidden" name="project_description" value="{{ project.project_description }}">
-        <input type="hidden" name="start_date" value="{{ project.start_date }}">
-        <input type="hidden" name="end_date" value="{{ project.end_date }}">
-
-        <!-- チーム作成ボタン -->
-        <button type="submit" >チームを新規で作成</button>
-    </form>
-</div>
-
-<!-- フェーズ情報表示 ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐-->
-    <h3>フェーズ情報</h3>
-    <div class="tasks-panel">
-        <div class="task-list">
-            <!-- 削除されていないフェーズをすべて表示 -->
-            {% for phase in phases %}
-                <div class="task-item">
-                    <!-- チェックボックス(完了時はチェックがつく) -->
-                    <input type="checkbox" disabled {% if phase.complete_flag %}checked{% endif %}>
-                    <!-- フェーズIDをhiddenで送信 -->
-                    <input type="hidden" name="phase_id" value="{{ phase.progress_status_id }}">
-                    <input type="hidden" name="expirationdate" value="{{ phase.expiration_date }}">
-                    <input type="hidden" name="phase_name" value="{{ phase.phase_name }}">
-                    <!--フェーズ名と期限-->
-                    <!--フェーズ名のopen-modelが選択された場合フェーズ編集画面表示(そのためのデータを付けている) -->
-                    <span class="task-name"><a href="#" class="open-modal" data-phase-id="{{ phase.progress_status_id }}" data-phase-name="{{ phase.phase_name }}" data-phase-date="{{ phase.expiration_date |date:"Y年m月d日"}}">{{ phase.phase_name }}</a></span>
-                    <span class="task-date">期限日{{ phase.expiration_date |date:"Y年m月d日"}}</span>
-                    <span class="complete-date">完了日{{ phase.complete_date |date:"Y年m月d日"}}</span>
-                    <!-- フェーズ削除用ボタン -->
-                    <button type="button" class="aaction-button" data-phase-id="{{ phase.progress_status_id }}"  data-phase-name="{{ phase.phase_name }}" data-phase-date="{{ phase.expiration_date |date:"Y年m月d日"}}" >
-                    <i class="fas fa-trash" aria-hidden="true"></i></button>
-                    <!-- フェーズ完了ボタン -->
-                    <form method="get" action="{% url 'canri_app:project_phase_coplete' project.project_id %}">
-                        <input type="hidden" name="phase_id" value="{{ phase.progress_status_id }}">
-                        <input type="hidden" name="expirationdate" value="{{ phase.expiration_date }}">
-                        <input type="hidden" name="phase_name" value="{{ phase.phase_name }}">
-                        <button type="submit" class="submit-button">完了</button>
-                    </form>
+        <!-- チーム一覧 -->
+        <h2>関連チーム</h2>
+        <div class="teams-grid">
+            {% for affiliation in teams %}
+                <div class="team-card">
+                    <!-- チーム詳細ページのリンクにproject_idを追加 -->
+                    <a href="{% url 'canri_app:project_team_edit' team_id=affiliation.team.team_id %}?project_id={{ project.project_id }}">
+                        {{ affiliation.team.team_name }}
+                    </a>
                 </div>
             {% endfor %}
         </div>
-    </div>
-<!--‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐-->
+         <!-- チーム新規作成 -->
+        <div class="team-add">
+            <form method="post" action="{% url 'canri_app:project_detail_create_team' %}" >
+                {% csrf_token %}
+                <!-- プロジェクト情報をhiddenで送信 -->
+                <input type="hidden" name="project_id" value="{{ project.project_id }}">
+                <input type="hidden" name="project_name" value="{{ project.project_name }}">
+                <input type="hidden" name="project_description" value="{{ project.project_description }}">
+                <input type="hidden" name="start_date" value="{{ project.start_date }}">
+                <input type="hidden" name="end_date" value="{{ project.end_date }}">
 
-
-
-<!-- ボタンボックス -->
-<!-- モーダルリンク -->
-        <div class="action-boxes">
-            <div class="box">
-                <a href="フェーズ追加画面モーダル"> フェーズ追加</a>
-            </div>
-            <div class="box">
-                <a href="プロジェクト詳細入力モーダル"> プロジェクト詳細</a>
-            </div>
-            <div class="box">
-                <a href="完了確認"> 保存</a>
-            </div>
+                <!-- チーム作成ボタン -->
+                <button type="submit" >チームを新規で作成</button>
+            </form>
         </div>
-    </div>
 </div>
 
 {% endblock %}

@@ -1,307 +1,314 @@
+/* 全体的なレイアウト */
 .container {
-    padding: 20px;
-    display: flex;
-    flex-direction: column; /* 子要素を縦に並べる */
-    gap: 20px; /* セクション間の間隔を追加 */
-    position: relative; /* 親要素の位置設定 */
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    position: relative !important;
 }
 
-.teams-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 最大3列に制限 */
-    gap: 20px;
-    padding-right: 20px;
-    height: auto; /* 高さを自動調整 */
-    line-height: normal; /* 中央揃えの調整 */
-    text-align: center;
-    margin-top: 5px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    justify-content: start; /* 左寄せに変更 */
-    margin-left: 0; /* グリッド全体を左寄せ */
-    max-width: 60%; /* 画面幅を制限 */
-    overflow: hidden; /* はみ出すアイテムを隠す */
-}
-
-.team-card {
-    display: flex;
-    flex-direction: column; /* 子要素を縦に並べる */
-    align-items: center;
-    justify-content: start; /* 上に詰める */
-    width: 250px;
-    height: 200px;
-    background-color: #ffffff;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    margin: 10px;
-    padding: 10px; /* 内側の余白を追加 */
-    font-size: 16px;
-    font-weight: bold;
-    color: #133eff;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.team-card a {
-    text-decoration: none;
-    color: #0084ff;
-}
-
-.team-card .team-name {
-    font-size: 18px; /* チーム名の文字サイズを調整 */
-    font-weight: bold;
-    color: #007bff; /* チーム名の色 */
-    margin-bottom: 10px; /* 下に余白を追加 */
-}
-
-.team-card .other-content {
-    font-size: 14px;
-    color: #383838;
-}
-
-.team-card:hover {
-    box-shadow: 4px 4px 10px rgba(95, 95, 95, 0.2); /* ホバー時の影を強調 */
-}
-
-.phase {
-    position: absolute;
-    top: 20px;   /* フェーズ情報を上に配置 */
-    right: 10px; /* 右寄せ */
-    z-index: 10; /* 他の要素より前に表示 */
-    font-size: 14px;
-}
-
-.team-add {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-start; /* 左寄せ */
-    margin-bottom: 20px; /* 下部に余白 */
-    gap: 10px; /* ボタンとフォームの間隔を縮める */
-    max-width: 30%; /* 画面幅を制限 */
-}
-
-.team-add form {
-    display: flex;
-    justify-content: flex-start; /* 左寄せ */
-    gap: 5px; /* フォームの中の要素間の間隔を縮める */
-}
-
-.team-add button {
-    background-color: #007bff;
-    color: white;
-    padding: 8px 16px; /* ボタンのパディングを調整してコンパクトに */
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.team-add button:hover {
-    background-color: #0056b3;
+/* 新しいコンテナでフェーズ情報とボタンを包括 */
+.phase-and-actions-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    order: -1 !important;
+    width: fit-content !important;
+    margin-left: auto !important;
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    z-index: 10;
 }
 
 .tasks-panel {
-    flex: 2;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* タスクパネルにも影を追加 */
-    min-width: 250px; /* 最小幅を設定 */
-    margin-top: 20px; /* フェーズ情報との間に余白を追加 */
-    margin-left: auto; /* 右寄せ */
+    background: white !important;
+    border-radius: 8px !important;
+    padding: 20px !important;
+    border: 1px solid #ddd !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    min-width: 250px !important;
+    margin-top: 20px !important;
+    width: auto !important;
+    max-width: 650px !important; /* 幅を制限 */
 }
 
+
 .task-list {
-    margin-top: 15px;
+    margin-top: 15px !important;
 }
 
 .task-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.3s ease;
-    overflow: hidden; /* 内容がはみ出すのを防止 */
-    flex-direction: row; /* チェックボックスと名前を横並びに */
+    display: flex !important;
+    align-items: center !important;
+    padding: 10px !important;
+    border-bottom: 1px solid #eee !important;
+    transition: background-color 0.3s ease !important;
+    overflow: hidden !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
 }
 
 .task-item:hover {
-    background-color: #f8f8f8; /* ホバー時の背景色変更 */
+    background-color: #f8f8f8 !important;
 }
 
 .task-item:last-child {
-    border-bottom: none;
+    border-bottom: none !important;
 }
 
 .task-checkbox {
-    margin-right: 10px;
-    width: 25px;
+    margin-right: 10px !important;
+    width: 25px !important;
 }
 
 .task-name {
-    flex: 1;
-    text-overflow: ellipsis; /* テキストが長すぎる場合省略記号を表示 */
-    overflow: hidden; /* 内容がはみ出すのを防止 */
-    white-space: nowrap; /* テキストが折り返されないように設定 */
-    max-width: 150px;
+    flex: 1 !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    max-width: 40% !important;
 }
 
 .task-date {
-    color: #666;
-    margin-right: 10px;
+    color: #666 !important;
+    margin-right: 10px !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
 }
 
 .delete-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #666;
-    font-size: 16px;
-    transition: color 0.2s ease;
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    color: #666 !important;
+    font-size: 16px !important;
+    transition: color 0.2s ease !important;
 }
 
 .delete-button:hover {
-    color: #d9534f; /* ゴミ箱アイコンのホバー時色変更 */
+    color: #d9534f !important;
 }
 
 .btn-primary{
-    border: none;
-    cursor: pointer;
-    color: #007bff;
-    font-size: 16px;
-    transition: color 0.2s ease;
+    border: none !important;
+    cursor: pointer !important;
+    color: #007bff !important;
+    font-size: 16px !important;
+    transition: color 0.2s ease !important;
 }
 
 .action-boxes {
-    display: flex;
-    gap: 20px;
-    margin-top: 20px;
-    flex-wrap: wrap; /* 子要素が横並びに収まりきらないときに折り返す */
-    justify-content: flex-start; /* 左寄せ */
-    margin-left: 20px; /* 左寄りに配置 */
-    max-width: 40%; /* 横幅を制限 */
-    position: relative; /* レイアウト調整のためrelativeに設定 */
+    display: flex !important;
+    gap: 20px !important;
+    margin-top: 20px !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    position: relative !important;
+    z-index: 10 !important;
+    align-items: flex-start !important;
+   width: 100% !important;
 }
 
+
 .box {
-    width: fit-content;
-    height: 30px;
-    border: solid 3px #000000;
-    background-color: #53d7ff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    border-width: 0.5px; /* 外枠の太さを指定 */
-    border-radius: 4px; /* 角の丸みを指定 */
-    padding: 0 10px; /* 文字がボックスに収まるように左右のパディングを追加 */
-    flex: 1; /* 横幅を均等に分ける */
-    min-width: 100px; /* ボックスの最小幅を設定 */
-    text-align: center;
-    white-space: nowrap; /* テキストが折り返されないように設定 */
+    width: fit-content !important;
+    height: 30px !important;
+    border: solid 3px #000000 !important;
+    background-color: #53d7ff !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    transition: background-color 0.3s ease !important, color 0.3s ease !important;
+    border-width: 0.5px !important;
+    border-radius: 4px !important;
+    padding: 0 10px !important;
+    flex: 1 !important;
+    min-width: 100px !important;
+    text-align: center !important;
+    white-space: nowrap !important;
 }
 
 .box:hover {
-    background-color: #1eb9e9;
-    color: #fff;
+    background-color: #1eb9e9 !important;
+    color: #fff !important;
 }
 
 .box a {
-    text-decoration: none;
-    color: #000;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    overflow: hidden;
-    text-overflow: ellipsis; /* 文字が長すぎる場合省略記号を表示 */
+    text-decoration: none !important;
+    color: #000 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 .fas {
-    font-size: 14px;
+    font-size: 14px !important;
 }
 
+/* チーム一覧のレイアウト */
+.teams-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 20px !important;
+    padding-right: 20px !important;
+    height: auto !important;
+    line-height: normal !important;
+    text-align: center !important;
+    margin-top: 5px !important;
+    border: 1px solid #ddd !important;
+    border-radius: 8px !important;
+    padding: 15px !important;
+    justify-content: start !important;
+    margin-left: 0 !important;
+    max-width: 60% !important;
+    overflow: hidden !important;
+}
+
+.team-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: start !important;
+    width: 250px !important;
+    height: 200px !important;
+    background-color: #ffffff !important;
+    border: 2px solid #ddd !important;
+    border-radius: 8px !important;
+    margin: 10px !important;
+    padding: 10px !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    color: #133eff !important;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1) !important;
+    text-align: center !important;
+    transition: transform 0.2s ease !important, box-shadow 0.2s ease !important;
+}
+
+.team-card a {
+    text-decoration: none !important;
+    color: #0084ff !important;
+}
+
+.team-card .team-name {
+    font-size: 18px !important;
+    font-weight: bold !important;
+    color: #007bff !important;
+    margin-bottom: 10px !important;
+}
+
+.team-card .other-content {
+    font-size: 14px !important;
+    color: #383838 !important;
+}
+
+.team-card:hover {
+    box-shadow: 4px 4px 10px rgba(95, 95, 95, 0.2) !important;
+}
+
+
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.4);
+    display: none ;
+    position: fixed !important;
+    z-index: 1000 !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: auto !important;
+    background-color: rgba(0, 0, 0, 0.4) !important;
 }
 
 .modal-content {
-    margin: 10% auto;
-    padding: 20px;
-    width: 60%;
-    background: white;
-    border-radius: 8px;
+    margin: 10% auto !important;
+    padding: 20px !important;
+    width: 60% !important;
+    background: white !important;
+    border-radius: 8px !important;
 }
 
 .close-button {
-    float: right;
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-    cursor: pointer;
+    float: right !important;
+    font-size: 20px !important;
+    font-weight: bold !important;
+    color: #333 !important;
+    cursor: pointer !important;
 }
 
 .close-button:hover {
-    color: #d9534f;
+    color: #d9534f !important;
 }
 
 .phase-boxes {
-    position: absolute;
-    top: 140px; /* 上からの距離を指定 */
-    right: 100px; /* 右寄せ */
-    max-width: 40%; /* 画面幅を制限 */
-    text-align: right; /* 右寄せ */
-    z-index: 10; /* 他の要素より前に表示 */
-}
-
-.tasks-panel {
-    position: absolute;
-    top: 200px; /* 上からの距離を指定 */
-    right: 50px; /* 右寄せ */
-    max-width: 50%; /* 画面幅を制限 */
-    text-align: right; /* 右寄せ */
-    z-index: 10; /* 他の要素より前に表示 */
+    position: absolute !important;
+    top: 140px !important;
+    right: 100px !important;
+    max-width: 40% !important;
+    text-align: right !important;
+    z-index: 10 !important;
 }
 
 @media (max-width: 1400px) {
     .action-boxes {
-        margin-left: 10px; /* 画面幅が小さい場合の左側余白 */
-        max-width: 100%; /* 横幅を調整 */
+        margin-left: 10px !important;
+        max-width: 100% !important;
     }
 
     .phase-boxes,
     .tasks-panel {
-        position: relative; /* 絶対位置から相対位置に変更 */
-        top: auto; /* 上からの距離を解除 */
-        right: auto; /* 右からの距離を解除 */
-        left: 0; /* 左寄せ */
-        text-align: left; /* 左寄せ */
-        margin-left: 10px; /* 左側の余白を少し追加 */
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        left: 0 !important;
+        text-align: left !important;
+        margin-left: 10px !important;
     }
 
     .tasks-panel {
-        margin-top: 20px; /* フェーズ情報との間に余白を追加 */
+         margin-top: 20px !important;
     }
 }
 
 .tasks-panel .task-list .task-item:nth-child(odd) {
-    background-color: #f5f5f5; /* 奇数番目のタスクアイテムの背景色 */
+    background-color: #f5f5f5 !important;
 }
 
 .tasks-panel .task-list .task-item:nth-child(even) {
-    background-color: #e9e8e8; /* 偶数番目のタスクアイテムの背景色 */
+    background-color: #e9e8e8 !important;
 }
 
 .tasks-panel .task-list .task-item:hover {
-    background-color: #c9c9c9; /* ホバー時の背景色 */
+    background-color: #c9c9c9 !important;
+}
+
+/* チーム新規作成ボタンのスタイル */
+.team-add {
+    margin-top: 20px !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    margin-bottom: 20px !important;
+    gap: 10px !important;
+    max-width: 30% !important;
+}
+
+.team-add form {
+    display: flex !important;
+    justify-content: flex-start !important;
+    gap: 5px !important;
+}
+
+.team-add button {
+    background-color: #007bff !important;
+    color: white !important;
+    padding: 8px 16px !important;
+    border-radius: 4px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: background-color 0.3s ease !important;
+}
+
+.team-add button:hover {
+    background-color: #0056b3 !important;
 }
