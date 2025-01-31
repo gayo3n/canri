@@ -444,7 +444,8 @@ def save_project_api(request):
             project_detail=project_description,
             project_start_date=start_date,
             project_end_date=end_date,
-            creation_date=timezone.now()
+            creation_date=timezone.now(),
+            post_evaluation_memo=f'{project_name}の事後評価',
         )
 
         # チームをプロジェクトに関連付け
