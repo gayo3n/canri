@@ -38,7 +38,6 @@
     padding: 10px; /* 内側の余白を追加 */
     font-size: 16px;
     font-weight: bold;
-    color: #133eff;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
     text-align: center;
     transition: transform 0.2s, box-shadow 0.2s;
@@ -112,6 +111,12 @@
     min-width: 250px; /* 最小幅を設定 */
     margin-top: 20px; /* フェーズ情報との間に余白を追加 */
     margin-left: auto; /* 右寄せ */
+    position: absolute;
+    top: 200px; /* 上からの距離を指定 */
+    right: 50px; /* 右寄せ */
+    max-width: 50%; /* 画面幅を制限 */
+    text-align: right; /* 右寄せ */
+    z-index: 10; /* 他の要素より前に表示 */
 }
 
 .task-list {
@@ -168,11 +173,33 @@
 }
 
 .btn-primary{
-    border: none;
     cursor: pointer;
+    background-color: #FFF;
     color: #007bff;
+    border: 1px solid #000;
+    border-width: 0.5px; /* 外枠の太さを指定 */
+    border-radius: 4px; /* 角の丸みを指定 */
     font-size: 16px;
     transition: color 0.2s ease;
+}
+
+.btn-primary:hover{
+    color: #074990;
+}
+
+.submit-button2{
+    cursor: pointer;
+    background-color: #FFF;
+    color: #007bff;
+    border: 1px solid #000;
+    border-width: 0.5px; /* 外枠の太さを指定 */
+    border-radius: 4px; /* 角の丸みを指定 */
+    font-size: 16px;
+    transition: color 0.2s ease;
+}
+
+.submit-button2:hover{
+    color: #074990;
 }
 
 .action-boxes {
@@ -190,11 +217,12 @@
     width: fit-content;
     height: 30px;
     border: solid 3px #000000;
-    background-color: #53d7ff;
+    background-color: #fff;
+    font-weight: bold;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: color 0.3s ease, color 0.3s ease;
     border-width: 0.5px; /* 外枠の太さを指定 */
     border-radius: 4px; /* 角の丸みを指定 */
     padding: 0 10px; /* 文字がボックスに収まるように左右のパディングを追加 */
@@ -204,19 +232,18 @@
     white-space: nowrap; /* テキストが折り返されないように設定 */
 }
 
-.box:hover {
-    background-color: #1eb9e9;
-    color: #fff;
-}
-
 .box a {
     text-decoration: none;
-    color: #000;
     display: flex;
     align-items: center;
     gap: 5px;
     overflow: hidden;
     text-overflow: ellipsis; /* 文字が長すぎる場合省略記号を表示 */
+    color: #007bff;
+}
+
+.box a:hover {
+    color: #074990;
 }
 
 .fas {
@@ -236,12 +263,14 @@
 }
 
 .modal-content {
-    margin: 10% auto;
-    padding: 20px;
-    width: 60%;
+    margin: 5% auto; /* 上下の余白を縮める（中央寄せは維持） */
+    padding: 30px; /* 内側の余白を増やす */
+    width: 75%; /* 幅を広げる（現在60% → 75%に変更） */
+    max-width: 800px; /* 最大幅を800pxに制限 */
     background: white;
-    border-radius: 8px;
+    border-radius: 10px; /* 角を少し丸くする */
 }
+
 
 .close-button {
     float: right;

@@ -5,7 +5,6 @@
 
 <!-- 外部CSSファイルを読み込む -->
 <link rel="stylesheet" href="{% static 'css/project_detail.css' %}">
-
 <!-- JavaScript -->
 <script>
 // --------------------------プロジェクト詳細変更モーダルのjavascript----------------------------
@@ -358,7 +357,7 @@ document.addEventListener("DOMContentLoaded", () => {
         >
 
             <!-- フォームの送信ボタン -->
-            <button type="submit" class="submit-button">保存</button>
+            <button type="submit" class="submit-button2">保存</button>
         </form>
     </div>
 </div>
@@ -372,7 +371,6 @@ document.addEventListener("DOMContentLoaded", () => {
             {% csrf_token %}
             <!-- project_idはどのフェーズでも固定なので最初から設定(url用のデータなので見えない) -->
             <!-- <input type="hidden" name="project_id" value="{{ project_id }}"> -->
-             
             <!-- イベント発生時に毎回データを取得＆設定(url用のデータなので見えない) -->
             <input type="hidden" id="modalPhaseId" name="phase_id">
             <label for="modalPhaseName">フェーズ名:</label>
@@ -486,10 +484,6 @@ document.addEventListener("DOMContentLoaded", () => {
             {% endfor %}
         </div>
     </div>
-<!--‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐-->
-
-
-
 <!-- ボタンボックス -->
 <!-- モーダルリンク -->
         <div class="action-boxes">

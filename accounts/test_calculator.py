@@ -20,13 +20,13 @@ class TestUserModel(TestCase):
             creation_date=timezone.now(),
         )
 
-    def test_create_user_success(self):
-        """
-        正常に User を作成するケース
-        """
-        self.assertEqual(User.objects.count(), 1)
-        self.assertEqual(self.user.name, "TestUser")
-        self.assertTrue(self.user.is_active)
+    # def test_create_user_success(self):
+    #     """
+    #     正常に User を作成するケース
+    #     """
+    #     self.assertEqual(User.objects.count(), 1)
+    #     self.assertEqual(self.user.name, "TestUser")
+    #     self.assertTrue(self.user.is_active)
 
     # def test_create_user_with_duplicate_name(self):
     #     """
@@ -59,16 +59,16 @@ class TestUserModel(TestCase):
     #     self.assertTrue(deleted_user.deletion_flag)
     #     self.assertIsNotNone(deleted_user.deletion_date)
 
-    # def test_create_user_with_short_name(self):
-    #     """
-    #     name の長さが不十分な場合にエラーを検出
-    #     """
-    #     with self.assertRaises(ValueError):
-    #         User.objects.create(
-    #             user_id="USR5432109",
-    #             name="Us",  # 短すぎる名前
-    #             password="password789",
-    #         )
+    def test_create_user_with_short_name(self):
+        """
+        name の長さが不十分な場合にエラーを検出
+        """
+        with self.assertRaises(ValueError):
+            User.objects.create(
+                user_id="USR5432109",
+                name="Us",  # 短すぎる名前
+                password="password789",
+            )
 
     # def test_create_user_with_invalid_password(self):
     #     """
