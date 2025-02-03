@@ -71,8 +71,8 @@ def get_members_by_member_list(request, category_id):
     try:
         # 指定された category_id に一致する MemberList を取得
         member_lists = MemberList.objects.filter(category=category_id, deletion_flag=False)
-        members = Member.objects.filter(memberlist__in=member_lists, deletion_flag=False).distinct()
-        
+        member_ids = member_lists.values_list('member_id', flat=True)
+        members = Member.objects.filter(member_id__in=member_ids, deletion_flag=False).distinct()
 
         # メンバー情報を辞書形式で返す
         members_data = []
@@ -106,25 +106,24 @@ def get_members_by_member_list(request, category_id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-#チームを作成するAPI
+# チームを作成するAPI
 @require_http_methods(["POST"])
 def create_team_api(request):
     try:
-        # リクエストボディからデータを取得
         data = json.loads(request.body)
         team_type = data.get('team_type')
         member_ids = data.get('members')
         team_size = data.get('team_size')
 
-        # team_type, members, team_size のバリデーションチェック
+        print(f"Received team creation request with team_type: {team_type}, team_size: {team_size}, member_ids: {member_ids}")
+
         if not team_type or not isinstance(member_ids, list) or not team_size:
             return JsonResponse({"error": "無効なデータです"}, status=400)
 
-        # メンバーIDから各メンバーの情報を取得
         members = []
         for member_id in member_ids:
             try:
-                member_id = int(member_id)  # member_id を整数に変換
+                member_id = int(member_id)
                 member = Member.objects.get(member_id=member_id)
                 member_parameter = MemberParameter.objects.get(member=member)
                 members.append({
@@ -138,23 +137,27 @@ def create_team_api(request):
                     'speciality_height': member_parameter.speciality_height
                 })
             except Member.DoesNotExist:
+                print(f'Member with ID {member_id} not found')
                 return JsonResponse({'error': f'Member with ID {member_id} not found'}, status=404)
             except MemberParameter.DoesNotExist:
+                print(f'MemberParameter for member ID {member_id} not found')
                 return JsonResponse({'error': f'MemberParameter for member ID {member_id} not found'}, status=404)
 
-        # チーム作成ロジックを呼び出し
+        print(f"Members for team creation: {members}")
+
         team = create_team(team_type, members, team_size)
-        
-        # チーム作成に失敗した場合のエラーハンドリング
+
         if isinstance(team, dict) and "error" in team:
             return JsonResponse(team, status=400)
-        
-        # 作成されたチームを辞書形式として返す
+
+        print(f"Created team: {team}")
+
         return JsonResponse({'team': team})
 
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
     except Exception as e:
+        print(f"Error during team creation: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
 # チーム作成ロジック

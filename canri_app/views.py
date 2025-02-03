@@ -1238,30 +1238,25 @@ class CreateTeam3View(TemplateView):
         categories = Category.objects.filter(deletion_flag=False)
         selected_members = json.loads(request.POST.get('selected_members'))
 
-        # teams をリストとして扱う
-        if isinstance(teams, str):
-            teams = json.loads(teams)
+        print(f"Creating team with project_name: {project_name}, team_size: {team_size}, team_type: {team_type}, selected_members: {selected_members}")
 
-        # チームを編成するためのデータを作成
         data = {
             'team_type': team_type,
             'members': selected_members,
             'team_size': team_size
         }
 
-        # create_team_api を呼び出してチームを編成
         request._body = json.dumps(data).encode('utf-8')
         response = create_team_api(request)
         response_data = json.loads(response.content)
 
+        print(f"Team creation response: {response_data}")
+
         if response.status_code == 200:
             team = response_data['team']
-            print("チームが作成されました:", team)  # メンバー情報をターミナルに表示
         else:
-            team = None
-            print("チームの作成に失敗しました")  # エラーメッセージをターミナルに表示
+            team = []
 
-        # 入力された情報を保持した状態でcreate_team3.htmlに遷移
         return render(request, self.template_name, {
             'project_name': project_name,
             'project_description': project_description,
@@ -2345,7 +2340,7 @@ class Past_ProjectListView(TemplateView):
         query = request.GET.get('q')
         qs = Project.objects.filter(complete_flag=1, deletion_flag=0)
         if query:
-            qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+            qs = qs.filter(project_name__icontains(query))  # プロジェクト名でフィルタリング
 
         context = {
             'project_list': qs
@@ -2359,7 +2354,7 @@ def Post_projectListView(request):
     qs = Project.objects.all()
     qs=qs.filter(complete_flag=1,deletion_flag=0)
     if query:
-        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+        qs = qs.filter(project_name__icontains(query))  # プロジェクト名でフィルタリング
 
     ctx["project_list"] = qs
     return render(request, template_name, ctx)
