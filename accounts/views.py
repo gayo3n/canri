@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.db import transaction
 from django.views import View, generic
 from django.views.generic.base import TemplateView
-from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, PasswordChangeForm
+from .forms import AccountAddForm, UserCreationForm, UserForm, LoginForm, PasswordChangeForm, MySetPasswordForm
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import AbstractUser
@@ -17,6 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.hashers import make_password
 from .models import User
+
 
 # ログイン失敗画面
 class LoginFailView(TemplateView):
