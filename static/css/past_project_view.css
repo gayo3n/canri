@@ -20,16 +20,52 @@ h1 {
     gap: 20px;
     flex: 3;
     padding-right: 20px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.teams-grid:hover {
+    color: #074990;
 }
 
 .team-card {
-    background: white;
-    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column; /* 子要素を縦に並べる */
+    align-items: center;
+    justify-content: start; /* 上に詰める */
+    width: 250px;
+    height: 200px;
+    background-color: #ffffff;
+    border: 2px solid #ddd;
     border-radius: 8px;
-    padding: 15px;
-    min-height: 150px;
+    margin: 10px;
+    padding: 10px; /* 内側の余白を追加 */
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
+.team-card a {
+    text-decoration: none;
+    color: #0084ff;
+}
+
+.team-card .team-name {
+    font-size: 18px; /* チーム名の文字サイズを調整 */
+    font-weight: bold;
+    color: #007bff; /* チーム名の色 */
+    margin-bottom: 10px; /* 下に余白を追加 */
+}
+
+.team-card .other-content {
+    font-size: 14px;
+    color: #383838;
+}
+
+.team-card:hover {
+    box-shadow: 4px 4px 10px rgba(95, 95, 95, 0.2); /* ホバー時の影を強調 */
+}
 /* ボタンのスタイル */
 button[type="button"], .action-button {
     width: auto;
