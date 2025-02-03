@@ -150,3 +150,63 @@ ul li:hover {
         max-width: 100%;
     }
 }
+
+.memberlist_cancel:hover {
+    background-color: #95a5a6;
+}
+/* その他のセクションやボタンのスタイル（変更なし） */
+.csv_ref {
+    display: block;
+    margin: 10px 0;
+    background-color: #337ab7;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.csv_ref:hover {
+    background-color: #286090;
+}
+
+input[type="text"] {
+    width: 300px; /* 幅を300ピクセルに設定 */
+}
+
+.modal {
+    display: none; /* 最初は非表示 */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 15px;
+    border: 1px solid #888;
+    width: 50%;
+  }
+  
+  
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  

@@ -20,13 +20,14 @@ urlpatterns = [
     path('memberlist/delete/<int:category_id>/',            views.MemberListDeleteView.as_view(),       name='memberlist_delete'),
     path('memberlist/delete/complete/<int:category_id>/',   views.MemberListDeleteCompleteView.as_view(),name='memberlist_delete_complete'),
     # メンバー
-    path('member/make/',                            views.MemberMakeView.as_view(),         name='member_make'),
-    path('member/edit/<int:member_id>/',            views.MemberEditView.as_view(),         name='member_edit'),
-    path('member/upload_csv/',                      views.FileUploadView.as_view(),         name='member_csv_upload'),
-    path('member/make/complete/',                   views.MemberMakeCompleteView.as_view(), name='member_make_complete'),
-    path('member/edit/complete/<int:member_id>/',   views.MemberEditCompleteView.as_view(), name='member_edit_complete'),
-    path('member/delete/<int:member_id>/',          views.MemberDeleteView.as_view(),       name='member_delete'),
-    path('member/delete/complete/<int:member_id>/', views.MemberDeleteCompleteView.as_view(), name='member_delete_complete'),
+    path('member/make/',                                views.MemberMakeView.as_view(),             name='member_make'),
+    path('member/edit/<int:member_id>/',                views.MemberEditView.as_view(),             name='member_edit'),
+    path('member/upload_csv/',                          views.FileUploadView.as_view(),             name='member_csv_upload'),
+    path('member/overwrite/',                           views.MemberOverwriteView.as_view(),        name='member_overwrite'),
+    path('member/make/complete/',                       views.MemberMakeCompleteView.as_view(),     name='member_make_complete'),
+    path('member/edit/complete/<int:member_id>/',       views.MemberEditCompleteView.as_view(),     name='member_edit_complete'),
+    path('member/delete/<int:member_id>/',              views.MemberDeleteView.as_view(),           name='member_delete'),
+    path('member/delete/complete/<int:member_id>/',     views.MemberDeleteCompleteView.as_view(),   name='member_delete_complete'),
 
 
     #新規プロジェクト作成
