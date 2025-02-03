@@ -1,0 +1,146 @@
+/* ナビゲーションバー全体 */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fffff9;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 3px;
+}
+
+/* 右側のユーザー情報 */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* 右寄せ */
+}
+
+.navbar-right a {
+    margin-right: 20px;
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+}
+
+.navbar-right a:hover {
+    color: #007bff;
+}
+
+
+/* ユーザー情報コンテナ */
+.user-info-container {
+    display: flex;
+    align-items: center;
+}
+
+/* ユーザー情報 */
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-right: 20px; /* ログアウトリンクとの間にスペースを追加 */
+}
+
+.user-into {
+    text-indent: 1em;
+}
+
+/* ログアウトリンク */
+.logout-link {
+    margin-left: 20px; /* 必要に応じて調整 */
+}
+
+/* ハンバーガーメニュー */
+.hamburger-menu {
+    display: none; /* デフォルトは非表示 */
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 20px;
+    width: 25px;
+    z-index: 1000; /* 他の要素より上に表示 */
+}
+
+.hamburger-menu .bar {
+    height: 4px;
+    background-color: #333;
+    width: 100%;
+    border-radius: 5px;
+}
+
+/* 左側のリンクグループ */
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-left a {
+    margin-right: 20px;
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+}
+
+.navbar-left a:hover {
+    color: #007bff;
+}
+
+/* 小画面用のユーザー情報 */
+.hamburger-user-info {
+    display: none; /* 小画面でのユーザー情報は非表示 */
+    margin-top: 10px;
+}
+
+.hamburger-user-info .user-info {
+    margin-bottom: 10px;
+}
+
+.navbar-left a.active {
+    color: #007bff; /* 現在選択中のリンクの色 */
+    font-weight: bold; /* 強調 */
+}
+
+/* 小画面での表示 */
+@media (max-width: 1200px) {
+    .hamburger-menu {
+        display: flex; /* 小画面でハンバーガーメニューを表示 */
+    }
+
+    .navbar-left {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #fffff9;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        padding: 10px 0;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000; /* 他の要素より上に表示 */
+    }
+
+    .navbar-left.active {
+        display: flex; /* ハンバーガーメニューがクリックされたら表示 */
+    }
+
+    .navbar-left a {
+        margin: 10px 0;
+        text-align: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .hamburger-user-info {
+        display: flex; /* ハンバーガーメニューが開いたときに表示 */
+        flex-direction: column;
+        align-items: center;
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+    }
+
+    .navbar-right {
+        display: none; /* 小画面で非表示 */
+    }
+}
