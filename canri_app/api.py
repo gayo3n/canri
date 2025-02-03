@@ -444,7 +444,8 @@ def save_project_api(request):
             project_detail=project_description,
             project_start_date=start_date,
             project_end_date=end_date,
-            creation_date=timezone.now()
+            creation_date=timezone.now(),
+            post_evaluation_memo=f'{project_name}の事後評価',
         )
 
         # チームをプロジェクトに関連付け
@@ -614,11 +615,10 @@ def get_p_project_detail(request, project_id):
 def get_members_by_project(request, project_id):
     try:
         # プロジェクトに関連するチームメンバーを取得
-        teams = Team.objects.filter(team_id__in=ProjectAffiliationTeam.objects.filter(project_id=project_id,deletion_flag=0).values_list('team_id', flat=True))
+        teams = Team.objects.filter(team_id__in=ProjectAffiliationTeam.objects.filter(project_id=project_id, deletion_flag=0).values_list('team_id', flat=True))
         team_members = TeamMember.objects.filter(team_id__in=teams, deletion_flag=False)
-        members = Member.objects.filter(member_id__in=team_members, deletion_flag=False)
-        for member in members:
-            print(member.name)
+        member_ids = team_members.values_list('member_id', flat=True)
+        members = Member.objects.filter(member_id__in=member_ids, deletion_flag=False)
 
         # メンバー情報を辞書形式で返す
         members_data = [{'member_id': member.member_id, 'name': member.name} for member in members]

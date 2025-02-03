@@ -3,7 +3,6 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/past_project_view.css' %}">
-<link rel="stylesheet" href="{% static 'css/feedback_application.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -98,9 +97,6 @@
     </div>
 </div>
 
-
-
-
 <script>
     // フィードバックモーダルを開く
     function openAddFeedback() {
@@ -116,6 +112,8 @@
             .then(response => response.json())
             .then(data => {
                 window.members = data.members;
+                console.log('Fetched members:', window.members); // デバッグ情報を追加
+                fetchFeedbacks(); // メンバー情報を取得した後にフィードバック情報を取得
             })
             .catch(error => console.error('Error fetching members:', error));
     }
@@ -123,9 +121,18 @@
     // フィードバック情報を取得する
     function fetchFeedbacks() {
         const projectId = document.querySelector('input[name="project_id"]').value;
-        fetch("{% url 'canri_app:get_feedbacks_by_project' project_id=0 %}".replace('0', projectId))
-            .then(response => response.json())
+        const feedbacksUrl = "{% url 'canri_app:get_feedbacks_by_project' project_id=0 %}".replace('0', projectId);
+        console.log('Fetching feedbacks from URL:', feedbacksUrl); // デバッグ情報を追加
+
+        fetch(feedbacksUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Fetched feedbacks:', data.feedbacks); // デバッグ情報を追加
                 const feedbackContainer = document.getElementById('feedback-container');
                 feedbackContainer.innerHTML = ''; // 既存のフィードバック行をクリア
                 data.feedbacks.forEach(feedback => {
@@ -155,8 +162,6 @@
             })
             .catch(error => console.error('Error fetching feedbacks:', error));
     }
-
-
 
     // フィードバック行を追加する
     function addFeedbackRow() {

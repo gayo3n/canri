@@ -1579,14 +1579,8 @@ def projectListView(request):
 
     ctx["project_list"] = qs
     return render(request, template_name, ctx)
-# 過去プロジェクト
-class post_ProjectlistView(TemplateView):
-    template_name="post_projectlist.html"
-# プロジェクト詳細表示
-class Project_detailView(TemplateView):
-    template_name="project_detail.html"
-from django.shortcuts import render, get_object_or_404
-from .models import Project, ProjectAffiliationTeam, ProjectProgressStatus
+from django.shortcuts   import render, get_object_or_404
+from .models            import Project, ProjectAffiliationTeam, ProjectProgressStatus
 #プロジェクト詳細表示時に利用
 #project_idを使用してデータを取得
 def project_detail_view(request, project_id):
@@ -1619,11 +1613,11 @@ def project_detail_view(request, project_id):
 
 
 # プロジェクト詳細変更保存時
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from django.utils import timezone
-from .models import Project
-from django.views.decorators.http import require_http_methods
+from django.shortcuts               import render, redirect, get_object_or_404
+from django.contrib                 import messages
+from django.utils                   import timezone
+from .models                        import Project
+from django.views.decorators.http   import require_http_methods
 @require_http_methods(["GET", "POST"])
 # プロジェクト詳細変更保存時
 def project_detail_update(request, project_id):
@@ -1636,40 +1630,40 @@ def project_detail_update(request, project_id):
     if request.method == "POST":
         try:
             # POSTデータから各プロジェクト情報を取得
-            project_name = request.POST.get('project_name')
+            project_name        = request.POST.get('project_name')
             project_description = request.POST.get('project_description')
-            start_date = request.POST.get('start_date')
-            end_date = request.POST.get('end_date')
+            start_date          = request.POST.get('start_date')
+            end_date            = request.POST.get('end_date')
 
             # 必須項目の入力チェック
             if not all([project_name, project_description, start_date, end_date]):
                 # 必須項目が未入力の場合、エラーメッセージを表示して再表示
                 messages.error(request, '全ての必須項目を入力してください。')
                 return render(request, templatename, {
-                    'project': project,
-                    'project_name': project_name,
-                    'project_description': project_description,
-                    'start_date': start_date,
-                    'end_date': end_date,
+                    'project'               : project,
+                    'project_name'          : project_name,
+                    'project_description'   : project_description,
+                    'start_date'            : start_date,
+                    'end_date'              : end_date,
                 })
 
             # 開始日と終了日の論理チェック
             if start_date > end_date:
                 # 開始日が終了日より後の場合、エラーメッセージを表示して再表示
                 messages.error(request, '開始日は終了日よりも前の日付である必要があります。')
-                return render(request, templatename, {
-                    'project': project,
-                    'project_name': project_name,
-                    'project_description': project_description,
-                    'start_date': start_date,
-                    'end_date': end_date,
+                return  render(request, templatename, {
+                    'project'               : project,
+                    'project_name'          : project_name,
+                    'project_description'   : project_description,
+                    'start_date'            : start_date,
+                    'end_date'              : end_date,
                 })
 
             # プロジェクト情報の更新
-            project.project_name = project_name
-            project.project_detail = project_description
-            project.project_start_date = start_date
-            project.project_end_date = end_date
+            project.project_name        = project_name
+            project.project_detail      = project_description
+            project.project_start_date  = start_date
+            project.project_end_date    = end_date
 
             # 更新日時の設定
             project.update_date = timezone.now()
@@ -1685,17 +1679,17 @@ def project_detail_update(request, project_id):
             project = get_object_or_404(Project, project_id=project_id)
             #プロジェクトに関連するチームを取得
             #プロジェクト所属チームテーブルのprojectに当てはまるデータを取得
-            teams = ProjectAffiliationTeam.objects.filter(project=project,team__deletion_flag=0).select_related('team')
+            teams   = ProjectAffiliationTeam.objects.filter(project=project,team__deletion_flag=0).select_related('team')
             # プロジェクトに関連する���ェーズを取得
             # 上と同じ感じ
-            phases = ProjectProgressStatus.objects.filter(project=project,deletion_flag=0).order_by('expiration_date')
+            phases  = ProjectProgressStatus.objects.filter(project=project,deletion_flag=0).order_by('expiration_date')
             context = {
                 #プロジェクトテーブルの情報
-                'project': project,
+                'project'   : project,
                 #プロジェクト所属チームテーブルの情報
-                'teams': teams,
+                'teams'     : teams,
                 #フェーズテーブルの情報
-                'phases': phases,
+                'phases'    : phases,
             }
             # 情報を保持した状態でrender
             return render(request, 'project_detail.html', context)
@@ -1703,12 +1697,12 @@ def project_detail_update(request, project_id):
         except Exception as e:
             # 予期しないエラーが発生した場合のエラーハンドリング
             messages.error(request, f'更新中にエラーが発生しました: {str(e)}')
-            return render(request, templatename, {
-                'project': project,
-                'project_name': project_name,
-                'project_description': project_description,
-                'start_date': start_date,
-                'end_date': end_date,
+            return  render(request, templatename, {
+                'project'               : project,
+                'project_name'          : project_name,
+                'project_description'   : project_description,
+                'start_date'            : start_date,
+                'end_date'              : end_date,
             })
 
     # GETリクエストの場合、プロジェクト詳細ページを表示
@@ -1725,8 +1719,8 @@ def ProjectComplete(request, project_id):
     project.complete_flag = 1
 
     # 更新日時の設定
-    project.update_date = timezone.now()
-    project.complete_date = timezone.now()
+    project.update_date     = timezone.now()
+    project.complete_date   = timezone.now()
 
     # プロジェクト情報の保存
     project.save()
@@ -1735,21 +1729,21 @@ def ProjectComplete(request, project_id):
     # messages.success(request, 'プロジェクトが正常に更新されました。')
 
     #これ以降は再度進行中プロジェクトを表示する処理------------------------------------
-    ctx = {}
-    query = request.GET.get('q')
-    qs = Project.objects.all()
-    qs=qs.filter(complete_flag=0,deletion_flag=0)
+    ctx     = {}
+    query   = request.GET.get('q')
+    qs      = Project.objects.all()
+    qs      =qs.filter(complete_flag=0,deletion_flag=0)
     if query:
-        qs = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
+        qs  = qs.filter(project_name__icontains=query)  # プロジェクト名でフィルタリング
 
     ctx["project_list"] = qs
     return render(request, template_name, ctx)
 # フェーズ追加時
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from django.utils import timezone
-from .models import Project
-from django.views.decorators.http import require_http_methods
+from django.shortcuts               import render, redirect, get_object_or_404
+from django.contrib                 import messages
+from django.utils                   import timezone
+from .models                        import Project
+from django.views.decorators.http   import require_http_methods
 @require_http_methods(["GET", "POST"])
 # フェーズ追加
 def project_phase_add(request, project_id):
@@ -1763,30 +1757,24 @@ def project_phase_add(request, project_id):
     if request.method == "POST":
         try:
             # POSTデータから各プロジェクト情報を取得
-            # project_id=request.POST.get('project_id')
-            phase_name = request.POST.get('phase_name')
-            end_date2 = request.POST.get('end_date2')
+            phase_name  = request.POST.get('phase_name')
+            end_date2   = request.POST.get('end_date2')
 
             # # 必須項目の入力チェック
             if not all([project_id,phase_name,end_date2]):
                 # 必須項目が未入力の場合、エラーメッセージを表示して再表示
                 messages.error(request, '全ての必須項目を入力してください。')
                 return render(request, templatename, {
-                    'project_id': project_id,
-                    'phase_name':phase_name,
-                    'end_name2': end_date2,
+                    'project_id'    : project_id,
+                    'phase_name'    : phase_name,
+                    'end_name2'     : end_date2,
                 })
 
-
-
-            # 更新日時の設定
-            # creation_date = timezone.now()
-
-            project_progress_status = ProjectProgressStatus.objects.create(
-                project_id=project_id,
-                phase_name=phase_name,  # メンバーの数をカウント
-                expiration_date=end_date2,
-                creation_date=timezone.now()  # 現在の日時を設定
+            ProjectProgressStatus.objects.create(
+                project_id      =project_id,
+                phase_name      =phase_name,  # メンバーの数をカウント
+                expiration_date =end_date2,
+                creation_date   =timezone.now()  # 現在の日時を設定
             )
 
             # 成功メッセージの追加
@@ -1800,19 +1788,19 @@ def project_phase_add(request, project_id):
 
             #プロジェクトに関連するチームを取得
             #プロジェクト所属チームテーブルのprojectに当てはまるデータを取得
-            teams = ProjectAffiliationTeam.objects.filter(project=project,team__deletion_flag=0).select_related('team')
+            teams   = ProjectAffiliationTeam.objects.filter(project=project,team__deletion_flag=0).select_related('team')
 
             # プロジェクトに関連するフェーズを取得
             # 上と同じ感じ
-            phases = ProjectProgressStatus.objects.filter(project=project,deletion_flag=0).order_by('expiration_date')
+            phases  = ProjectProgressStatus.objects.filter(project=project,deletion_flag=0).order_by('expiration_date')
 
             context = {
                 #プロジェクトテーブルの情報
-                'project': project,
+                'project'   : project,
                 #プロジェクト所属チームテーブルの情報
-                'teams': teams,
+                'teams'     : teams,
                 #フェーズテーブルの情報
-                'phases': phases,
+                'phases'    : phases,
             }
             # 情報を保持した状態でrender
             return render(request, 'project_detail.html', context)
@@ -1820,9 +1808,8 @@ def project_phase_add(request, project_id):
         except Exception as e:
             # 予期しないエラーが発生した場合のエラーハンドリング
             messages.error(request, f'更新中にエラーが発生しました: {str(e)}')
-            return render(request, templatename, {
+            return  render(request, templatename, {
                 'project': project,
-
             })
 
     # GETリクエストの場合、プロジェクト詳細ページを表示
@@ -1835,37 +1822,33 @@ def project_phase_edit(request, project_id):
     # テンプレート名の定義
     templatename = f"project_detail.html"
 
-    # 指定されたIDのプロジェクトを取得（削除されていないプロジェクトのみ）
-    # project = get_object_or_404(Project, project_id=project_id, deletion_flag=False)
-
     if request.method == "POST":
         try:
             # POSTデータから各プロジェクト情報を取得
-            phaseid=request.POST.get('phase_id')
-            phase_name = request.POST.get('phase_name')
-            end_date3 = request.POST.get('expirationdate')
+            phaseid     = request.POST.get('phase_id')
+            phase_name  = request.POST.get('phase_name')
+            end_date3   = request.POST.get('expirationdate')
+
+            project_progress_status=ProjectProgressStatus.objects.get(project_id=project_id,progress_status_id=phaseid)
 
             # # 必須項目の入力チェック
-            if not all([project_id,phaseid,phase_name,end_date3]):
+            if not all([project_progress_status,project_id,phaseid,phase_name,end_date3]):
                 # 必須項目が未入力の場合、エラーメッセージを表示して再表示
                 messages.error(request, '全ての必須項目を入力してください。')
                 return render(request, templatename, {
                     'project_id': project_id,
-                    'phase_id': phaseid,
-                    'phase_name':phase_name,
-                    'end_name3': end_date3,
+                    'phase_id'  : phaseid,
+                    'phase_name': phase_name,
+                    'end_name3' : end_date3,
                 })
 
             # 更新日時の設定
             # creation_date = timezone.now()
 
-            project_progress_status = ProjectProgressStatus(
-            project_id=project_id,
-            progress_status_id=phaseid,
-            phase_name=phase_name,
-            expiration_date=end_date3,
-            creation_date=timezone.now()  # 現在の日時を設定
-            )
+            project_progress_status.phase_name      = phase_name
+            project_progress_status.expiration_date = end_date3
+            project_progress_status.creation_date   = timezone.now()
+
 
 # インスタンスをデータベースに保存
             project_progress_status.save()
@@ -1881,19 +1864,19 @@ def project_phase_edit(request, project_id):
 
             #プロジェクトに関連するチームを取得
             #プロジェクト所属チームテーブルのprojectに当てはまるデータを取得
-            teams = ProjectAffiliationTeam.objects.filter(project=project,team__deletion_flag=0).select_related('team')
+            teams   = ProjectAffiliationTeam.objects.filter(project=project,team__deletion_flag=0).select_related('team')
 
             # プロジェクトに関連するフェーズを取得
             # 上と同じ感じ
-            phases = ProjectProgressStatus.objects.filter(project=project,deletion_flag=0).order_by('expiration_date')
+            phases  = ProjectProgressStatus.objects.filter(project=project,deletion_flag=0).order_by('expiration_date')
 
             context = {
                 #プロジェクトテーブルの情報
-                'project': project,
+                'project'   : project,
                 #プロジェクト��属チームテーブルの情報
-                'teams': teams,
+                'teams'     : teams,
                 #フェーズテーブルの情報
-                'phases': phases,
+                'phases'    : phases,
             }
             # 情報を保持した状態でrender
             return render(request, 'project_detail.html', context)
@@ -1909,88 +1892,7 @@ def project_phase_edit(request, project_id):
     # GETリクエストの場合、プロジェクト詳細ページを表示
     return render(request, templatename, {'project': project})
 
-# @require_http_methods(["GET", "POST"])
-# # フェーズ変更
-# def project_phase_edit(request, project_id):
-
-#     # テンプレート名の定義
-#     templatename = f"project_detail.html"
-
-#     # 指定されたIDのプロジェクトを取得（削除されていないプロジェクトのみ）
-#     # project = get_object_or_404(Project, project_id=project_id, deletion_flag=False)
-
-#     if request.method == "POST":
-#         try:
-#             # POSTデータから各プロジェクト情報を取得
-#             phaseid=request.POST.get('phase_id')
-#             phase_name = request.POST.get('phase_name')
-#             end_date3 = request.POST.get('expirationdate')
-
-#             # # 必須項目の入力チェック
-#             if not all([project_id,phaseid,phase_name,end_date3]):
-#                 # 必須項目が未入力の場合、エラーメッセージを表示して再表示
-#                 messages.error(request, '全ての必須項目を入力してください。')
-#                 return render(request, templatename, {
-#                     'project_id': project_id,
-#                     'phase_id': phaseid,
-#                     'phase_name':phase_name,
-#                     'end_name3': end_date3,
-#                 })
-
-#             # 更新日時の設定
-#             # creation_date = timezone.now()
-
-#             project_progress_status = ProjectProgressStatus(
-#             project_id=project_id,
-#             progress_status_id=phaseid,
-#             phase_name=phase_name,
-#             expiration_date=end_date3,
-#             creation_date=timezone.now()  # 現在の日時を設定
-#             )
-
-# # インスタンスをデータベースに保存
-#             project_progress_status.save()
-
-#             # 成功メッセージの追加
-#             messages.success(request, 'フェーズの追加がかんりょうしました')
-#             #-------------ここまででフェーズの追加完了-----------------
-
-#             #‐‐‐‐‐‐‐‐‐‐‐ここから進行中プロジェクト表示用の処理----------
-#             # プロジェクトを取得
-#             #project_idに当てはまるprojectテーブルのデータを取得
-#             project = get_object_or_404(Project, project_id=project_id)
-
-#             #プロジェクトに関連するチームを取得
-#             #プロジェクト所属チームテーブルのprojectに当てはまるデータを取得
-#             teams = ProjectAffiliationTeam.objects.filter(project=project,team__deletion_flag=0).select_related('team')
-
-#             # プロジェクトに関連するフェーズを取得
-#             # 上と同じ感じ
-#             phases = ProjectProgressStatus.objects.filter(project=project,deletion_flag=0).order_by('expiration_date')
-
-#             context = {
-#                 #プロジェクトテーブルの情報
-#                 'project': project,
-#                 #プロジェクト��属チームテーブルの情報
-#                 'teams': teams,
-#                 #フェーズテーブルの情報
-#                 'phases': phases,
-#             }
-#             # 情報を保持した状態でrender
-#             return render(request, 'project_detail.html', context)
-
-#         except Exception as e:
-#             # 予期しないエラーが発生した場合のエラーハンドリング
-#             messages.error(request, f'更新中にエラーが発生しました: {str(e)}')
-#             return render(request, templatename, {
-#                 'project': project,
-
-#             })
-
-#     # GETリクエストの場合、プロジェクト詳細ページを表示
-#     return render(request, templatename, {'project': project})
-
-# 進行中プロジェクトのフェーズ削除
+#進行中プロジェクトのフェーズ削除
 #フェーズ変更のコピペ
 from datetime import datetime
 def project_phase_delete(request, project_id):
@@ -1998,41 +1900,24 @@ def project_phase_delete(request, project_id):
     # テンプレート名の定義
     templatename = f"project_detail.html"
 
-    # 指定されたIDのプロジェクトを取得（削除されていないプロジェクトのみ）
-    # project = get_object_or_404(Project, project_id=project_id, deletion_flag=False)
-
     if request.method == "POST":
         try:
             # POSTデータから各プロジェクト情報を取得
-            phaseid=request.POST.get('phase_id')
-            phase_name = request.POST.get('phase_name')
-            end_date4 = request.POST.get('expirationdate')
-            enddate42=datetime.strptime(end_date4, "%Y年%m月%d日").date()
+            phaseid                 = request.POST.get('phase_id')
+            project_progress_status = ProjectProgressStatus.objects.get(project_id=project_id,progress_status_id=phaseid)
 
             # # 必須項目の入力チェック
-            if not all([project_id,phaseid,enddate42,phase_name]):
+            if not all([project_id,phaseid,]):
                 # 必須項目が未入力の場合、エラーメッセージを表示して再表示
                 messages.error(request, '全ての必須項目を入力してください。')
-                return render(request, templatename, {
+                return  render(request, templatename, {
                     'project_id': project_id,
-                    'phase_id': phaseid,
-                    'phase_name':phase_name,
-                    'end_name4': enddate42,
+                    'phase_id'  : phaseid,
                 })
+            project_progress_status.deletion_flag   = 1
+            project_progress_status.creation_date   =timezone.now()
 
-            # 更新日時の設定
-            # creation_date = timezone.now()
-
-            project_progress_status = ProjectProgressStatus(
-            project_id=project_id,
-            phase_name=phase_name,
-            progress_status_id=phaseid,
-            deletion_flag=1,
-            expiration_date=enddate42,
-            creation_date=timezone.now()  # 現在の日時を設定
-            )
-
-# インスタンスをデータベースに保存
+            # インスタンスをデータベースに保存
             project_progress_status.save()
 
             # 成功メッセージの追加
@@ -2046,27 +1931,27 @@ def project_phase_delete(request, project_id):
 
             #プロジェクトに関連するチームを取得
             #プロジェクト所属チームテーブルのprojectに当てはまるデータを取得
-            teams = ProjectAffiliationTeam.objects.filter(project=project,team__deletion_flag=0).select_related('team')
+            teams   = ProjectAffiliationTeam.objects.filter(project=project,team__deletion_flag=0).select_related('team')
 
             # プロジェクトに関連するフェーズを取得
             # 上と同じ感じ
-            phases = ProjectProgressStatus.objects.filter(project=project,deletion_flag=0).order_by('expiration_date')
+            phases  = ProjectProgressStatus.objects.filter(project=project,deletion_flag=0).order_by('expiration_date')
 
             context = {
                 #プロジェクトテーブルの情報
-                'project': project,
+                'project'   : project,
                 #プロジェクト��属チームテーブルの情報
-                'teams': teams,
+                'teams'     : teams,
                 #フェーズテーブルの情報
-                'phases': phases,
+                'phases'    : phases,
             }
             # 情報を保持した状態でrender
-            return render(request, 'project_detail.html', context)
+            return  render(request, 'project_detail.html', context)
 
         except Exception as e:
             # 予期しないエラーが発生した場合のエラーハンドリング
             messages.error(request, f'更新中にエラーが発生しました: {str(e)}')
-            return render(request, templatename, {
+            return  render(request, templatename, {
                 'project': project,
 
             })
@@ -2086,42 +1971,25 @@ def project_phase_coplete(request, project_id):
     if request.method == "GET":
         try:
             # POSTデータから各プロジェクト情報を取得
-            phaseid=request.GET.get('phase_id')
-            print(phaseid)
-            phase_name = request.GET.get('phase_name')
-            print(phase_name)
-            end_date4 = request.GET.get('expirationdate')
-            print(end_date4)
-            end_date4_cleaned = end_date4.replace(', midnight', '').strip()
-            enddate42 = datetime.strptime(end_date4_cleaned, "%b. %d, %Y").date()
+            phaseid             = request.GET.get('phase_id')
 
-
+            project_progress_status =ProjectProgressStatus.objects.get(project_id=project_id,progress_status_id=phaseid)
 
             # # 必須項目の入力チェック
-            if not all([project_id,phaseid,enddate42,phase_name]):
+            if not all([project_progress_status,project_id,phaseid]):
                 # 必須項目が未入力の場合、エラーメッセージを表示して再表示
                 messages.error(request, '全ての必須項目を入力してください。')
                 return render(request, templatename, {
                     'project_id': project_id,
-                    'phase_id': phaseid,
-                    'phase_name':phase_name,
-                    'end_name4': enddate42,
+                    'phase_id'  : phaseid,
                 })
 
-            # 更新日時の設定
-            # creation_date = timezone.now()
+            project_progress_status.complete_flag   = 1
+            project_progress_status.creation_date   =timezone.now()
+            project_progress_status.complete_date   =timezone.now()
 
-            project_progress_status = ProjectProgressStatus(
-            project_id=project_id,
-            phase_name=phase_name,
-            progress_status_id=phaseid,
-            complete_flag=1,
-            expiration_date=enddate42,
-            complete_date=timezone.now(),  # 現在の日時を設定
-            creation_date=timezone.now()  # 現在の日時を設定
-            )
 
-# インスタンスをデータベースに保存
+            # インスタンスをデータベースに保存
             project_progress_status.save()
 
             # 成功メッセージの追加
@@ -2144,7 +2012,7 @@ def project_phase_coplete(request, project_id):
             context = {
                 #プロジェクトテーブルの情報
                 'project': project,
-                #プロジェクト��属チームテーブルの情報
+                #プロジェクト属チームテーブルの情報
                 'teams': teams,
                 #フェーズテーブルの情報
                 'phases': phases,
@@ -2160,15 +2028,9 @@ def project_phase_coplete(request, project_id):
 
             })
 
-    # # GETリクエストの場合、プロジェクト詳細ページを表示
-    # return render(request, templatename, {'project': project})
-
 # 進行中プロジェクト用のチーム追加用のビュー
-# 元々のからteamを削除
-#プロジェクトIDを追加
 class project_detail_Create_TeamView(TemplateView):
     template_name = "project_detail_create_team.html"
-
     def post(self, request, *args, **kwargs):
         # POSTデータからプロジェクト情報を取得
         project_id          = request.POST.get('project_id')            # プロジェクト名
@@ -2183,24 +2045,19 @@ class project_detail_Create_TeamView(TemplateView):
         # teamにプロジェクトに所属しているチームが入っているprojectaffilitionteamテーブルのチームIDを取得
         # それをもとにチームテーブルから情報を取得
         #そこからメンバー情報を抽出
-        team_ids=teams.values_list('team_id',flat=True)                 #テーブルからteam_idだけ取得
+        team_ids    =teams.values_list('team_id',flat=True)                 #テーブルからteam_idだけ取得
         #team_idsにはteeam_idだけが入っている
         teammembers = TeamMember.objects.filter(team_id__in=team_ids)  # チームIDに基づいてメンバーをフィルタリング チームが同じ奴だけ取得
         members     = list(teammembers.values_list('member_id', flat=True))
         # 入力された情報を保持したまま create_team.html テンプレートをレンダリング
         return render(request, self.template_name, {
             'project_id'            :project_id,
-            'project_name'          : project_name,            # プロジェクト名
-            'project_description'   : project_description,     # プロジェクト説明
-            'start_date'            : start_date,              # 開始日
-            'end_date'              : end_date,                # 終了日
-
-            'member':members,
+            'project_name'          :project_name,            # プロジェクト名
+            'project_description'   :project_description,     # プロジェクト説明
+            'start_date'            :start_date,              # 開始日
+            'end_date'              :end_date,                # 終了日
+            'member'                :members,
         })
-
-
-
-
 
 
 # 進行中プロジェクト用のチーム追加のステップ2用ビュー
@@ -2212,7 +2069,7 @@ class project_detail_Create_Team2View(TemplateView):
 
     def post(self, request, *args, **kwargs):
         # プロジェクト情報の取得
-        project_id          =request.POST.get('project_id')
+        project_id          = request.POST.get('project_id')
         project_name        = request.POST.get('project_name')
         project_description = request.POST.get('project_description')
         start_date          = request.POST.get('start_date')
@@ -2226,8 +2083,6 @@ class project_detail_Create_Team2View(TemplateView):
         auto_generate   = request.POST.get('auto_generate')
 
         categories      = Category.objects.filter(deletion_flag=False)
-
-
 
         if auto_generate:
             # 自動生成が有効な場合、create_team2.html にレンダリング
@@ -2307,7 +2162,6 @@ class project_detail_CreateTeam3View(TemplateView):
             'project_description'   : project_description,     # プロジェクトの説明
             'start_date'            : start_date,              # 開始日
             'end_date'              : end_date,                # 終了日
-            # 'teams': teams,
             'team_size'             : team_size,               # チームサイズ
             'team_type'             : team_type,               # チームタイプ
             'categories'            : categories,              # 利用可能なカテゴリリスト
@@ -2315,7 +2169,7 @@ class project_detail_CreateTeam3View(TemplateView):
             'team'                  : team                     # 作成されたチーム情報（または失敗した場合はNone）
         })
 
-#チーム保存
+#チーム新規作成保存
 class project_detail_SaveTeamView(TemplateView):
     # 保存後の画面に使用するテンプレート
     template_name = "project_detail_create_team_complete.html"
@@ -2328,8 +2182,6 @@ class project_detail_SaveTeamView(TemplateView):
         project_description     = request.POST.get('project_description')   # プロジェクトの説明
         start_date              = request.POST.get('start_date')            # プロジェクト開始日
         end_date                = request.POST.get('end_date')              # プロジェクト終了日
-
-        #
         team_name   = request.POST.get('team_name')     # チーム名
         team_type   = request.POST.get('team_type')     # チームの種類
         team        = request.POST.get('team')          # チーム情報（JSON形式）   member_idのみ
@@ -2356,26 +2208,18 @@ class project_detail_SaveTeamView(TemplateView):
         }
 
         # チーム保存APIを呼び出し
-        request._body = json.dumps(data).encode('utf-8')  # データをJSON形式に変換しリクエストボディとして設定
-        response = save_team_api(request)  # API呼び出し
-        response_data = json.loads(response.content)  # APIのレスポンスをJSON形式で取得
+        request._body   = json.dumps(data).encode('utf-8')  # データをJSON形式に変換しリクエストボディとして設定
+        response        = save_team_api(request)  # API呼び出し
+        response_data   = json.loads(response.content)  # APIのレスポンスをJSON形式で取得
 
         if response.status_code == 200:
             # チーム保存成功時の処理
             team_id = response_data['team_id']  # 保存されたチームIDを取得
-            # if isinstance(teams, list):
-            #     # 既存のチームリストに新しいチームIDを追加
-            #     teams.append(team_id)
-            # else:
-            #     # チームリストが存在しない場合、新規リストを作成
-            #     teams = [team_id]
             ProjectAffiliation_Team = ProjectAffiliationTeam.objects.create(
             team_id=team_id,
             project_id=project_id,
             creation_date=timezone.now()  # 現在の日時を設定
         )
-
-
             print("チームが保存されました:", team_id)  # チームIDをターミナルに表示
             print("プロジェクトへの保存も完了;",ProjectAffiliation_Team)
         else:
@@ -2385,28 +2229,26 @@ class project_detail_SaveTeamView(TemplateView):
 
         # プロジェクト情報を辞書形式にまとめる
         project_data = {
-            'project_name': project_name,            # プロジェクト名
-            'project_description': project_description,  # プロジェクトの説明
-            'start_date': start_date,               # プロジェクト開始日
-            'end_date': end_date                    # プロジェクト終了日
+            'project_name'          : project_name,            # プロジェクト名
+            'project_description'   : project_description,  # プロジェクトの説明
+            'start_date'            : start_date,               # プロジェクト開始日
+            'end_date'              : end_date                    # プロジェクト終了日
         }
 
         # プロジェクト情報とチームリストをテンプレートに渡し、新しいプロジェクト編集画面をレンダリング
         return render(request, self.template_name, {
             'project_id' : project_id,
-
         })
 # 進行中プロジェクトのチーム詳細表示用と編集時の保存用ビュー
 class projectTeamEditView(TemplateView):
     template_name = "team_detail.html"  # 使用するテンプレートを定義
-
+    # getメソッドで画面表示  postメソッドでデータ保存
     # GETリクエストを処理して、データを取得・表示する
-    # チーム詳細表示時に利用
     def get(self, request, *args, **kwargs):
-        team_id = kwargs.get('team_id')  # URLパラメータからチームIDを取得
-        team = Team.objects.get(team_id=team_id)  # チームIDを使ってTeamオブジェクトを取得
-        members = TeamMember.objects.filter(team=team,deletion_flag=0)  # チームのメンバーを取得
-        categories = Category.objects.filter(deletion_flag=0)  # 削除されていないカテゴリーを取得
+        team_id     = kwargs    .get            ('team_id')                     # URLパラメータからチームIDを取得
+        team        = Team      .objects.get    (team_id=team_id)               # チームIDを使ってTeamオブジェクトを取得
+        members     = TeamMember.objects.filter (team=team,deletion_flag=0)     # チームのメンバーを取得
+        categories  = Category  .objects.filter (deletion_flag=0)               # 削除されていないカテゴリーを取得
 
         # プロジェクト関連のパラメータをGETリクエストから取得
         project_id = request.GET.get('project_id')
@@ -2415,30 +2257,29 @@ class projectTeamEditView(TemplateView):
         # プロジェクト所属チームテーブルからプロジェクトIDに基づいてチームを取得
         projectaffilitionteam_all= ProjectAffiliationTeam.objects.all()
         #取得したプロジェクトIDに基づいてチームを取得
-        tem=projectaffilitionteam_all.filter(project=project_id,deletion_flag=0)
+        tem     =projectaffilitionteam_all.filter(project=project_id,deletion_flag=0)
         # チームIDを取得
         team_ids=tem.values_list('team_id',flat=True)
         # チームテーブルからチーム情報を取得
-        teams=Team.objects.filter(team_id__in=team_ids)
+        teams   =Team.objects.filter(team_id__in=team_ids)
 
         # 取得したデータをコンテキストとしてテンプレートに渡す
         context = {
-            'team': team,
-            'members': members,
+            'team'      : team,
+            'members'   : members,
             'categories': categories,
             'project_id': project_id,
-            'teams': teams
+            'teams'     : teams
         }
         return render(request, self.template_name, context)
 
     # POSTリクエストを処理して、チームとプロジェクト情報を更新
-    # チーム情報の更新時に利用
     def post(self, request, *args, **kwargs):
-        team_id = kwargs.get('team_id')  # URLパラメータからチームIDを取得
-        team = Team.objects.get(team_id=team_id)  # チームIDを使ってTeamオブジェクトを取得
-        team_name = request.POST.get('team_name')  # フォームから新しいチーム名を取得
-        team_memo = request.POST.get('team_memo')  # フォームから新しいチームメモを取得
-        team_members = request.POST.get('team')  # フォームから選択されたメンバーのIDリストを取得
+        team_id         = kwargs.get('team_id')  # URLパラメータからチームIDを取得
+        team            = Team.objects.get(team_id=team_id)  # チームIDを使ってTeamオブジェクトを取得
+        team_name       = request.POST.get('team_name')  # フォームから新しいチーム名を取得
+        team_memo       = request.POST.get('team_memo')  # フォームから新しいチームメモを取得
+        team_members    = request.POST.get('team')  # フォームから選択されたメンバーのIDリストを取得
 
         # メンバーが空の場合は空リストを設定
         if not team_members:
@@ -2450,8 +2291,8 @@ class projectTeamEditView(TemplateView):
         print("team_memo:", team_memo)  # デバッグ用にチームメモを表示
 
         # チームの名前とメモを更新
-        team.team_name = team_name
-        team.memo = team_memo
+        team.team_name  = team_name
+        team.memo       = team_memo
         team.save()  # チーム情報を保存
 
         # 既存のチームメンバーを削除
@@ -2484,16 +2325,13 @@ class project_team_delete(TemplateView):
     template_name = "project_detail_create_team_complete.html"
 
     def get(self, request, *args, **kwargs):
-        team_id = kwargs.get('team_id')  # URLパラメータから取得
-        project_id = request.GET.get('project_id')  # クエリパラメータから取得
-
-        team = Team.objects.get(team_id=team_id)
-        print("Deleting team:", team_id)
-        team.deletion_flag = 1
-        team.update_date=timezone.now()
-        team.deletion_date=timezone.now()
-        team.save()  # データベースに変更を保存
-
+        team_id     = kwargs.       get('team_id')      # URLパラメータから取得
+        project_id  = request.GET.  get('project_id')   # クエリパラメータから取得
+        team        = Team.objects. get(team_id=team_id)# チームIDを使ってTeamオブジェクトを取得
+        team.deletion_flag  = 1             # 削除フラグを立てる
+        team.update_date    =timezone.now() # 更新日時を設定
+        team.deletion_date  =timezone.now() # 削除日時を設定
+        team.save()                         # データベースに変更を保存
         # 関連するTeamMemberの削除フラグを設定
         TeamMember.objects.filter(team=team).update(deletion_flag=1, update_date=timezone.now(),deletion_date=timezone.now())
         ProjectAffiliationTeam.objects.filter(team=team).update(deletion_flag=1,deletion_date=timezone.now())

@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 <!-- 進行中プロジェクトチーム詳細表示時利用 -->
 {% load static %}
@@ -10,9 +11,9 @@
 {% block content %}
 <div class="main-content">
     <h1>チーム編集</h1>
-    <div class="container" style="justify-content: space-around;">
-        <div class="left-spacer" style="flex: 0.5;"></div>
-        <div class="left-panel" style="flex: 3;">
+    <div class="container"          style="justify-content: space-around;">
+        <div class="left-spacer"    style="flex: 0.5;"></div>
+        <div class="left-panel"     style="flex: 3;">
             <h2>チームメンバー</h2>
             <table>
                 <thead>
@@ -24,8 +25,8 @@
                 <tbody id="memberTableBody">
                     {% for member in members %}
                     <tr data-member-id="{{ member.member.member_id }}">
-                        <td><a href="#" class="member-link" onclick="openMemberEditWindow(event, {{ member.member.member_id }})">{{ member.member.name }}</a></td>
-                        <td><a href="#" class="remove-member" onclick="removeMember(this)">一</a></td>
+                        <td><a href="#" class="member-link"     onclick="openMemberEditWindow(event, {{ member.member.member_id }})">{{ member.member.name }}</a></td>
+                        <td><a href="#" class="remove-member"   onclick="removeMember(this)">一</a></td>
                     </tr>
                     {% endfor %}
                     <tr>
@@ -34,20 +35,20 @@
                 </tbody>
             </table>
         </div>
-        <div class="middle-spacer" style="flex: 0.5;"></div>
-        <div class="middle-panel" style="flex: 3;">
+        <div class="middle-spacer"  style="flex: 0.5;"></div>
+        <div class="middle-panel"   style="flex: 3;">
             <h2>メモ欄</h2>
             <textarea id="team_memo" name="team_memo" rows="10" style="width: 100%;">{{ team.memo }}</textarea>
         </div>
-        <div class="right-spacer" style="flex: 0.5;"></div>
-        <div class="right-panel" style="flex: 3;">
+        <div class="right-spacer"   style="flex: 0.5;"></div>
+        <div class="right-panel"    style="flex: 3;">
             <form method="post" action="{% url 'canri_app:project_team_edit' team_id=team.team_id %}">
                 {% csrf_token %}
-                <input type="hidden" name="team" id="team">
-                <input type="hidden" name="project_id" value="{{ project_id }}">
+                <input type="hidden" name="team"        id="team">
+                <input type="hidden" name="project_id"  value="{{ project_id }}">
 
                 <label for="team_name">チーム名</label>
-                <input type="text" name="team_name" id="team_name" value="{{ team.team_name }}" required>
+                <input type="text"  name="team_name" id="team_name" value="{{ team.team_name }}" required>
 
                 <div class="chart-container">
                     <div class="chart-wrapper">
@@ -56,9 +57,9 @@
                 </div>
 
                 <div class="button-container">
-                    <button type="button" class="action-button back-button" onclick="goBack()">戻る</button>
-                    <button type="button" class="action-button delete-button" onclick="openDeleteConfirmation()">削除</button>
-                    <button type="submit" class="action-button next-button" onclick="setTeamMembers(); setTeamMemo()">保存</button>
+                    <button type="button" class="action-button back-button"     onclick="goBack()">戻る</button>
+                    <button type="button" class="action-button delete-button"   onclick="openDeleteConfirmation()">削除</button>
+                    <button type="submit" class="action-button next-button"     onclick="setTeamMembers(); setTeamMemo()">保存</button>
                 </div>
             </form>
         </div>
@@ -67,9 +68,9 @@
 </div>
 
 <!-- メンバーウィンドウのHTML -->
-<div id="addMemberWindow" class="modal">
-    <div class="modal-content" style="width: 70%; max-width: 1000px;">
-        <span class="close" onclick="closeAddMemberWindow()">&times;</span>
+<div id="addMemberWindow"       class="modal">
+    <div class="modal-content"  style="width: 70%; max-width: 1000px;">
+        <span class="close"     onclick="closeAddMemberWindow()">&times;</span>
         <h2>メンバーを追加</h2>
         <form id="categoryForm" class="form-inline">
             {% csrf_token %}
@@ -109,7 +110,6 @@
         </div>
     </div>
 </div>
-
 <!-- メンバー編集ウィンドウ -->
 <div id="memberEditWindow" class="modal">
     <div class="modal-content" style="width: 70%; max-width: 1000px;">
@@ -117,43 +117,40 @@
         <div id="memberEditContent">
             <h1>メンバー詳細</h1>
             <div class="container" style="justify-content: space-around;">
-                <div class="left-spacer" style="flex: 0.5;"></div>
-                <div class="left-panel" style="flex: 3;">
+                <div class="left-spacer"    style="flex: 0.5;"></div>
+                <div class="left-panel"     style="flex: 3;">
                     <form id="memberEditForm">
                         {% csrf_token %}
-                        <input type="hidden" name="member_id" value="">
-                        <input type="hidden" name="team_id" value="{{ team_id }}">
-                        <input type="hidden" name="project_id" value="{{ project_id }}">
-                        <!-- <input type="hidden" name="project_description" value="{{ project_description }}">
-                        <input type="hidden" name="start_date" value="{{ start_date }}">
-                        <input type="hidden" name="end_date" value="{{ end_date }}">
-                        <input type="hidden" name="teams" value="{{ teams|safe }}"> -->
-                        <input type="hidden" name="team_name" value="{{ team_name }}">
-                        <input type="hidden" name="team_memo" value="{{ team_memo }}">
-                        <input type="hidden" name="team_members" value="{{ team_members }}">
+                        <input type="hidden" name="member_id"   value="">
+                        <input type="hidden" name="team_id"     value="{{ team_id }}">
+                        <input type="hidden" name="project_id"  value="{{ project_id }}">
+                        <input type="hidden" name="team_name"   value="{{ team_name }}">
+                        <input type="hidden" name="team_memo"   value="{{ team_memo }}">
+                        <input type="hidden" name="team_members"value="{{ team_members }}">
+
                         <label for="member_name">メンバー名</label>
-                        <input type="text" name="member_name" id="member_name" value="" required readonly>
+                        <input type="text" name="member_name"       id="member_name"    value="" required readonly>
                         <label for="member_job">役職</label>
-                        <input type="text" name="member_job" id="member_job" value="" required readonly>
+                        <input type="text" name="member_job"        id="member_job"     value="" required readonly>
                         <label for="member_career">職歴</label>
-                        <input type="text" name="member_career" id="member_career" value="" required readonly>
+                        <input type="text" name="member_career"     id="member_career"  value="" required readonly>
                         <label for="qualification1">資格1</label>
-                        <input type="text" name="qualification1" id="qualification1" value="" required readonly>
+                        <input type="text" name="qualification1"    id="qualification1" value="" required readonly>
                         <label for="qualification2">資格2</label>
-                        <input type="text" name="qualification2" id="qualification2" value="" required readonly>
+                        <input type="text" name="qualification2"    id="qualification2" value="" required readonly>
                         <label for="qualification3">資格3</label>
-                        <input type="text" name="qualification3" id="qualification3" value="" required readonly>
+                        <input type="text" name="qualification3"    id="qualification3" value="" required readonly>
                         <label for="mbti">MBTI</label>
-                        <input type="text" name="mbti" id="mbti" value="" required readonly>
+                        <input type="text" name="mbti"              id="mbti"           value="" required readonly>
                     </form>
                 </div>
-                <div class="middle-spacer" style="flex: 0.5;"></div>
-                <div class="middle-panel" style="flex: 3;">
+                <div class="middle-spacer"  style="flex: 0.5;"></div>
+                <div class="middle-panel"   style="flex: 3;">
                     <h2>メモ欄</h2>
                     <textarea id="member_memo" name="member_memo" rows="10" style="width: 100%;"></textarea>
                 </div>
-                <div class="right-spacer" style="flex: 0.5;"></div>
-                <div class="right-panel" style="flex: 1;">
+                <div class="right-spacer"   style="flex: 0.5;"></div>
+                <div class="right-panel"    style="flex: 1;">
                     <div class="button-container" style="flex-direction: column; justify-content: flex-end; height: 100%;">
                         <button type="button" class="action-button" onclick="moveToAnotherTeam()">チーム移動</button>
                         <button type="button" class="action-button" onclick="saveMemberMemo()">保存</button>
@@ -163,7 +160,6 @@
         </div>
     </div>
 </div>
-
 <!-- 削除確認ウィンドウ -->
 <div id="deleteConfirmationWindow" class="modal">
     <div class="modal-content">
@@ -172,11 +168,9 @@
         <p>チーム{{ team.team_name }}を削除しますか？</p>
         <div class="button-container">
             <a href="{% url 'canri_app:project_team_delete' team_id=team.team_id %}?project_id={{ project_id }}">削除</a>
-
         </div>
     </div>
 </div>
-
 <!-- チーム移動ウィンドウ -->
 <div class="modal" id="moveTeamWindow">
     <div class="modal-content">
@@ -194,6 +188,7 @@
                 {% endfor %}
             </select>
 
+
             <div class="button-container" style="justify-content: flex-end;">
                 <button type="button" class="action-button" onclick="moveMemberToTeam()">移動</button>
             </div>
@@ -206,12 +201,26 @@
     function openAddMemberWindow() {
         document.getElementById('addMemberWindow').style.display = 'block';
     }
-
     // メンバー追加ウィンドウを閉じる処理
     function closeAddMemberWindow() {
         document.getElementById('addMemberWindow').style.display = 'none';
     }
-
+    // チーム移動ウィンドウを開く処理
+    function moveToAnotherTeam() {
+        // teamselectはチーム移動ウィンドウの移動先チーム選択
+        const teamSelect = document.getElementById('teamSelect');
+        //options.lengthはteamselectのselectにある要素みたい
+        //そこが不明
+        if (teamSelect.options.length === 0) {
+            alert('移動先のチームが存在しません。');
+        } else {
+            document.getElementById('moveTeamWindow').style.display = 'block';
+        }
+    }
+    // チーム移動ウィンドウを閉じる処理
+    function closeMoveTeamWindow() {
+        document.getElementById('moveTeamWindow').style.display = 'none';
+    }
     // メンバー編集ウィンドウを開く関数
     function openMemberEditWindow(event, memberId) {
         // リンクのデフォルトの動作（ページ遷移など）を防ぐ
@@ -237,14 +246,14 @@
                 // 取得したメンバー情報をフォームの各フィールドに設定
                 // メンバー情報が存在しない場合はデフォルトの値（'なし'）を設定
                 document.querySelector('input[name="member_id"]').value = member.member_id; // メンバーIDを入力フィールドに設定
-                document.getElementById('member_name').value = member.name;  // メンバー名を設定
-                document.getElementById('member_job').value = member.job_title || 'なし';  // 職業情報がなければ'なし'を設定
-                document.getElementById('member_career').value = member.career_name || 'なし';  // 経歴情報がなければ'なし'を設定
+                document.getElementById('member_name')   .value = member.name;  // メンバー名を設定
+                document.getElementById('member_job')    .value = member.job_title || 'なし';  // 職業情報がなければ'なし'を設定
+                document.getElementById('member_career') .value = member.career_name || 'なし';  // 経歴情報がなければ'なし'を設定
                 document.getElementById('qualification1').value = member.qualification_name1 || 'なし';  // 資格1情報がなければ'なし'を設定
                 document.getElementById('qualification2').value = member.qualification_name2 || 'なし';  // 資格2情報がなければ'なし'を設定
                 document.getElementById('qualification3').value = member.qualification_name3 || 'なし';  // 資格3情報がなければ'なし'を設定
-                document.getElementById('mbti').value = member.mbti_name || 'なし';  // MBTI情報がなければ'なし'を設定
-                document.getElementById('member_memo').value = member.memo || '';  // メモ情報がなければ空文字を設定
+                document.getElementById('mbti')          .value = member.mbti_name || 'なし';  // MBTI情報がなければ'なし'を設定
+                document.getElementById('member_memo')   .value = member.memo || '';  // メモ情報がなければ空文字を設定
 
                 // メンバー編集ウィンドウ（モーダルなど）を表示
                 // ここでは、表示したい要素のID ('memberEditWindow') を指定して、表示スタイルを変更します
@@ -255,23 +264,33 @@
                 console.error('メンバー編集ウィンドウの読み込みエラー:', error);
             });
     }
-
-
     // メンバー編集ウィンドウを閉じる処理
     function closeMemberEditWindow() {
         document.getElementById('memberEditWindow').style.display = 'none';
     }
+    // 削除確認ウィンドウを開く処理
+    function openDeleteConfirmation() {
+        document.getElementById('deleteConfirmationWindow').style.display = 'block';
+    }
+    // 削除確認ウィンドウを閉じる処理
+    function closeDeleteConfirmation() {
+        document.getElementById('deleteConfirmationWindow').style.display = 'none';
+    }
+
 
     // メモの保存処理
     function saveMemberMemo() {
+        // 入力フィールドからメンバーIDを取得
         const memberId = document.querySelector('input[name="member_id"]').value;
+        // テキストエリアからメンバーメモを取得
         const memberMemo = document.getElementById('member_memo').value;
 
+        // メンバーメモを保存するためにPOSTリクエストを送信
         fetch(`/api/save_member_memo/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
+                'X-CSRFToken': '{{ csrf_token }}' // セキュリティのためにCSRFトークンを含める
             },
             body: JSON.stringify({
                 member_id: memberId,
@@ -281,23 +300,13 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                alert('メモが保存されました。');
-                closeMemberEditWindow();
+                alert('メモが保存されました。'); // 成功メッセージを表示
+                closeMemberEditWindow(); // メンバー編集ウィンドウを閉じる
             } else {
-                alert('メモの保存に失敗しました。');
+                alert('メモの保存に失敗しました。'); // 失敗メッセージを表示
             }
         })
-        .catch(error => console.error('メモの保存エラー:', error));
-    }
-
-    // 削除確認ウィンドウを開く処理
-    function openDeleteConfirmation() {
-        document.getElementById('deleteConfirmationWindow').style.display = 'block';
-    }
-
-    // 削除確認ウィンドウを閉じる処理
-    function closeDeleteConfirmation() {
-        document.getElementById('deleteConfirmationWindow').style.display = 'none';
+        .catch(error => console.error('メモの保存エラー:', error)); // エラーをログに記録
     }
 
     // メンバー情報の取得処理
@@ -320,8 +329,8 @@
                 // メンバー情報をテーブルに追加
                 data.members.forEach(member => {
                     const birthdate = member.birthdate.split('T')[0]; // T以降を削除
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
+                    const row       = document.createElement('tr');
+                    row.innerHTML   = `
                         <td style="width: 10%;"><input type="checkbox" name="member" value="${member.member_id}"></td>
                         <td style="width: 30%;">${member.name}</td>
                         <td style="width: 30%;">${birthdate}</td>
@@ -342,8 +351,8 @@
 
     // チームメンバーの追加処理
     function addSelectedMembers() {
-        const memberTableBody = document.getElementById('memberTableBody');
-        const noMembersMessage = document.getElementById('noMembersMessage');
+        const memberTableBody   = document.getElementById('memberTableBody');
+        const noMembersMessage  = document.getElementById('noMembersMessage');
         if (noMembersMessage) {
             noMembersMessage.remove();
         }
@@ -399,37 +408,6 @@
         hiddenTeamMemo.value = teamMemo;
         document.querySelector('form').appendChild(hiddenTeamMemo);
     }
-
-    // 要修正----------------------------------------------------------------------
-    // チーム削除処理
-    //今の処理が不明
-    // チーム削除apiが詳細不明
-    // function deleteTeam() {
-    //     const teamId = {{ team.team_id }};
-    // }
-    // -----------------------------------------------------------------------
-
-
-
-
-    // チーム移動ウィンドウを開く処理
-    function moveToAnotherTeam() {
-        // teamselectはチーム移動ウィンドウの移動先チーム選択
-        const teamSelect = document.getElementById('teamSelect');
-        //options.lengthはteamselectのselectにある要素みたい
-        //そこが不明
-        if (teamSelect.options.length === 0) {
-            alert('移動先のチームが存在しません。');
-        } else {
-            document.getElementById('moveTeamWindow').style.display = 'block';
-        }
-    }
-
-    // チーム移動ウィンドウを閉じる処理
-    function closeMoveTeamWindow() {
-        document.getElementById('moveTeamWindow').style.display = 'none';
-    }
-
     // メンバーを別のチームに移動
     function moveMemberToTeam() {
         // フォームからメンバーIDを取得
@@ -602,30 +580,6 @@
         projectName.name = 'project_id';
         projectName.value = '{{ project_id }}';
         form.appendChild(projectName);
-
-        // const projectDescription = document.createElement('input');
-        // projectDescription.type = 'hidden';
-        // projectDescription.name = 'project_description';
-        // projectDescription.value = '{{ project_description }}';
-        // form.appendChild(projectDescription);
-
-        // const startDate = document.createElement('input');
-        // startDate.type = 'hidden';
-        // startDate.name = 'start_date';
-        // startDate.value = '{{ start_date }}';
-        // form.appendChild(startDate);
-
-        // const endDate = document.createElement('input');
-        // endDate.type = 'hidden';
-        // endDate.name = 'end_date';
-        // endDate.value = '{{ end_date }}';
-        // form.appendChild(endDate);
-
-        // const teams = document.createElement('input');
-        // teams.type = 'hidden';
-        // teams.name = 'teams';
-        // teams.value = '{{ teams|safe }}';
-        // form.appendChild(teams);
 
         document.body.appendChild(form);
         form.submit();
