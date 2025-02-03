@@ -23,7 +23,11 @@ from django.test import TestCase, override_settings
 import os
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+from django.db import transaction
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import logging
 
+logger = logging.getLogger(__name__)
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -73,99 +77,72 @@ class MemberListMakeView(TemplateView):
     template_name = "memberList_make.html"
 
     def get(self, request, *args, **kwargs):
-
         # フォームget
         form = CSVUploadForm()
-        # メンバー検索(未入力の場合はすべて
+
+        # メンバー検索
         members = self.get_queryset()
 
         # セッションから memberID_list を取得
         memberID_list = request.session.get('memberID_list', [])
 
-        # `memberID_list` の各 `member_id` に対応する `member_name` を取得
-        members_in_list = Member.objects.filter(member_id__in=memberID_list, deletion_flag=False)
-
-        # member_dict を作成する
-        member_dict = {member.member_id: member.name for member in members_in_list}
-
-        messages.error(request , '')
+        # member_dict を作成
+        member_dict = self.get_member_dict(memberID_list)
 
         context = {
-            'form': form, # フォーム
-            'members': members, # 検索メンバー
-            'memberID_list': memberID_list,  # 現在のリストを表示
-            'member_dict':member_dict,
+            'form': form,
+            'members': members,
+            'memberID_list': memberID_list,
+            'member_dict': member_dict,
         }
         return render(request, self.template_name, context)
-    
+
     def post(self, request, *args, **kwargs):
-        # セッションから memberID_list を取得
         memberID_list = request.session.get('memberID_list', [])
 
-        # 削除リクエストがあるか判定
+        # 削除リクエストの処理
         delete_member_id = request.POST.get('delete_member_id')
         if delete_member_id and delete_member_id.isdigit():
             delete_member_id = int(delete_member_id)
             if delete_member_id in memberID_list:
-                memberID_list.remove(delete_member_id)  # リストから削除
+                memberID_list.remove(delete_member_id)
         else:
-            # 追加リクエストの場合
+            # 追加リクエストの処理
             member_id = request.POST.get('member_id')
             if member_id and member_id.isdigit():
                 member_id = int(member_id)
                 if member_id not in memberID_list:
                     try:
-                        Member.objects.get(member_id=member_id)  # メンバーIDの確認
-                        memberID_list.append(member_id)  # リストに追加
+                        Member.objects.get(member_id=member_id)
+                        memberID_list.append(member_id)
                     except Member.DoesNotExist:
                         print(f"Member with ID {member_id} not found")
 
-        # セッションに memberID_list を保存
+        # セッションに保存
         request.session['memberID_list'] = memberID_list
 
-        # `memberID_list` の各 `member_id` に対応する `member_name` を取得
-        members_in_list = Member.objects.filter(member_id__in=memberID_list, deletion_flag=False)
-
-        # member_dict を作成する
-        member_dict = {member.member_id: member.name for member in members_in_list}
+        # member_dict を作成
+        member_dict = self.get_member_dict(memberID_list)
 
         members = self.get_queryset()
         context = {
             'members': members,
             'memberID_list': memberID_list,
-            'member_dict': member_dict,  # member_dict を渡す
+            'member_dict': member_dict,
         }
         return render(request, self.template_name, context)
 
-
-    # メンバー検索
     def get_queryset(self):
         query = self.request.GET.get('query')
         if query:
             members = Member.objects.filter(name__icontains=query, deletion_flag=False)
         else:
-            # フォーム未入力の場合はすべて
             members = Member.objects.filter(deletion_flag=False)
         return members
-    
-    # def upload_csv(request):
-    #     if request.method == 'POST':
-    #         form = CSVUploadForm(request.POST, request.FILES)
-    #         if form.is_valid():
-    #             csv_file = request.FILES['csv_file']
-    #             decoded_file = csv_file.read().decode('utf-8').splitlines()
-    #             reader = csv.reader(decoded_file)
-                
-    #             for row in reader:
-    #                 # 各行のデータを処理する
-    #                 print(row)
-                
-    #             # 成功した場合のレスポンス
-    #             return render(request, 'upload_success.html')
-    #     else:
-    #         form = CSVUploadForm()
 
-    #     return render(request, 'upload_csv.html', {'form': form})
+    def get_member_dict(self, memberID_list):
+        members_in_list = Member.objects.filter(member_id__in=memberID_list, deletion_flag=False)
+        return {member.member_id: member.name for member in members_in_list}
 
 
 # -----メンバーリスト保存-----
@@ -355,25 +332,6 @@ class MemberListEditView(TemplateView):
             members = Member.objects.filter(deletion_flag=False)
         return members
 
-    # def upload_csv(request):
-    #     if request.method == 'POST':
-    #         form = CSVUploadForm(request.POST, request.FILES)
-    #         if form.is_valid():
-    #             csv_file = request.FILES['csv_file']
-    #             decoded_file = csv_file.read().decode('utf-8').splitlines()
-    #             reader = csv.reader(decoded_file)
-                
-    #             for row in reader:
-    #                 # 各行のデータを処理する
-    #                 print(row)
-                
-    #             # 成功した場合のレスポンス
-    #             return render(request, 'canri_app:member_csv_upload')
-    #     else:
-    #         form = CSVUploadForm()
-
-    #     return render(request, 'memberlist_edit.html', {'form': form})
-    
 
 # -----メンバーリスト編集保存-----
 class MemberListEditCompleteView(TemplateView):
@@ -492,145 +450,107 @@ class MemberMakeView(TemplateView):
         'careerinformation': careerinformation,
     }
         return render(request, 'member_make.html', context)
-# -----CSVファイル処理-----
-class FileUploadView(TemplateView):
-    def upload_csv(request):
-        if request.method == 'POST':
-            form = CSVUploadForm(request.POST, request.FILES)
-            if form.is_valid():
-                csv_file = request.FILES['csv_file']
-                decoded_file = csv_file.read().decode('utf-8').splitlines()
-                reader = csv.reader(decoded_file)
-                
-                for row in reader:
-                    # 各行のデータを処理する
-                    print(row)
-                
-                # 成功した場合のレスポンス
-                return render(request, 'upload_success.html')
-        else:
-            form = CSVUploadForm()
 
-        return render(request, 'upload_csv.html', {'form': form})
+
 # -----メンバー保存-----
 class MemberMakeCompleteView(TemplateView):
-    template_name = "member_make_complete.html"
-    
+    template_name = 'member_make_complete.html'
+
     def post(self, request, *args, **kwargs):
-        # フォームからの入力を取得
         name = request.POST.get('name')
-        birthdate = request.POST.get('birthday')  # 日付は適切なフォーマットで受け取る
-        job_title_id = request.POST.get('job_title')  # JobTitleInformation ID
-        memo = request.POST.get('memo', '')  # メモは任意なのでデフォルト値を設定
-        mbti_id = request.POST.get('MBTI')  # MBTI ID を取得
+        birthdate = request.POST.get('birthday')
+        job_title_id = request.POST.get('job_title')
+        mbti_id = request.POST.get('MBTI')
+        career_id = request.POST.get('career')
+        qualification_id = request.POST.get('qualification')
+        qualification2_id = request.POST.get('qualification2')
+        qualification3_id = request.POST.get('qualification3')
+        memo = request.POST.get('memo')
 
-        # 職歴と資格
-        career = request.POST.get('career')
-        qualification = request.POST.get('qualification')
-        qualification2 = request.POST.get('qualification2')
-        qualification3 = request.POST.get('qualification3')
-
-        # メンバーパラメータ変数 (デフォルト値を設定)
-        planning_presentation_power = 0
-        teamwork = 0
-        time_management_ability = 0
-        problem_solving_ability = 0
-        speciality_height = 0
-
-        # 入力検証
-        if not name:
-            messages.error(request, "名前を入力してください。")
-            return redirect('canri_app:member_make')
-        if not birthdate:
-            messages.error(request, "生年月日を設定してください。")
-            return redirect('canri_app:member_make')
-        if not job_title_id:
-            messages.error(request, "役職を選択してください。")
-            return redirect('canri_app:member_make')
-        if not mbti_id:
-            messages.error(request, "MBTIを選択してください。")
-            return redirect('canri_app:member_make')
-        
         try:
-            # 外部キー関連のデータを取得
             job_title = JobTitleInformation.objects.get(job_title_id=job_title_id)
             mbti = MBTI.objects.get(mbti_id=mbti_id)
-            
-            # Member オブジェクトを作成して保存
+            career = CareerInformation.objects.get(career_id=career_id) if career_id else None
+            qualification = Credentials.objects.get(qualification_id=qualification_id) if qualification_id else None
+            qualification2 = Credentials.objects.get(qualification_id=qualification2_id) if qualification2_id else None
+            qualification3 = Credentials.objects.get(qualification_id=qualification3_id) if qualification3_id else None
+
+            # 重複チェック
+            if Member.objects.filter(name=name, birthdate=birthdate, mbti_id=mbti_id).exists():
+                messages.error(request, "同じメンバーは保存できません。")
+                return redirect('canri_app:member_make',  member_id=kwargs['member_id'])
+        
+            speciality_height = 0
+            planning_presentation_power = 0
+            teamwork = 0
+            time_management_ability = 0
+            problem_solving_ability = 0
+
             member = Member(
                 name=name,
                 birthdate=birthdate,
-                job=job_title,  # 外部キーを関連付け
-                memo=memo,
-                mbti=mbti,  # 外部キーを関連付け
-                creation_date=timezone.now(),  # 作成日を現在時刻に設定
-                deletion_flag=False,  # 削除フラグは初期状態でFalse
+                job=job_title,
+                memo="",
+                mbti=mbti,
+                creation_date=timezone.now(),
+                deletion_flag=False,
             )
             member.save()
 
-            # -----役職の計算-----
+            speciality_height += job_title.speciality_height
             planning_presentation_power += job_title.planning_presentation_power
             teamwork += job_title.teamwork
             time_management_ability += job_title.time_management_ability
             problem_solving_ability += job_title.problem_solving_ability
-        
+
             # -----職歴の計算-----
             if career:
-                career = CareerInformation.objects.get(career_id=career)
                 speciality_height += career.speciality_height
 
-                # member_careerとmember_holding_Qualificationに保存
                 member_career = MemberCareer(
                     creation_date=timezone.now(),
-                    career_id=career.career_id,
-                    member_id=member.member_id,
+                    career=career,
+                    member=member,
                 )
-
                 member_career.save()
 
             # -----資格の計算-----
-            # 1つめ
             if qualification:
-                quali = Credentials.objects.get(qualification_id=qualification)
-                speciality_height += float(quali.speciality_height)
+                speciality_height += float(qualification.speciality_height)
                 member_holding_qualification = MemberHoldingQualification(
                     creation_date=timezone.now(),
-                    member_id=member.member_id,
-                    qualification_id=quali.qualification_id,
+                    member=member,
+                    qualification=qualification,
                 )
                 member_holding_qualification.save()
-                # 2つめ
-                if qualification2:
-                    quali2 = Credentials.objects.get(qualification_id=qualification2)
-                    speciality_height += float(quali2.speciality_height)
-                    member_holding_qualification = MemberHoldingQualification(
-                        creation_date=timezone.now(),
-                        member_id=member.member_id,
-                        qualification_id=quali2.qualification_id,
-                    )
-                    member_holding_qualification.save()
-                    # 3つめ
-                    if qualification3:
-                        quali3 = Credentials.objects.get(qualification_id=qualification3)
-                        speciality_height += float(quali3.speciality_height)
-                        member_holding_qualification = MemberHoldingQualification(
-                            creation_date=timezone.now(),
-                            member_id=member.member_id,
-                            qualification_id=quali3.qualification_id,
-                        )
-                        member_holding_qualification.save()
 
-            # -----MBTIの計算-----
+            if qualification2:
+                speciality_height += float(qualification2.speciality_height)
+                member_holding_qualification2 = MemberHoldingQualification(
+                    creation_date=timezone.now(),
+                    member=member,
+                    qualification=qualification2,
+                )
+                member_holding_qualification2.save()
+
+            if qualification3:
+                speciality_height += float(qualification3.speciality_height)
+                member_holding_qualification3 = MemberHoldingQualification(
+                    creation_date=timezone.now(),
+                    member=member,
+                    qualification=qualification3,
+                )
+                member_holding_qualification3.save()
+
+            # MBTIの計算
             planning_presentation_power += mbti.planning_presentation_power
             teamwork += mbti.teamwork
             time_management_ability += mbti.time_management_ability
-            problem_solving_ability += mbti.problem_solving_ability 
+            problem_solving_ability += mbti.problem_solving_ability
 
-
-
-            # MemberParameter オブジェクトを作成して保存
+            # メンバーパラメータの計算
             member_parameter = MemberParameter(
-                member=member,  # Member オブジェクトを直接渡す
+                member=member,
                 planning_presentation_power=planning_presentation_power,
                 teamwork=teamwork,
                 time_management_ability=time_management_ability,
@@ -639,39 +559,50 @@ class MemberMakeCompleteView(TemplateView):
             )
             member_parameter.save()
 
+            messages.success(request, "メンバーが正常に作成されました。")
+            return redirect('canri_app:member_make_complete')
+
         except JobTitleInformation.DoesNotExist:
-            messages.error(request, "指定された職業が見つかりません。")
-            return redirect('canri_app:member_make')
+            logger.error("指定された役職が見つかりません。")
+            messages.error(request, "指定された役職が見つかりません。")
         except MBTI.DoesNotExist:
+            logger.error("指定されたMBTIが見つかりません。")
             messages.error(request, "指定されたMBTIが見つかりません。")
-            return redirect('canri_app:member_make')
+        except CareerInformation.DoesNotExist:
+            logger.error("指定された職歴が見つかりません。")
+            messages.error(request, "指定された職歴が見つかりません。")
+        except Credentials.DoesNotExist:
+            logger.error("指定された資格が見つかりません。")
+            messages.error(request, "指定された資格が見つかりません。")
         except Exception as e:
-            # 保存に失敗した場合の処理
-            messages.error(request, f"メンバーの保存中にエラーが発生しました: {e}")
-            return redirect('canri_app:member_make')
-        
-        # 保存が成功した場合にmember_make_completeへ遷移
-        return render(request, self.template_name, {"member": member})
+            logger.error(f"メンバーの作成中にエラーが発生しました: {e}")
+            messages.error(request, f"メンバーの作成中にエラーが発生しました: {e}")
+
+        return render(request, self.template_name)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
 
 
 # -----メンバー編集-----
 class MemberEditView(TemplateView):
     template_name = "member_edit.html"
+
     def get(self, request, *args, **kwargs):
-        member_id=self.kwargs.get('member_id')
-        member=Member.objects.get(member_id=member_id)
+        member_id = self.kwargs.get('member_id')
+        member = Member.objects.get(member_id=member_id)
         mbti = MBTI.objects.all()  # 複数のフィールドを取得
         job_title = JobTitleInformation.objects.all()
         credentials = Credentials.objects.all()
         careerinformation = CareerInformation.objects.all()
+
         # 役職
-        mem_job=JobTitleInformation.objects.get(job_title_id=int(member.job_id))
+        mem_job = JobTitleInformation.objects.get(job_title_id=int(member.job_id))
+
         # 職歴
-        try:
-            career = MemberCareer.objects.get(member_id=member.member_id)
-            mem_career = CareerInformation.objects.get(career_id=career.career_id)
-        except MemberCareer.DoesNotExist:
-            mem_career = None
+        mem_careers = MemberCareer.objects.filter(member_id=member.member_id)
+        mem_career = mem_careers.first() if mem_careers.exists() else None
+
         # 資格情報を取得
         qualifications = MemberHoldingQualification.objects.filter(member_id=member.member_id, deletion_flag=False)
         if qualifications.exists():
@@ -679,21 +610,22 @@ class MemberEditView(TemplateView):
             mem_credentials = Credentials.objects.filter(qualification_id__in=qualification_ids)
         else:
             mem_credentials = []
+
         # MBTI
-        mem_mbti=MBTI.objects.get(mbti_id=member.mbti_id)
+        mem_mbti = MBTI.objects.get(mbti_id=member.mbti_id)
 
         context = {
-        'member': member,
-        'mbti': mbti,
-        'job_title': job_title,
-        'credentials': credentials,
-        'careerinformation': careerinformation,
-        'mem_job': mem_job,
-        'mem_career': mem_career,
-        'mem_credentials': mem_credentials,
-        'mem_mbti': mem_mbti,
-        'member_id': member.member_id,
-    }
+            'member': member,
+            'mbti': mbti,
+            'job_title': job_title,
+            'credentials': credentials,
+            'careerinformation': careerinformation,
+            'mem_job': mem_job,
+            'mem_career': mem_career,
+            'mem_credentials': mem_credentials,
+            'mem_mbti': mem_mbti,
+            'member_id': member.member_id,
+        }
         return render(request, 'member_edit.html', context)
 
 
@@ -717,6 +649,7 @@ class MemberEditCompleteView(TemplateView):
             request.POST.get('qualification2'),
             request.POST.get('qualification3'),
         ]
+
 
         try:
             # 外部キー関連のデータを取得
@@ -750,7 +683,7 @@ class MemberEditCompleteView(TemplateView):
                 existing_career = MemberCareer.objects.filter(member=member, career=career_obj).exists()
                 if not existing_career:
                     # 新規職歴を保存
-                    MemberCareer.objects.create(
+                    MemberCareer.objects.update(
                         member=member,
                         career=career_obj,
                         creation_date=timezone.now()
@@ -790,7 +723,7 @@ class MemberEditCompleteView(TemplateView):
             member_parameter.problem_solving_ability = (
                 int(job_title.problem_solving_ability) + int(mbti.problem_solving_ability)
             )
-            member_parameter.speciality_height = sum(
+            member_parameter.speciality_height = int(job_title.speciality_height) + int(career_obj.speciality_height) + sum(
                 map(
                     float,
                     Credentials.objects.filter(qualification_id__in=new_qualifications).values_list('speciality_height', flat=True)
@@ -820,50 +753,288 @@ class MemberEditCompleteView(TemplateView):
 
 # -----CSVファイル処理-----
 class FileUploadView(TemplateView):
-    template_name = 'upload_success.html'
+    template_name = 'memberlist_make.html'
 
     def post(self, request, *args, **kwargs):
         form = CSVUploadForm(request.POST, request.FILES)
         if form.is_valid():
             csv_file = request.FILES['csv_file']
-            
-            # ファイル拡張子のチェック
-            if not csv_file.name.endswith('.csv'):
-                messages.error(request, "CSVファイルのみアップロード可能です。")
-                return redirect('canri_app:file_upload')
-
-            # ファイルをstaticディレクトリに保存
             fs = FileSystemStorage(location=os.path.join(settings.BASE_DIR, 'static/uploads'))
             filename = fs.save(csv_file.name, csv_file)
             file_url = fs.url(filename)
 
-            decoded_file = csv_file.read().decode('utf-8').splitlines()
-            reader = csv.reader(decoded_file)
+            # CSVファイルのパスをセッションに保存
+            request.session['csv_file_path'] = fs.path(filename)
 
-            # 各行のデータをデータベースに保存する
-            for column in reader:
-                try:
-                    birthdate = datetime.strptime(column[1], '%Y-%m-%d').date()  # 日付フォーマットの変換
-                except ValueError:
-                    messages.error(request, f"生年月日 '{column[1]}' のフォーマットが正しくありません。")
-                    return redirect('canri_app:member_csv_upload')
+            try:
+                # CSVファイルを読み込み、行数をカウント
+                with open(fs.path(filename), newline='', encoding='utf-8-sig') as f:
+                    reader = csv.reader(f)
+                    row_count = sum(1 for row in reader) - 1  # ヘッダー行を除く
 
-                try:
-                    job = column[2]
-                    JobTitleInformation.filter(name=job)
-                except ValueError:
-                    messages.error(request, f"役職'{column[2]}'のフォーマットが正しくありません。")
-                    return redirect('canri_app:member_csv_upload')
+                # 重複メンバーリストを初期化
+                duplicate_members = []
 
-                member = Member.objects.create(name=column[0], birthdate=column[1], job=column[2])
+                # CSVファイルを再度読み込み、1行ずつMemberモデルに保存
+                with open(fs.path(filename), newline='', encoding='utf-8-sig') as f:
+                    reader = csv.reader(f)
+                    next(reader)  # ヘッダー行をスキップ
+                    for row in reader:
+                        try:
+                            birthdate = self.parse_date(row[1])
+                            job_title = JobTitleInformation.objects.get(job_title=row[2])
+                            mbti = MBTI.objects.get(mbti_name=row[7])
 
-            # 成功した場合のレスポンス
-            messages.success(request, "ファイルが正常にアップロードされました。")
-            return render(request, self.template_name, {'file_url': file_url})
-        
-        messages.error(request, "フォームが無効です。")
-        return redirect('canri_app:member_csv_upload')
+                            # 重複チェック
+                            existing_members = Member.objects.filter(name=row[0], birthdate=birthdate, mbti=mbti, deletion_flag=False)
+                            if existing_members.exists():
+                                duplicate_members.extend(existing_members)
+                                continue
+
+                            member = Member(
+                                name=row[0],
+                                birthdate=birthdate,
+                                job=job_title,
+                                mbti=mbti,
+                                creation_date=timezone.now(),
+                                deletion_flag=False,
+                            )
+                            member.save()
+
+                        except Exception as e:
+                            messages.error(request, f"行の保存中にエラーが発生しました: {e}")
+                            return redirect(request.META.get('HTTP_REFERER', 'canri_app:memberlist_make'))
+
+                if duplicate_members:
+                    context = {
+                        'form': form,
+                        'duplicate_members': duplicate_members,
+                        'show_modal': True,
+                    }
+
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        return render(request, 'canri_app/memberList_make.html', context)
+                    
+                    return render(request, self.template_name, context)
+                
+                messages.success(request, f"CSVファイルが正常にアップロードされました。{row_count} 行が処理されました。")
+                return redirect(request.META.get('HTTP_REFERER', 'canri_app:memberlist_make'))
+
+            except UnicodeDecodeError:
+                messages.error(request, "CSVファイルのエンコーディングが正しくありません。")
+                return redirect(request.META.get('HTTP_REFERER', 'canri_app:memberlist_make'))
+            
+            except Exception as e:
+                messages.error(request, f"ファイルの処理中にエラーが発生しました: {e}")
+                return redirect(request.META.get('HTTP_REFERER', 'canri_app:memberlist_make'))
+
+        # フォームが無効な場合の処理
+        return render(request, self.template_name, {'form': form})
     
+    def get(self, request, *args, **kwargs):
+        form = CSVUploadForm()
+        return render(request, self.template_name, {'form': form})
+
+    def parse_date(self, date_str):
+        for fmt in ('%Y/%m/%d', '%Y-%m-%d'):
+            try:
+                return timezone.make_aware(datetime.strptime(date_str, fmt))
+            except ValueError:
+                continue
+        raise ValueError(f"日付のフォーマットが正しくありません: {date_str}")
+
+
+# -----CSVファイル上書き処理-----
+class MemberOverwriteView(TemplateView):
+    template_name = 'memberlist_overwrite.html'
+
+    def post(self, request, *args, **kwargs):
+        selected_member_ids = [id for id in request.POST.getlist('members') if id]
+        if not selected_member_ids:
+            messages.error(request, "メンバーが選択されていません。")
+            return redirect(request.META.get('HTTP_REFERER', 'canri_app:member_overwrite'))
+        
+        try:
+            # セッションからCSVファイルのパスを取得
+            csv_file_path = request.session.get('csv_file_path')
+            if not csv_file_path:
+                messages.error(request, "CSVファイルのパスが見つかりません。")
+                return redirect(request.META.get('HTTP_REFERER', 'canri_app:member_overwrite'))
+        
+            # ファイルパスのデバッグメッセージを追加
+            print(f"CSV File Path: {csv_file_path}")
+        
+            # ファイルが存在するか確認
+            if not os.path.exists(csv_file_path):
+                messages.error(request, "CSVファイルが存在しません。")
+                return redirect(request.META.get('HTTP_REFERER', 'canri_app:member_overwrite'))
+        
+            # ファイルを開く前にデバッグメッセージを追加
+            print(f"Opening file: {csv_file_path}")
+        
+            with open(csv_file_path, newline='', encoding='utf-8-sig') as f:
+                print("File opened successfully")  # ファイルが開かれたことを確認するデバッグメッセージ
+                reader = csv.reader(f)
+                next(reader)  # ヘッダー行をスキップ
+                for row in reader:
+                    print(f"Processing row: {row}")  # デバッグメッセージを追加
+                    member_name = row[0]
+                    selected_members = Member.objects.filter(member_id__in=selected_member_ids, name=member_name)
+                    if selected_members.exists():
+                        for member in selected_members:
+                            print(f"Processing member NAME: {member.name}")  # デバッグメッセージを追加
+                            new_job_title_name = row[2]
+                            new_mbti_name = row[7]
+                            new_career_name = row[3]
+                            new_qualification_names = [row[4], row[5], row[6]]
+        
+                            # デバッグメッセージを追加
+                            print(f"Job Title: {new_job_title_name}, MBTI: {new_mbti_name}, Career: {new_career_name}, Qualifications: {new_qualification_names}")
+        
+                            try:
+                                job_title = JobTitleInformation.objects.get(job_title=new_job_title_name)
+                                print(f"Job title found: {job_title}")  # デバッグメッセージを追加
+                            except JobTitleInformation.DoesNotExist:
+                                messages.error(request, f"指定された役職 '{new_job_title_name}' が見つかりません。")
+                                return redirect(request.META.get('HTTP_REFERER', 'canri_app:memberlist_make'))
+        
+                            try:
+                                mbti = MBTI.objects.get(mbti_name=new_mbti_name)
+                                print(f"MBTI found: {mbti}")  # デバッグメッセージを追加
+                            except MBTI.DoesNotExist:
+                                messages.error(request, f"指定されたMBTI '{new_mbti_name}' が見つかりません。")
+                                return redirect(request.META.get('HTTP_REFERER', 'canri_app:memberlist_make'))
+                            
+                            if not new_career_name == "":
+                                try:
+                                    career = CareerInformation.objects.get(career=new_career_name)
+                                    print(f"Career found: {career}")  # デバッグメッセージを追加
+                                except CareerInformation.DoesNotExist:
+                                    messages.error(request, f"指定された職歴 '{new_career_name}' が見つかりません。")
+                                    return redirect(request.META.get('HTTP_REFERER', 'canri_app:memberlist_make'))
+            
+                            qualifications = []
+                            if not new_qualification_names == []:
+                                for name in new_qualification_names:
+                                    if name:
+                                        try:
+                                            qualification = Credentials.objects.get(qualification_name=name)
+                                            qualifications.append(qualification)
+                                            print(f"Qualification found: {qualification}")  # デバッグメッセージを追加
+                                        except Credentials.DoesNotExist:
+                                            messages.error(request, f"指定された資格 '{name}' が見つかりません。")
+                                            return redirect(request.META.get('HTTP_REFERER', 'canri_app:memberlist_make'))
+        
+                            member.job = job_title
+                            member.mbti = mbti
+                            member.save()
+                            print(f"Member: {member}")
+        
+                            # 役職の更新処理
+                            print(f"Updating job for member ID: {member.member_id} to job ID: {job_title.job_title_id}")
+                            Member.objects.filter(member_id=member.member_id).update(job_id=job_title.job_title_id)
+                            print("Job update completed")
+                            
+                            # MBTIの更新処理
+                            print(f"Updating MBTI for member ID: {member.member_id} to MBTI ID: {mbti.mbti_id}")
+                            Member.objects.filter(member_id=member.member_id).update(mbti_id=mbti.mbti_id)
+                            print("MBTI update completed")
+                            
+                            # 職歴の更新処理
+                            if not career == "":
+                                print(f"Updating career for member ID: {member.member_id} to career ID: {career.career_id}")
+                                MemberCareer.objects.filter(
+                                    member_id=member.member_id,
+                                ).update(
+                                    member_id=member.member_id,
+                                    career=career.career_id,
+                                    creation_date=timezone.now()
+                                )
+                                print("Career update completed")
+                            
+                            # 資格の更新処理
+                            print(f"Updating qualifications for member ID: {member.member_id}")
+                            MemberHoldingQualification.objects.filter(member_id=member.member_id).update(deletion_flag=True)
+                            if not qualifications == []:
+                                for qualification in qualifications:
+                                    print(f"Adding qualification ID: {qualification.qualification_id} for member ID: {member.member_id}")
+                                    MemberHoldingQualification.objects.create(
+                                        member_id=member.member_id,
+                                        qualification=qualification,
+                                        creation_date=timezone.now()
+                                    )
+                                print("Qualifications update completed")
+        
+                            # メンバーパラメータの計算
+                            planning_presentation_power = job_title.planning_presentation_power + mbti.planning_presentation_power
+                            teamwork = job_title.teamwork + mbti.teamwork
+                            time_management_ability = job_title.time_management_ability + mbti.time_management_ability
+                            problem_solving_ability = job_title.problem_solving_ability + mbti.problem_solving_ability
+                            speciality_height = int(job_title.speciality_height)
+                            if career: 
+                                speciality_height += int(career.speciality_height)
+                            if qualification: 
+                                speciality_height += sum(float(qualification.speciality_height) for qualification in qualifications)
+        
+                            member_parameter, created = MemberParameter.objects.update_or_create(
+                                member=member,
+                                defaults={
+                                    'planning_presentation_power': planning_presentation_power,
+                                    'teamwork': teamwork,
+                                    'time_management_ability': time_management_ability,
+                                    'problem_solving_ability': problem_solving_ability,
+                                    'speciality_height': speciality_height,
+                                }
+                            )
+                            print("Member parameters updated")  # デバッグメッセージを追加
+        
+            messages.success(request, "上書き保存が正常に完了しました。")
+            return redirect('canri_app:memberlist_make')
+        
+        except Member.DoesNotExist:
+            messages.error(request, "選択されたメンバーが見つかりません。")
+            return redirect(request.META.get('HTTP_REFERER', 'canri_app:memberlist_make'))
+        except Exception as e:
+            print(f"Exception occurred: {e}")  # 例外が発生した場合のデバッグメッセージ
+            messages.error(request, f"保存中にエラーが発生しました: {e}")
+            return redirect(request.META.get('HTTP_REFERER', 'canri_app:memberlist_make'))
+    def get(self, request, *args, **kwargs):
+        # セッションからCSVファイルのパスを取得
+        csv_file_path = request.session.get('csv_file_path')
+        if not csv_file_path:
+            messages.error(request, "CSVファイルのパスが見つかりません。")
+            return redirect(request.META.get('HTTP_REFERER', 'canri_app:memberlist_make'))
+
+        duplicate_members = []
+        try:
+            with open(csv_file_path, newline='', encoding='utf-8-sig') as f:
+                reader = csv.reader(f)
+                next(reader)  # ヘッダー行をスキップ
+                for row in reader:
+                    print(f"Processing row: {row}")  # デバッグメッセージを追加
+                    birthdate = self.parse_date(row[1])
+                    job_title = JobTitleInformation.objects.get(job_title=row[2])
+                    mbti = MBTI.objects.get(mbti_name=row[7])
+
+                    existing_members = Member.objects.filter(name=row[0], birthdate=birthdate, mbti=mbti)
+                    if existing_members.exists():
+                        duplicate_members.extend(existing_members)
+
+        except Exception as e:
+            print(f"Exception occurred: {e}")  # 例外が発生した場合のデバッグメッセージ
+            messages.error(request, f"CSVファイルの読み込み中にエラーが発生しました: {e}")
+            return redirect(request.META.get('HTTP_REFERER', 'canri_app:memberlist_make'))
+
+        return render(request, self.template_name, {'members': duplicate_members})
+
+    def parse_date(self, date_str):
+        for fmt in ('%Y/%m/%d', '%Y-%m-%d'):
+            try:
+                return timezone.make_aware(datetime.strptime(date_str, fmt))
+            except ValueError:
+                continue
+        raise ValueError(f"日付のフォーマットが正しくありません: {date_str}")
+
 
 # -----メンバー削除確認-----
 class MemberDeleteView(TemplateView):
@@ -898,6 +1069,7 @@ class MemberDeleteCompleteView(TemplateView):
 #新規プロジェクト作成
 class NewProjectView(TemplateView):
     template_name = "new_project.html"
+
 #新規プロジェクト編集
 class NewProjectEditView(TemplateView):
     template_name = "new_project_edit.html"

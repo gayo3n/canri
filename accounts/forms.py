@@ -70,8 +70,10 @@ class UserForm(forms.ModelForm):
     def clean_user_id(self):
         user_id = self.cleaned_data['user_id']
         if not user_id.isdigit():
+            # 数字以外を入力した時のエラーメッセージ
             raise ValidationError('ユーザーIDは数字のみでなければなりません。')
         if User.objects.filter(user_id=user_id).exists():
+            # 既にIDが存在している時のエラーメッセージ
             raise ValidationError('すでに使用されているIDです')
         return user_id
 
@@ -84,6 +86,7 @@ class UserForm(forms.ModelForm):
         name = self.cleaned_data['name']
         # 名前の追加バリデーションはここに記述可能
         if User.objects.filter(name=name).exists():
+            # 入力されたユーザー名が存在している時のエラーメッセージ
             raise ValidationError('この名前のユーザーは既に存在しています。')
         return name
 
@@ -175,11 +178,13 @@ class MySetPasswordForm(SetPasswordForm):
         new_password1 = cleaned_data.get('new_password1')
         new_password2 = cleaned_data.get('new_password2')
         if new_password1 and new_password2 and new_password1 != new_password2:
+            # パスワードが確認用と違った時のエラーメッセージ
             raise ValidationError('パスワードが一致しません。')
         return cleaned_data
     
     def clean_new_password2(self):
         new_password2 = self.cleaned_data.get('new_password2')
         if self.user.check_password(new_password2):
+            # 入力されたパスワードが現在DBに存在しているパスワードと同じ時のエラーメッセージ
             raise forms.ValidationError('現在と同じパスワードです')
         return new_password2
