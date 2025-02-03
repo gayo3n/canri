@@ -33,15 +33,7 @@
             {% endfor %}
         </ul>
 
-        <form method="post" enctype="multipart/form-data" action="{% url 'canri_app:member_csv_upload' %}" class="upload-form">
-            {% csrf_token %}
-            <input type="file" name="csv_file" accept=".csv" class="file-input" required>
-            <button type="submit" class="btn-primary">アップロード</button>
-        </form>
-        <form method="GET" action="{% url 'canri_app:member_make' %}" class="inline-form">
-            {% csrf_token %}
-            <button type="submit" class="btn-add">⊕新規メンバー追加</button>
-        </form>
+
     </section>
 
     <section class="selected-members-section">
@@ -77,11 +69,24 @@
             <input type="hidden" name="memberID_list" value="{{ member_id }}">
             {% endfor %}
             <div class="button-group">
-            <input type="hidden" name="category_id" value="{{ category_id }}">
-            <button class="btn-success" type="submit">保存</button>
-            <button class="btn-light" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
-        </div>
+                <input type="hidden" name="category_id" value="{{ category_id }}">
+                <button class="btn-success" type="submit">保存</button>
+                <button class="btn-light" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
+            </div>
         </form>
+
+        <br><br><br>
+        <form method="post" enctype="multipart/form-data" action="{% url 'canri_app:member_csv_upload' %}" class="upload-form">
+            {% csrf_token %}
+            <input type="file" name="csv_file" accept=".csv" class="file-input" required>
+            <button type="submit" class="btn-primary">アップロード</button>
+        </form>
+
+        <form method="GET" action="{% url 'canri_app:member_make' %}" class="inline-form">
+            {% csrf_token %}
+            <button type="submit" class="btn-add">⊕新規メンバー追加</button>
+        </form>
+
     </section>
 
     
@@ -106,6 +111,23 @@
                 <button type="submit">完了</button>
                 <button class="memberlist_cancel" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
             </form>
+            {% comment %} <div class="pagination">
+                <span class="step-links">
+                    {% if members.has_previous %}
+                        <a href="?page=1">&laquo; 最初</a>
+                        <a href="?page={{ members.previous_page_number }}">前</a>
+                    {% endif %}
+            
+                    <span class="current">
+                        Page {{ members.number }} of {{ members.paginator.num_pages }}.
+                    </span>
+            
+                    {% if members.has_next %}
+                        <a href="?page={{ members.next_page_number }}">次</a>
+                        <a href="?page={{ members.paginator.num_pages }}">最後 &raquo;</a>
+                    {% endif %}
+                </span>
+            </div> {% endcomment %}
         </div>
     </div>
 
@@ -138,7 +160,22 @@
             modal.style.display = 'block';
         });
         {% endif %}
-        
+                
+        {% comment %} document.querySelectorAll('.pagination a').forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                fetch(link.href)
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newModalContent = doc.querySelector('.modal-content').innerHTML;
+                        document.querySelector('.modal-content').innerHTML = newModalContent;
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        }); {% endcomment %}
+
     </script>
 </div>
 {% endblock %}

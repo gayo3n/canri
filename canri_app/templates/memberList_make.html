@@ -32,17 +32,7 @@
             {% endfor %}
         </ul>
 
-        <form method="post" enctype="multipart/form-data" action="{% url 'canri_app:member_csv_upload' %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">アップロード</button>
-        </form>
 
-        <!-- 新規メンバー追加 -->
-        <form method="GET" action="{% url 'canri_app:member_make' %}" class="inline-form">
-            {% csrf_token %}
-            <button type="submit" class="btn-add">⊕ 新規メンバー追加</button>
-        </form>
     </section>
 
     <!-- 選択されたメンバーセクション -->
@@ -82,6 +72,20 @@
             <button class="memberlist_save" type="button" id="uploadButton">保存</button>
             <button class="memberlist_cancel" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
         </form>
+
+        <br><br><br>
+        <form method="post" enctype="multipart/form-data" action="{% url 'canri_app:member_csv_upload' %}" class="upload-form">
+            {% csrf_token %}
+            <input type="file" name="csv_file" accept=".csv" class="file-input" required>
+            <button type="submit" class="btn-primary">アップロード</button>
+        </form>
+
+        <!-- 新規メンバー追加 -->
+        <form method="GET" action="{% url 'canri_app:member_make' %}" class="inline-form">
+            {% csrf_token %}
+            <button type="submit" class="btn-add">⊕ 新規メンバー追加</button>
+        </form>
+
     </section>
 
     <!-- モーダルのHTML構造 -->
@@ -105,6 +109,23 @@
                 <button type="submit">完了</button>
                 <button class="memberlist_cancel" type="button" onclick="window.location.href='{% url 'canri_app:memberlist' %}'">キャンセル</button>
             </form>
+            {% comment %} <div class="pagination">
+                <span class="step-links">
+                    {% if members.has_previous %}
+                        <a href="?page=1">&laquo; 最初</a>
+                        <a href="?page={{ members.previous_page_number }}&query={{ request.GET.query }}">前</a>
+                    {% endif %}
+            
+                    <span class="current">
+                        Page {{ members.number }} of {{ members.paginator.num_pages }}.
+                    </span>
+            
+                    {% if members.has_next %}
+                        <a href="?page={{ members.next_page_number }}&query={{ request.GET.query }}">次</a>
+                        <a href="?page={{ members.paginator.num_pages }}&query={{ request.GET.query }}">最後 &raquo;</a>
+                    {% endif %}
+                </span>
+            </div> {% endcomment %}
         </div>
     </div>
 
@@ -137,6 +158,40 @@
             modal.style.display = 'block';
         });
         {% endif %}
+        
+        {% comment %} document.addEventListener("DOMContentLoaded", function () {
+            function updatePagination() {
+                document.querySelectorAll('.pagination a').forEach(link => {
+                    link.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        const url = link.href;
+        
+                        fetch(url, {
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                            cache: "no-cache"  // キャッシュ無効化
+                        })
+                        .then(response => response.text())
+                        .then(html => {
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const newModalContent = doc.querySelector('.modal-content');
+        
+                            if (newModalContent) {
+                                document.querySelector('.modal-content').innerHTML = newModalContent.innerHTML;
+                                updatePagination();  // 新しく取得したページにもイベントを適用
+                            } else {
+                                console.error("新しいコンテンツが取得できませんでした");
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    });
+                });
+            }
+        
+            updatePagination(); // 初回実行
+        }); {% endcomment %}
+        
+        
         
     </script>
 </body>

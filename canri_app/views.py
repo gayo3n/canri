@@ -89,13 +89,12 @@ class MemberListMakeView(TemplateView):
         # member_dict を作成
         member_dict = self.get_member_dict(memberID_list)
 
-        if member_dict:
-            context = {
-                'form': form,
-                'members': members,
-                'memberID_list': memberID_list,
-                'member_dict': member_dict,
-            }
+        context = {
+            'form': form,
+            'members': members,
+            'memberID_list': memberID_list,
+            'member_dict': member_dict,
+        }
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
@@ -144,7 +143,7 @@ class MemberListMakeView(TemplateView):
     def get_member_dict(self, memberID_list):
         members_in_list = Member.objects.filter(member_id__in=memberID_list, deletion_flag=False)
         return {member.member_id: member.name for member in members_in_list}
- 
+
 
 # -----メンバーリスト保存-----
 class MemberListMakeCompleteView(TemplateView):
@@ -815,7 +814,7 @@ class FileUploadView(TemplateView):
 
                     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                         return render(request, 'canri_app/memberList_make.html', context)
-
+                    
                     return render(request, self.template_name, context)
                 
                 messages.success(request, f"CSVファイルが正常にアップロードされました。{row_count} 行が処理されました。")
